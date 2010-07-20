@@ -5,5 +5,5 @@
 #
 #*****************************************************************
 
-README: Package containing ESG SAML-based services for Authentication and Authorization,
+Package containing ESG SAML-based services for Authentication and Authorization,
 as well as general SAML-handling functionality.
