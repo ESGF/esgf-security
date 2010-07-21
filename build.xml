@@ -130,6 +130,7 @@ Builds the project via ant (obviously).
     <!-- defaults to use if local .${module}.ant.properties file does not exist --> 
     <property name="src_dir"   	          value="${basedir}/src/java/main"/>
     <property name="lib_dir"   	          value="${basedir}/lib"/>
+  	<property name="weblib_dir"   	      value="${basedir}/web/WEB-INF/lib"/>
     <property name="lib_fetched_dir"      value="${basedir}/lib/fetched"/>
     <property name="build_dir"   	  value="${basedir}/build"/>
     <property name="dist_dir"   	  value="${basedir}/dist"/>
@@ -208,11 +209,17 @@ Builds the project via ant (obviously).
     <ivy:retrieve sync="false"/>
     <path id="main_classpath">
       <fileset dir="${lib_dir}">
-	<include name="**/*.jar"/>
-	<exclude name="**/junit*.jar"/>
-	<exclude name="**/*javadoc.jar"/>
-	<exclude name="**/*sources.jar"/>
+	  	<include name="**/*.jar"/>
+		<exclude name="**/junit*.jar"/>
+		<exclude name="**/*javadoc.jar"/>
+		<exclude name="**/*sources.jar"/>
       </fileset>
+      <fileset dir="${weblib_dir}">
+   		<include name="**/*.jar"/>
+   		<exclude name="**/junit*.jar"/>
+   		<exclude name="**/*javadoc.jar"/>
+   		<exclude name="**/*sources.jar"/>
+       </fileset>
       <pathelement path="${build_dir}"/>
     </path>
     

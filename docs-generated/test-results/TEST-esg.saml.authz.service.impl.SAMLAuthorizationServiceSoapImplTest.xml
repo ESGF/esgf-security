@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite errors="0" failures="0" hostname="LMC-MAC-R46-3.local" name="esg.saml.authz.service.impl.SAMLAuthorizationServiceSoapImplTest" tests="1" time="1.903" timestamp="2010-07-21T09:48:05">
+<testsuite errors="0" failures="0" hostname="LMC-MAC-R46-3.local" name="esg.saml.authz.service.impl.SAMLAuthorizationServiceSoapImplTest" tests="1" time="1.992" timestamp="2010-07-21T23:23:05">
   <properties>
     <property name="file.encoding.pkg" value="sun.io" />
     <property name="ivy.retrieve.pattern.ivy.instance" value="/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/[artifact]-[revision](-[classifier]).[ext]" />
@@ -17,8 +17,9 @@
     <property name="java.endorsed.dirs" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home/lib/endorsed" />
     <property name="java.class.path.ivy.instance" value="/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant.jar:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-antlr.jar:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-apache-bcel.jar:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-apache-bsf.jar:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-apache-log4j.jar:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-apache-oro.jar:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-apache-regexp.jar:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-apache-resolver.jar:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-commons-logging.jar:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-commons-net.jar:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-jai.jar:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-javamail.jar:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-jdepend.jar:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-jmf.jar:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-jsch.jar:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-junit.jar:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-launcher.jar:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-netrexx.jar:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-nodeps.jar:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-starteam.jar:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-stylebook.jar:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-swing.jar:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-trax.jar:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-weblogic.jar:/Users/cinquini/myApplications/eclipse/configuration/org.eclipse.osgi/bundles/48/1/.cp/lib/remoteAnt.jar:/Users/cinquini/myApplications/eclipse/plugins/org.eclipse.swt.cocoa.macosx_3.5.2.v3557f.jar" />
     <property name="env.LOGNAME" value="cinquini" />
+    <property name="env.APP_ICON_5466" value="../Resources/Eclipse.icns" />
     <property name="ivy.home" value="/Users/cinquini/.ivy2" />
-    <property name="env.JAVA_MAIN_CLASS_4298" value="org.eclipse.ant.internal.ui.antsupport.InternalAntRunner" />
+    <property name="weblib_dir" value="/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib" />
     <property name="ftp.nonProxyHosts.ivy.instance" value="local|*.local|169.254/16|*.169.254/16" />
     <property name="java.vm.specification.vendor.ivy.instance" value="Sun Microsystems Inc." />
     <property name="sun.os.patch.level" value="unknown" />
@@ -60,7 +61,6 @@
     <property name="user.timezone" value="" />
     <property name="java.endorsed.dirs.ivy.instance" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home/lib/endorsed" />
     <property name="jdoc_dir" value="/Users/cinquini/Documents/workspace/esg-saml/docs-generated/javadocs" />
-    <property name="env.APP_ICON_4185" value="../Resources/Eclipse.icns" />
     <property name="path.separator" value=":" />
     <property name="jaxb_gen_src_dir" value="/Users/cinquini/Documents/workspace/esg-saml/src/java/main/esg/common/generated" />
     <property name="java.class.version.ivy.instance" value="50.0" />
@@ -89,19 +89,8 @@
     <property name="user.language" value="en" />
     <property name="awt.nativeDoubleBuffering.ivy.instance" value="true" />
     <property name="user.dir.ivy.instance" value="/Users/cinquini/Documents/workspace/esg-saml" />
-    <property name="_cp" value="/Users/cinquini/Documents/workspace/esg-saml/lib/XSGroupRole.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/activation.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/commons-beanutils.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/commons-codec-1.4.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/commons-collections.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/commons-digester.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/commons-httpclient-3.1.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/commons-io.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/commons-lang-2.1.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/commons-logging.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/easymock-2.4.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/eske-utils-xml.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/activation-1.1.jar
+    <property name="env.JAVA_STARTED_ON_FIRST_THREAD_5671" value="1" />
+    <property name="_cp" value="/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/activation-1.1.jar
 /Users/cinquini/Documents/workspace/esg-saml/lib/fetched/avalon-framework-4.1.3.jar
 /Users/cinquini/Documents/workspace/esg-saml/lib/fetched/commons-logging-1.1.1.jar
 /Users/cinquini/Documents/workspace/esg-saml/lib/fetched/jaxb-api-2.2.jar
@@ -113,42 +102,54 @@
 /Users/cinquini/Documents/workspace/esg-saml/lib/fetched/stax-api-1.0-2.jar
 /Users/cinquini/Documents/workspace/esg-saml/lib/hessian-3.0.20.jar
 /Users/cinquini/Documents/workspace/esg-saml/lib/ivy-2.1.0.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/jcl-over-slf4j-1.5.5.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/jdom.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/joda-time-1.5.2.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/jstl.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/log4j-1.2.15.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/mail.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/opensaml-2.2.3.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/openws-1.2.2.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/serializer-2.9.1.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/slf4j-api-1.5.6.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/slf4j-log4j12-1.5.6.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/spring-aop.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/spring-beans.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/spring-context-support.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/spring-context.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/spring-core.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/spring-jdbc.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/spring-jms.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/spring-orm.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/spring-test.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/spring-tx.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/spring-web.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/spring-webmvc-portlet.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/spring-webmvc-struts.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/spring-webmvc.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/standard.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/tiles-api-2.0.5.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/tiles-core-2.0.5.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/tiles-jsp-2.0.5.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/velocity-1.5.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/xalan-2.7.1.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/xercesImpl-2.9.1.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/xmlsec-1.4.2.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/xmltooling-1.2.1.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/xmlunit-1.2.jar
-/Users/cinquini/Documents/workspace/esg-saml/lib/xsltc.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/XSGroupRole.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/activation.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/commons-beanutils.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/commons-codec-1.4.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/commons-collections.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/commons-digester.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/commons-httpclient-3.1.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/commons-io.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/commons-lang-2.1.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/commons-logging.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/easymock-2.4.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/eske-utils-xml.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/jcl-over-slf4j-1.5.5.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/jdom.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/joda-time-1.5.2.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/jstl.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/log4j-1.2.15.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/mail.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/opensaml-2.2.3.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/openws-1.2.2.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/serializer-2.9.1.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/slf4j-api-1.5.6.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/slf4j-log4j12-1.5.6.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-aop.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-beans.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-context-support.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-context.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-core.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-jdbc.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-jms.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-orm.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-test.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-tx.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-web.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-webmvc-portlet.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-webmvc-struts.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-webmvc.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/standard.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/tiles-api-2.0.5.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/tiles-core-2.0.5.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/tiles-jsp-2.0.5.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/velocity-1.5.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/xalan-2.7.1.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/xercesImpl-2.9.1.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/xmlsec-1.4.2.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/xmltooling-1.2.1.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/xmlunit-1.2.jar
+/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/xsltc.jar
 /Users/cinquini/Documents/workspace/esg-saml/build" />
     <property name="ivy.home.ivy.instance" value="/Users/cinquini/.ivy2" />
     <property name="line.separator" value="
@@ -168,14 +169,17 @@
     <property name="ant.file.esg-saml" value="/Users/cinquini/Documents/workspace/esg-saml/build.xml" />
     <property name="env.__CF_USER_TEXT_ENCODING" value="0x1F6:0:0" />
     <property name="java.vm.version.ivy.instance" value="16.3-b01-279" />
+    <property name="env.JAVA_STARTED_ON_FIRST_THREAD_5466" value="1" />
     <property name="log_file" value="/esg/logs/esg-saml_v0.0.1.log" />
     <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16" />
     <property name="user.name.ivy.instance" value="cinquini" />
     <property name="project_name" value="ESG-SAML" />
     <property name="ivy.cache.dir" value="/Users/cinquini/.ivy2/cache" />
     <property name="eclipse.pdebuild.templates" value="/Users/cinquini/myApplications/eclipse/plugins/org.eclipse.pde.build_3.5.2.R35x_20100114/templates//" />
+    <property name="env.JAVA_MAIN_CLASS_5671" value="org.eclipse.ant.internal.ui.antsupport.InternalAntRunner" />
     <property name="java.awt.printerjob" value="apple.awt.CPrinterJob" />
     <property name="db.host" value="localhost" />
+    <property name="tests_uptodate" value="true" />
     <property name="java.io.tmpdir.ivy.instance" value="/var/folders/SY/SYJg-mLQE1Cc0xD6X6hLo++++TM/-Tmp-/" />
     <property name="ant.version" value="Apache Ant version 1.7.1 compiled on June 27 2008" />
     <property name="java.home.ivy.instance" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home" />
@@ -200,24 +204,23 @@
     <property name="mrj.version" value="1060.1.6.0_20-279" />
     <property name="java.runtime.version.ivy.instance" value="1.6.0_20-b02-279-10M3065" />
     <property name="filter" value="false" />
-    <property name="ivy.report.output.pattern" value="[organisation]-[module]-[conf].[ext]" />
     <property name="ivy.version" value="2.1.0" />
-    <property name="java.library.path" value=".:/Users/cinquini/Library/Java/Extensions:/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java" />
+    <property name="ivy.report.output.pattern" value="[organisation]-[module]-[conf].[ext]" />
     <property name="ivy.conf.url" value="jar:file:/Users/cinquini/Documents/workspace/esg-saml/lib/ivy-2.1.0.jar!/org/apache/ivy/core/settings/ivysettings.xml" />
+    <property name="java.library.path" value=".:/Users/cinquini/Library/Java/Extensions:/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java" />
+    <property name="env.PATH" value="/usr/bin:/bin:/usr/sbin:/sbin" />
     <property name="jaxb_xsd_dir" value="/Users/cinquini/Documents/workspace/esg-saml/etc/xsd/" />
     <property name="java.vm.name.ivy.instance" value="Java HotSpot(TM) 64-Bit Server VM" />
-    <property name="env.PATH" value="/usr/bin:/bin:/usr/sbin:/sbin" />
+    <property name="os.version.ivy.instance" value="10.6.3" />
     <property name="line.separator.ivy.instance" value="
 " />
-    <property name="os.version.ivy.instance" value="10.6.3" />
     <property name="eclipse.pdebuild.scripts" value="/Users/cinquini/myApplications/eclipse/plugins/org.eclipse.pde.build_3.5.2.R35x_20100114/scripts//" />
     <property name="etc_dir" value="/Users/cinquini/Documents/workspace/esg-saml/etc" />
-    <property name="sun.cpu.endian.ivy.instance" value="little" />
     <property name="ant.java.version" value="1.6" />
-    <property name="env.JAVA_STARTED_ON_FIRST_THREAD_4185" value="1" />
-    <property name="java.class.version" value="50.0" />
+    <property name="sun.cpu.endian.ivy.instance" value="little" />
     <property name="basedir" value="/Users/cinquini/Documents/workspace/esg-saml" />
     <property name="java.vm.specification.name.ivy.instance" value="Java Virtual Machine Specification" />
+    <property name="java.class.version" value="50.0" />
     <property name="ivy.settings.url.ivy.instance" value="jar:file:/Users/cinquini/Documents/workspace/esg-saml/lib/ivy-2.1.0.jar!/org/apache/ivy/core/settings/ivysettings.xml" />
     <property name="sun.boot.class.path.ivy.instance" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jsfd.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/classes.jar:/System/Library/Frameworks/JavaVM.framework/Frameworks/JavaRuntimeSupport.framework/Resources/Java/JavaRuntimeSupport.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/ui.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/laf.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/sunrsasign.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jsse.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jce.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/charsets.jar" />
     <property name="path.separator.ivy.instance" value=":" />
@@ -226,13 +229,13 @@
     <property name="ivy.resolved.configurations" value="default" />
     <property name="ivy.deliver.ivy.pattern" value="/Users/cinquini/Documents/workspace/esg-saml/distrib/[type]s/[artifact]-[revision](-[classifier]).[ext]" />
     <property name="sun.boot.library.path" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Libraries" />
-    <property name="ivy.default.always.check.exact.revision.ivy.instance" value="false" />
     <property name="java.library.path.ivy.instance" value=".:/Users/cinquini/Library/Java/Extensions:/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:/Users/cinquini/myApplications/eclipse/configuration/org.eclipse.osgi/bundles/534/1/.cp" />
+    <property name="ivy.default.always.check.exact.revision.ivy.instance" value="false" />
     <property name="awt.toolkit.ivy.instance" value="apple.awt.CToolkit" />
     <property name="ivy.basedir" value="/Users/cinquini/Documents/workspace/esg-saml" />
     <property name="sun.management.compiler" value="HotSpot 64-Bit Server Compiler" />
-    <property name="java.awt.graphicsenv" value="apple.awt.CGraphicsEnvironment" />
     <property name="java.ext.dirs.ivy.instance" value="/Users/cinquini/Library/Java/Extensions:/Library/Java/Extensions:/System/Library/Java/Extensions:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home/lib/ext" />
+    <property name="java.awt.graphicsenv" value="apple.awt.CGraphicsEnvironment" />
     <property name="ivy.log.modules.in.use.ivy.instance" value="false" />
     <property name="env.USER" value="cinquini" />
     <property name="sun.os.patch.level.ivy.instance" value="unknown" />
@@ -241,20 +244,20 @@
     <property name="ivy.resolver.default.check.modified" value="false" />
     <property name="ivy.settings.file.ivy.instance" value="ivysettings.xml" />
     <property name="build.compiler.emacs" value="true" />
-    <property name="env.COMMAND_MODE" value="unix2003" />
     <property name="ivy.nb.targets.copied" value="0" />
+    <property name="env.COMMAND_MODE" value="unix2003" />
     <property name="ant.project.name" value="esg-saml" />
-    <property name="java.vm.specification.version" value="1.0" />
     <property name="ivy.cache.dir.ivy.instance" value="/Users/cinquini/.ivy2/cache" />
+    <property name="java.vm.specification.version" value="1.0" />
     <property name="src_dir" value="/Users/cinquini/Documents/workspace/esg-saml/src/java/main" />
     <property name="socksNonProxyHosts.ivy.instance" value="local|*.local|169.254/16|*.169.254/16" />
     <property name="ivy.status.ivy.instance" value="integration" />
     <property name="awt.toolkit" value="apple.awt.CToolkit" />
     <property name="sun.cpu.isalist" value="" />
     <property name="file.separator.ivy.instance" value="/" />
-    <property name="ivy.deps.changed" value="false" />
     <property name="java.ext.dirs" value="/Users/cinquini/Library/Java/Extensions:/Library/Java/Extensions:/System/Library/Java/Extensions:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home/lib/ext" />
     <property name="ivy.local.default.root.ivy.instance" value="/Users/cinquini/.ivy2/local" />
+    <property name="ivy.deps.changed" value="false" />
     <property name="os.version" value="10.6.3" />
     <property name="user.home" value="/Users/cinquini" />
     <property name="sun.java.launcher.ivy.instance" value="SUN_STANDARD" />
@@ -274,16 +277,16 @@
     <property name="sun.cpu.endian" value="little" />
     <property name="ivy.revision" value="working@LMC-MAC-R46-3.local" />
     <property name="db.protocol" value="jdbc:postgresql:" />
-    <property name="user.timezone.ivy.instance" value="America/New_York" />
     <property name="env.TMPDIR" value="/var/folders/SY/SYJg-mLQE1Cc0xD6X6hLo++++TM/-Tmp-/" />
+    <property name="user.timezone.ivy.instance" value="America/New_York" />
     <property name="test_last_failed_file" value="/Users/cinquini/Documents/workspace/esg-saml/build/.lasttestsfailed" />
     <property name="lib_dir" value="/Users/cinquini/Documents/workspace/esg-saml/lib" />
     <property name="java.vm.version" value="16.3-b01-279" />
-    <property name="java.class.path" value="/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/junit-4.8.1-sources.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/junit-4.8.1.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/junit-4.4.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/XSGroupRole.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/activation.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/commons-beanutils.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/commons-codec-1.4.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/commons-collections.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/commons-digester.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/commons-httpclient-3.1.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/commons-io.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/commons-lang-2.1.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/commons-logging.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/easymock-2.4.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/eske-utils-xml.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/activation-1.1.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/avalon-framework-4.1.3.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/commons-logging-1.1.1.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/jaxb-api-2.2.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/jaxb-impl-2.2.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/jaxb-xjc-2.2.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/log4j-1.2.14.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/logkit-1.0.1.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/servlet-api-2.3.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/stax-api-1.0-2.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/hessian-3.0.20.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/ivy-2.1.0.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/jcl-over-slf4j-1.5.5.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/jdom.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/joda-time-1.5.2.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/jstl.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/log4j-1.2.15.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/mail.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/opensaml-2.2.3.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/openws-1.2.2.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/serializer-2.9.1.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/slf4j-api-1.5.6.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/slf4j-log4j12-1.5.6.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/spring-aop.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/spring-beans.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/spring-context-support.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/spring-context.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/spring-core.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/spring-jdbc.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/spring-jms.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/spring-orm.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/spring-test.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/spring-tx.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/spring-web.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/spring-webmvc-portlet.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/spring-webmvc-struts.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/spring-webmvc.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/standard.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/tiles-api-2.0.5.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/tiles-core-2.0.5.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/tiles-jsp-2.0.5.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/velocity-1.5.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/xalan-2.7.1.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/xercesImpl-2.9.1.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/xmlsec-1.4.2.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/xmltooling-1.2.1.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/xmlunit-1.2.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/xsltc.jar:/Users/cinquini/Documents/workspace/esg-saml/build:/Users/cinquini/Documents/workspace/esg-saml/build/test:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-launcher.jar:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant.jar:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-junit.jar" />
+    <property name="java.class.path" value="/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/junit-4.8.1-sources.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/junit-4.8.1.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/activation-1.1.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/avalon-framework-4.1.3.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/commons-logging-1.1.1.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/jaxb-api-2.2.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/jaxb-impl-2.2.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/jaxb-xjc-2.2.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/log4j-1.2.14.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/logkit-1.0.1.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/servlet-api-2.3.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/stax-api-1.0-2.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/hessian-3.0.20.jar:/Users/cinquini/Documents/workspace/esg-saml/lib/ivy-2.1.0.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/XSGroupRole.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/activation.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/commons-beanutils.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/commons-codec-1.4.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/commons-collections.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/commons-digester.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/commons-httpclient-3.1.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/commons-io.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/commons-lang-2.1.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/commons-logging.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/easymock-2.4.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/eske-utils-xml.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/jcl-over-slf4j-1.5.5.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/jdom.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/joda-time-1.5.2.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/jstl.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/log4j-1.2.15.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/mail.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/opensaml-2.2.3.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/openws-1.2.2.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/serializer-2.9.1.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/slf4j-api-1.5.6.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/slf4j-log4j12-1.5.6.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-aop.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-beans.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-context-support.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-context.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-core.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-jdbc.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-jms.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-orm.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-test.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-tx.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-web.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-webmvc-portlet.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-webmvc-struts.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/spring-webmvc.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/standard.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/tiles-api-2.0.5.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/tiles-core-2.0.5.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/tiles-jsp-2.0.5.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/velocity-1.5.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/xalan-2.7.1.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/xercesImpl-2.9.1.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/xmlsec-1.4.2.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/xmltooling-1.2.1.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/xmlunit-1.2.jar:/Users/cinquini/Documents/workspace/esg-saml/web/WEB-INF/lib/xsltc.jar:/Users/cinquini/Documents/workspace/esg-saml/build:/Users/cinquini/Documents/workspace/esg-saml/build/test:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-launcher.jar:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant.jar:/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant-junit.jar" />
     <property name="ivy.default.ivy.user.dir" value="/Users/cinquini/.ivy2" />
-    <property name="DSTAMP" value="20100721" />
     <property name="release_name" value="Flatbush" />
     <property name="user.home.ivy.instance" value="/Users/cinquini" />
+    <property name="DSTAMP" value="20100721" />
     <property name="basedir.ivy.instance" value="/Users/cinquini/Documents/workspace/esg-saml" />
     <property name="ant.library.dir" value="/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib" />
     <property name="os.arch" value="x86_64" />
@@ -295,22 +298,22 @@
     <property name="db.driver" value="org.postgresql.Driver" />
     <property name="java.awt.printerjob.ivy.instance" value="apple.awt.CPrinterJob" />
     <property name="ivy.settings.dir.ivy.instance" value="jar:file:/Users/cinquini/Documents/workspace/esg-saml/lib/ivy-2.1.0.jar!/org/apache/ivy/core/settings" />
-    <property name="ivy.resolver.default.check.modified.ivy.instance" value="false" />
     <property name="ant.core.lib" value="/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant.jar" />
+    <property name="ivy.resolver.default.check.modified.ivy.instance" value="false" />
     <property name="module" value="esg-saml" />
     <property name="java.vm.specification.vendor" value="Sun Microsystems Inc." />
     <property name="ivy.settings.dir" value="jar:file:/Users/cinquini/Documents/workspace/esg-saml/lib/ivy-2.1.0.jar!/org/apache/ivy/core/settings" />
+    <property name="TSTAMP" value="1922" />
     <property name="gopherProxySet.ivy.instance" value="false" />
-    <property name="TSTAMP" value="0547" />
     <property name="file.separator" value="/" />
     <property name="user.language.ivy.instance" value="en" />
     <property name="ivy.shared.default.artifact.pattern.ivy.instance" value="[organisation]/[module]/[revision]/[type]s/[artifact].[ext]" />
     <property name="user.country.ivy.instance" value="US" />
     <property name="ivy.conf.url.ivy.instance" value="jar:file:/Users/cinquini/Documents/workspace/esg-saml/lib/ivy-2.1.0.jar!/org/apache/ivy/core/settings/ivysettings.xml" />
     <property name="author" value="Gavin M. Bell" />
+    <property name="java.runtime.version" value="1.6.0_20-b02-279-10M3065" />
     <property name="java.specification.name.ivy.instance" value="Java Platform API Specification" />
     <property name="lib_fetched_dir" value="/Users/cinquini/Documents/workspace/esg-saml/lib/fetched" />
-    <property name="java.runtime.version" value="1.6.0_20-b02-279-10M3065" />
     <property name="sun.boot.class.path" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jsfd.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/classes.jar:/System/Library/Frameworks/JavaVM.framework/Frameworks/JavaRuntimeSupport.framework/Resources/Java/JavaRuntimeSupport.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/ui.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/laf.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/sunrsasign.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jsse.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jce.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/charsets.jar" />
     <property name="env.SSH_AUTH_SOCK" value="/tmp/launch-9QodTp/Listeners" />
     <property name="version_num" value="0.0.1" />
@@ -321,11 +324,10 @@
     <property name="test_build_dir" value="/Users/cinquini/Documents/workspace/esg-saml/build/test" />
     <property name="env.ANT_HOME" value="/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145" />
     <property name="user.country" value="US" />
-    <property name="ivy.shared.default.root" value="/Users/cinquini/.ivy2/shared" />
     <property name="env.SHELL" value="/bin/bash" />
+    <property name="ivy.shared.default.root" value="/Users/cinquini/.ivy2/shared" />
     <property name="java.version.ivy.instance" value="1.6.0_20" />
     <property name="ivy.resolved.file" value="/Users/cinquini/Documents/workspace/esg-saml/ivy.xml" />
-    <property name="env.JAVA_STARTED_ON_FIRST_THREAD_4298" value="1" />
     <property name="os.arch.ivy.instance" value="x86_64" />
     <property name="log_dir" value="/esg/logs" />
     <property name="java.vendor" value="Apple Inc." />
@@ -335,7 +337,7 @@
     <property name="sun.arch.data.model" value="64" />
     <property name="ivy.buildlist.ivyfilepath" value="ivy.xml" />
   </properties>
-  <testcase classname="esg.saml.authz.service.impl.SAMLAuthorizationServiceSoapImplTest" name="testProcessAuthorizationQuery" time="1.762" />
+  <testcase classname="esg.saml.authz.service.impl.SAMLAuthorizationServiceSoapImplTest" name="testProcessAuthorizationQuery" time="1.837" />
   <system-out><![CDATA[[INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ObjectProviders
 [INFO] org.opensaml.xml.XMLConfigurator: ObjectProviders load complete
 [INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ObjectProviders
