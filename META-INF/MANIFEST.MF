@@ -1,0 +1,7 @@
+Manifest-Version: 1.0.4
+Specification-Title: ESG/SAML
+Specification-Version: 1.0.4
+Implementation-Title: ESG library for SAML support
+Implementation-Vendor: Earth System Grid
+Implementation-Vendor-Id: esg
+Implementation-Version: 1.0.4

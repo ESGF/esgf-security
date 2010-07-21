@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?><saml:Assertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Version="2.0">
+   <saml:Issuer Format="urn:oasis:names:tc:SAML:1.1:nameid-format:x509SubjectName">Test SAML Issuer</saml:Issuer>
+   <saml:Subject>
+      <saml:NameID Format="urn:esg:openid">Test Openid</saml:NameID>
+   </saml:Subject>
+   <saml:AuthnStatement>
+      <saml:AuthnContext>
+         <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:X509</saml:AuthnContextClassRef>
+      </saml:AuthnContext>
+   </saml:AuthnStatement>
+</saml:Assertion>

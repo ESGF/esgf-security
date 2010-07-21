@@ -1,0 +1,3 @@
+Version 1.0.4
+- Added BSD Open Source License
+- Changed log file name to avoid possible conflicts with other applications

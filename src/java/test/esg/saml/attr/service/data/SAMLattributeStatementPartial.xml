@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?><saml:Assertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Version="2.0">
+   <saml:Issuer Format="urn:oasis:names:tc:SAML:1.1:nameid-format:x509SubjectName">Test SAML Issuer</saml:Issuer>
+   <saml:Subject>
+      <saml:NameID Format="urn:esg:openid">Test Openid</saml:NameID>
+   </saml:Subject>
+   <saml:AttributeStatement>
+      <saml:Attribute FriendlyName="FirstName" Name="urn:esg:first:name" NameFormat="http://www.w3.org/2001/XMLSchema#string">
+         <saml:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">Test First Name</saml:AttributeValue>
+      </saml:Attribute>
+      <saml:Attribute FriendlyName="LastName" Name="urn:esg:last:name" NameFormat="http://www.w3.org/2001/XMLSchema#string">
+         <saml:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">Test Last Name</saml:AttributeValue>
+      </saml:Attribute>
+   </saml:AttributeStatement>
+</saml:Assertion>

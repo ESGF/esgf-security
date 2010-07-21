@@ -1,0 +1,592 @@
+<HTML>
+<BODY BGCOLOR="white">
+<PRE>
+<FONT color="green">001</FONT>    /*******************************************************************************<a name="line.1"></a>
+<FONT color="green">002</FONT>     * Copyright (c) 2010 Earth System Grid Federation<a name="line.2"></a>
+<FONT color="green">003</FONT>     * ALL RIGHTS RESERVED. <a name="line.3"></a>
+<FONT color="green">004</FONT>     * U.S. Government sponsorship acknowledged.<a name="line.4"></a>
+<FONT color="green">005</FONT>     * <a name="line.5"></a>
+<FONT color="green">006</FONT>     * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:<a name="line.6"></a>
+<FONT color="green">007</FONT>     * <a name="line.7"></a>
+<FONT color="green">008</FONT>     * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.<a name="line.8"></a>
+<FONT color="green">009</FONT>     * <a name="line.9"></a>
+<FONT color="green">010</FONT>     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.<a name="line.10"></a>
+<FONT color="green">011</FONT>     * <a name="line.11"></a>
+<FONT color="green">012</FONT>     * Neither the name of the &lt;ORGANIZATION&gt; nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.<a name="line.12"></a>
+<FONT color="green">013</FONT>     * <a name="line.13"></a>
+<FONT color="green">014</FONT>     * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. <a name="line.14"></a>
+<FONT color="green">015</FONT>     * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES <a name="line.15"></a>
+<FONT color="green">016</FONT>     * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)<a name="line.16"></a>
+<FONT color="green">017</FONT>     * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.<a name="line.17"></a>
+<FONT color="green">018</FONT>     ******************************************************************************/<a name="line.18"></a>
+<FONT color="green">019</FONT>    package esg.saml.common;<a name="line.19"></a>
+<FONT color="green">020</FONT>    <a name="line.20"></a>
+<FONT color="green">021</FONT>    import java.io.InputStream;<a name="line.21"></a>
+<FONT color="green">022</FONT>    import java.io.StringReader;<a name="line.22"></a>
+<FONT color="green">023</FONT>    import java.util.Map;<a name="line.23"></a>
+<FONT color="green">024</FONT>    import java.util.UUID;<a name="line.24"></a>
+<FONT color="green">025</FONT>    <a name="line.25"></a>
+<FONT color="green">026</FONT>    import org.apache.commons.logging.Log;<a name="line.26"></a>
+<FONT color="green">027</FONT>    import org.apache.commons.logging.LogFactory;<a name="line.27"></a>
+<FONT color="green">028</FONT>    import org.joda.time.DateTime;<a name="line.28"></a>
+<FONT color="green">029</FONT>    import org.opensaml.Configuration;<a name="line.29"></a>
+<FONT color="green">030</FONT>    import org.opensaml.DefaultBootstrap;<a name="line.30"></a>
+<FONT color="green">031</FONT>    import org.opensaml.common.SAMLObjectBuilder;<a name="line.31"></a>
+<FONT color="green">032</FONT>    import org.opensaml.common.SAMLVersion;<a name="line.32"></a>
+<FONT color="green">033</FONT>    import org.opensaml.saml2.core.Action;<a name="line.33"></a>
+<FONT color="green">034</FONT>    import org.opensaml.saml2.core.Assertion;<a name="line.34"></a>
+<FONT color="green">035</FONT>    import org.opensaml.saml2.core.Attribute;<a name="line.35"></a>
+<FONT color="green">036</FONT>    import org.opensaml.saml2.core.AttributeQuery;<a name="line.36"></a>
+<FONT color="green">037</FONT>    import org.opensaml.saml2.core.AttributeStatement;<a name="line.37"></a>
+<FONT color="green">038</FONT>    import org.opensaml.saml2.core.AttributeValue;<a name="line.38"></a>
+<FONT color="green">039</FONT>    import org.opensaml.saml2.core.AuthnContext;<a name="line.39"></a>
+<FONT color="green">040</FONT>    import org.opensaml.saml2.core.AuthnContextClassRef;<a name="line.40"></a>
+<FONT color="green">041</FONT>    import org.opensaml.saml2.core.AuthnStatement;<a name="line.41"></a>
+<FONT color="green">042</FONT>    import org.opensaml.saml2.core.AuthzDecisionQuery;<a name="line.42"></a>
+<FONT color="green">043</FONT>    import org.opensaml.saml2.core.AuthzDecisionStatement;<a name="line.43"></a>
+<FONT color="green">044</FONT>    import org.opensaml.saml2.core.Conditions;<a name="line.44"></a>
+<FONT color="green">045</FONT>    import org.opensaml.saml2.core.Issuer;<a name="line.45"></a>
+<FONT color="green">046</FONT>    import org.opensaml.saml2.core.NameID;<a name="line.46"></a>
+<FONT color="green">047</FONT>    import org.opensaml.saml2.core.NameIDType;<a name="line.47"></a>
+<FONT color="green">048</FONT>    import org.opensaml.saml2.core.Response;<a name="line.48"></a>
+<FONT color="green">049</FONT>    import org.opensaml.saml2.core.Status;<a name="line.49"></a>
+<FONT color="green">050</FONT>    import org.opensaml.saml2.core.StatusCode;<a name="line.50"></a>
+<FONT color="green">051</FONT>    import org.opensaml.saml2.core.Subject;<a name="line.51"></a>
+<FONT color="green">052</FONT>    import org.opensaml.saml2.core.impl.ActionBuilder;<a name="line.52"></a>
+<FONT color="green">053</FONT>    import org.opensaml.saml2.core.impl.AssertionBuilder;<a name="line.53"></a>
+<FONT color="green">054</FONT>    import org.opensaml.saml2.core.impl.AttributeBuilder;<a name="line.54"></a>
+<FONT color="green">055</FONT>    import org.opensaml.saml2.core.impl.AttributeQueryBuilder;<a name="line.55"></a>
+<FONT color="green">056</FONT>    import org.opensaml.saml2.core.impl.AttributeStatementBuilder;<a name="line.56"></a>
+<FONT color="green">057</FONT>    import org.opensaml.saml2.core.impl.AuthnContextBuilder;<a name="line.57"></a>
+<FONT color="green">058</FONT>    import org.opensaml.saml2.core.impl.AuthnContextClassRefBuilder;<a name="line.58"></a>
+<FONT color="green">059</FONT>    import org.opensaml.saml2.core.impl.AuthnStatementBuilder;<a name="line.59"></a>
+<FONT color="green">060</FONT>    import org.opensaml.saml2.core.impl.AuthzDecisionQueryBuilder;<a name="line.60"></a>
+<FONT color="green">061</FONT>    import org.opensaml.saml2.core.impl.AuthzDecisionStatementBuilder;<a name="line.61"></a>
+<FONT color="green">062</FONT>    import org.opensaml.saml2.core.impl.ConditionsBuilder;<a name="line.62"></a>
+<FONT color="green">063</FONT>    import org.opensaml.saml2.core.impl.IssuerBuilder;<a name="line.63"></a>
+<FONT color="green">064</FONT>    import org.opensaml.saml2.core.impl.NameIDBuilder;<a name="line.64"></a>
+<FONT color="green">065</FONT>    import org.opensaml.saml2.core.impl.ResponseBuilder;<a name="line.65"></a>
+<FONT color="green">066</FONT>    import org.opensaml.saml2.core.impl.StatusBuilder;<a name="line.66"></a>
+<FONT color="green">067</FONT>    import org.opensaml.saml2.core.impl.StatusCodeBuilder;<a name="line.67"></a>
+<FONT color="green">068</FONT>    import org.opensaml.saml2.core.impl.SubjectBuilder;<a name="line.68"></a>
+<FONT color="green">069</FONT>    import org.opensaml.saml2.metadata.AssertionConsumerService;<a name="line.69"></a>
+<FONT color="green">070</FONT>    import org.opensaml.saml2.metadata.Endpoint;<a name="line.70"></a>
+<FONT color="green">071</FONT>    import org.opensaml.ws.soap.soap11.Body;<a name="line.71"></a>
+<FONT color="green">072</FONT>    import org.opensaml.ws.soap.soap11.Envelope;<a name="line.72"></a>
+<FONT color="green">073</FONT>    import org.opensaml.ws.soap.soap11.impl.BodyBuilder;<a name="line.73"></a>
+<FONT color="green">074</FONT>    import org.opensaml.ws.soap.soap11.impl.EnvelopeBuilder;<a name="line.74"></a>
+<FONT color="green">075</FONT>    import org.opensaml.xml.ConfigurationException;<a name="line.75"></a>
+<FONT color="green">076</FONT>    import org.opensaml.xml.XMLObject;<a name="line.76"></a>
+<FONT color="green">077</FONT>    import org.opensaml.xml.XMLObjectBuilderFactory;<a name="line.77"></a>
+<FONT color="green">078</FONT>    import org.opensaml.xml.io.Marshaller;<a name="line.78"></a>
+<FONT color="green">079</FONT>    import org.opensaml.xml.io.MarshallerFactory;<a name="line.79"></a>
+<FONT color="green">080</FONT>    import org.opensaml.xml.io.MarshallingException;<a name="line.80"></a>
+<FONT color="green">081</FONT>    import org.opensaml.xml.io.Unmarshaller;<a name="line.81"></a>
+<FONT color="green">082</FONT>    import org.opensaml.xml.io.UnmarshallerFactory;<a name="line.82"></a>
+<FONT color="green">083</FONT>    import org.opensaml.xml.io.UnmarshallingException;<a name="line.83"></a>
+<FONT color="green">084</FONT>    import org.opensaml.xml.parse.BasicParserPool;<a name="line.84"></a>
+<FONT color="green">085</FONT>    import org.opensaml.xml.parse.XMLParserException;<a name="line.85"></a>
+<FONT color="green">086</FONT>    import org.opensaml.xml.schema.XSAny;<a name="line.86"></a>
+<FONT color="green">087</FONT>    import org.opensaml.xml.schema.XSGroupRole;<a name="line.87"></a>
+<FONT color="green">088</FONT>    import org.opensaml.xml.schema.XSString;<a name="line.88"></a>
+<FONT color="green">089</FONT>    import org.opensaml.xml.schema.impl.XSAnyBuilder;<a name="line.89"></a>
+<FONT color="green">090</FONT>    import org.opensaml.xml.schema.impl.XSGroupRoleBuilder;<a name="line.90"></a>
+<FONT color="green">091</FONT>    import org.opensaml.xml.schema.impl.XSStringBuilder;<a name="line.91"></a>
+<FONT color="green">092</FONT>    import org.opensaml.xml.security.CriteriaSet;<a name="line.92"></a>
+<FONT color="green">093</FONT>    import org.opensaml.xml.security.SecurityException;<a name="line.93"></a>
+<FONT color="green">094</FONT>    import org.opensaml.xml.security.SecurityTestHelper;<a name="line.94"></a>
+<FONT color="green">095</FONT>    import org.opensaml.xml.security.credential.CollectionCredentialResolver;<a name="line.95"></a>
+<FONT color="green">096</FONT>    import org.opensaml.xml.security.credential.Credential;<a name="line.96"></a>
+<FONT color="green">097</FONT>    import org.opensaml.xml.security.criteria.EntityIDCriteria;<a name="line.97"></a>
+<FONT color="green">098</FONT>    import org.opensaml.xml.security.keyinfo.KeyInfoCredentialResolver;<a name="line.98"></a>
+<FONT color="green">099</FONT>    import org.opensaml.xml.signature.SignableXMLObject;<a name="line.99"></a>
+<FONT color="green">100</FONT>    import org.opensaml.xml.signature.Signature;<a name="line.100"></a>
+<FONT color="green">101</FONT>    import org.opensaml.xml.signature.SignatureConstants;<a name="line.101"></a>
+<FONT color="green">102</FONT>    import org.opensaml.xml.signature.SignatureException;<a name="line.102"></a>
+<FONT color="green">103</FONT>    import org.opensaml.xml.signature.Signer;<a name="line.103"></a>
+<FONT color="green">104</FONT>    import org.opensaml.xml.signature.impl.ExplicitKeySignatureTrustEngine;<a name="line.104"></a>
+<FONT color="green">105</FONT>    import org.opensaml.xml.signature.impl.SignatureBuilder;<a name="line.105"></a>
+<FONT color="green">106</FONT>    import org.springframework.util.Assert;<a name="line.106"></a>
+<FONT color="green">107</FONT>    import org.w3c.dom.Element;<a name="line.107"></a>
+<FONT color="green">108</FONT>    <a name="line.108"></a>
+<FONT color="green">109</FONT>    <a name="line.109"></a>
+<FONT color="green">110</FONT>    /**<a name="line.110"></a>
+<FONT color="green">111</FONT>     * Utility class to build, marshall, serialize and embed SAML objects.<a name="line.111"></a>
+<FONT color="green">112</FONT>     * This class is a singleton to enforce sharing of factories and XML parsers.<a name="line.112"></a>
+<FONT color="green">113</FONT>     */<a name="line.113"></a>
+<FONT color="green">114</FONT>    public class SAMLBuilder {<a name="line.114"></a>
+<FONT color="green">115</FONT>            <a name="line.115"></a>
+<FONT color="green">116</FONT>            // SAMLObject builders<a name="line.116"></a>
+<FONT color="green">117</FONT>        private XMLObjectBuilderFactory builderFactory;<a name="line.117"></a>
+<FONT color="green">118</FONT>        private ActionBuilder actionBuilder;<a name="line.118"></a>
+<FONT color="green">119</FONT>        private AssertionBuilder assertionBuilder;<a name="line.119"></a>
+<FONT color="green">120</FONT>        private AttributeBuilder attributeBuilder;<a name="line.120"></a>
+<FONT color="green">121</FONT>        private AuthzDecisionQueryBuilder authzDecisionQueryBuilder;<a name="line.121"></a>
+<FONT color="green">122</FONT>        private AuthzDecisionStatementBuilder authzDecisionStatementBuilder;<a name="line.122"></a>
+<FONT color="green">123</FONT>        private AuthnStatementBuilder authnStatementBuilder;<a name="line.123"></a>
+<FONT color="green">124</FONT>        private AttributeStatementBuilder attributeStatementBuilder;<a name="line.124"></a>
+<FONT color="green">125</FONT>        private AuthnContextBuilder authnContextBuilder;<a name="line.125"></a>
+<FONT color="green">126</FONT>        private AuthnContextClassRefBuilder authnContextClassRefBuilder;<a name="line.126"></a>
+<FONT color="green">127</FONT>        private XSStringBuilder stringBuilder;<a name="line.127"></a>
+<FONT color="green">128</FONT>        private XSAnyBuilder anyBuilder;<a name="line.128"></a>
+<FONT color="green">129</FONT>        private XSGroupRoleBuilder groupRoleBuilder = new XSGroupRoleBuilder();<a name="line.129"></a>
+<FONT color="green">130</FONT>        private IssuerBuilder issuerBuilder;<a name="line.130"></a>
+<FONT color="green">131</FONT>        private SubjectBuilder subjectBuilder;<a name="line.131"></a>
+<FONT color="green">132</FONT>        private NameIDBuilder nameIdBuilder;<a name="line.132"></a>
+<FONT color="green">133</FONT>        private AttributeQueryBuilder attributeQueryBuilder;<a name="line.133"></a>
+<FONT color="green">134</FONT>        private ResponseBuilder responseBuilder;<a name="line.134"></a>
+<FONT color="green">135</FONT>        private StatusBuilder statusBuilder;<a name="line.135"></a>
+<FONT color="green">136</FONT>        private StatusCodeBuilder statusCodeBuilder;<a name="line.136"></a>
+<FONT color="green">137</FONT>        private SAMLObjectBuilder&lt;Endpoint&gt; endpointBuilder;<a name="line.137"></a>
+<FONT color="green">138</FONT>        private EnvelopeBuilder envelopeBuilder;<a name="line.138"></a>
+<FONT color="green">139</FONT>        private BodyBuilder bodyBuilder;<a name="line.139"></a>
+<FONT color="green">140</FONT>        private SignatureBuilder signatureBuilder;<a name="line.140"></a>
+<FONT color="green">141</FONT>        private ConditionsBuilder conditionsBuilder;<a name="line.141"></a>
+<FONT color="green">142</FONT>    <a name="line.142"></a>
+<FONT color="green">143</FONT>        // SAML documents parsers pool<a name="line.143"></a>
+<FONT color="green">144</FONT>        private BasicParserPool parserPoolManager;<a name="line.144"></a>
+<FONT color="green">145</FONT>        <a name="line.145"></a>
+<FONT color="green">146</FONT>        // factories for marshalling XML to/from DOM<a name="line.146"></a>
+<FONT color="green">147</FONT>        private UnmarshallerFactory unmarshallerFactory;<a name="line.147"></a>
+<FONT color="green">148</FONT>        private MarshallerFactory marshallerFactory;<a name="line.148"></a>
+<FONT color="green">149</FONT>    <a name="line.149"></a>
+<FONT color="green">150</FONT>        private final static Log LOG = LogFactory.getLog(SAMLBuilder.class);<a name="line.150"></a>
+<FONT color="green">151</FONT>        <a name="line.151"></a>
+<FONT color="green">152</FONT>        private static boolean INITIALIZED = false;<a name="line.152"></a>
+<FONT color="green">153</FONT>        <a name="line.153"></a>
+<FONT color="green">154</FONT>        /**<a name="line.154"></a>
+<FONT color="green">155</FONT>         * Singleton instance.<a name="line.155"></a>
+<FONT color="green">156</FONT>         */<a name="line.156"></a>
+<FONT color="green">157</FONT>        private final static SAMLBuilder instance = new SAMLBuilder();<a name="line.157"></a>
+<FONT color="green">158</FONT>        <a name="line.158"></a>
+<FONT color="green">159</FONT>        /**<a name="line.159"></a>
+<FONT color="green">160</FONT>         * Static initializer bootstraps the SAML library<a name="line.160"></a>
+<FONT color="green">161</FONT>         * but will not crash the whole application if initialization fails<a name="line.161"></a>
+<FONT color="green">162</FONT>         * (due to missing/wrong endorsed jars).<a name="line.162"></a>
+<FONT color="green">163</FONT>         */<a name="line.163"></a>
+<FONT color="green">164</FONT>        static {<a name="line.164"></a>
+<FONT color="green">165</FONT>            <a name="line.165"></a>
+<FONT color="green">166</FONT>            try {<a name="line.166"></a>
+<FONT color="green">167</FONT>                    <a name="line.167"></a>
+<FONT color="green">168</FONT>                            // initialize SAML library<a name="line.168"></a>
+<FONT color="green">169</FONT>                            DefaultBootstrap.bootstrap();<a name="line.169"></a>
+<FONT color="green">170</FONT>                            <a name="line.170"></a>
+<FONT color="green">171</FONT>                            INITIALIZED = true;<a name="line.171"></a>
+<FONT color="green">172</FONT>                            // initialize singleton instance<a name="line.172"></a>
+<FONT color="green">173</FONT>                            instance.init();<a name="line.173"></a>
+<FONT color="green">174</FONT>                            <a name="line.174"></a>
+<FONT color="green">175</FONT>                            if (LOG.isInfoEnabled()) LOG.info("SAML libraries initialized correctly");<a name="line.175"></a>
+<FONT color="green">176</FONT>                            <a name="line.176"></a>
+<FONT color="green">177</FONT>            } catch(ConfigurationException e) {<a name="line.177"></a>
+<FONT color="green">178</FONT>                    LOG.warn("Error initailizing SAML libraries", e);<a name="line.178"></a>
+<FONT color="green">179</FONT>            } catch(UnsupportedOperationException e) {<a name="line.179"></a>
+<FONT color="green">180</FONT>                            LOG.warn("SAML libraries NOT properly initialized, likely missing correct endorsed jars");<a name="line.180"></a>
+<FONT color="green">181</FONT>                    }<a name="line.181"></a>
+<FONT color="green">182</FONT>    <a name="line.182"></a>
+<FONT color="green">183</FONT>        }<a name="line.183"></a>
+<FONT color="green">184</FONT>        <a name="line.184"></a>
+<FONT color="green">185</FONT>        /**<a name="line.185"></a>
+<FONT color="green">186</FONT>         * Static method to check whether the SAML library has been properly initialized.<a name="line.186"></a>
+<FONT color="green">187</FONT>         * @return<a name="line.187"></a>
+<FONT color="green">188</FONT>         */<a name="line.188"></a>
+<FONT color="green">189</FONT>        public static boolean isInitailized() {<a name="line.189"></a>
+<FONT color="green">190</FONT>            return INITIALIZED;<a name="line.190"></a>
+<FONT color="green">191</FONT>        }<a name="line.191"></a>
+<FONT color="green">192</FONT>        <a name="line.192"></a>
+<FONT color="green">193</FONT>        /**<a name="line.193"></a>
+<FONT color="green">194</FONT>         * Factory method to access the singleton instance.<a name="line.194"></a>
+<FONT color="green">195</FONT>         * @return<a name="line.195"></a>
+<FONT color="green">196</FONT>         */<a name="line.196"></a>
+<FONT color="green">197</FONT>        public static SAMLBuilder getInstance() {<a name="line.197"></a>
+<FONT color="green">198</FONT>            return instance;<a name="line.198"></a>
+<FONT color="green">199</FONT>        }<a name="line.199"></a>
+<FONT color="green">200</FONT>        <a name="line.200"></a>
+<FONT color="green">201</FONT>        /**<a name="line.201"></a>
+<FONT color="green">202</FONT>         * Private constructor to enforce single instance.<a name="line.202"></a>
+<FONT color="green">203</FONT>         */<a name="line.203"></a>
+<FONT color="green">204</FONT>        private SAMLBuilder() {}<a name="line.204"></a>
+<FONT color="green">205</FONT>        <a name="line.205"></a>
+<FONT color="green">206</FONT>            /**<a name="line.206"></a>
+<FONT color="green">207</FONT>             * Initialization method, made private so it cannot be invoked by external clients.<a name="line.207"></a>
+<FONT color="green">208</FONT>             */<a name="line.208"></a>
+<FONT color="green">209</FONT>            private void init() {<a name="line.209"></a>
+<FONT color="green">210</FONT>                                        <a name="line.210"></a>
+<FONT color="green">211</FONT>                    if (INITIALIZED) {<a name="line.211"></a>
+<FONT color="green">212</FONT>                            // get Java object builders<a name="line.212"></a>
+<FONT color="green">213</FONT>                            builderFactory = Configuration.getBuilderFactory();<a name="line.213"></a>
+<FONT color="green">214</FONT>                            actionBuilder = (ActionBuilder)this.builderFactory.getBuilder(Action.DEFAULT_ELEMENT_NAME);<a name="line.214"></a>
+<FONT color="green">215</FONT>                        assertionBuilder = (AssertionBuilder)this.builderFactory.getBuilder(Assertion.DEFAULT_ELEMENT_NAME);<a name="line.215"></a>
+<FONT color="green">216</FONT>                        attributeBuilder = (AttributeBuilder)this.builderFactory.getBuilder(Attribute.DEFAULT_ELEMENT_NAME);<a name="line.216"></a>
+<FONT color="green">217</FONT>                        authzDecisionQueryBuilder = (AuthzDecisionQueryBuilder)this.builderFactory.getBuilder(AuthzDecisionQuery.DEFAULT_ELEMENT_NAME);<a name="line.217"></a>
+<FONT color="green">218</FONT>                        authzDecisionStatementBuilder = (AuthzDecisionStatementBuilder)this.builderFactory.getBuilder(AuthzDecisionStatement.DEFAULT_ELEMENT_NAME);<a name="line.218"></a>
+<FONT color="green">219</FONT>                        attributeStatementBuilder = (AttributeStatementBuilder)this.builderFactory.getBuilder(AttributeStatement.DEFAULT_ELEMENT_NAME);<a name="line.219"></a>
+<FONT color="green">220</FONT>                        authnStatementBuilder = (AuthnStatementBuilder)this.builderFactory.getBuilder(AuthnStatement.DEFAULT_ELEMENT_NAME);<a name="line.220"></a>
+<FONT color="green">221</FONT>                        authnContextBuilder = (AuthnContextBuilder)this.builderFactory.getBuilder(AuthnContext.DEFAULT_ELEMENT_NAME);<a name="line.221"></a>
+<FONT color="green">222</FONT>                        authnContextClassRefBuilder = (AuthnContextClassRefBuilder)this.builderFactory.getBuilder(AuthnContextClassRef.DEFAULT_ELEMENT_NAME);<a name="line.222"></a>
+<FONT color="green">223</FONT>                        stringBuilder = (XSStringBuilder)this.builderFactory.getBuilder(XSString.TYPE_NAME);<a name="line.223"></a>
+<FONT color="green">224</FONT>                        anyBuilder = new XSAnyBuilder();<a name="line.224"></a>
+<FONT color="green">225</FONT>                    groupRoleBuilder = new XSGroupRoleBuilder();<a name="line.225"></a>
+<FONT color="green">226</FONT>                    issuerBuilder = (IssuerBuilder)builderFactory.getBuilder(Issuer.DEFAULT_ELEMENT_NAME);<a name="line.226"></a>
+<FONT color="green">227</FONT>                    subjectBuilder = (SubjectBuilder)builderFactory.getBuilder(Subject.DEFAULT_ELEMENT_NAME);<a name="line.227"></a>
+<FONT color="green">228</FONT>                    nameIdBuilder = (NameIDBuilder)builderFactory.getBuilder(NameID.DEFAULT_ELEMENT_NAME);<a name="line.228"></a>
+<FONT color="green">229</FONT>                    attributeQueryBuilder = (AttributeQueryBuilder)builderFactory.getBuilder(AttributeQuery.DEFAULT_ELEMENT_NAME);<a name="line.229"></a>
+<FONT color="green">230</FONT>                    responseBuilder = (ResponseBuilder)builderFactory.getBuilder(Response.DEFAULT_ELEMENT_NAME);<a name="line.230"></a>
+<FONT color="green">231</FONT>                    statusBuilder = (StatusBuilder)builderFactory.getBuilder(Status.DEFAULT_ELEMENT_NAME);<a name="line.231"></a>
+<FONT color="green">232</FONT>                    statusCodeBuilder = (StatusCodeBuilder)builderFactory.getBuilder(StatusCode.DEFAULT_ELEMENT_NAME);<a name="line.232"></a>
+<FONT color="green">233</FONT>                    conditionsBuilder = (ConditionsBuilder)builderFactory.getBuilder(Conditions.DEFAULT_ELEMENT_NAME);<a name="line.233"></a>
+<FONT color="green">234</FONT>                    <a name="line.234"></a>
+<FONT color="green">235</FONT>                    endpointBuilder = (SAMLObjectBuilder&lt;Endpoint&gt;) builderFactory.getBuilder(AssertionConsumerService.DEFAULT_ELEMENT_NAME);<a name="line.235"></a>
+<FONT color="green">236</FONT>                    envelopeBuilder = (EnvelopeBuilder) builderFactory.getBuilder(Envelope.DEFAULT_ELEMENT_NAME);<a name="line.236"></a>
+<FONT color="green">237</FONT>                    bodyBuilder = (BodyBuilder) builderFactory.getBuilder(Body.DEFAULT_ELEMENT_NAME);<a name="line.237"></a>
+<FONT color="green">238</FONT>                    <a name="line.238"></a>
+<FONT color="green">239</FONT>                    signatureBuilder = (SignatureBuilder)builderFactory.getBuilder(Signature.DEFAULT_ELEMENT_NAME);<a name="line.239"></a>
+<FONT color="green">240</FONT>                                        <a name="line.240"></a>
+<FONT color="green">241</FONT>                    // get Java objects - DOM marshaller/unmarshaller<a name="line.241"></a>
+<FONT color="green">242</FONT>                        marshallerFactory = Configuration.getMarshallerFactory();<a name="line.242"></a>
+<FONT color="green">243</FONT>                        unmarshallerFactory = Configuration.getUnmarshallerFactory();<a name="line.243"></a>
+<FONT color="green">244</FONT>                            <a name="line.244"></a>
+<FONT color="green">245</FONT>                        // get pool of XML parsers<a name="line.245"></a>
+<FONT color="green">246</FONT>                    parserPoolManager = new BasicParserPool();<a name="line.246"></a>
+<FONT color="green">247</FONT>                    parserPoolManager.setNamespaceAware(true);<a name="line.247"></a>
+<FONT color="green">248</FONT>                    }<a name="line.248"></a>
+<FONT color="green">249</FONT>                        <a name="line.249"></a>
+<FONT color="green">250</FONT>            }<a name="line.250"></a>
+<FONT color="green">251</FONT>            <a name="line.251"></a>
+<FONT color="green">252</FONT>            // &lt;saml:AuthzDecisionStatement&gt;<a name="line.252"></a>
+<FONT color="green">253</FONT>            public AuthzDecisionStatement getAuthzDecisionStatement() {<a name="line.253"></a>
+<FONT color="green">254</FONT>                    return authzDecisionStatementBuilder.buildObject();<a name="line.254"></a>
+<FONT color="green">255</FONT>            }<a name="line.255"></a>
+<FONT color="green">256</FONT>            <a name="line.256"></a>
+<FONT color="green">257</FONT>            // &lt;saml:Issuer Format="urn:oasis:names:tc:SAML:1.1:nameid-format:x509SubjectName"&gt;Test Gateway&lt;/saml:Issuer&gt;<a name="line.257"></a>
+<FONT color="green">258</FONT>            public Issuer getIssuer(final String value) {<a name="line.258"></a>
+<FONT color="green">259</FONT>                    Assert.notNull(issuerBuilder, "Cannot build SAML assertion, likely SAML libraries are not configured properly");<a name="line.259"></a>
+<FONT color="green">260</FONT>            final Issuer issuer = issuerBuilder.buildObject();<a name="line.260"></a>
+<FONT color="green">261</FONT>            issuer.setFormat(NameIDType.X509_SUBJECT);<a name="line.261"></a>
+<FONT color="green">262</FONT>            issuer.setValue(value);<a name="line.262"></a>
+<FONT color="green">263</FONT>            return issuer;<a name="line.263"></a>
+<FONT color="green">264</FONT>            }<a name="line.264"></a>
+<FONT color="green">265</FONT>            <a name="line.265"></a>
+<FONT color="green">266</FONT>        // &lt;saml:Subject&gt;<a name="line.266"></a>
+<FONT color="green">267</FONT>        //          &lt;saml:NameID Format="urn:esg:openid"&gt;http://test.openid.com/testUserValid&lt;/saml:NameID&gt;<a name="line.267"></a>
+<FONT color="green">268</FONT>        // &lt;/saml:Subject&gt;<a name="line.268"></a>
+<FONT color="green">269</FONT>            public Subject getSubject(final String openid) {<a name="line.269"></a>
+<FONT color="green">270</FONT>            final Subject subject = subjectBuilder.buildObject();<a name="line.270"></a>
+<FONT color="green">271</FONT>            final NameID nameId = nameIdBuilder.buildObject();<a name="line.271"></a>
+<FONT color="green">272</FONT>            nameId.setFormat(SAMLParameters.OPENID);<a name="line.272"></a>
+<FONT color="green">273</FONT>            nameId.setValue(openid);     <a name="line.273"></a>
+<FONT color="green">274</FONT>            subject.setNameID(nameId);<a name="line.274"></a>
+<FONT color="green">275</FONT>            return subject;<a name="line.275"></a>
+<FONT color="green">276</FONT>            }<a name="line.276"></a>
+<FONT color="green">277</FONT>            <a name="line.277"></a>
+<FONT color="green">278</FONT>            // &lt;saml:Action xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"&gt;read&lt;/saml:Action&gt;<a name="line.278"></a>
+<FONT color="green">279</FONT>            public Action getAction(final String action) {<a name="line.279"></a>
+<FONT color="green">280</FONT>            final Action actionObj = actionBuilder.buildObject();<a name="line.280"></a>
+<FONT color="green">281</FONT>            //actionObj.setNamespace(SAMLParameters.AC_ACTION);<a name="line.281"></a>
+<FONT color="green">282</FONT>            actionObj.setAction(action);<a name="line.282"></a>
+<FONT color="green">283</FONT>            return actionObj;<a name="line.283"></a>
+<FONT color="green">284</FONT>            }<a name="line.284"></a>
+<FONT color="green">285</FONT>            <a name="line.285"></a>
+<FONT color="green">286</FONT>            // &lt;saml:Conditions NotBefore="2009-08-04T11:16:53.632Z" NotOnOrAfter="2009-08-05T11:16:53.632Z"/&gt;<a name="line.286"></a>
+<FONT color="green">287</FONT>            public Conditions getConditions(final DateTime notBefore, final DateTime notOnOrAfter) {<a name="line.287"></a>
+<FONT color="green">288</FONT>                    final Conditions conditions = conditionsBuilder.buildObject();<a name="line.288"></a>
+<FONT color="green">289</FONT>                    conditions.setNotBefore(notBefore);<a name="line.289"></a>
+<FONT color="green">290</FONT>                    conditions.setNotOnOrAfter(notOnOrAfter);<a name="line.290"></a>
+<FONT color="green">291</FONT>                    return conditions;<a name="line.291"></a>
+<FONT color="green">292</FONT>            }<a name="line.292"></a>
+<FONT color="green">293</FONT>            <a name="line.293"></a>
+<FONT color="green">294</FONT>            // &lt;?xml version="1.0" encoding="UTF-8"?&gt;<a name="line.294"></a>
+<FONT color="green">295</FONT>            // &lt;samlp:AttributeQuery xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" <a name="line.295"></a>
+<FONT color="green">296</FONT>            //                       ID="c9a2bd30-6186-46d7-a8f3-e51367921f51" IssueInstant="2009-07-28T15:24:52.895Z" Version="2.0"/&gt;<a name="line.296"></a>
+<FONT color="green">297</FONT>            public AttributeQuery getAttributeQuery(final boolean includeFlag) {<a name="line.297"></a>
+<FONT color="green">298</FONT>                    final AttributeQuery attributeQuery = attributeQueryBuilder.buildObject();      <a name="line.298"></a>
+<FONT color="green">299</FONT>            if (includeFlag) {<a name="line.299"></a>
+<FONT color="green">300</FONT>                    attributeQuery.setID(UUID.randomUUID().toString());<a name="line.300"></a>
+<FONT color="green">301</FONT>                    attributeQuery.setIssueInstant(new DateTime());<a name="line.301"></a>
+<FONT color="green">302</FONT>            }<a name="line.302"></a>
+<FONT color="green">303</FONT>            return attributeQuery;<a name="line.303"></a>
+<FONT color="green">304</FONT>            }<a name="line.304"></a>
+<FONT color="green">305</FONT>            <a name="line.305"></a>
+<FONT color="green">306</FONT>            // &lt;?xml version="1.0" encoding="UTF-8"?&gt;<a name="line.306"></a>
+<FONT color="green">307</FONT>            //    &lt;samlp:AuthzDecisionQuery xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="b0f70731-8d1b-4744-a842-0fd26d2d0089"<a name="line.307"></a>
+<FONT color="green">308</FONT>            //                       IssueInstant="2010-01-25T21:20:03.549Z" Version="2.0"&gt;<a name="line.308"></a>
+<FONT color="green">309</FONT>            public AuthzDecisionQuery getAuthzDecisionQuery(final boolean includeFlag) {<a name="line.309"></a>
+<FONT color="green">310</FONT>                    final AuthzDecisionQuery authzDecisionQuery = authzDecisionQueryBuilder.buildObject();<a name="line.310"></a>
+<FONT color="green">311</FONT>            if (includeFlag) {<a name="line.311"></a>
+<FONT color="green">312</FONT>                    authzDecisionQuery.setID(UUID.randomUUID().toString());<a name="line.312"></a>
+<FONT color="green">313</FONT>                    authzDecisionQuery.setIssueInstant(new DateTime());<a name="line.313"></a>
+<FONT color="green">314</FONT>            }<a name="line.314"></a>
+<FONT color="green">315</FONT>            return authzDecisionQuery;<a name="line.315"></a>
+<FONT color="green">316</FONT>            }<a name="line.316"></a>
+<FONT color="green">317</FONT>            <a name="line.317"></a>
+<FONT color="green">318</FONT>            // &lt;saml:Assertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" <a name="line.318"></a>
+<FONT color="green">319</FONT>            //                 ID="bed4bf11-188e-4d7c-bf55-4a11aa606720" <a name="line.319"></a>
+<FONT color="green">320</FONT>            //                 IssueInstant="2009-07-26T21:24:51.757Z" Version="2.0"&gt;<a name="line.320"></a>
+<FONT color="green">321</FONT>            public Assertion getAssertion(final boolean includeFlag) {<a name="line.321"></a>
+<FONT color="green">322</FONT>               Assert.notNull(assertionBuilder, "Cannot build SAML assertion, likely SAML libraries are not configured properly");<a name="line.322"></a>
+<FONT color="green">323</FONT>           final Assertion assertion = this.assertionBuilder.buildObject();<a name="line.323"></a>
+<FONT color="green">324</FONT>            assertion.setVersion(SAMLVersion.VERSION_20);<a name="line.324"></a>
+<FONT color="green">325</FONT>            if (includeFlag) {<a name="line.325"></a>
+<FONT color="green">326</FONT>                    assertion.setID(UUID.randomUUID().toString());<a name="line.326"></a>
+<FONT color="green">327</FONT>                    assertion.setIssueInstant(new DateTime());<a name="line.327"></a>
+<FONT color="green">328</FONT>            }<a name="line.328"></a>
+<FONT color="green">329</FONT>            return assertion;<a name="line.329"></a>
+<FONT color="green">330</FONT>            }<a name="line.330"></a>
+<FONT color="green">331</FONT>            <a name="line.331"></a>
+<FONT color="green">332</FONT>            // &lt;saml:AttributeStatement&gt;<a name="line.332"></a>
+<FONT color="green">333</FONT>            public AttributeStatement getAttributeStatement() {<a name="line.333"></a>
+<FONT color="green">334</FONT>                    return attributeStatementBuilder.buildObject();<a name="line.334"></a>
+<FONT color="green">335</FONT>            }<a name="line.335"></a>
+<FONT color="green">336</FONT>            <a name="line.336"></a>
+<FONT color="green">337</FONT>            public AuthnStatement getAuthnStatement(final DateTime dateTime) {<a name="line.337"></a>
+<FONT color="green">338</FONT>                    <a name="line.338"></a>
+<FONT color="green">339</FONT>                    final AuthnStatement authnStatement = authnStatementBuilder.buildObject();<a name="line.339"></a>
+<FONT color="green">340</FONT>            if (dateTime!=null) authnStatement.setAuthnInstant(dateTime);<a name="line.340"></a>
+<FONT color="green">341</FONT>            final AuthnContext authnContext = (AuthnContext)authnContextBuilder.buildObject();<a name="line.341"></a>
+<FONT color="green">342</FONT>            final AuthnContextClassRef classRef = (AuthnContextClassRef)authnContextClassRefBuilder.buildObject();<a name="line.342"></a>
+<FONT color="green">343</FONT>            classRef.setAuthnContextClassRef(AuthnContext.X509_AUTHN_CTX);<a name="line.343"></a>
+<FONT color="green">344</FONT>            authnContext.setAuthnContextClassRef(classRef);<a name="line.344"></a>
+<FONT color="green">345</FONT>            authnStatement.setAuthnContext(authnContext);<a name="line.345"></a>
+<FONT color="green">346</FONT>            return authnStatement;<a name="line.346"></a>
+<FONT color="green">347</FONT>                    <a name="line.347"></a>
+<FONT color="green">348</FONT>            }<a name="line.348"></a>
+<FONT color="green">349</FONT>            <a name="line.349"></a>
+<FONT color="green">350</FONT>        // &lt;saml:Attribute FriendlyName="FirstName" Name="urn:esg:first:name" NameFormat="http://www.w3.org/2001/XMLSchema#string"&gt;<a name="line.350"></a>
+<FONT color="green">351</FONT>        //          &lt;saml:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string"&gt;Tester&lt;/saml:AttributeValue&gt;<a name="line.351"></a>
+<FONT color="green">352</FONT>        // &lt;/saml:Attribute&gt;<a name="line.352"></a>
+<FONT color="green">353</FONT>        // &lt;saml:Attribute FriendlyName="LastName" Name="urn:esg:last:name" NameFormat="http://www.w3.org/2001/XMLSchema#string"&gt;<a name="line.353"></a>
+<FONT color="green">354</FONT>        //          &lt;saml:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string"&gt;ValidUser&lt;/saml:AttributeValue&gt;<a name="line.354"></a>
+<FONT color="green">355</FONT>        // &lt;/saml:Attribute&gt;<a name="line.355"></a>
+<FONT color="green">356</FONT>        // &lt;saml:Attribute FriendlyName="EmailAddress" Name="urn:esg:email:address" NameFormat="http://www.w3.org/2001/XMLSchema#string"&gt;<a name="line.356"></a>
+<FONT color="green">357</FONT>        //          &lt;saml:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string"&gt;testUserValid@test.com&lt;/saml:AttributeValue&gt;<a name="line.357"></a>
+<FONT color="green">358</FONT>        // &lt;/saml:Attribute&gt;<a name="line.358"></a>
+<FONT color="green">359</FONT>            public Attribute getAttribute(final String name, final String friendlyName, final String value) {<a name="line.359"></a>
+<FONT color="green">360</FONT>                    <a name="line.360"></a>
+<FONT color="green">361</FONT>                    final Attribute attribute = attributeBuilder.buildObject();<a name="line.361"></a>
+<FONT color="green">362</FONT>                    attribute.setName(name);<a name="line.362"></a>
+<FONT color="green">363</FONT>                attribute.setNameFormat("http://www.w3.org/2001/XMLSchema#string");<a name="line.363"></a>
+<FONT color="green">364</FONT>                attribute.setFriendlyName(friendlyName);<a name="line.364"></a>
+<FONT color="green">365</FONT>                if (value!=null) {<a name="line.365"></a>
+<FONT color="green">366</FONT>                    final XSString attString = stringBuilder.buildObject(AttributeValue.DEFAULT_ELEMENT_NAME, XSString.TYPE_NAME);<a name="line.366"></a>
+<FONT color="green">367</FONT>                    attString.setValue(value);<a name="line.367"></a>
+<FONT color="green">368</FONT>                    attribute.getAttributeValues().add(attString);<a name="line.368"></a>
+<FONT color="green">369</FONT>                }<a name="line.369"></a>
+<FONT color="green">370</FONT>                return attribute;<a name="line.370"></a>
+<FONT color="green">371</FONT>                <a name="line.371"></a>
+<FONT color="green">372</FONT>            }<a name="line.372"></a>
+<FONT color="green">373</FONT>            <a name="line.373"></a>
+<FONT color="green">374</FONT>        //  &lt;saml:Attribute FriendlyName="GroupRole" Name="urn:esg:group:role" NameFormat="groupRole"&gt;<a name="line.374"></a>
+<FONT color="green">375</FONT>            public Attribute getGroupRoleAttribute() {<a name="line.375"></a>
+<FONT color="green">376</FONT>            final Attribute grAttribute = attributeBuilder.buildObject();<a name="line.376"></a>
+<FONT color="green">377</FONT>            grAttribute.setName(SAMLParameters.GROUP_ROLE);<a name="line.377"></a>
+<FONT color="green">378</FONT>            grAttribute.setNameFormat(XSGroupRole.TYPE_LOCAL_NAME);<a name="line.378"></a>
+<FONT color="green">379</FONT>            grAttribute.setFriendlyName(SAMLParameters.GROUP_ROLE_FRIENDLY);<a name="line.379"></a>
+<FONT color="green">380</FONT>            return grAttribute;<a name="line.380"></a>
+<FONT color="green">381</FONT>            }<a name="line.381"></a>
+<FONT color="green">382</FONT>    <a name="line.382"></a>
+<FONT color="green">383</FONT>        //  &lt;saml:AttributeValue&gt;<a name="line.383"></a>
+<FONT color="green">384</FONT>        //          &lt;esg:groupRole xmlns:esg="http://www.esg.org" group="Test Group A" role="default"/&gt;<a name="line.384"></a>
+<FONT color="green">385</FONT>            //      &lt;/saml:AttributeValue&gt;<a name="line.385"></a>
+<FONT color="green">386</FONT>            public XSAny getGroupRoleAttributeValue(final String group, final String role) {<a name="line.386"></a>
+<FONT color="green">387</FONT>                    <a name="line.387"></a>
+<FONT color="green">388</FONT>            final XSGroupRole groupRoleValue = groupRoleBuilder.buildObject(SAMLParameters.ESG_NAMESPACE, "groupRole", SAMLParameters.ESG_PREFIX);<a name="line.388"></a>
+<FONT color="green">389</FONT>            groupRoleValue.setGroup(group);<a name="line.389"></a>
+<FONT color="green">390</FONT>            groupRoleValue.setRole(role);<a name="line.390"></a>
+<FONT color="green">391</FONT>            final XSAny grAttributeValue = (XSAny)anyBuilder.buildObject(AttributeValue.DEFAULT_ELEMENT_NAME);<a name="line.391"></a>
+<FONT color="green">392</FONT>            grAttributeValue.getUnknownXMLObjects().add(groupRoleValue);<a name="line.392"></a>
+<FONT color="green">393</FONT>            return grAttributeValue;<a name="line.393"></a>
+<FONT color="green">394</FONT>            <a name="line.394"></a>
+<FONT color="green">395</FONT>            }<a name="line.395"></a>
+<FONT color="green">396</FONT>            <a name="line.396"></a>
+<FONT color="green">397</FONT>            // &lt;?xml version="1.0" encoding="UTF-8"?&gt;<a name="line.397"></a>
+<FONT color="green">398</FONT>            //              &lt;samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="e41d7a47-4850-4750-b2cc-2c0e9f300580" InResponseTo="9566201b-63ad-4f14-b6c0-6cf6b35a90e0" IssueInstant="2009-07-28T23:13:19.823Z" Version="2.0"/&gt;<a name="line.398"></a>
+<FONT color="green">399</FONT>            public Response getResponse(final String requestID, final boolean includeFlag) {<a name="line.399"></a>
+<FONT color="green">400</FONT>                    final Response response = responseBuilder.buildObject();<a name="line.400"></a>
+<FONT color="green">401</FONT>                    response.setVersion(SAMLVersion.VERSION_20);<a name="line.401"></a>
+<FONT color="green">402</FONT>            if (includeFlag) {<a name="line.402"></a>
+<FONT color="green">403</FONT>                    response.setID(UUID.randomUUID().toString());<a name="line.403"></a>
+<FONT color="green">404</FONT>                    response.setIssueInstant(new DateTime());<a name="line.404"></a>
+<FONT color="green">405</FONT>            }<a name="line.405"></a>
+<FONT color="green">406</FONT>            response.setInResponseTo(requestID);<a name="line.406"></a>
+<FONT color="green">407</FONT>                    return response;<a name="line.407"></a>
+<FONT color="green">408</FONT>            }<a name="line.408"></a>
+<FONT color="green">409</FONT>            <a name="line.409"></a>
+<FONT color="green">410</FONT>            //  &lt;samlp:Status&gt;<a name="line.410"></a>
+<FONT color="green">411</FONT>        //          &lt;samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/&gt;<a name="line.411"></a>
+<FONT color="green">412</FONT>        //  &lt;/samlp:Status&gt;<a name="line.412"></a>
+<FONT color="green">413</FONT>            public Status getStatus(final boolean success) {<a name="line.413"></a>
+<FONT color="green">414</FONT>                    <a name="line.414"></a>
+<FONT color="green">415</FONT>                    final Status status = statusBuilder.buildObject();<a name="line.415"></a>
+<FONT color="green">416</FONT>                    final StatusCode statusCode = statusCodeBuilder.buildObject();<a name="line.416"></a>
+<FONT color="green">417</FONT>                    if (success) {<a name="line.417"></a>
+<FONT color="green">418</FONT>                            statusCode.setValue(StatusCode.SUCCESS_URI);<a name="line.418"></a>
+<FONT color="green">419</FONT>                    } else {<a name="line.419"></a>
+<FONT color="green">420</FONT>                            statusCode.setValue(StatusCode.UNKNOWN_PRINCIPAL_URI);<a name="line.420"></a>
+<FONT color="green">421</FONT>                    }<a name="line.421"></a>
+<FONT color="green">422</FONT>                    <a name="line.422"></a>
+<FONT color="green">423</FONT>                    status.setStatusCode(statusCode);<a name="line.423"></a>
+<FONT color="green">424</FONT>                    return status;<a name="line.424"></a>
+<FONT color="green">425</FONT>                    <a name="line.425"></a>
+<FONT color="green">426</FONT>            }<a name="line.426"></a>
+<FONT color="green">427</FONT>            <a name="line.427"></a>
+<FONT color="green">428</FONT>            public Endpoint getEndpoint() {<a name="line.428"></a>
+<FONT color="green">429</FONT>                    <a name="line.429"></a>
+<FONT color="green">430</FONT>                    final Endpoint samlEndpoint = endpointBuilder.buildObject();<a name="line.430"></a>
+<FONT color="green">431</FONT>                    return samlEndpoint;<a name="line.431"></a>
+<FONT color="green">432</FONT>                    <a name="line.432"></a>
+<FONT color="green">433</FONT>            }<a name="line.433"></a>
+<FONT color="green">434</FONT>            <a name="line.434"></a>
+<FONT color="green">435</FONT>            public Envelope getSOAPEnvelope() {<a name="line.435"></a>
+<FONT color="green">436</FONT>                    return envelopeBuilder.buildObject();<a name="line.436"></a>
+<FONT color="green">437</FONT>            }<a name="line.437"></a>
+<FONT color="green">438</FONT>            <a name="line.438"></a>
+<FONT color="green">439</FONT>            public Body getSOAPBody() {<a name="line.439"></a>
+<FONT color="green">440</FONT>                    return bodyBuilder.buildObject();<a name="line.440"></a>
+<FONT color="green">441</FONT>            }<a name="line.441"></a>
+<FONT color="green">442</FONT>                    <a name="line.442"></a>
+<FONT color="green">443</FONT>            /**<a name="line.443"></a>
+<FONT color="green">444</FONT>             * Method to parse a generic {@link InputStream} into a SAML/XML document element.<a name="line.444"></a>
+<FONT color="green">445</FONT>             * @param inputStream<a name="line.445"></a>
+<FONT color="green">446</FONT>             * @return<a name="line.446"></a>
+<FONT color="green">447</FONT>             * @throws XMLParserException<a name="line.447"></a>
+<FONT color="green">448</FONT>             */<a name="line.448"></a>
+<FONT color="green">449</FONT>            public Element parse(final InputStream inputStream) throws XMLParserException {<a name="line.449"></a>
+<FONT color="green">450</FONT>                    return parserPoolManager.parse(inputStream).getDocumentElement();<a name="line.450"></a>
+<FONT color="green">451</FONT>            }<a name="line.451"></a>
+<FONT color="green">452</FONT>            <a name="line.452"></a>
+<FONT color="green">453</FONT>            /**<a name="line.453"></a>
+<FONT color="green">454</FONT>             * Method to parse a SAML/XML document serialized as a string.<a name="line.454"></a>
+<FONT color="green">455</FONT>             * @param inputStream<a name="line.455"></a>
+<FONT color="green">456</FONT>             * @return<a name="line.456"></a>
+<FONT color="green">457</FONT>             * @throws XMLParserException<a name="line.457"></a>
+<FONT color="green">458</FONT>             */<a name="line.458"></a>
+<FONT color="green">459</FONT>            public Element parse(final String string) throws XMLParserException {<a name="line.459"></a>
+<FONT color="green">460</FONT>                    return parserPoolManager.parse( new StringReader(string)).getDocumentElement();<a name="line.460"></a>
+<FONT color="green">461</FONT>            }<a name="line.461"></a>
+<FONT color="green">462</FONT>    <a name="line.462"></a>
+<FONT color="green">463</FONT>            /**<a name="line.463"></a>
+<FONT color="green">464</FONT>             * Method to marshall a generic SAML object into XML.<a name="line.464"></a>
+<FONT color="green">465</FONT>             * @param xmlObject<a name="line.465"></a>
+<FONT color="green">466</FONT>             * @return<a name="line.466"></a>
+<FONT color="green">467</FONT>             * @throws MarshallingException<a name="line.467"></a>
+<FONT color="green">468</FONT>             */<a name="line.468"></a>
+<FONT color="green">469</FONT>            public Element marshall(final XMLObject xmlObject) throws MarshallingException {<a name="line.469"></a>
+<FONT color="green">470</FONT>                    final Marshaller marshaller = marshallerFactory.getMarshaller(xmlObject);<a name="line.470"></a>
+<FONT color="green">471</FONT>            return marshaller.marshall(xmlObject);<a name="line.471"></a>
+<FONT color="green">472</FONT>            }<a name="line.472"></a>
+<FONT color="green">473</FONT>    <a name="line.473"></a>
+<FONT color="green">474</FONT>            /**<a name="line.474"></a>
+<FONT color="green">475</FONT>             * Method to marshall and sign a signable XML object.<a name="line.475"></a>
+<FONT color="green">476</FONT>             * @param xmlObject<a name="line.476"></a>
+<FONT color="green">477</FONT>             * @param credential<a name="line.477"></a>
+<FONT color="green">478</FONT>             * @return<a name="line.478"></a>
+<FONT color="green">479</FONT>             * @throws MarshallingException<a name="line.479"></a>
+<FONT color="green">480</FONT>             */<a name="line.480"></a>
+<FONT color="green">481</FONT>            public Element marshallAndSign(final SignableXMLObject xmlObject, final Credential credential) throws MarshallingException, SignatureException {<a name="line.481"></a>
+<FONT color="green">482</FONT>                    <a name="line.482"></a>
+<FONT color="green">483</FONT>                final Signature signature = signatureBuilder.buildObject();<a name="line.483"></a>
+<FONT color="green">484</FONT>            signature.setSigningCredential(credential);<a name="line.484"></a>
+<FONT color="green">485</FONT>            signature.setCanonicalizationAlgorithm(SignatureConstants.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);<a name="line.485"></a>
+<FONT color="green">486</FONT>            signature.setSignatureAlgorithm(SignatureConstants.ALGO_ID_SIGNATURE_RSA);<a name="line.486"></a>
+<FONT color="green">487</FONT>            xmlObject.setSignature(signature);<a name="line.487"></a>
+<FONT color="green">488</FONT>            <a name="line.488"></a>
+<FONT color="green">489</FONT>            final Element element = this.marshall(xmlObject);<a name="line.489"></a>
+<FONT color="green">490</FONT>            Signer.signObject(signature);<a name="line.490"></a>
+<FONT color="green">491</FONT>            return element;<a name="line.491"></a>
+<FONT color="green">492</FONT>    <a name="line.492"></a>
+<FONT color="green">493</FONT>            }<a name="line.493"></a>
+<FONT color="green">494</FONT>            <a name="line.494"></a>
+<FONT color="green">495</FONT>            /**<a name="line.495"></a>
+<FONT color="green">496</FONT>             * Method to validate the signature of a SAML assertion versus a set of trusted credentials.<a name="line.496"></a>
+<FONT color="green">497</FONT>             * @param signedAssertion<a name="line.497"></a>
+<FONT color="green">498</FONT>             * @param trustedCredentials<a name="line.498"></a>
+<FONT color="green">499</FONT>             * @return<a name="line.499"></a>
+<FONT color="green">500</FONT>             * @throws SecurityException<a name="line.500"></a>
+<FONT color="green">501</FONT>             */<a name="line.501"></a>
+<FONT color="green">502</FONT>            public boolean validateSignature(final Assertion signedAssertion, final Map&lt;String, Credential&gt; trustedCredentials) throws SecurityException {<a name="line.502"></a>
+<FONT color="green">503</FONT>                                    <a name="line.503"></a>
+<FONT color="green">504</FONT>            final CollectionCredentialResolver credResolver = new CollectionCredentialResolver(trustedCredentials.values());<a name="line.504"></a>
+<FONT color="green">505</FONT>            final KeyInfoCredentialResolver kiResolver = SecurityTestHelper.buildBasicInlineKeyInfoResolver();<a name="line.505"></a>
+<FONT color="green">506</FONT>            final ExplicitKeySignatureTrustEngine trustEngine = new ExplicitKeySignatureTrustEngine(credResolver, kiResolver);<a name="line.506"></a>
+<FONT color="green">507</FONT>            <a name="line.507"></a>
+<FONT color="green">508</FONT>            final CriteriaSet criteriaSet = new CriteriaSet( new EntityIDCriteria(NameIDType.X509_SUBJECT) );<a name="line.508"></a>
+<FONT color="green">509</FONT>            final boolean valid = trustEngine.validate(signedAssertion.getSignature(), criteriaSet);<a name="line.509"></a>
+<FONT color="green">510</FONT>            if (LOG.isDebugEnabled()) LOG.debug("Validated assertion signature: result="+valid);<a name="line.510"></a>
+<FONT color="green">511</FONT>            return valid;<a name="line.511"></a>
+<FONT color="green">512</FONT>            <a name="line.512"></a>
+<FONT color="green">513</FONT>            }<a name="line.513"></a>
+<FONT color="green">514</FONT>            <a name="line.514"></a>
+<FONT color="green">515</FONT>            /**<a name="line.515"></a>
+<FONT color="green">516</FONT>             * Method to unmarshall a generic SAML object from XML.<a name="line.516"></a>
+<FONT color="green">517</FONT>             * @param element<a name="line.517"></a>
+<FONT color="green">518</FONT>             * @return<a name="line.518"></a>
+<FONT color="green">519</FONT>             * @throws UnmarshallingException<a name="line.519"></a>
+<FONT color="green">520</FONT>             */<a name="line.520"></a>
+<FONT color="green">521</FONT>            public XMLObject unmarshall(final Element element) throws UnmarshallingException {<a name="line.521"></a>
+<FONT color="green">522</FONT>                    final Unmarshaller unmarshaller = unmarshallerFactory.getUnmarshaller(element);<a name="line.522"></a>
+<FONT color="green">523</FONT>                    return unmarshaller.unmarshall(element);<a name="line.523"></a>
+<FONT color="green">524</FONT>            }<a name="line.524"></a>
+<FONT color="green">525</FONT>                    <a name="line.525"></a>
+<FONT color="green">526</FONT>    }<a name="line.526"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</PRE>
+</BODY>
+</HTML>

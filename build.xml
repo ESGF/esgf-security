@@ -284,8 +284,10 @@ Builds the project via ant (obviously).
     </javac>
 
     <copy todir="${build_dir}" filtering="${filter}" overwrite="true">
-      <fileset dir="${conf_dir}" includes="**/*.properties,**/*.template,**/*filter-web.xml"/>
-    </copy> 
+      <fileset dir="${conf_dir}" includes="**/*.properties,**/*.template,**/*.xml"/>
+      <fileset dir="${src_dir}" includes="**/*.properties,**/*.template,**/*.xml"/>
+    </copy>
+
 
     <tstamp/>
   </target>
@@ -420,6 +422,28 @@ Builds the project via ant (obviously).
   </target>  
 
   <target name="make_all_jars" depends="make_jar,make_test_jar,make_common_jar,make_fe_jar,make_connector_jar"/>
+
+  <target name="make_war" depends="make,init"
+          description="(Creates war file of this project)">
+    <mkdir dir="${dist_dir}" />
+    <mkdir dir="${dist_dir}/tmplib"/>
+
+    <copy todir="${dist_dir}/tmplib" overwrite="true" flatten="yes">
+      <fileset dir="${lib_dir}" includes="**/*.jar" excludes="**/junit*.jar"/>
+    </copy>
+
+    <delete file="${dist_dir}/${module}.war"/>
+    <war destfile="${dist_dir}/${module}.war">
+      <fileset dir="${web_dir}" excludes="**semantic.cache**"/>
+      <lib dir="${dist_dir}/tmplib">
+        <include name="**/*.jar"/>
+        <exclude name="**/*-test*.jar,**/*-common*.jar"/>
+      </lib>
+      <classes dir="${build_dir}"/>
+    </war>
+    <delete dir="${dist_dir}/tmplib"/>
+  </target>
+
 
   <target name="make_dist" depends="make_all_jars"
 	  description="(Creates full software distribution)">

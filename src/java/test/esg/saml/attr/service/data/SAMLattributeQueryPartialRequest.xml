@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?><samlp:AttributeQuery xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="9566201b-63ad-4f14-b6c0-6cf6b35a90e0" IssueInstant="2009-07-28T23:07:00.081Z" Version="2.0">
+   <saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Format="urn:oasis:names:tc:SAML:1.1:nameid-format:x509SubjectName">CN=test.gateway.com, OU=Services, DC=doegrids, DC=org</saml:Issuer>
+   <saml:Subject xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">
+      <saml:NameID Format="urn:esg:openid">Test Openid</saml:NameID>
+   </saml:Subject>
+   <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" FriendlyName="EmailAddress" Name="urn:esg:email:address" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
+   <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" FriendlyName="GroupRole" Name="urn:esg:group:role" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
+</samlp:AttributeQuery>

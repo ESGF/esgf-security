@@ -1,0 +1,12 @@
+esg.saml.attr.main
+esg.saml.attr.service.api
+esg.saml.attr.service.impl
+esg.saml.attr.web
+esg.saml.auth.service.api
+esg.saml.auth.service.impl
+esg.saml.authz.main
+esg.saml.authz.service.api
+esg.saml.authz.service.impl
+esg.saml.authz.web
+esg.saml.common
+esg.utils.xml

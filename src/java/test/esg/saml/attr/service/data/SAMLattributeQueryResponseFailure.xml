@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" InResponseTo="9566201b-63ad-4f14-b6c0-6cf6b35a90e0" Version="2.0">
+   <saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Format="urn:oasis:names:tc:SAML:1.1:nameid-format:x509SubjectName">Test SAML Issuer</saml:Issuer>
+   <samlp:Status>
+      <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:UnknownPrincipal"/>
+   </samlp:Status>
+</samlp:Response>

@@ -35,3 +35,7 @@ generated/
 /dist
 /docs-generated
 /lib/fetched
+.project
+.classpath
+/.settings
+

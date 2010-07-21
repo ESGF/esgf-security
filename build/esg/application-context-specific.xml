@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Application-specific Spring configuration file -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+      	
+    
+    <!--ESG SAML-based Attribute Service stack -->
+    <bean name="attributeServiceController" class="esg.saml.attr.web.SAMLAttributeServiceSoapController" />
+    <bean name="samlAttributeService" class="esg.saml.attr.service.impl.SAMLAttributeServiceSoapImpl" />
+  	<bean id="samlAttributeFactory" class="esg.saml.attr.service.impl.SAMLAttributeFactoryTrivialImpl"/>
+  	
+  	<!-- ESG SAML-based Authorization Service stack -->
+  	<bean name="authorizationServiceController" class="esg.saml.authz.web.SAMLAuthorizationServiceSoapController" />
+  	<bean name="samlAuthorizationService" class="esg.saml.authz.service.impl.SAMLAuthorizationServiceSoapImpl" />
+  	<bean id="samlAuthorizationFactory" class="esg.saml.authz.service.impl.SAMLAuthorizationFactoryTrivialImpl"/>
+  	
+
+</beans>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<saml:Assertion Version="2.0" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"><saml:Issuer Format="urn:oasis:names:tc:SAML:1.1:nameid-format:x509SubjectName">Test SAML Issuer</saml:Issuer><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+<ds:SignedInfo>
+<ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+<ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+<ds:Reference URI="">
+<ds:Transforms>
+<ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+<ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"><ec:InclusiveNamespaces PrefixList="ds saml" xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#"/></ds:Transform>
+</ds:Transforms>
+<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+<ds:DigestValue>ZDiXdqQXDaDsOdYWENt0fUJexP4=</ds:DigestValue>
+</ds:Reference>
+</ds:SignedInfo>
+<ds:SignatureValue>
+ml87cInW68qMqofNUzYmeneSYU1odcQRKCoJRwCsLY4rMVu/ERGPv6vghB4qaOrzYttk88XxqoIw
+pWNlVG3JKsddLPLR3VEmrwn7W8VxB7DX1G5ZI/OCsRLAh1VOvKQcFhHdWfU7QhI0/8ozsvagvxvN
+CVlqxz+UdJ/jb+JCI7s=
+</ds:SignatureValue>
+</ds:Signature><saml:Subject><saml:NameID Format="urn:esg:openid">Test Openid</saml:NameID></saml:Subject><saml:AuthnStatement><saml:AuthnContext><saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:X509</saml:AuthnContextClassRef></saml:AuthnContext></saml:AuthnStatement></saml:Assertion>

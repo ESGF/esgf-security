@@ -1,0 +1,139 @@
+[INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ObjectProviders
+[INFO] org.opensaml.xml.XMLConfigurator: ObjectProviders load complete
+[INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ObjectProviders
+[INFO] org.opensaml.xml.XMLConfigurator: ObjectProviders load complete
+[INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ObjectProviders
+[INFO] org.opensaml.xml.XMLConfigurator: ObjectProviders load complete
+[INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ValidatorSuites
+[INFO] org.opensaml.xml.XMLConfigurator: ValidatorSuites load complete
+[INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ObjectProviders
+[INFO] org.opensaml.xml.XMLConfigurator: ObjectProviders load complete
+[INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ValidatorSuites
+[INFO] org.opensaml.xml.XMLConfigurator: ValidatorSuites load complete
+[INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ObjectProviders
+[INFO] org.opensaml.xml.XMLConfigurator: ObjectProviders load complete
+[INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ObjectProviders
+[INFO] org.opensaml.xml.XMLConfigurator: ObjectProviders load complete
+[INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ObjectProviders
+[INFO] org.opensaml.xml.XMLConfigurator: ObjectProviders load complete
+[INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ObjectProviders
+[INFO] org.opensaml.xml.XMLConfigurator: ObjectProviders load complete
+[INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ValidatorSuites
+[INFO] org.opensaml.xml.XMLConfigurator: ValidatorSuites load complete
+[INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ObjectProviders
+[INFO] org.opensaml.xml.XMLConfigurator: ObjectProviders load complete
+[INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ObjectProviders
+[INFO] org.opensaml.xml.XMLConfigurator: ObjectProviders load complete
+[INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ValidatorSuites
+[INFO] org.opensaml.xml.XMLConfigurator: ValidatorSuites load complete
+[INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ObjectProviders
+[INFO] org.opensaml.xml.XMLConfigurator: ObjectProviders load complete
+[INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ObjectProviders
+[INFO] org.opensaml.xml.XMLConfigurator: ObjectProviders load complete
+[INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ValidatorSuites
+[INFO] org.opensaml.xml.XMLConfigurator: ValidatorSuites load complete
+[INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ObjectProviders
+[INFO] org.opensaml.xml.XMLConfigurator: ObjectProviders load complete
+[INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ObjectProviders
+[INFO] org.opensaml.xml.XMLConfigurator: ObjectProviders load complete
+[INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ObjectProviders
+[INFO] org.opensaml.xml.XMLConfigurator: ObjectProviders load complete
+[INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ObjectProviders
+[INFO] org.opensaml.xml.XMLConfigurator: ObjectProviders load complete
+[INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ObjectProviders
+[INFO] org.opensaml.xml.XMLConfigurator: ObjectProviders load complete
+[INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ObjectProviders
+[INFO] org.opensaml.xml.XMLConfigurator: ObjectProviders load complete
+[INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ObjectProviders
+[INFO] org.opensaml.xml.XMLConfigurator: ObjectProviders load complete
+[INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ObjectProviders
+[INFO] org.opensaml.xml.XMLConfigurator: ObjectProviders load complete
+[INFO] esg.saml.common.SAMLBuilder: SAML libraries initialized correctly
+[DEBUG] esg.saml.auth.service.impl.SAMLStatementFacadeImplTest: <?xml version="1.0" encoding="UTF-8"?>
+<saml:Assertion Version="2.0" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"><saml:Issuer Format="urn:oasis:names:tc:SAML:1.1:nameid-format:x509SubjectName">Test SAML Issuer</saml:Issuer><saml:Subject><saml:NameID Format="urn:esg:openid">Test Openid</saml:NameID></saml:Subject><saml:AuthnStatement><saml:AuthnContext><saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:X509</saml:AuthnContextClassRef></saml:AuthnContext></saml:AuthnStatement></saml:Assertion>
+[DEBUG] esg.saml.common.SecurityManager: Keystore alias=tomcat
+[DEBUG] esg.saml.common.SecurityManager: Private key=Sun RSA private CRT key, 1024 bits
+  modulus:          129408685500683016740861667555763060319269041708485883214125586091952210067224947587585184570161894960170062430338482581995557409117473846130375077697928500698387724516579599404828023017645928667628958720124701100049200461166335472696890532927023533238119528338718075041811086002182026458842678319593433279261
+  public exponent:  65537
+  private exponent: 23319904416788477161139147257786620418550854976230500034466380391930597996458895448515815947840334154441131533367372313248508979685938723511905178259800346718994901444447055975162706703739015125751310539693078650225546068253099034213952825269681118597695261371792639371456636449090825750871547211884623185473
+  prime p:          12699272589832540424143428898900506911426927695442228906722717693432035707705720508407664119650069501038092199442211308482185827107786497245922651586608681
+  prime q:          10190243936041809987501514423927219979620348711301615921769386408580773019688629233411486520185494007622801711333381971394420583077246869683910465762868181
+  prime exponent p: 4791414213784415323676618801335319504994943941974762259128929313296213542646739261964940578399793529642322746167928941282619115108934444930343613619513753
+  prime exponent q: 5146355399165537436353893592980196330095584198951140329565331817922798196524928671856407538414933253952721226814048193985268359227470236550316135859429193
+  crt coefficient:  3303273783485475066483534621439001011351839472228840390514195923660164072015932832492050619978685570082609384537906521743510172270362206794670258825825697
+[DEBUG] esg.saml.common.SecurityManager: Public key=Sun RSA public key, 1024 bits
+  modulus: 129408685500683016740861667555763060319269041708485883214125586091952210067224947587585184570161894960170062430338482581995557409117473846130375077697928500698387724516579599404828023017645928667628958720124701100049200461166335472696890532927023533238119528338718075041811086002182026458842678319593433279261
+  public exponent: 65537
+[DEBUG] esg.saml.auth.service.impl.SAMLAuthenticationStatementFacadeImpl: Set signinig credential CN=localhost, OU=CISL, O=NCAR, L=Boulder, ST=CO, C=US
+[DEBUG] esg.saml.auth.service.impl.SAMLStatementFacadeImplTest: <?xml version="1.0" encoding="UTF-8"?>
+<saml:Assertion Version="2.0" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"><saml:Issuer Format="urn:oasis:names:tc:SAML:1.1:nameid-format:x509SubjectName">Test SAML Issuer</saml:Issuer><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+<ds:SignedInfo>
+<ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+<ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+<ds:Reference URI="">
+<ds:Transforms>
+<ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+<ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"><ec:InclusiveNamespaces PrefixList="ds saml" xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#"/></ds:Transform>
+</ds:Transforms>
+<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+<ds:DigestValue>ZDiXdqQXDaDsOdYWENt0fUJexP4=</ds:DigestValue>
+</ds:Reference>
+</ds:SignedInfo>
+<ds:SignatureValue>
+ml87cInW68qMqofNUzYmeneSYU1odcQRKCoJRwCsLY4rMVu/ERGPv6vghB4qaOrzYttk88XxqoIw
+pWNlVG3JKsddLPLR3VEmrwn7W8VxB7DX1G5ZI/OCsRLAh1VOvKQcFhHdWfU7QhI0/8ozsvagvxvN
+CVlqxz+UdJ/jb+JCI7s=
+</ds:SignatureValue>
+</ds:Signature><saml:Subject><saml:NameID Format="urn:esg:openid">Test Openid</saml:NameID></saml:Subject><saml:AuthnStatement><saml:AuthnContext><saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:X509</saml:AuthnContextClassRef></saml:AuthnContext></saml:AuthnStatement></saml:Assertion>
+[DEBUG] esg.saml.common.SecurityManager: Trusted Certificate Alias=simpleca-vetswebdev.ucar.edu
+[DEBUG] esg.saml.common.SecurityManager: Trusted Certificate Alias=pcmdi3.llnl.gov-1
+[DEBUG] esg.saml.common.SecurityManager: Trusted Certificate Alias=esg.prototype.ucar.edu-1
+[DEBUG] esg.saml.common.SecurityManager: Trusted Certificate Alias=simpleca-vetswebprod.ucar.edu
+[DEBUG] esg.saml.common.SecurityManager: Trusted Certificate Alias=esnet
+[DEBUG] esg.saml.common.SecurityManager: Trusted Certificate Alias=localhost-1
+[DEBUG] esg.saml.common.SecurityManager: Trusted Certificate Alias=simpleca-vetsproc.ucar.edu
+[DEBUG] esg.saml.common.SecurityManager: Trusted Certificate Alias=doegrids
+[INFO] org.opensaml.xml.security.credential.criteria.EvaluableEntityIDCredentialCriteria: Could not evaluate criteria, credential contained no entity ID
+[WARN] org.apache.xml.security.signature.XMLSignature: Signature verification failed.
+[INFO] org.opensaml.xml.security.credential.criteria.EvaluableEntityIDCredentialCriteria: Could not evaluate criteria, credential contained no entity ID
+[WARN] org.apache.xml.security.signature.XMLSignature: Signature verification failed.
+[INFO] org.opensaml.xml.security.credential.criteria.EvaluableEntityIDCredentialCriteria: Could not evaluate criteria, credential contained no entity ID
+[INFO] org.apache.xml.security.signature.Reference: Verification successful for URI ""
+[DEBUG] esg.saml.common.SAMLBuilder: Validated assertion signature: result=true
+[DEBUG] esg.saml.common.SecurityManager: Trusted Certificate Alias=simpleca-vetswebdev.ucar.edu
+[DEBUG] esg.saml.common.SecurityManager: Trusted Certificate Alias=pcmdi3.llnl.gov-1
+[DEBUG] esg.saml.common.SecurityManager: Trusted Certificate Alias=esg.prototype.ucar.edu-1
+[DEBUG] esg.saml.common.SecurityManager: Trusted Certificate Alias=simpleca-vetswebprod.ucar.edu
+[DEBUG] esg.saml.common.SecurityManager: Trusted Certificate Alias=esnet
+[DEBUG] esg.saml.common.SecurityManager: Trusted Certificate Alias=localhost-1
+[DEBUG] esg.saml.common.SecurityManager: Trusted Certificate Alias=simpleca-vetsproc.ucar.edu
+[DEBUG] esg.saml.common.SecurityManager: Trusted Certificate Alias=doegrids
+[DEBUG] esg.saml.common.SecurityManager: Trusted Certificate Alias=simpleca-vetswebdev.ucar.edu
+[DEBUG] esg.saml.common.SecurityManager: Trusted Certificate Alias=pcmdi3.llnl.gov-1
+[DEBUG] esg.saml.common.SecurityManager: Trusted Certificate Alias=esg.prototype.ucar.edu-1
+[DEBUG] esg.saml.common.SecurityManager: Trusted Certificate Alias=simpleca-vetswebprod.ucar.edu
+[DEBUG] esg.saml.common.SecurityManager: Trusted Certificate Alias=esnet
+[DEBUG] esg.saml.common.SecurityManager: Trusted Certificate Alias=localhost-1
+[DEBUG] esg.saml.common.SecurityManager: Trusted Certificate Alias=simpleca-vetsproc.ucar.edu
+[DEBUG] esg.saml.common.SecurityManager: Trusted Certificate Alias=doegrids
+[INFO] org.opensaml.xml.security.credential.criteria.EvaluableEntityIDCredentialCriteria: Could not evaluate criteria, credential contained no entity ID
+[WARN] org.apache.xml.security.signature.XMLSignature: Signature verification failed.
+[INFO] org.opensaml.xml.security.credential.criteria.EvaluableEntityIDCredentialCriteria: Could not evaluate criteria, credential contained no entity ID
+[WARN] org.apache.xml.security.signature.XMLSignature: Signature verification failed.
+[INFO] org.opensaml.xml.security.credential.criteria.EvaluableEntityIDCredentialCriteria: Could not evaluate criteria, credential contained no entity ID
+[WARN] org.apache.xml.security.signature.XMLSignature: Signature verification failed.
+[INFO] org.opensaml.xml.security.credential.criteria.EvaluableEntityIDCredentialCriteria: Could not evaluate criteria, credential contained no entity ID
+[WARN] org.apache.xml.security.signature.XMLSignature: Signature verification failed.
+[INFO] org.opensaml.xml.security.credential.criteria.EvaluableEntityIDCredentialCriteria: Could not evaluate criteria, credential contained no entity ID
+[WARN] org.apache.xml.security.signature.XMLSignature: Signature verification failed.
+[INFO] org.opensaml.xml.security.credential.criteria.EvaluableEntityIDCredentialCriteria: Could not evaluate criteria, credential contained no entity ID
+[WARN] org.apache.xml.security.signature.XMLSignature: Signature verification failed.
+[INFO] org.opensaml.xml.security.credential.criteria.EvaluableEntityIDCredentialCriteria: Could not evaluate criteria, credential contained no entity ID
+[WARN] org.apache.xml.security.signature.XMLSignature: Signature verification failed.
+[INFO] org.opensaml.xml.security.credential.criteria.EvaluableEntityIDCredentialCriteria: Could not evaluate criteria, credential contained no entity ID
+[WARN] org.apache.xml.security.signature.XMLSignature: Signature verification failed.
+[ERROR] org.opensaml.xml.signature.impl.ExplicitKeySignatureTrustEngine: Failed to verify signature using either KeyInfo-derived or directly trusted credentials
+[DEBUG] esg.saml.common.SAMLBuilder: Validated assertion signature: result=false
+[ERROR] org.opensaml.xml.signature.impl.ExplicitKeySignatureTrustEngine: Failed to verify signature using either KeyInfo-derived or directly trusted credentials
+[DEBUG] esg.saml.common.SAMLBuilder: Validated assertion signature: result=false
+
