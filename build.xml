@@ -387,7 +387,7 @@ Builds the project via ant (obviously).
     <jar destfile="${dist_dir}/${module}-fe.${version_num}.jar">
       <fileset dir="${build_dir}" 
 	       includes="esg/saml/**,esg/**/common/**,**/*.properties"
-	       excludes="**/test/**,**/saml.properties/**"/>
+	       excludes="**/test/**,**/${module}.properties/**"/>
       <manifest>
 	<attribute name="Organization" value="${organization}"/>
 	<attribute name="Author"       value="${author}"/>
@@ -413,7 +413,7 @@ Builds the project via ant (obviously).
     <jar destfile="${dist_dir}/${module}-connector.${version_num}.jar">
       <fileset dir="${build_dir}" 
 	       includes="esg/node/**/connector/**,esg/**/common/**,**/*.properties"
-	       excludes="**/test/**,**/saml.properties/**"/>
+	       excludes="**/test/**,**/${module}.properties/**"/>
       <manifest>
 	<attribute name="Organization" value="${organization}"/>
 	<attribute name="Author"       value="${author}"/>
