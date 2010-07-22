@@ -2,11 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src/java/main"/>
 	<classpathentry kind="src" path="src/java/test"/>
-	<classpathentry kind="lib" path="dist/esg-saml-common.0.0.1.jar"/>
-	<classpathentry kind="lib" path="dist/esg-saml-connector.0.0.1.jar"/>
-	<classpathentry kind="lib" path="dist/esg-saml-fe.0.0.1.jar"/>
-	<classpathentry kind="lib" path="dist/esg-saml-test.0.0.1.jar"/>
-	<classpathentry kind="lib" path="dist/esg-saml.0.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/activation-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/avalon-framework-4.1.3.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/commons-logging-1.1.1-javadoc.jar"/>

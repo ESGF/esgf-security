@@ -35,7 +35,7 @@ import org.w3c.dom.Node;
 
 import esg.saml.authz.service.api.SAMLAuthorizations;
 import esg.saml.common.SAMLBuilder;
-import esg.saml.common.SAMLTstParameters;
+import esg.saml.common.SAMLTestParameters;
 import esg.saml.common.SAMLUnknownPrincipalException;
 import eske.utils.xml.XmlChecker;
 
@@ -63,10 +63,10 @@ public class SAMLAuthorizationStatementHandlerImplTest {
 		samlAuthorizationStatementHandler.setIncludeFlag(false);
 				
 		final SAMLAuthorizationFactoryTrivialImpl samlAuthorizationsFactory = new SAMLAuthorizationFactoryTrivialImpl();
-		samlAuthorizationsFactory.setIssuer(SAMLTstParameters.ISSUER);
+		samlAuthorizationsFactory.setIssuer(SAMLTestParameters.ISSUER);
 		final Vector<String> actions = new Vector<String>();
-		actions.add(SAMLTstParameters.TEST_ACTION);
-		testAuthorizations = samlAuthorizationsFactory.newInstance(SAMLTstParameters.IDENTIFIER, SAMLTstParameters.TEST_RESOURCE_PATH, actions);
+		actions.add(SAMLTestParameters.TEST_ACTION);
+		testAuthorizations = samlAuthorizationsFactory.newInstance(SAMLTestParameters.IDENTIFIER, SAMLTestParameters.TEST_RESOURCE_PATH, actions);
 		
 	}
 	
@@ -86,7 +86,7 @@ public class SAMLAuthorizationStatementHandlerImplTest {
 			final Element assertionElement = builder.marshall(assertion);
 			final String xml = XMLHelper.prettyPrintXML((Node)assertionElement);
 	        if (LOG.isDebugEnabled()) LOG.debug(xml);
-	        XmlChecker.compare(xml, SAMLTstParameters.AUTHZ_DECISION_STMT_FILE);	
+	        XmlChecker.compare(xml, SAMLTestParameters.AUTHZ_DECISION_STMT_FILE);	
 		}
 		
 	}
@@ -101,7 +101,7 @@ public class SAMLAuthorizationStatementHandlerImplTest {
 			
 			// retrieve test XML
 	        final InputStream inputStream = new ClassPathResource(
-	        		SAMLTstParameters.AUTHZ_DECISION_STMT_FILE).getInputStream();
+	        		SAMLTestParameters.AUTHZ_DECISION_STMT_FILE).getInputStream();
 	        final Element element = builder.parse(inputStream);
 	        final Assertion assertion = (Assertion)builder.unmarshall(element);
 	       
@@ -109,7 +109,7 @@ public class SAMLAuthorizationStatementHandlerImplTest {
 	        final SAMLAuthorizations samlAuthorizations = samlAuthorizationStatementHandler.parseAuthzDecisionStatement(assertion);
 	        
 	        // compare to expected result
-	        Assert.assertEquals("Invalid authorization identity",SAMLTstParameters.IDENTIFIER, samlAuthorizations.getIdentity());
+	        Assert.assertEquals("Invalid authorization identity",SAMLTestParameters.IDENTIFIER, samlAuthorizations.getIdentity());
 	        Assert.assertEquals("Number of authzDecisionStatements does not match", testAuthorizations.getAuthorizations().size(),
 	        		samlAuthorizations.getAuthorizations().size());
 	        Assert.assertEquals("Wrong resource name", samlAuthorizations.getAuthorizations().get(0).getResource(),

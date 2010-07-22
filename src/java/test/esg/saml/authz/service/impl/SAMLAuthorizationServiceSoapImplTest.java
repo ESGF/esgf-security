@@ -26,7 +26,7 @@ import org.opensaml.xml.ConfigurationException;
 import org.springframework.core.io.ClassPathResource;
 
 import esg.saml.common.SAMLBuilder;
-import esg.saml.common.SAMLTstParameters;
+import esg.saml.common.SAMLTestParameters;
 import eske.utils.xml.XmlChecker;
 
 public class SAMLAuthorizationServiceSoapImplTest {
@@ -37,7 +37,7 @@ public class SAMLAuthorizationServiceSoapImplTest {
 	public void setup() throws ConfigurationException {
 						
 		final SAMLAuthorizationFactoryTrivialImpl samlAuthorizationsFactory = new SAMLAuthorizationFactoryTrivialImpl();
-		samlAuthorizationsFactory.setIssuer(SAMLTstParameters.ISSUER);
+		samlAuthorizationsFactory.setIssuer(SAMLTestParameters.ISSUER);
 		
 		samlAuthorizationService = new SAMLAuthorizationServiceSoapImpl(samlAuthorizationsFactory, false);
 		
@@ -47,9 +47,9 @@ public class SAMLAuthorizationServiceSoapImplTest {
 	public void testProcessAuthorizationQuery() throws Exception {
 		
 		if (SAMLBuilder.isInitailized()) {
-			final InputStream inputStream = new ClassPathResource(SAMLTstParameters.SOAP_REQUEST).getInputStream();
+			final InputStream inputStream = new ClassPathResource(SAMLTestParameters.SOAP_REQUEST).getInputStream();
 			final String xml = samlAuthorizationService.processAuthorizationQuery(inputStream);
-			XmlChecker.compare(xml, SAMLTstParameters.SOAP_RESPONSE);
+			XmlChecker.compare(xml, SAMLTestParameters.SOAP_RESPONSE);
 		}	
 	}
 

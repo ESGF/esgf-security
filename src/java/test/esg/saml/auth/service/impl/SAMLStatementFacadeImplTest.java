@@ -32,7 +32,7 @@ import org.springframework.core.io.ClassPathResource;
 import esg.saml.auth.service.impl.SAMLAuthenticationStatementFacadeImpl;
 import esg.saml.common.SAMLBuilder;
 import esg.saml.common.SAMLInvalidStatementException;
-import esg.saml.common.SAMLTstParameters;
+import esg.saml.common.SAMLTestParameters;
 import esg.saml.common.SAMLUnknownPrincipalException;
 import eske.utils.xml.XmlChecker;
 
@@ -61,11 +61,11 @@ public class SAMLStatementFacadeImplTest {
 		
 			// build statement
 			final boolean signit = false;
-			final String xml = statementFacade.buildAuthenticationStatement(SAMLTstParameters.IDENTIFIER, SAMLTstParameters.ISSUER, signit);
+			final String xml = statementFacade.buildAuthenticationStatement(SAMLTestParameters.IDENTIFIER, SAMLTestParameters.ISSUER, signit);
 			
 			// compare to expected test XML
 	        if (LOG.isDebugEnabled()) LOG.debug(xml);
-	        XmlChecker.compare(xml, SAMLTstParameters.AUTHENTICATION_FILE);
+	        XmlChecker.compare(xml, SAMLTestParameters.AUTHENTICATION_FILE);
 			
 		}
 		
@@ -85,11 +85,11 @@ public class SAMLStatementFacadeImplTest {
 		
 			// build statement
 			final boolean signit = true;
-			final String xml = statementFacade.buildAuthenticationStatement(SAMLTstParameters.IDENTIFIER, SAMLTstParameters.ISSUER, signit);
+			final String xml = statementFacade.buildAuthenticationStatement(SAMLTestParameters.IDENTIFIER, SAMLTestParameters.ISSUER, signit);
 			
 			// compare to expected test XML
 	        if (LOG.isDebugEnabled()) LOG.debug(xml);
-	        XmlChecker.compare(xml, SAMLTstParameters.AUTHENTICATION_FILE_SIGNED);
+	        XmlChecker.compare(xml, SAMLTestParameters.AUTHENTICATION_FILE_SIGNED);
 			
 		}
 		
@@ -106,7 +106,7 @@ public class SAMLStatementFacadeImplTest {
 					
 			// build statement
 			final boolean signit = true;
-			statementFacade.buildAuthenticationStatement(SAMLTstParameters.IDENTIFIER, SAMLTstParameters.ISSUER, signit);
+			statementFacade.buildAuthenticationStatement(SAMLTestParameters.IDENTIFIER, SAMLTestParameters.ISSUER, signit);
 						
 		}
 		
@@ -122,13 +122,13 @@ public class SAMLStatementFacadeImplTest {
 		if (SAMLBuilder.isInitailized()) {
 						
 			// retrieve test XML
-	        final File file = new ClassPathResource(SAMLTstParameters.AUTHENTICATION_FILE).getFile();
+	        final File file = new ClassPathResource(SAMLTestParameters.AUTHENTICATION_FILE).getFile();
 	        final String xml = FileUtils.readFileToString(file);
 	        
 	        // process statement
 	        final boolean validate = false;
 	        final String identity = statementFacade.parseAuthenticationStatement(xml, validate);
-	        Assert.assertEquals("Wrong identity extrected", SAMLTstParameters.IDENTIFIER, identity);
+	        Assert.assertEquals("Wrong identity extrected", SAMLTestParameters.IDENTIFIER, identity);
 		}
 		
 	} 
@@ -143,7 +143,7 @@ public class SAMLStatementFacadeImplTest {
 		if (SAMLBuilder.isInitailized()) {
 						
 			// retrieve test XML
-	        final File file = new ClassPathResource(SAMLTstParameters.AUTHENTICATION_FILE_SIGNED).getFile();
+	        final File file = new ClassPathResource(SAMLTestParameters.AUTHENTICATION_FILE_SIGNED).getFile();
 	        final String xml = FileUtils.readFileToString(file);
 	        
 	        // set trustore
@@ -152,7 +152,7 @@ public class SAMLStatementFacadeImplTest {
 	        // process and validate statement
 	        final boolean validate = true;
 	        final String identity = statementFacade.parseAuthenticationStatement(xml, validate);
-	        Assert.assertEquals("Wrong identity extrected", SAMLTstParameters.IDENTIFIER, identity);
+	        Assert.assertEquals("Wrong identity extrected", SAMLTestParameters.IDENTIFIER, identity);
 		}
 		
 	} 
@@ -167,7 +167,7 @@ public class SAMLStatementFacadeImplTest {
 		if (SAMLBuilder.isInitailized()) {
 						
 			// retrieve test XML
-	        final File file = new ClassPathResource(SAMLTstParameters.AUTHENTICATION_FILE).getFile();
+	        final File file = new ClassPathResource(SAMLTestParameters.AUTHENTICATION_FILE).getFile();
 	        final String xml = FileUtils.readFileToString(file);
 	        
 	        // set trustore
@@ -191,7 +191,7 @@ public class SAMLStatementFacadeImplTest {
 		if (SAMLBuilder.isInitailized()) {
 						
 			// retrieve test XML
-	        final File file = new ClassPathResource(SAMLTstParameters.AUTHENTICATION_FILE_SIGNED_INVALID).getFile();
+	        final File file = new ClassPathResource(SAMLTestParameters.AUTHENTICATION_FILE_SIGNED_INVALID).getFile();
 	        final String xml = FileUtils.readFileToString(file);
 	        
 	        // set trustore
@@ -215,7 +215,7 @@ public class SAMLStatementFacadeImplTest {
 		if (SAMLBuilder.isInitailized()) {
 						
 			// retrieve test XML
-	        final File file = new ClassPathResource(SAMLTstParameters.AUTHENTICATION_FILE_SIGNED).getFile();
+	        final File file = new ClassPathResource(SAMLTestParameters.AUTHENTICATION_FILE_SIGNED).getFile();
 	        final String xml = FileUtils.readFileToString(file);
 	        
 	        // process and validate statement
@@ -231,8 +231,8 @@ public class SAMLStatementFacadeImplTest {
 	 * @throws Exception
 	 */
 	private void setTrustore() throws Exception {
-        final File trustore = new ClassPathResource(SAMLTstParameters.TRUSTORE_PATH).getFile();
-        statementFacade.setTrustedCredentials(trustore, SAMLTstParameters.TRUSTORE_PASSWORD);
+        final File trustore = new ClassPathResource(SAMLTestParameters.TRUSTORE_PATH).getFile();
+        statementFacade.setTrustedCredentials(trustore, SAMLTestParameters.TRUSTORE_PASSWORD);
 	}
 
 	/**
@@ -241,8 +241,8 @@ public class SAMLStatementFacadeImplTest {
 	 * @throws Exception
 	 */
 	private void setKeystore() throws Exception {
-		final File keystore = new ClassPathResource(SAMLTstParameters.KEYSTORE_PATH).getFile();
-		statementFacade.setSigningCredential(keystore, SAMLTstParameters.KEYSTORE_PASSWORD, SAMLTstParameters.KEYSTORE_ALIAS);
+		final File keystore = new ClassPathResource(SAMLTestParameters.KEYSTORE_PATH).getFile();
+		statementFacade.setSigningCredential(keystore, SAMLTestParameters.KEYSTORE_PASSWORD, SAMLTestParameters.KEYSTORE_ALIAS);
 	}
 
 }

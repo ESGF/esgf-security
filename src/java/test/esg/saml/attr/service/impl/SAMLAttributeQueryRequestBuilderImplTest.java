@@ -30,7 +30,7 @@ import org.w3c.dom.Node;
 
 import esg.saml.authz.service.impl.SAMLAuthorizationFactoryTrivialImpl;
 import esg.saml.common.SAMLBuilder;
-import esg.saml.common.SAMLTstParameters;
+import esg.saml.common.SAMLTestParameters;
 import eske.utils.xml.XmlChecker;
 
 /**
@@ -49,10 +49,10 @@ public class SAMLAttributeQueryRequestBuilderImplTest {
 		builder = SAMLBuilder.getInstance();
 		
 		final SAMLAttributeFactoryTrivialImpl samlAttributesFactory = new SAMLAttributeFactoryTrivialImpl();
-		samlAttributesFactory.setIssuer(SAMLTstParameters.ISSUER);
+		samlAttributesFactory.setIssuer(SAMLTestParameters.ISSUER);
 		
 		final SAMLAuthorizationFactoryTrivialImpl samlAuthorizationsFactory = new SAMLAuthorizationFactoryTrivialImpl();
-		samlAuthorizationsFactory.setIssuer(SAMLTstParameters.ISSUER);
+		samlAuthorizationsFactory.setIssuer(SAMLTestParameters.ISSUER);
 		
 		samlAttributeQueryRequestBuilder = new SAMLAttributeQueryRequestBuilderImpl();
 		samlAttributeQueryRequestBuilder.setIncludeFlag(false);
@@ -68,11 +68,11 @@ public class SAMLAttributeQueryRequestBuilderImplTest {
 		
 		if (SAMLBuilder.isInitailized()) {
 			final AttributeQuery attributeQuery 
-				= samlAttributeQueryRequestBuilder.buildAttributeQueryRequest(SAMLTstParameters.IDENTIFIER, SAMLTstParameters.ISSUER);
+				= samlAttributeQueryRequestBuilder.buildAttributeQueryRequest(SAMLTestParameters.IDENTIFIER, SAMLTestParameters.ISSUER);
 			final Element attributeQueryRequestElement = builder.marshall(attributeQuery);
 			final String xml = XMLHelper.prettyPrintXML((Node)attributeQueryRequestElement);
 			if (LOG.isDebugEnabled()) LOG.debug(xml);
-	        XmlChecker.compare(xml, SAMLTstParameters.ATTRIBUTE_REQUEST);
+	        XmlChecker.compare(xml, SAMLTestParameters.ATTRIBUTE_REQUEST);
 		}
 		
 	}

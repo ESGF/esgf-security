@@ -27,7 +27,7 @@ import org.springframework.core.io.ClassPathResource;
 
 import esg.saml.authz.service.impl.SAMLAuthorizationFactoryTrivialImpl;
 import esg.saml.common.SAMLBuilder;
-import esg.saml.common.SAMLTstParameters;
+import esg.saml.common.SAMLTestParameters;
 import eske.utils.xml.XmlChecker;
 
 /**
@@ -41,10 +41,10 @@ public class SAMLAttributeServiceSoapImplTest {
 	public void setup() throws ConfigurationException {
 				
 		final SAMLAttributeFactoryTrivialImpl samlAttributesFactory = new SAMLAttributeFactoryTrivialImpl();
-		samlAttributesFactory.setIssuer(SAMLTstParameters.ISSUER);
+		samlAttributesFactory.setIssuer(SAMLTestParameters.ISSUER);
 		
 		final SAMLAuthorizationFactoryTrivialImpl samlAuthorizationsFactory = new SAMLAuthorizationFactoryTrivialImpl();
-		samlAuthorizationsFactory.setIssuer(SAMLTstParameters.ISSUER);
+		samlAuthorizationsFactory.setIssuer(SAMLTestParameters.ISSUER);
 		
 		samlAttributeServiceSoapImpl = new SAMLAttributeServiceSoapImpl(samlAttributesFactory, false);
 		
@@ -54,9 +54,9 @@ public class SAMLAttributeServiceSoapImplTest {
 	public void testProcessAttributeQuery() throws Exception {
 		
 		if (SAMLBuilder.isInitailized()) {
-			final InputStream inputStream = new ClassPathResource( SAMLTstParameters.ATTRIBUTE_SOAP_REQUEST).getInputStream();
+			final InputStream inputStream = new ClassPathResource( SAMLTestParameters.ATTRIBUTE_SOAP_REQUEST).getInputStream();
 			final String xml = samlAttributeServiceSoapImpl.processAttributeQuery(inputStream);
-			XmlChecker.compare(xml,  SAMLTstParameters.ATTRIBUTE_SOAP_RESPONSE);
+			XmlChecker.compare(xml,  SAMLTestParameters.ATTRIBUTE_SOAP_RESPONSE);
 		}
 		
 	}

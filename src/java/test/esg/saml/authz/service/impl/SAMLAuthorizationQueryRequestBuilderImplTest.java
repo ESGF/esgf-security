@@ -29,7 +29,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import esg.saml.common.SAMLBuilder;
-import esg.saml.common.SAMLTstParameters;
+import esg.saml.common.SAMLTestParameters;
 import eske.utils.xml.XmlChecker;
 
 /**
@@ -61,11 +61,11 @@ public class SAMLAuthorizationQueryRequestBuilderImplTest {
 		
 		if (SAMLBuilder.isInitailized()) {
 			final AuthzDecisionQuery authzDecisionQuery 
-				= samlAuthorizationQueryRequestBuilder.buildAuthorizationQueryRequest(SAMLTstParameters.IDENTIFIER, SAMLTstParameters.TEST_RESOURCE_PATH, SAMLTstParameters.TEST_ACTION, SAMLTstParameters.ISSUER);
+				= samlAuthorizationQueryRequestBuilder.buildAuthorizationQueryRequest(SAMLTestParameters.IDENTIFIER, SAMLTestParameters.TEST_RESOURCE_PATH, SAMLTestParameters.TEST_ACTION, SAMLTestParameters.ISSUER);
 			final Element authzDecisionQueryRequestElement = builder.marshall(authzDecisionQuery);
 			final String xml = XMLHelper.prettyPrintXML((Node)authzDecisionQueryRequestElement);
 			if (LOG.isDebugEnabled()) LOG.debug(xml);
-	        XmlChecker.compare(xml, SAMLTstParameters.REQUEST);
+	        XmlChecker.compare(xml, SAMLTestParameters.REQUEST);
 		}		
 	}
 	

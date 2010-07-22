@@ -35,7 +35,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import esg.saml.common.SAMLBuilder;
-import esg.saml.common.SAMLTstParameters;
+import esg.saml.common.SAMLTestParameters;
 import eske.utils.xml.XmlChecker;
 
 /**
@@ -54,7 +54,7 @@ public class SAMLAuthorizationQueryResponseBuilderImplTest {
 		builder = SAMLBuilder.getInstance();
 			
 		final SAMLAuthorizationFactoryTrivialImpl samlAuthorizationsFactory = new SAMLAuthorizationFactoryTrivialImpl();
-		samlAuthorizationsFactory.setIssuer(SAMLTstParameters.ISSUER);
+		samlAuthorizationsFactory.setIssuer(SAMLTestParameters.ISSUER);
 		
 		samlAuthorizationQueryResponseBuilder = new SAMLAuthorizationQueryResponseBuilderImpl(samlAuthorizationsFactory);
 		samlAuthorizationQueryResponseBuilder.setIncludeFlag(false);
@@ -68,7 +68,7 @@ public class SAMLAuthorizationQueryResponseBuilderImplTest {
 	public void testBuildAuthzDecisionQueryResponseSuccess() throws Exception {
 
 		if (SAMLBuilder.isInitailized()) {
-			final InputStream inputStream = new ClassPathResource(SAMLTstParameters.VALID_REQUEST).getInputStream();
+			final InputStream inputStream = new ClassPathResource(SAMLTestParameters.VALID_REQUEST).getInputStream();
 	        final BasicParserPool parser = new BasicParserPool();
 	        final Document document = parser.parse(inputStream);
 	        final AuthzDecisionQuery authzQueryRequest = (AuthzDecisionQuery)builder.unmarshall(document.getDocumentElement());
@@ -77,7 +77,7 @@ public class SAMLAuthorizationQueryResponseBuilderImplTest {
 	        final Element authzQueryResponseElement = builder.marshall(response);
 	        final String xml = XMLHelper.prettyPrintXML((Node)authzQueryResponseElement);
 	        if (LOG.isDebugEnabled()) LOG.debug(xml);
-	        XmlChecker.compare(xml, SAMLTstParameters.RESPONSE_SUCCESS);
+	        XmlChecker.compare(xml, SAMLTestParameters.RESPONSE_SUCCESS);
 		}
 	}
 	
@@ -89,7 +89,7 @@ public class SAMLAuthorizationQueryResponseBuilderImplTest {
 
 		if (SAMLBuilder.isInitailized()) {
 						
-			final InputStream inputStream = new ClassPathResource(SAMLTstParameters.INVALID_REQUEST).getInputStream();
+			final InputStream inputStream = new ClassPathResource(SAMLTestParameters.INVALID_REQUEST).getInputStream();
 	        final BasicParserPool parser = new BasicParserPool();
 	        final Document document = parser.parse(inputStream);
 	        final AuthzDecisionQuery authzQueryRequest = (AuthzDecisionQuery)builder.unmarshall(document.getDocumentElement());
@@ -98,7 +98,7 @@ public class SAMLAuthorizationQueryResponseBuilderImplTest {
 	        final Element authzQueryResponseElement = builder.marshall(response);
 	        final String xml = XMLHelper.prettyPrintXML((Node)authzQueryResponseElement);
 	        if (LOG.isDebugEnabled()) LOG.debug(xml);
-	        XmlChecker.compare(xml, SAMLTstParameters.RESPONSE_FAILURE);
+	        XmlChecker.compare(xml, SAMLTestParameters.RESPONSE_FAILURE);
 		}
 
 	}

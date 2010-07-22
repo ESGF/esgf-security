@@ -35,7 +35,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import esg.saml.common.SAMLBuilder;
-import esg.saml.common.SAMLTstParameters;
+import esg.saml.common.SAMLTestParameters;
 import eske.utils.xml.XmlChecker;
 
 /**
@@ -54,7 +54,7 @@ public class SAMLAttributeQueryResponseBuilderImplTest {
 		builder = SAMLBuilder.getInstance();
 		
 		final SAMLAttributeFactoryTrivialImpl samlAttributesFactory = new SAMLAttributeFactoryTrivialImpl();
-		samlAttributesFactory.setIssuer(SAMLTstParameters.ISSUER);
+		samlAttributesFactory.setIssuer(SAMLTestParameters.ISSUER);
 				
 		samlAttribuuteQueryResponseBuilder = new SAMLAttributeQueryResponseBuilderImpl(samlAttributesFactory);
 		samlAttribuuteQueryResponseBuilder.setIncludeFlag(false);
@@ -68,7 +68,7 @@ public class SAMLAttributeQueryResponseBuilderImplTest {
 	public void testBuildAttributeQueryResponseSuccess() throws Exception {
 
 		if (SAMLBuilder.isInitailized()) {
-			final InputStream inputStream = new ClassPathResource( SAMLTstParameters.ATTRIBUTE_VALID_REQUEST).getInputStream();
+			final InputStream inputStream = new ClassPathResource( SAMLTestParameters.ATTRIBUTE_VALID_REQUEST).getInputStream();
 	        final BasicParserPool parser = new BasicParserPool();
 	        final Document document = parser.parse(inputStream);
 	        final AttributeQuery attributeQueryRequest = (AttributeQuery)builder.unmarshall(document.getDocumentElement());
@@ -77,7 +77,7 @@ public class SAMLAttributeQueryResponseBuilderImplTest {
 	        final Element attributeQueryResponseElement = builder.marshall(response);
 	        final String xml = XMLHelper.prettyPrintXML((Node)attributeQueryResponseElement);
 	        if (LOG.isDebugEnabled()) LOG.debug(xml);
-	        XmlChecker.compare(xml,  SAMLTstParameters.ATTRIBUTE_RESPONSE_SUCCESS);
+	        XmlChecker.compare(xml,  SAMLTestParameters.ATTRIBUTE_RESPONSE_SUCCESS);
 		}
 
 	}
@@ -89,7 +89,7 @@ public class SAMLAttributeQueryResponseBuilderImplTest {
 	public void testBuildAttributeQueryPartialResponse() throws Exception {
 
 		if (SAMLBuilder.isInitailized()) {
-			final InputStream inputStream = new ClassPathResource(SAMLTstParameters.ATTRIBUTE_PARTIAL_REQUEST).getInputStream();
+			final InputStream inputStream = new ClassPathResource(SAMLTestParameters.ATTRIBUTE_PARTIAL_REQUEST).getInputStream();
 	        final BasicParserPool parser = new BasicParserPool();
 	        final Document document = parser.parse(inputStream);
 	        final AttributeQuery attributeQueryRequest = (AttributeQuery)builder.unmarshall(document.getDocumentElement());
@@ -98,7 +98,7 @@ public class SAMLAttributeQueryResponseBuilderImplTest {
 	        final Element attributeQueryResponseElement = builder.marshall(response);
 	        final String xml = XMLHelper.prettyPrintXML((Node)attributeQueryResponseElement);
 	        if (LOG.isDebugEnabled()) LOG.debug(xml);
-	        XmlChecker.compare(xml, SAMLTstParameters.ATTRIBUTE_PARTIAL_RESPONSE);
+	        XmlChecker.compare(xml, SAMLTestParameters.ATTRIBUTE_PARTIAL_RESPONSE);
 		}
 
 	}
@@ -111,7 +111,7 @@ public class SAMLAttributeQueryResponseBuilderImplTest {
 
 		if (SAMLBuilder.isInitailized()) {
 						
-			final InputStream inputStream = new ClassPathResource( SAMLTstParameters.ATTRIBUTE_INVALID_REQUEST).getInputStream();
+			final InputStream inputStream = new ClassPathResource( SAMLTestParameters.ATTRIBUTE_INVALID_REQUEST).getInputStream();
 	        final BasicParserPool parser = new BasicParserPool();
 	        final Document document = parser.parse(inputStream);
 	        final AttributeQuery attributeQueryRequest = (AttributeQuery)builder.unmarshall(document.getDocumentElement());
@@ -120,7 +120,7 @@ public class SAMLAttributeQueryResponseBuilderImplTest {
 	        final Element attributeQueryResponseElement = builder.marshall(response);
 	        final String xml = XMLHelper.prettyPrintXML((Node)attributeQueryResponseElement);
 	        if (LOG.isDebugEnabled()) LOG.debug(xml);
-	        XmlChecker.compare(xml,  SAMLTstParameters.ATTRIBUTE_RESPONSE_FAILURE);
+	        XmlChecker.compare(xml,  SAMLTestParameters.ATTRIBUTE_RESPONSE_FAILURE);
 		}
 
 	}

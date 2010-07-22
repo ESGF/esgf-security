@@ -25,7 +25,7 @@ import org.opensaml.saml2.core.Action;
 /**
  * Class that contains common test parameters.
  */
-public abstract class SAMLTstParameters {
+public class SAMLTestParameters {
 	
 	public final static String IDENTIFIER = "Test Openid";
 	public final static String ISSUER = "Test SAML Issuer";
@@ -61,9 +61,6 @@ public abstract class SAMLTstParameters {
 	public static final String ATTRIBUTE_SOAP_REQUEST = "esg/saml/attr/service/data/SAMLattributeQueryRequestSOAP.xml";
 	public static final String ATTRIBUTE_SOAP_RESPONSE = "esg/saml/attr/service/data/SAMLattributeQueryResponseSOAP.xml";
 
-
-
-	
 	// authorization test files
 	public final static String SOAP_REQUEST = "esg/saml/authz/service/data/SAMLauthorizationQueryRequestSOAP.xml";
 	public final static String SOAP_RESPONSE = "esg/saml/authz/service/data/SAMLauthorizationQueryResponseSOAP.xml";
@@ -75,8 +72,7 @@ public abstract class SAMLTstParameters {
 	public final static String AUTHZ_DECISION_STMT_FILE = "esg/saml/authz/service/data/SAMLauthzDecisionStatement.xml";
 			
 	@Test
-	public void testNothing() {
-		 Assert.assertTrue(true);
-	}
+	public void testNothing() {}
+
 
 }

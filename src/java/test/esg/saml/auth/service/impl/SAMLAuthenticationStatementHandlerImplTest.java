@@ -33,7 +33,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import esg.saml.common.SAMLBuilder;
-import esg.saml.common.SAMLTstParameters;
+import esg.saml.common.SAMLTestParameters;
 import esg.saml.common.SAMLUnknownPrincipalException;
 
 
@@ -69,7 +69,7 @@ public class SAMLAuthenticationStatementHandlerImplTest {
 		if (SAMLBuilder.isInitailized()) {
 			
 			// execute service invocation
-			final Assertion assertion = samlAuthenticationStatementHandler.buildAuthenticationStatement(SAMLTstParameters.IDENTIFIER, SAMLTstParameters.ISSUER);
+			final Assertion assertion = samlAuthenticationStatementHandler.buildAuthenticationStatement(SAMLTestParameters.IDENTIFIER, SAMLTestParameters.ISSUER);
 
 			// compare to expected test XML
 			final Element assertionElement = builder.marshall(assertion);
@@ -90,13 +90,13 @@ public class SAMLAuthenticationStatementHandlerImplTest {
 		if (SAMLBuilder.isInitailized()) {
 						
 			// retrieve test XML
-	        final InputStream inputStream = new ClassPathResource(SAMLTstParameters.AUTHENTICATION_FILE).getInputStream();
+	        final InputStream inputStream = new ClassPathResource(SAMLTestParameters.AUTHENTICATION_FILE).getInputStream();
 	        final Element element = builder.parse(inputStream);
 	        final Assertion assertion = (Assertion)builder.unmarshall(element);
 	        
 	        // parse SAML assertion
 	        final String identity = samlAuthenticationStatementHandler.parseAuthenticationStatement(assertion);
-	        Assert.assertEquals("Wrong identity extrected", SAMLTstParameters.IDENTIFIER, identity);
+	        Assert.assertEquals("Wrong identity extrected", SAMLTestParameters.IDENTIFIER, identity);
 		}
 		
 	}

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite errors="0" failures="0" hostname="LMC-MAC-R46-3.local" name="esg.saml.authz.service.impl.SAMLAuthorizationStatementHandlerImplTest" tests="2" time="1.723" timestamp="2010-07-21T23:23:07">
+<testsuite errors="0" failures="0" hostname="LMC-MAC-R46-3.local" name="esg.saml.authz.service.impl.SAMLAuthorizationStatementHandlerImplTest" tests="2" time="1.524" timestamp="2010-07-22T09:28:54">
   <properties>
     <property name="file.encoding.pkg" value="sun.io" />
     <property name="ivy.retrieve.pattern.ivy.instance" value="/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/[artifact]-[revision](-[classifier]).[ext]" />
@@ -84,12 +84,11 @@
     <property name="ivy.settings.file" value="ivysettings.xml" />
     <property name="java.io.tmpdir" value="/var/folders/SY/SYJg-mLQE1Cc0xD6X6hLo++++TM/-Tmp-/" />
     <property name="ivy.buildlist.ivyfilepath.ivy.instance" value="ivy.xml" />
-    <property name="TODAY" value="July 21 2010" />
+    <property name="TODAY" value="July 22 2010" />
     <property name="ivy.cache.ttl.default" value="10s" />
     <property name="user.language" value="en" />
     <property name="awt.nativeDoubleBuffering.ivy.instance" value="true" />
     <property name="user.dir.ivy.instance" value="/Users/cinquini/Documents/workspace/esg-saml" />
-    <property name="env.JAVA_STARTED_ON_FIRST_THREAD_5671" value="1" />
     <property name="_cp" value="/Users/cinquini/Documents/workspace/esg-saml/lib/fetched/activation-1.1.jar
 /Users/cinquini/Documents/workspace/esg-saml/lib/fetched/avalon-framework-4.1.3.jar
 /Users/cinquini/Documents/workspace/esg-saml/lib/fetched/commons-logging-1.1.1.jar
@@ -176,10 +175,8 @@
     <property name="project_name" value="ESG-SAML" />
     <property name="ivy.cache.dir" value="/Users/cinquini/.ivy2/cache" />
     <property name="eclipse.pdebuild.templates" value="/Users/cinquini/myApplications/eclipse/plugins/org.eclipse.pde.build_3.5.2.R35x_20100114/templates//" />
-    <property name="env.JAVA_MAIN_CLASS_5671" value="org.eclipse.ant.internal.ui.antsupport.InternalAntRunner" />
     <property name="java.awt.printerjob" value="apple.awt.CPrinterJob" />
     <property name="db.host" value="localhost" />
-    <property name="tests_uptodate" value="true" />
     <property name="java.io.tmpdir.ivy.instance" value="/var/folders/SY/SYJg-mLQE1Cc0xD6X6hLo++++TM/-Tmp-/" />
     <property name="ant.version" value="Apache Ant version 1.7.1 compiled on June 27 2008" />
     <property name="java.home.ivy.instance" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home" />
@@ -204,23 +201,23 @@
     <property name="mrj.version" value="1060.1.6.0_20-279" />
     <property name="java.runtime.version.ivy.instance" value="1.6.0_20-b02-279-10M3065" />
     <property name="filter" value="false" />
-    <property name="ivy.version" value="2.1.0" />
     <property name="ivy.report.output.pattern" value="[organisation]-[module]-[conf].[ext]" />
-    <property name="ivy.conf.url" value="jar:file:/Users/cinquini/Documents/workspace/esg-saml/lib/ivy-2.1.0.jar!/org/apache/ivy/core/settings/ivysettings.xml" />
+    <property name="ivy.version" value="2.1.0" />
     <property name="java.library.path" value=".:/Users/cinquini/Library/Java/Extensions:/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java" />
-    <property name="env.PATH" value="/usr/bin:/bin:/usr/sbin:/sbin" />
+    <property name="ivy.conf.url" value="jar:file:/Users/cinquini/Documents/workspace/esg-saml/lib/ivy-2.1.0.jar!/org/apache/ivy/core/settings/ivysettings.xml" />
     <property name="jaxb_xsd_dir" value="/Users/cinquini/Documents/workspace/esg-saml/etc/xsd/" />
+    <property name="env.PATH" value="/usr/bin:/bin:/usr/sbin:/sbin" />
     <property name="java.vm.name.ivy.instance" value="Java HotSpot(TM) 64-Bit Server VM" />
-    <property name="os.version.ivy.instance" value="10.6.3" />
     <property name="line.separator.ivy.instance" value="
 " />
-    <property name="eclipse.pdebuild.scripts" value="/Users/cinquini/myApplications/eclipse/plugins/org.eclipse.pde.build_3.5.2.R35x_20100114/scripts//" />
+    <property name="os.version.ivy.instance" value="10.6.3" />
     <property name="etc_dir" value="/Users/cinquini/Documents/workspace/esg-saml/etc" />
+    <property name="eclipse.pdebuild.scripts" value="/Users/cinquini/myApplications/eclipse/plugins/org.eclipse.pde.build_3.5.2.R35x_20100114/scripts//" />
     <property name="ant.java.version" value="1.6" />
     <property name="sun.cpu.endian.ivy.instance" value="little" />
+    <property name="java.class.version" value="50.0" />
     <property name="basedir" value="/Users/cinquini/Documents/workspace/esg-saml" />
     <property name="java.vm.specification.name.ivy.instance" value="Java Virtual Machine Specification" />
-    <property name="java.class.version" value="50.0" />
     <property name="ivy.settings.url.ivy.instance" value="jar:file:/Users/cinquini/Documents/workspace/esg-saml/lib/ivy-2.1.0.jar!/org/apache/ivy/core/settings/ivysettings.xml" />
     <property name="sun.boot.class.path.ivy.instance" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jsfd.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/classes.jar:/System/Library/Frameworks/JavaVM.framework/Frameworks/JavaRuntimeSupport.framework/Resources/Java/JavaRuntimeSupport.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/ui.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/laf.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/sunrsasign.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jsse.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jce.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/charsets.jar" />
     <property name="path.separator.ivy.instance" value=":" />
@@ -232,10 +229,10 @@
     <property name="java.library.path.ivy.instance" value=".:/Users/cinquini/Library/Java/Extensions:/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:/Users/cinquini/myApplications/eclipse/configuration/org.eclipse.osgi/bundles/534/1/.cp" />
     <property name="ivy.default.always.check.exact.revision.ivy.instance" value="false" />
     <property name="awt.toolkit.ivy.instance" value="apple.awt.CToolkit" />
-    <property name="ivy.basedir" value="/Users/cinquini/Documents/workspace/esg-saml" />
     <property name="sun.management.compiler" value="HotSpot 64-Bit Server Compiler" />
-    <property name="java.ext.dirs.ivy.instance" value="/Users/cinquini/Library/Java/Extensions:/Library/Java/Extensions:/System/Library/Java/Extensions:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home/lib/ext" />
+    <property name="ivy.basedir" value="/Users/cinquini/Documents/workspace/esg-saml" />
     <property name="java.awt.graphicsenv" value="apple.awt.CGraphicsEnvironment" />
+    <property name="java.ext.dirs.ivy.instance" value="/Users/cinquini/Library/Java/Extensions:/Library/Java/Extensions:/System/Library/Java/Extensions:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home/lib/ext" />
     <property name="ivy.log.modules.in.use.ivy.instance" value="false" />
     <property name="env.USER" value="cinquini" />
     <property name="sun.os.patch.level.ivy.instance" value="unknown" />
@@ -247,8 +244,9 @@
     <property name="ivy.nb.targets.copied" value="0" />
     <property name="env.COMMAND_MODE" value="unix2003" />
     <property name="ant.project.name" value="esg-saml" />
-    <property name="ivy.cache.dir.ivy.instance" value="/Users/cinquini/.ivy2/cache" />
+    <property name="env.JAVA_STARTED_ON_FIRST_THREAD_5988" value="1" />
     <property name="java.vm.specification.version" value="1.0" />
+    <property name="ivy.cache.dir.ivy.instance" value="/Users/cinquini/.ivy2/cache" />
     <property name="src_dir" value="/Users/cinquini/Documents/workspace/esg-saml/src/java/main" />
     <property name="socksNonProxyHosts.ivy.instance" value="local|*.local|169.254/16|*.169.254/16" />
     <property name="ivy.status.ivy.instance" value="integration" />
@@ -271,12 +269,13 @@
     <property name="ivy.local.default.ivy.pattern" value="[organisation]/[module]/[revision]/[type]s/[artifact].[ext]" />
     <property name="ivy.shared.default.ivy.pattern.ivy.instance" value="[organisation]/[module]/[revision]/[type]s/[artifact].[ext]" />
     <property name="build.compiler" value="javac1.5" />
-    <property name="java.vm.info.ivy.instance" value="mixed mode" />
     <property name="ivy.publish.src.artifacts.pattern" value="/Users/cinquini/Documents/workspace/esg-saml/distrib/[type]s/[artifact]-[revision](-[classifier]).[ext]" />
+    <property name="java.vm.info.ivy.instance" value="mixed mode" />
     <property name="ivy.distrib.dir" value="/Users/cinquini/Documents/workspace/esg-saml/distrib" />
     <property name="sun.cpu.endian" value="little" />
     <property name="ivy.revision" value="working@LMC-MAC-R46-3.local" />
     <property name="db.protocol" value="jdbc:postgresql:" />
+    <property name="env.JAVA_MAIN_CLASS_5988" value="org.eclipse.ant.internal.ui.antsupport.InternalAntRunner" />
     <property name="env.TMPDIR" value="/var/folders/SY/SYJg-mLQE1Cc0xD6X6hLo++++TM/-Tmp-/" />
     <property name="user.timezone.ivy.instance" value="America/New_York" />
     <property name="test_last_failed_file" value="/Users/cinquini/Documents/workspace/esg-saml/build/.lasttestsfailed" />
@@ -286,36 +285,36 @@
     <property name="ivy.default.ivy.user.dir" value="/Users/cinquini/.ivy2" />
     <property name="release_name" value="Flatbush" />
     <property name="user.home.ivy.instance" value="/Users/cinquini" />
-    <property name="DSTAMP" value="20100721" />
+    <property name="DSTAMP" value="20100722" />
     <property name="basedir.ivy.instance" value="/Users/cinquini/Documents/workspace/esg-saml" />
     <property name="ant.library.dir" value="/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib" />
     <property name="os.arch" value="x86_64" />
-    <property name="java.awt.graphicsenv.ivy.instance" value="apple.awt.CGraphicsEnvironment" />
     <property name="env.Apple_PubSub_Socket_Render" value="/tmp/launch-H3cahN/Render" />
+    <property name="java.awt.graphicsenv.ivy.instance" value="apple.awt.CGraphicsEnvironment" />
     <property name="java.vendor.url.bug.ivy.instance" value="http://bugreport.apple.com/" />
     <property name="java.vm.specification.version.ivy.instance" value="1.0" />
     <property name="sun.java.launcher" value="SUN_STANDARD" />
     <property name="db.driver" value="org.postgresql.Driver" />
     <property name="java.awt.printerjob.ivy.instance" value="apple.awt.CPrinterJob" />
     <property name="ivy.settings.dir.ivy.instance" value="jar:file:/Users/cinquini/Documents/workspace/esg-saml/lib/ivy-2.1.0.jar!/org/apache/ivy/core/settings" />
-    <property name="ant.core.lib" value="/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant.jar" />
     <property name="ivy.resolver.default.check.modified.ivy.instance" value="false" />
     <property name="module" value="esg-saml" />
+    <property name="ant.core.lib" value="/Users/cinquini/myApplications/eclipse/plugins/org.apache.ant_1.7.1.v20090120-1145/lib/ant.jar" />
     <property name="java.vm.specification.vendor" value="Sun Microsystems Inc." />
     <property name="ivy.settings.dir" value="jar:file:/Users/cinquini/Documents/workspace/esg-saml/lib/ivy-2.1.0.jar!/org/apache/ivy/core/settings" />
-    <property name="TSTAMP" value="1922" />
+    <property name="TSTAMP" value="0528" />
     <property name="gopherProxySet.ivy.instance" value="false" />
-    <property name="file.separator" value="/" />
     <property name="user.language.ivy.instance" value="en" />
+    <property name="file.separator" value="/" />
     <property name="ivy.shared.default.artifact.pattern.ivy.instance" value="[organisation]/[module]/[revision]/[type]s/[artifact].[ext]" />
     <property name="user.country.ivy.instance" value="US" />
-    <property name="ivy.conf.url.ivy.instance" value="jar:file:/Users/cinquini/Documents/workspace/esg-saml/lib/ivy-2.1.0.jar!/org/apache/ivy/core/settings/ivysettings.xml" />
     <property name="author" value="Gavin M. Bell" />
-    <property name="java.runtime.version" value="1.6.0_20-b02-279-10M3065" />
+    <property name="ivy.conf.url.ivy.instance" value="jar:file:/Users/cinquini/Documents/workspace/esg-saml/lib/ivy-2.1.0.jar!/org/apache/ivy/core/settings/ivysettings.xml" />
     <property name="java.specification.name.ivy.instance" value="Java Platform API Specification" />
+    <property name="java.runtime.version" value="1.6.0_20-b02-279-10M3065" />
     <property name="lib_fetched_dir" value="/Users/cinquini/Documents/workspace/esg-saml/lib/fetched" />
-    <property name="sun.boot.class.path" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jsfd.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/classes.jar:/System/Library/Frameworks/JavaVM.framework/Frameworks/JavaRuntimeSupport.framework/Resources/Java/JavaRuntimeSupport.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/ui.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/laf.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/sunrsasign.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jsse.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jce.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/charsets.jar" />
     <property name="env.SSH_AUTH_SOCK" value="/tmp/launch-9QodTp/Listeners" />
+    <property name="sun.boot.class.path" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jsfd.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/classes.jar:/System/Library/Frameworks/JavaVM.framework/Frameworks/JavaRuntimeSupport.framework/Resources/Java/JavaRuntimeSupport.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/ui.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/laf.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/sunrsasign.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jsse.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jce.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/charsets.jar" />
     <property name="version_num" value="0.0.1" />
     <property name="organization" value="Earth Systems Grid Federation" />
     <property name="db.password" value="&lt;password&gt;" />
@@ -337,8 +336,8 @@
     <property name="sun.arch.data.model" value="64" />
     <property name="ivy.buildlist.ivyfilepath" value="ivy.xml" />
   </properties>
-  <testcase classname="esg.saml.authz.service.impl.SAMLAuthorizationStatementHandlerImplTest" name="testBuildAuthzDecisionStatement" time="1.686" />
-  <testcase classname="esg.saml.authz.service.impl.SAMLAuthorizationStatementHandlerImplTest" name="testParseAuthzDecisionStatement" time="0.0060" />
+  <testcase classname="esg.saml.authz.service.impl.SAMLAuthorizationStatementHandlerImplTest" name="testBuildAuthzDecisionStatement" time="1.493" />
+  <testcase classname="esg.saml.authz.service.impl.SAMLAuthorizationStatementHandlerImplTest" name="testParseAuthzDecisionStatement" time="0.0030" />
   <system-out><![CDATA[[INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ObjectProviders
 [INFO] org.opensaml.xml.XMLConfigurator: ObjectProviders load complete
 [INFO] org.opensaml.xml.XMLConfigurator: Preparing to load ObjectProviders

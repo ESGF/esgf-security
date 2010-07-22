@@ -38,7 +38,7 @@ import org.w3c.dom.Node;
 import esg.saml.attr.service.api.SAMLAttributes;
 import esg.saml.common.SAMLBuilder;
 import esg.saml.common.SAMLParameters;
-import esg.saml.common.SAMLTstParameters;
+import esg.saml.common.SAMLTestParameters;
 import esg.saml.common.SAMLUnknownPrincipalException;
 import eske.utils.xml.XmlChecker;
 
@@ -67,8 +67,8 @@ public class SAMLAttributeStatementHandlerImplTest {
 		samlAttributeStatementHandler.setIncludeFlag(false);
 		
 		final SAMLAttributeFactoryTrivialImpl samlAttributesFactory = new SAMLAttributeFactoryTrivialImpl();
-		samlAttributesFactory.setIssuer(SAMLTstParameters.ISSUER);
-		testAttributes = samlAttributesFactory.newInstance(SAMLTstParameters.IDENTIFIER);
+		samlAttributesFactory.setIssuer(SAMLTestParameters.ISSUER);
+		testAttributes = samlAttributesFactory.newInstance(SAMLTestParameters.IDENTIFIER);
 				
 		if (SAMLBuilder.isInitailized()) {
 			requestAttributes = new ArrayList<Attribute>();
@@ -97,7 +97,7 @@ public class SAMLAttributeStatementHandlerImplTest {
 			final Element assertionElement = builder.marshall(assertion);
 			final String xml = XMLHelper.prettyPrintXML((Node)assertionElement);
 	        if (LOG.isDebugEnabled()) LOG.debug(xml);
-	        XmlChecker.compare(xml, SAMLTstParameters.ATTRIBUTES_FILE);
+	        XmlChecker.compare(xml, SAMLTestParameters.ATTRIBUTES_FILE);
 		} 
 		
 	}
@@ -123,7 +123,7 @@ public class SAMLAttributeStatementHandlerImplTest {
 			final Element assertionElement = builder.marshall(assertion);
 			final String xml = XMLHelper.prettyPrintXML((Node)assertionElement);
 	        if (LOG.isDebugEnabled()) LOG.debug(xml);
-	        XmlChecker.compare(xml, SAMLTstParameters.ATTRIBUTES_FILE_PARTIAL);
+	        XmlChecker.compare(xml, SAMLTestParameters.ATTRIBUTES_FILE_PARTIAL);
 		} 
 		
 	}
@@ -136,7 +136,7 @@ public class SAMLAttributeStatementHandlerImplTest {
 		
 		if (SAMLBuilder.isInitailized()) {
 			// retrieve test XML
-	        final InputStream inputStream = new ClassPathResource(SAMLTstParameters.ATTRIBUTES_FILE).getInputStream();
+	        final InputStream inputStream = new ClassPathResource(SAMLTestParameters.ATTRIBUTES_FILE).getInputStream();
 	        final Element element = builder.parse(inputStream);
 	        final Assertion assertion = (Assertion)builder.unmarshall(element);
 	       
@@ -166,7 +166,7 @@ public class SAMLAttributeStatementHandlerImplTest {
 		if (SAMLBuilder.isInitailized()) {
 			
 			// retrieve test XML
-	        final InputStream inputStream = new ClassPathResource(SAMLTstParameters.ATTRIBUTES_FILE_BADC).getInputStream();
+	        final InputStream inputStream = new ClassPathResource(SAMLTestParameters.ATTRIBUTES_FILE_BADC).getInputStream();
 	        final Element element = builder.parse(inputStream);
 	        final Assertion assertion = (Assertion)builder.unmarshall(element);
 	       
