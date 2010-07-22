@@ -452,7 +452,7 @@ Builds the project via ant (obviously).
   </target>
 
 
-  <target name="make_dist" depends="make_all_jars"
+  <target name="make_dist" depends="make_all_jars, make_war"
 	  description="(Creates full software distribution)">
     <delete file="${dist_dir}/${module}.${version_num}.tar.gz"/> 
     <tar destfile="${dist_dir}/${module}.${version_num}.tar">
