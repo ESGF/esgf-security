@@ -18,13 +18,13 @@
     
     <!-- Configurable properties -->
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="location" value="classpath:esg/application.properties" />
+		<property name="location" value="classpath:esg/saml/config/application.properties" />
 	</bean>
     
  	<!-- Web Servlets configuration -->
-  	<import resource="classpath:esg/web-context.xml" />
+  	<import resource="classpath:esg/saml/config/web-context.xml" />
   	
   	<!-- Application-specific configuration -->
-  	<import resource="classpath:esg/application-context-specific.xml"/>
+  	<import resource="classpath:esg/saml/config/application-context-specific.xml"/>
   	
 </beans>

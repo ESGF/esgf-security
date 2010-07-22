@@ -1,3 +1,4 @@
-Version 1.0.4
+Version 1.2.0
 - Added BSD Open Source License
 - Changed log file name to avoid possible conflicts with other applications
+- Moved configuration files to module specific directory: esg/saml/config.
