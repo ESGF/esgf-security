@@ -1,0 +1,10 @@
+<ivysettings>
+      <property name="ivy.default.root.url" value="http://esg-gateway.jpl.nasa.gov/ivy" override="false"/>
+      <settings defaultResolver="default-chain"/>
+      <include url="${ivy.default.root.url}/ivysettings-esgf.xml"/>
+      <include url="${ivy.default.root.url}/ivysettings-shared.xml"/>
+      <include url="${ivy.default.root.url}/ivysettings-public.xml"/>
+      <include url="${ivy.default.root.url}/ivysettings-shiboleth.xml"/>
+      <include url="${ivy.default.root.url}/ivysettings-default-chain.xml"/>
+</ivysettings>
+
