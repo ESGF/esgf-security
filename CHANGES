@@ -3,3 +3,6 @@ Version 1.2.0
 - Changed log file name to avoid possible conflicts with other applications
 - Moved configuration files to module specific directory: esg/saml/config.
 - Upgraded dependencies to latest version of OpenSAML libraries (i.e. opensaml, openws and xmltooling jars)
+
+Version 1.2.1
+- Removed warnings due to obsolete Xerces and SAML libraries.
