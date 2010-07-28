@@ -20,6 +20,7 @@ package esg.saml.common;
 
 import java.io.InputStream;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
 
@@ -91,11 +92,12 @@ import org.opensaml.xml.schema.impl.XSGroupRoleBuilder;
 import org.opensaml.xml.schema.impl.XSStringBuilder;
 import org.opensaml.xml.security.CriteriaSet;
 import org.opensaml.xml.security.SecurityException;
-import org.opensaml.xml.security.SecurityTestHelper;
 import org.opensaml.xml.security.credential.CollectionCredentialResolver;
 import org.opensaml.xml.security.credential.Credential;
 import org.opensaml.xml.security.criteria.EntityIDCriteria;
+import org.opensaml.xml.security.keyinfo.BasicProviderKeyInfoCredentialResolver;
 import org.opensaml.xml.security.keyinfo.KeyInfoCredentialResolver;
+import org.opensaml.xml.security.keyinfo.KeyInfoProvider;
 import org.opensaml.xml.signature.SignableXMLObject;
 import org.opensaml.xml.signature.Signature;
 import org.opensaml.xml.signature.SignatureConstants;
@@ -502,8 +504,8 @@ public class SAMLBuilder {
 	public boolean validateSignature(final Assertion signedAssertion, final Map<String, Credential> trustedCredentials) throws SecurityException {
 				
         final CollectionCredentialResolver credResolver = new CollectionCredentialResolver(trustedCredentials.values());
-        final KeyInfoCredentialResolver kiResolver = SecurityTestHelper.buildBasicInlineKeyInfoResolver();
-        final ExplicitKeySignatureTrustEngine trustEngine = new ExplicitKeySignatureTrustEngine(credResolver, kiResolver);
+        final KeyInfoCredentialResolver kiResolver = new BasicProviderKeyInfoCredentialResolver(new ArrayList<KeyInfoProvider>());
+         final ExplicitKeySignatureTrustEngine trustEngine = new ExplicitKeySignatureTrustEngine(credResolver, kiResolver);
         
         final CriteriaSet criteriaSet = new CriteriaSet( new EntityIDCriteria(NameIDType.X509_SUBJECT) );
         final boolean valid = trustEngine.validate(signedAssertion.getSignature(), criteriaSet);

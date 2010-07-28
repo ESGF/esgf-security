@@ -18,8 +18,18 @@
  ******************************************************************************/
 package esg.utils.xml;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.jdom.JDOMException;
 
@@ -36,30 +46,31 @@ public class Serializer {
     * @exception IOException
     */
    public static void DOMtoFile(org.w3c.dom.Element root, String outputFile) 
-                      throws java.io.IOException {
-
-      org.apache.xml.serialize.OutputFormat of
-          = new org.apache.xml.serialize.OutputFormat(org.apache.xml.serialize.Method.XML,"UTF-8",false);
-      org.apache.xml.serialize.XMLSerializer xs
-          = new org.apache.xml.serialize.XMLSerializer(of);
-      java.io.FileWriter writer = new java.io.FileWriter(outputFile);
-      xs.setOutputCharStream(writer);
-      xs.serialize(root);
-      writer.close();
+                 throws java.io.IOException,TransformerConfigurationException, TransformerException  {
         
-   } // DOMtoFile
+        final Source source = new DOMSource(root);
+        
+        final File file = new File(outputFile);
+        final Result result = new StreamResult(file);
+        
+        final Transformer xformer = TransformerFactory.newInstance().newTransformer();
+        xformer.transform(source, result);
+        
+   }
    
-   public static String DOMtoString(org.w3c.dom.Element root) throws java.io.IOException {
+   public static String DOMtoString(org.w3c.dom.Element root) 
+   		  throws java.io.IOException,TransformerConfigurationException, TransformerException {
 	   
-	  org.apache.xml.serialize.OutputFormat of
-          = new org.apache.xml.serialize.OutputFormat(org.apache.xml.serialize.Method.XML,"UTF-8",false);
-      org.apache.xml.serialize.XMLSerializer xs
-          = new org.apache.xml.serialize.XMLSerializer(of);
-      java.io.StringWriter writer = new StringWriter();
-      xs.setOutputCharStream(writer);
-      xs.serialize(root);
-      writer.close();
-      return writer.toString();
+	   final Source source = new DOMSource(root);
+	   
+	   final StringWriter writer = new StringWriter();
+	   final Result result = new StreamResult(writer);
+	   
+	   final Transformer xformer = TransformerFactory.newInstance().newTransformer();
+	   xformer.transform(source, result);
+	   writer.close();
+	   
+       return writer.toString();
 	   
    }
 
@@ -68,14 +79,17 @@ public class Serializer {
     * @param root the root element of the DOM document
     * @exception IOException
     */
-   public static void DOMout(org.w3c.dom.Element root) throws java.io.IOException {
+   public static void DOMout(org.w3c.dom.Element root) 
+          throws java.io.IOException,TransformerConfigurationException, TransformerException {
 
-      org.apache.xml.serialize.OutputFormat of
-          = new org.apache.xml.serialize.OutputFormat(org.apache.xml.serialize.Method.XML,"UTF-8",true);
-      org.apache.xml.serialize.XMLSerializer xs
-          = new org.apache.xml.serialize.XMLSerializer(of);
-      xs.setOutputByteStream(System.out);
-      xs.serialize(root);
+	   final Source source = new DOMSource(root);
+	   
+	   final StringWriter writer = new StringWriter();
+	   final Result result = new StreamResult(System.out);
+	   
+	   final Transformer xformer = TransformerFactory.newInstance().newTransformer();
+	   xformer.transform(source, result);
+	   writer.close();
 
    } // DOMout
 
