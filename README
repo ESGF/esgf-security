@@ -1,13 +1,22 @@
-This project contains a web application that can be used to deploy an ESG Attribute Service and/or an ESG Authorization service.
-Deployment is controlled by the file esg/application-context-specific.xml (in the src folder): comment out whichever service stack is not going to be deployed.
+DESCRIPTION
 
-Assuming that the Tomcat container is started on localhost on port 8080, and that the application is deployed at the "esg-saml" context, 
+This project contains a web application that can be used to deploy an ESG Attribute Service and/or an ESG Authorization service.
+Additionally, the packaged jar contains ESG utilities for parsing and producing SAML statements that can be used in other ESG SAML aware projects.
+
+INSTALLATION
+
+Deployment of the web application is controlled by the file esg/saml/config/application-context-specific.xml (in the src folder): 
+comment out whichever service stack is not going to be deployed.
+
+Assuming that the servlet container is started on localhost on port 8080, and that the application is deployed at the "esg-saml" context, 
 the services are available as follows:
 
 1) ESG Attribute service
 
-URL endpoint: http://localhost:8080/Sesg-saml/saml/soap/secure/attributeService.htm
+URL endpoint: http://localhost:8080/esg-saml/saml/soap/secure/attributeService.htm
+
 Run the client esg.saml.attr.main.SAMLAttributeServiceSOAPClient to execute a test query.
+
 Note that by default, the ESG Attribute Service uses the class SAMLAttributeFactoryTrivialImpl which is a trivial implementation of SAMLAttributeFactory
 that returns valid attributes only for a user identifier equal to "Test Openid". To use the service in conjunction with a specific
 user attribute repository, create your own implementation of SAMLAttributeFactory and deploy it in the Spring context
@@ -16,15 +25,19 @@ as a bean named "samlAttributeFactory" (replacing SAMLAttributeFactoryTrivialImp
 2) ESG Authorization Service
 
 URL endpoint: http://localhost:8080/esg-saml/saml/soap/secure/authorizationService.htm
+
 Run the client esg.saml.authz.main.SAMLAuthorizationServiceSOAPClient to execute a test query.
+
 Note that the SAML Authorization Service uses the class SAMLAuthorizationFactoryTrivialImpl which is a trivial implementation of SAMLAuthorizationFactory
 that returns valid authorizations only for the test user identifier "Test Openid" (for all resources and actions). 
 To use the service in conjunction with a specific authorization repository, create your own implementation of SAMLAuthorizationFactory 
 and deploy it in the Spring context as a bean named "samlAuthorizationFactory" (replacing SAMLAuthorizationFactoryTrivialImpl in application-context-specific.xml).
 
-Technical Note: to allow flexibility in deployment, the Spring beans for each service are auto-wired by name, but not auto-deployed in the Spring context. 
+TECHNICAL NOTES
+
+o To allow flexibility in deployment (specifically, the capability of replacing the attribute and authorization factory implementations),
+the Spring beans for each service are auto-wired by name, but not auto-deployed in the Spring context. 
 Currently the URL end-points for the Spring controllers are set as fixed request mappings in the Java classes and cannot be changed.
 
-Technical Note: this project requires Java 1.6 because of faulty XML libraries in Java 1.5 and below. 
+o This project requires Java 1.6 because of faulty XML libraries in Java 1.5 and below. 
 Alternatively, the correct XML libraries can be placed in the endorsed directory of a Java 1.5 distribution.
-
