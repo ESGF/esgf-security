@@ -553,7 +553,7 @@ Builds the project via ant (obviously).
 	   classpathref="test_classpath"
 	   deprecation="true"
 	   failonerror="true"
-	   target="1.5"
+	   target="1.6"
 	   debug="on"
 	   verbose="off"
 	   nowarn="on"/>
