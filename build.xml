@@ -77,10 +77,9 @@ Builds the project via ant (obviously).
 
 <project name="esg-saml" default="make" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
 
+  <!-- Default properties for this module - can be overridden in etc/${module}.ant.properties -->
   <property name="module" value="esg-saml"/>
   <property name="organization" value="Earth Systems Grid Federation"/>
-  <property name="project_name" value="ESG-SAML"/>
-  <property name="author" value="Gavin M. Bell"/>
 
   <ivy:settings file="./ivysettings.xml" />
 
@@ -118,7 +117,7 @@ Builds the project via ant (obviously).
     -->
   
   <target name="pre-init" unless="build.master">
-    <property name="build.compiler" value="javac1.5" /> 
+    <property name="build.compiler" value="javac1.6" /> 
     <property name="build.compiler.emacs" value="true" /> 
     <echo message="set build.compiler to ${build.compiler}"/>
   </target>
@@ -146,7 +145,6 @@ Builds the project via ant (obviously).
     <property name="log_config"       	  value="${conf_dir}/log4j.properties"/>
     <property name="log_file"         	  value="${log_dir}/${module}_v${version_num}.log"/>
     <property name="javadoc_link_src" 	  value="true"/>
-    <property name="main_class"           value="esg.saml.Main"/>
 
     <property name="doc_dir_generated"    value="${basedir}/docs-generated"/>
     <property name="jdoc_dir"   	  value="${doc_dir_generated}/javadocs"/>
