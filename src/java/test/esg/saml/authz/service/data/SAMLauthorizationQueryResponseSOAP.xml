@@ -1,20 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<soap11:Envelope xmlns:soap11="http://schemas.xmlsoap.org/soap/envelope/">
+<?xml version="1.0" encoding="UTF-8"?><soap11:Envelope xmlns:soap11="http://schemas.xmlsoap.org/soap/envelope/">
    <soap11:Body>
-      <samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" InResponseTo="7658c723-7aef-478c-badf-c6cee670761f" Version="2.0">
-         <saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Format="urn:oasis:names:tc:SAML:1.1:nameid-format:x509SubjectName">Test SAML Issuer</saml:Issuer>
-         <samlp:Status>
-            <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
-         </samlp:Status>
-         <saml:Assertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Version="2.0">
-            <saml:Issuer Format="urn:oasis:names:tc:SAML:1.1:nameid-format:x509SubjectName">Test SAML Issuer</saml:Issuer>
-            <saml:Subject>
-               <saml:NameID Format="urn:esg:openid">Test Openid</saml:NameID>
-            </saml:Subject>
-            <saml:AuthzDecisionStatement Decision="Permit" Resource="/home/neillm/testfile1">
-               <saml:Action>Read</saml:Action>
-            </saml:AuthzDecisionStatement>
-         </saml:Assertion>
-      </samlp:Response>
+      <saml2p:Response xmlns:saml2p="urn:oasis:names:tc:SAML:2.0:protocol" InResponseTo="7658c723-7aef-478c-badf-c6cee670761f" Version="2.0">
+         <saml2:Issuer xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" Format="urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName">Test SAML Issuer</saml2:Issuer>
+         <saml2p:Status>
+            <saml2p:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
+         </saml2p:Status>
+         <saml2:Assertion xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" Version="2.0">
+            <saml2:Issuer Format="urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName">Test SAML Issuer</saml2:Issuer>
+            <saml2:Subject>
+               <saml2:NameID Format="urn:esg:openid">Test Openid</saml2:NameID>
+            </saml2:Subject>
+            <saml2:AuthzDecisionStatement Decision="Permit" Resource="/home/neillm/testfile1">
+               <saml2:Action>Read</saml2:Action>
+            </saml2:AuthzDecisionStatement>
+         </saml2:Assertion>
+      </saml2p:Response>
    </soap11:Body>
 </soap11:Envelope>
+

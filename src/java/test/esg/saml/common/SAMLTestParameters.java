@@ -30,7 +30,7 @@ public class SAMLTestParameters {
 	public final static String IDENTIFIER = "Test Openid";
 	public final static String ISSUER = "Test SAML Issuer";
 	
-	public final static String KEYSTORE_PATH = "esg/saml/resources/keystore-localhost";
+	public final static String KEYSTORE_PATH = "esg/saml/resources/localhost.ks";
 	public final static String KEYSTORE_PASSWORD = "changeit";
 	public final static String KEYSTORE_ALIAS = "tomcat";
 	

@@ -557,6 +557,11 @@ Builds the project via ant (obviously).
 	   debug="on"
 	   verbose="off"
 	   nowarn="on"/>
+  	
+    <copy todir="${test_build_dir}" filtering="${filter}" overwrite="true">
+      <fileset dir="${test_src_dir}" includes="**/*.properties,**/*.template,**/*.xml,**/*.ks"/>
+    </copy>
+
     <tstamp/>
 
   </target>
