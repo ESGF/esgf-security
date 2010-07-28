@@ -208,6 +208,7 @@ public class SAMLBuilder {
 	/**
 	 * Initialization method, made private so it cannot be invoked by external clients.
 	 */
+    @SuppressWarnings("unchecked")
 	private void init() {
 				    
 		if (INITIALIZED) {
