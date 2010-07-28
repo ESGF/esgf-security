@@ -34,7 +34,7 @@ public class SAMLTestParameters {
 	public final static String KEYSTORE_PASSWORD = "changeit";
 	public final static String KEYSTORE_ALIAS = "tomcat";
 	
-	public final static String TRUSTORE_PATH = "esg/saml/resources/jssecacerts";
+	public final static String TRUSTORE_PATH = "esg/saml/resources/jssecacerts.ks";
 	public final static String TRUSTORE_PASSWORD = "changeit";
 	
 	public final static String TEST_RESOURCE_PATH = "/PATH/TO/FILE";
