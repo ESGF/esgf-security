@@ -41,3 +41,4 @@ Currently the URL end-points for the Spring controllers are set as fixed request
 
 o This project requires Java 1.6 because of faulty XML libraries in Java 1.5 and below. 
 Alternatively, the correct XML libraries can be placed in the endorsed directory of a Java 1.5 distribution.
+
