@@ -216,12 +216,13 @@ Builds the project via ant (obviously).
 		<exclude name="**/*javadoc.jar"/>
 		<exclude name="**/*sources.jar"/>
       </fileset>
-      <fileset dir="${weblib_dir}">
+      <!-- <fileset dir="${weblib_dir}">
    		<include name="**/*.jar"/>
    		<exclude name="**/junit*.jar"/>
    		<exclude name="**/*javadoc.jar"/>
    		<exclude name="**/*sources.jar"/>
        </fileset>
+       -->
       <pathelement path="${build_dir}"/>
     </path>
     
