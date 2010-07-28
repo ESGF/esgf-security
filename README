@@ -1,9 +1,31 @@
-DESCRIPTION
+>>> DESCRIPTION
 
 This project contains a web application that can be used to deploy an ESG Attribute Service and/or an ESG Authorization service.
 Additionally, the packaged jar contains ESG utilities for parsing and producing SAML statements that can be used in other ESG SAML aware projects.
 
-INSTALLATION
+>>> PREREQUISITES
+
+o Fairly recent distribution of Ant
+
+o Ivy installed as Ant extension. When running from the command line, this means installing the Ivy jar into the ant lib/ directory.
+To run the Ant tasks within an Eclipse environment (because Eclipse comes packaged with its own version of Ant), 
+the Ivy jar must be copied into the Eclipse-specific Ant lib directory, or into the user's ~/.ant/lib directory.
+
+
+>>> INSTALLATION
+
+After downloading the module from the ESGF GIT repository, cd to the top-level module directory and run ant:
+
+cd esg-saml
+
+ant make_dist
+will create the jar and war files in the dist/ subdirectory.
+
+ant test 
+will run the tests.
+
+
+>>> CONFIGURING AND RUNNING THE WEB APPLICATION
 
 Deployment of the web application is controlled by the file esg/saml/config/application-context-specific.xml (in the src folder): 
 comment out whichever service stack is not going to be deployed.
@@ -33,7 +55,7 @@ that returns valid authorizations only for the test user identifier "Test Openid
 To use the service in conjunction with a specific authorization repository, create your own implementation of SAMLAuthorizationFactory 
 and deploy it in the Spring context as a bean named "samlAuthorizationFactory" (replacing SAMLAuthorizationFactoryTrivialImpl in application-context-specific.xml).
 
-TECHNICAL NOTES
+>>> TECHNICAL NOTES
 
 o To allow flexibility in deployment (specifically, the capability of replacing the attribute and authorization factory implementations),
 the Spring beans for each service are auto-wired by name, but not auto-deployed in the Spring context. 
