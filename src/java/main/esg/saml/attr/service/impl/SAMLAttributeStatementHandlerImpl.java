@@ -31,6 +31,7 @@ import org.opensaml.xml.XMLObject;
 import org.opensaml.xml.schema.XSAny;
 import org.opensaml.xml.schema.XSGroupRole;
 import org.w3c.dom.Element;
+import org.w3c.dom.Text;
 
 import esg.saml.attr.service.api.SAMLAttributeStatementHandler;
 import esg.saml.attr.service.api.SAMLAttributes;
@@ -180,7 +181,8 @@ class SAMLAttributeStatementHandlerImpl implements SAMLAttributeStatementHandler
 				} else if (attribute.getName().equals(SAMLParameters.AC_ATTRIBUTE)) {
 					for (final XMLObject attributeValue : attribute.getAttributeValues()) {
 						final Element element = attributeValue.getDOM();
-						final String value = element.getTextContent();
+						final Text text = (Text)element.getFirstChild();
+						final String value = text.getData();
 						samlAttributes.getAttributes().add(value.trim());
  					}
 				}
@@ -199,7 +201,11 @@ class SAMLAttributeStatementHandlerImpl implements SAMLAttributeStatementHandler
 	 */
 	private String getAttributeValue(final Attribute attribute) {
 		for (final XMLObject attributeValue : attribute.getAttributeValues()) {
-			return attributeValue.getDOM().getTextContent();
+			final Element element = attributeValue.getDOM();
+			final Text text = (Text)element.getFirstChild();
+			final String value = text.getData();
+			return value;
+			
 		}
 		return null;
 	}
