@@ -99,6 +99,8 @@ Note: Check Maven for propery dependency parameter values @
     <dependency org="org.opensaml" name="xmltooling" rev="1.2.2" transitive="false" />
     <dependency org="org.opensaml" name="XSGroupRole" rev="1.0.0" transitive="false" />
 
+    <dependency org="joda-time" name="joda-time" rev="1.6"/>
+
     <dependency org="eske" name="eske-utils-xml" rev="1.0.0"/>
 
   </dependencies>
