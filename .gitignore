@@ -35,4 +35,5 @@ generated/
 /dist
 /docs-generated
 /lib/fetched
+/WebContent
 
