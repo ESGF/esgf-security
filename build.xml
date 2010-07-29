@@ -711,12 +711,18 @@ Builds the project via ant (obviously).
 	    <mkdir dir="${basedir}/WebContent/WEB-INF" />
 	  	<property name="web_deploy_dir" value="${basedir}/WebContent/WEB-INF"/>
 
+		<!-- web configuration files -->
 	  	<copy file="${conf_dir}/${module}-web.xml" tofile="${web_deploy_dir}/web.xml"/>
-	  	
 	    <copy todir="${web_deploy_dir}">
 	      <fileset dir="${conf_dir}" includes="**/*.xml, **/*.properties" excludes="**/${module}-web.xml"/>
 	    </copy>
+		
+		<!-- web views -->
+	    <copy todir="${web_deploy_dir}/views">
+	      <fileset dir="${web_dir}/WEB-INF/views" />
+	    </copy>
 
+		<!-- web lib -->
 	    <copy todir="${web_deploy_dir}/lib" flatten="true">
 	      <fileset dir="${lib_dir}" includes="**/*.jar" excludes="**/junit*.jar,**/*sources.jar,**/*javadoc.jar"/>
 	    </copy>

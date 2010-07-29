@@ -12,7 +12,7 @@ To run the Ant tasks within an Eclipse environment (because Eclipse comes packag
 the Ivy jar must be copied into the Eclipse-specific Ant lib directory, or into the user's ~/.ant/lib directory.
 
 
->>> INSTALLATION
+>>> INSTALLING AND BUILDING FROM THE COMMAND LINE
 
 After downloading the module from the ESGF GIT repository, cd to the top-level module directory and run ant:
 
@@ -23,6 +23,15 @@ will create the jar and war files in the dist/ subdirectory.
 
 ant test 
 will run the tests.
+
+>>> INSTALLING WITHIN ECLIPSE
+
+This module is configured to be interpreted as both a Java and Dynamic Web Project by Eclipse
+(after it has been compiled from the command line, so that all the jar dependencies are downloaded by Ivy).
+Note that in order to run the web application from within the Eclipse (i.e. without deploying the war file
+to a separate servlet container), you must first run the "make_web_dir" ant task, which will assemble
+the Eclipse WebContent/WEB-INF directory from source files, configuration files and libraries found in the
+module distribution.
 
 
 >>> CONFIGURING AND RUNNING THE WEB APPLICATION
