@@ -599,7 +599,7 @@ Builds the project via ant (obviously).
       EXAMPLE: ant test -Dtestcase=esg.node.saml.connector.ESGsamlTest
       (unless="tests_uptodate")
     -->
-  <target name="test" depends="make_test,test_check"
+  <target name="test" depends="make_test"
 	  description="(Runs unit tests: JUnit)">
     <delete dir="${test_results_dir}" />
     <mkdir dir="${test_results_dir}"/>
