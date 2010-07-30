@@ -99,15 +99,24 @@ public class SAMLStatementFacadeImplTest {
 	 * Tests generation of a signed SAML authentication statement without signing credential.
 	 * @throws Exception
 	 */
-	@Test(expected=IllegalArgumentException.class)
+	@Test//(expected=IllegalArgumentException.class)
 	public void testBuildSignedAuthenticationStatementWithNoCredential() throws Exception {
 		
 		if (SAMLBuilder.isInitailized()) {
 					
-			// build statement
-			final boolean signit = true;
-			statementFacade.buildAuthenticationStatement(SAMLTestParameters.IDENTIFIER, SAMLTestParameters.ISSUER, signit);
-						
+			try {
+				
+				// build statement
+				final boolean signit = true;
+				statementFacade.buildAuthenticationStatement(SAMLTestParameters.IDENTIFIER, SAMLTestParameters.ISSUER, signit);
+				
+				// fail if exception has not been thrown
+				Assert.fail();
+				
+			} catch(Exception e) {
+				Assert.assertTrue(e instanceof IllegalArgumentException);
+			}
+
 		}
 		
 	}
@@ -161,21 +170,30 @@ public class SAMLStatementFacadeImplTest {
 	 * Tests processing of an unsigned SAML authentication statement with validation requested.
 	 * @throws Exception
 	 */
-	@Test(expected=SAMLInvalidStatementException.class)
+	@Test//(expected=SAMLInvalidStatementException.class)
 	public void testParseUnsignedAuthenticationStatement() throws Exception {
 		
 		if (SAMLBuilder.isInitailized()) {
 						
-			// retrieve test XML
-	        final File file = new ClassPathResource(SAMLTestParameters.AUTHENTICATION_FILE).getFile();
-	        final String xml = FileUtils.readFileToString(file);
-	        
-	        // set trustore
-	        setTrustore();	
-	        
-	        // process and validate statement
-	        final boolean validate = true;
-	        statementFacade.parseAuthenticationStatement(xml, validate);
+			try {
+				// retrieve test XML
+		        final File file = new ClassPathResource(SAMLTestParameters.AUTHENTICATION_FILE).getFile();
+		        final String xml = FileUtils.readFileToString(file);
+		        
+		        // set trustore
+		        setTrustore();	
+		        
+		        // process and validate statement
+		        final boolean validate = true;
+		        statementFacade.parseAuthenticationStatement(xml, validate);
+		        
+		        // fail if exception has not been thrown
+		        Assert.fail();
+		        
+			} catch(Exception e) {
+				Assert.assertTrue(e instanceof SAMLInvalidStatementException);
+			}
+
 	        
 		}
 		
@@ -185,21 +203,30 @@ public class SAMLStatementFacadeImplTest {
 	 * Tests processing of a corrupted signed SAML authentication statement.
 	 * @throws Exception
 	 */
-	@Test(expected=SAMLInvalidStatementException.class)
+	@Test//(expected=SAMLInvalidStatementException.class)
 	public void testParseInvalidSignedAuthenticationStatement() throws Exception {
 		
 		if (SAMLBuilder.isInitailized()) {
-						
-			// retrieve test XML
-	        final File file = new ClassPathResource(SAMLTestParameters.AUTHENTICATION_FILE_SIGNED_INVALID).getFile();
-	        final String xml = FileUtils.readFileToString(file);
-	        
-	        // set trustore
-	        setTrustore();	
-	        
-	        // process and validate statement
-	        final boolean validate = true;
-	        statementFacade.parseAuthenticationStatement(xml, validate);
+					
+			try {
+				
+				// retrieve test XML
+		        final File file = new ClassPathResource(SAMLTestParameters.AUTHENTICATION_FILE_SIGNED_INVALID).getFile();
+		        final String xml = FileUtils.readFileToString(file);
+		        
+		        // set trustore
+		        setTrustore();	
+		        
+		        // process and validate statement
+		        final boolean validate = true;
+		        statementFacade.parseAuthenticationStatement(xml, validate);
+		        
+				// fail if exception has not been thrown
+				Assert.fail();
+				
+			} catch(Exception e) {
+				Assert.assertTrue(e instanceof SAMLInvalidStatementException);
+			}
 	        
 		}
 		
@@ -209,18 +236,27 @@ public class SAMLStatementFacadeImplTest {
 	 * Tests processing of a SAML signed authentication statement without a trustore.
 	 * @throws Exception
 	 */
-	@Test(expected=SAMLInvalidStatementException.class)
+	@Test//(expected=SAMLInvalidStatementException.class)
 	public void testParseSignedAuthenticationStatementWithNoTrustore() throws Exception {
 		
 		if (SAMLBuilder.isInitailized()) {
 						
-			// retrieve test XML
-	        final File file = new ClassPathResource(SAMLTestParameters.AUTHENTICATION_FILE_SIGNED).getFile();
-	        final String xml = FileUtils.readFileToString(file);
-	        
-	        // process and validate statement
-	        final boolean validate = true;
-	        statementFacade.parseAuthenticationStatement(xml, validate);
+			try {
+				
+				// retrieve test XML
+		        final File file = new ClassPathResource(SAMLTestParameters.AUTHENTICATION_FILE_SIGNED).getFile();
+		        final String xml = FileUtils.readFileToString(file);
+		        
+		        // process and validate statement
+		        final boolean validate = true;
+		        statementFacade.parseAuthenticationStatement(xml, validate);
+		        
+				// fail if exception has not been thrown
+				Assert.fail();
+			
+			} catch(Exception e) {
+				Assert.assertTrue(e instanceof SAMLInvalidStatementException);
+			}
 	       
 		}
 		
