@@ -106,6 +106,7 @@ Note: Check Maven for propery dependency parameter values @
     <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.6.1"/>
     <!-- <dependency org="xml-security" name="xmlsec" rev="1.4.2"/> -->
     <dependency org="velocity" name="velocity" rev="1.5"/>
+    <dependency org="net.sourceforge.cobertura" name="cobertura" rev="1.9.4"/>
 
   </dependencies>
 </ivy-module>
