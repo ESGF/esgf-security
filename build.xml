@@ -127,22 +127,23 @@ Builds the project via ant (obviously).
     <echo message="Initializing build environment..."/>
         
     <!-- defaults to use if local .${module}.ant.properties file does not exist --> 
-    <property name="src_dir"   	          value="${basedir}/src/java/main"/>
-    <property name="lib_dir"   	          value="${basedir}/lib"/>
+    <property name="src_dir"   	      value="${basedir}/src/java/main"/>
+    <property name="lib_dir"   	      value="${basedir}/lib"/>
     <property name="weblib_dir"   	  value="${basedir}/web/WEB-INF/lib"/>
-    <property name="lib_fetched_dir"      value="${basedir}/lib/fetched"/>
+    <property name="lib_fetched_dir"  value="${basedir}/lib/fetched"/>
+  	<property name="lib_endorsed_dir" value="${basedir}/lib/endorsed"/>
     <property name="build_dir"   	  value="${basedir}/build"/>
     <property name="dist_dir"   	  value="${basedir}/dist"/>
     <property name="test_src_dir"  	  value="${basedir}/src/java/test"/>
-    <property name="test_build_dir"       value="${basedir}/build/test"/>
-    <property name="etc_dir"   	          value="${basedir}/etc"/>
+    <property name="test_build_dir"   value="${basedir}/build/test"/>
+    <property name="etc_dir"   	      value="${basedir}/etc"/>
     <property name="conf_dir"   	  value="${etc_dir}/conf"/>
-    <property name="web_dir"   	          value="${basedir}/web"/>
-    <property name="doc_dir"   	          value="${basedir}/docs"/>
-    <property name="depcache_dir"     	  value="${java.io.tmpdir}/${module}/depcache"/>
-    <property name="log_config"       	  value="${conf_dir}/log4j.properties"/>
-    <property name="log_file"         	  value="${log_dir}/${module}_v${version_num}.log"/>
-    <property name="javadoc_link_src" 	  value="true"/>
+    <property name="web_dir"   	      value="${basedir}/web"/>
+    <property name="doc_dir"   	      value="${basedir}/docs"/>
+    <property name="depcache_dir"     value="${java.io.tmpdir}/${module}/depcache"/>
+    <property name="log_config"       value="${conf_dir}/log4j.properties"/>
+    <property name="log_file"         value="${log_dir}/${module}_v${version_num}.log"/>
+    <property name="javadoc_link_src" value="true"/>
 
     <property name="doc_dir_generated"    value="${basedir}/docs-generated"/>
     <property name="jdoc_dir"   	  value="${doc_dir_generated}/javadocs"/>
@@ -165,6 +166,7 @@ Builds the project via ant (obviously).
     <echo message="src_dir           = ${src_dir}"/>
     <echo message="lib_dir           = ${lib_dir}"/>
     <echo message="lib_fetched_dir   = ${lib_fetched_dir}"/>
+  	<echo message="lib_endorsed_dir  = ${lib_endorsed_dir}"/>
     <echo message="build_dir         = ${build_dir}"/>
     <echo message="dist_dir          = ${dist_dir}"/>
     <echo message="test_src_dir      = ${test_src_dir}"/>
@@ -205,7 +207,7 @@ Builds the project via ant (obviously).
   
   <target name="deps" depends="init-ivy" description="(Sets up library dependencies: Ivy)">
     <mkdir dir="${lib_fetched_dir}"/>
-    <ivy:retrieve sync="false"/>
+    <ivy:retrieve sync="false" conf="default" />
     <path id="main_classpath">
       <fileset dir="${lib_dir}">
 	  	<include name="**/*.jar"/>
@@ -742,5 +744,14 @@ Builds the project via ant (obviously).
   <target name="clean_python">
     <ant dir="${basedir}/src/python" antfile="build.xml" target="clean"/>
   </target>
+	
+    <target name="make_endorsed" depends="init, init-ivy"
+	        description="--> retrieves jars that must be placed in the application endorsed directory">
+    	
+    	<delete dir="${lib_endorsed_dir}"/>
+    	<mkdir dir="${lib_endorsed_dir}"/>
+    	<ivy:retrieve sync="false" conf="endorsed" pattern="${lib_endorsed_dir}/[artifact]-[revision].[ext]" />
+    	
+    </target>    
  
 </project>
