@@ -37,4 +37,4 @@ generated/
 /lib/fetched
 /lib/endorsed
 /WebContent
-
+/.cobertura.ser
