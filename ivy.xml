@@ -76,6 +76,7 @@ Note: Check Maven for propery dependency parameter values @
       <exclude org="javax.jms"/>
     </dependency>
     <dependency org="junit" name="junit" rev="4.8.1" conf="default->default" />
+    <dependency org="net.sourceforge.cobertura" name="cobertura" rev="1.9.4" conf="default->default"/>
     <dependency org="com.sun.xml.bind" name="jaxb-xjc" rev="2.2" conf="default->default" />
 
     <dependency org="com.caucho" name="hessian" rev="3.0.20" conf="default->default" />
@@ -131,7 +132,6 @@ Note: Check Maven for propery dependency parameter values @
     <dependency org="xml-apis" name="xml-apis" rev="2.0.2" conf="endorsed->default" />
     <!-- <dependency org="org.apache" name="xsltc" rev="" conf="endorsed->default" /> -->
     
-    <dependency org="net.sourceforge.cobertura" name="cobertura" rev="1.9.4"/>
 
   </dependencies>
 </ivy-module>
