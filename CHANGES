@@ -6,3 +6,6 @@ Version 1.2.0
 
 Version 1.2.1
 - Removed warnings due to obsolete Xerces and SAML libraries.
+
+Version 1.2.2
+- Implementation of optional white-listing for Attribute and Authorization Services

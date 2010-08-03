@@ -30,11 +30,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import esg.saml.attr.service.api.SAMLAttributeService;
 import esg.saml.common.SAMLParameters;
+import esg.saml.common.WhiteListCertificateProvider;
 
 /**
  * Controller endpoint for SAML attribute requests with SOAP binding.
  * This controller is responsible only for managing the input and output streams of the HTTP request:
  * all other functionality is delegated to the underlying {@link SAMLAttributeService} specific to SOAP binding.
+ * 
+ * The controller can be optionally configured with a white-list of trusted clients that are allowed to invoke it,
+ * in case mutual client-server authentication is requested.
  */
 //@Controller("samlAttributeServiceSoapController")
 @RequestMapping("/saml/soap/secure/attributeService.htm")
@@ -43,6 +47,8 @@ public class SAMLAttributeServiceSoapController {
 	
 	private final SAMLAttributeService samlAttributeService;
 	
+	private WhiteListCertificateProvider whiteListCertificateProvider;
+	
 	@Autowired
 	public SAMLAttributeServiceSoapController(final @Qualifier("samlAttributeService") SAMLAttributeService samlService) {
 		this.samlAttributeService = samlService;
@@ -50,6 +56,11 @@ public class SAMLAttributeServiceSoapController {
 	
 	@RequestMapping(method = { RequestMethod.GET, RequestMethod.POST} )
 	public void process(final HttpServletRequest httpRequest, final HttpServletResponse httpResponse) throws Exception {
+		
+		// optional white-listing of clients for SSL mutual authentication
+		if (httpRequest.isSecure() && whiteListCertificateProvider!=null) {
+			if (!whiteListCertificateProvider.validate(httpRequest)) throw new Exception("Client is not included in server's white list");
+		}
 		
 		// read SOAP/SAML request from HTTP request
 		final InputStream inputStream = httpRequest.getInputStream();	
@@ -62,5 +73,14 @@ public class SAMLAttributeServiceSoapController {
 		httpResponse.getWriter().write( xml );
 	
 	}
+	
+	/**
+	 * Setter method for optional {@link WhiteListCertificateProvider}.
+	 * @param whiteListCertificateProvider
+	 */
+	public void setWhiteListCertificateProvider(final WhiteListCertificateProvider whiteListCertificateProvider) {
+		this.whiteListCertificateProvider = whiteListCertificateProvider;
+	}
+
 
 }

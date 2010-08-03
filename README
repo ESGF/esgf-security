@@ -41,14 +41,17 @@ module distribution, then instruct Eclipse to "refresh" the content directory fo
 Deployment of the web application is controlled by the file esg/saml/config/application-context-specific.xml (in the src folder): 
 comment out whichever service stack is not going to be deployed.
 
-Assuming that the servlet container is started on localhost on port 8080, and that the application is deployed at the "esg-saml" context, 
+Assuming that the servlet container is started on localhost on ports 8080/8443, and that the application is deployed at the "esg-saml" context, 
 the services are available as follows:
 
 1) ESG Attribute service
 
-URL endpoint: http://localhost:8080/esg-saml/saml/soap/secure/attributeService.htm
-
-Run the client esg.saml.attr.main.SAMLAttributeServiceSOAPClient to execute a test query.
+1a) non-secure URL endpoint: http://localhost:8080/esg-saml/saml/soap/secure/attributeService.htm
+    Run the client esg.saml.attr.main.SAMLAttributeServiceSOAPClient to execute a test query.
+    
+1b) secure URL endpoint: https://localhost:8443/esg-saml/saml/soap/secure/attributeService.htm
+    First follow the steps to setup mutual authentication (see below),
+    then run the client esg.saml.attr.main.SecureSAMLAttributeServiceSOAPClient to execute a test query.
 
 Note that by default, the ESG Attribute Service uses the class SAMLAttributeFactoryTrivialImpl which is a trivial implementation of SAMLAttributeFactory
 that returns valid attributes only for a user identifier equal to "Test Openid". To use the service in conjunction with a specific
@@ -57,14 +60,34 @@ as a bean named "samlAttributeFactory" (replacing SAMLAttributeFactoryTrivialImp
 
 2) ESG Authorization Service
 
-URL endpoint: http://localhost:8080/esg-saml/saml/soap/secure/authorizationService.htm
-
-Run the client esg.saml.authz.main.SAMLAuthorizationServiceSOAPClient to execute a test query.
+2a) non-secure URL endpoint: http://localhost:8080/esg-saml/saml/soap/secure/authorizationService.htm
+    Run the client esg.saml.authz.main.SAMLAuthorizationServiceSOAPClient to execute a test query.
+    
+2b) secure URL endpoint: https://localhost:8443/esg-saml/saml/soap/secure/authorizationService.htm
+    First follow the steps to setup mutual authentication (see below),
+    then run the client esg.saml.attr.main.SecureSAMLAuthorizationServiceSOAPClient to execute a test query.
 
 Note that the SAML Authorization Service uses the class SAMLAuthorizationFactoryTrivialImpl which is a trivial implementation of SAMLAuthorizationFactory
 that returns valid authorizations only for the test user identifier "Test Openid" (for all resources and actions). 
 To use the service in conjunction with a specific authorization repository, create your own implementation of SAMLAuthorizationFactory 
 and deploy it in the Spring context as a bean named "samlAuthorizationFactory" (replacing SAMLAuthorizationFactoryTrivialImpl in application-context-specific.xml).
+
+
+>>> HOW TOP SETUP MUTUAL AUTHENTICATION
+
+In order to setup mutual authentication (and optional white-listing) between the client and server, the following steps must be followed:
+
+server side:
+- enable Tomcat to listen on a secure port (e.g. 8443)
+- configure Tomcat to use a keystore certificate (test certificate provided in distribution: server-cert.ks)
+- configure Tomcat to use the client certificate, if found (clientAuth="want")
+- mandate service non-secure endpoint (e.g. 8080) to redirect to service secure endpoint (e.g. 8443)
+- insert client's CA public key into server's trustore (example provided in dsitribution: servert-trustore.ks)
+- optionally, configure the server with a white list that include's the client's certificate subject
+
+client side:
+- obtain a valid certificate in keystore format (example provided in distribution although expired: client-cert.ks)
+- configure the client to use a trustore that contains the service's certificate (example provided in distribution: client-trustore.ks)
 
 >>> TECHNICAL NOTES
 

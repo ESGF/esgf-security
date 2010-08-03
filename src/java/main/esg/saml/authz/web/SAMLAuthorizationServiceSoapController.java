@@ -30,11 +30,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import esg.saml.authz.service.api.SAMLAuthorizationService;
 import esg.saml.common.SAMLParameters;
+import esg.saml.common.WhiteListCertificateProvider;
 
 /**
  * Controller endpoint for SAML authorization requests with SOAP binding.
  * This controller is responsible only for managing the input and output streams of the HTTP request:
  * all other functionality is delegated to the underlying {@link SAMLAuthorizationService} specific to SOAP binding.
+ * 
+ * The controller can be optionally configured with a white-list of trusted clients that are allowed to invoke it,
+ * in case mutual client-server authentication is requested.
  */
 //@Controller("samlAuthorizationServiceSoapController")
 @RequestMapping("/saml/soap/secure/authorizationService.htm")
@@ -42,6 +46,8 @@ import esg.saml.common.SAMLParameters;
 public class SAMLAuthorizationServiceSoapController {
 	
 	private final SAMLAuthorizationService samlAuthorizationService;
+	
+	private WhiteListCertificateProvider whiteListCertificateProvider;
 	
 	@Autowired
 	public SAMLAuthorizationServiceSoapController(final @Qualifier("samlAuthorizationService") SAMLAuthorizationService samlAuthorizationService) {
@@ -51,6 +57,11 @@ public class SAMLAuthorizationServiceSoapController {
 	@RequestMapping(method = { RequestMethod.GET, RequestMethod.POST} )
 	public void process(final HttpServletRequest httpRequest, final HttpServletResponse httpResponse) throws Exception {
 		
+		// optional white-listing of clients for SSL mutual authentication
+		if (httpRequest.isSecure() && whiteListCertificateProvider!=null) {
+			if (!whiteListCertificateProvider.validate(httpRequest)) throw new Exception("Client is not included in server's white list");
+		}
+
 		// read SOAP/SAML request from HTTP request
 		final InputStream inputStream = httpRequest.getInputStream();	
 		
@@ -61,6 +72,14 @@ public class SAMLAuthorizationServiceSoapController {
 		httpResponse.setContentType(SAMLParameters.CONTENT_TYPE_XML);
 		httpResponse.getWriter().write( xml );
 	
+	}
+	
+	/**
+	 * Setter method for optional {@link WhiteListCertificateProvider}.
+	 * @param whiteListCertificateProvider
+	 */
+	public void setWhiteListCertificateProvider(final WhiteListCertificateProvider whiteListCertificateProvider) {
+		this.whiteListCertificateProvider = whiteListCertificateProvider;
 	}
 
 }
