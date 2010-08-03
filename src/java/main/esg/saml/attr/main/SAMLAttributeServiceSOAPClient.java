@@ -26,8 +26,9 @@ import org.springframework.core.io.ClassPathResource;
 import esg.saml.common.SOAPServiceClient;
 
 /**
- * Example client to contact a deployed ESG-CET SAML Attribute Service via SOAP binding.
- * This class is setup to query a SAML Attribute Service deployed on localhost.
+ * Example client to contact a deployed ESG SAML Attribute Service via SOAP binding.
+ * This class is setup to query a SAML Attribute Service deployed on localhost on the non-secure port 8080, 
+ * without any mutual authentication.
  */
 public class SAMLAttributeServiceSOAPClient {
 
