@@ -56,16 +56,6 @@
    properties used in this file by defining the property file
    $HOME/.esg-saml.ant.properties which will override the values set
    here.  An example of such a file is located in this etc directory.
-
-   NOTE:
-   If you get this error:
-
-   BUILD FAILED
-   java.lang.NoSuchMethodError: org.apache.tools.ant.util.FileUtils.getFileUtils()L
-   org/apache/tools/ant/util/FileUtils;
-    
-   It means somewhere in your system and/or classpath is an old ANT clobbering
-   the one you want to run. Use the "-noclasspath" flag in the ant command.
  
 **/
 -->
