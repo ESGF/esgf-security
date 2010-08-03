@@ -5,12 +5,14 @@ Additionally, the packaged jar contains ESG utilities for parsing and producing 
 
 >>> PREREQUISITES
 
-o Fairly recent distribution of Ant
+o Fairly recent distribution of Ant: 1.7+
 
-o Ivy installed as Ant extension. When running from the command line, this means installing the Ivy jar into the ant lib/ directory.
+o Java 1.6 or above.
+
+o Optional: Ivy installed as Ant extension. 
+When running from the command line, this means installing the Ivy jar into the ant lib/ directory.
 To run the Ant tasks within an Eclipse environment (because Eclipse comes packaged with its own version of Ant), 
 the Ivy jar must be copied into the Eclipse-specific Ant lib directory, or into the user's ~/.ant/lib directory.
-
 
 >>> INSTALLING AND BUILDING FROM THE COMMAND LINE
 
