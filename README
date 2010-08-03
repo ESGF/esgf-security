@@ -1,7 +1,7 @@
 >>> DESCRIPTION
 
 This project contains a web application that can be used to deploy an ESG Attribute Service and/or an ESG Authorization service.
-Additionally, the packaged jar contains ESG utilities for parsing and producing SAML statements that can be used in other ESG SAML aware projects.
+Additionally, the packaged jar contains ESG utilities for parsing and producing SAML statements that can be used in other ESG SAML-aware projects.
 
 >>> PREREQUISITES
 
@@ -33,7 +33,7 @@ This module is configured to be interpreted as both a Java and Dynamic Web Proje
 Note that in order to run the web application from within the Eclipse (i.e. without deploying the war file
 to a separate servlet container), you must first run the "make_web_dir" ant task, which will assemble
 the Eclipse WebContent/WEB-INF directory from source files, configuration files and libraries found in the
-module distribution.
+module distribution, then instruct Eclipse to "refresh" the content directory for the project.
 
 
 >>> CONFIGURING AND RUNNING THE WEB APPLICATION
@@ -73,13 +73,6 @@ the Spring beans for each service are auto-wired by name, but not auto-deployed 
 Currently the URL end-points for the Spring controllers are set as fixed request mappings in the Java classes and cannot be changed.
 
 o This project requires Java 1.6 because of faulty XML libraries in Java 1.5 and below. 
-Alternatively, the correct XML libraries can be placed in the endorsed directory of a Java 1.5 distribution.
-
---------------------------------------------------------------------------------
-OpenSAML requires an xml parser that supports JAXP 1.3 and DOM3.
-The JVM is currently configured to use the Sun XML parser, which is known
-to be buggy and can not be used with OpenSAML.  Please endorse a functional
-JAXP library(ies) such as Xerces and Xalan.  For instructions on how to endorse
-a new parser see http://java.sun.com/j2se/1.5.0/docs/guide/standards/index.html
---------------------------------------------------------------------------------
-
+Alternatively, if running with Java 1.5, the correct XML libraries can be placed in the JVM endorsed directory.
+For convenience, the ant task "make_endorsed" can be run to download all the required jars in the subdirectory lib/endorsed.
+These jars then need to be copied into the Java 1.5 endorsed directory.
