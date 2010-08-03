@@ -18,7 +18,6 @@
  ******************************************************************************/
 package esg.saml.common;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.opensaml.saml2.core.Action;
 
@@ -30,11 +29,11 @@ public class SAMLTestParameters {
 	public final static String IDENTIFIER = "Test Openid";
 	public final static String ISSUER = "Test SAML Issuer";
 	
-	public final static String KEYSTORE_PATH = "esg/saml/resources/localhost.ks";
+	public final static String KEYSTORE_PATH = "esg/saml/resources/server-cert.ks";
 	public final static String KEYSTORE_PASSWORD = "changeit";
 	public final static String KEYSTORE_ALIAS = "tomcat";
 	
-	public final static String TRUSTORE_PATH = "esg/saml/resources/jssecacerts.ks";
+	public final static String TRUSTORE_PATH = "esg/saml/resources/client-trustore.ks";
 	public final static String TRUSTORE_PASSWORD = "changeit";
 	
 	public final static String TEST_RESOURCE_PATH = "/PATH/TO/FILE";

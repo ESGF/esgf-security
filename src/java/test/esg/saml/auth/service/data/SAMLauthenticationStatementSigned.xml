@@ -1,20 +1,19 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<saml2:Assertion Version="2.0" xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion"><saml2:Issuer Format="urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName">Test SAML Issuer</saml2:Issuer><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+<?xml version="1.0" encoding="UTF-8"?><saml2:Assertion xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" Version="2.0"><saml2:Issuer Format="urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName">Test SAML Issuer</saml2:Issuer><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
 <ds:SignedInfo>
 <ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
 <ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
 <ds:Reference URI="">
 <ds:Transforms>
 <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
-<ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"><ec:InclusiveNamespaces PrefixList="ds saml2" xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#"/></ds:Transform>
+<ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"><ec:InclusiveNamespaces xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#" PrefixList="ds saml2"/></ds:Transform>
 </ds:Transforms>
 <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
 <ds:DigestValue>1NW5eFaP7/J099pC94+y0swUR8E=</ds:DigestValue>
 </ds:Reference>
 </ds:SignedInfo>
 <ds:SignatureValue>
-QGbJoMcq6Ngl4eqTB3fHqL0OewNBzLGgYUryI5eI5Qb7SdlBIEtj+FMv8K7TcSf9lgwjGlXkrirJ
-HuYJm5PiuOI6jmA67bIlUnwEtghIGscohlykqWTNtc6oi/rBCJrfJ1K7yI4Kdkfi75xkF6+V7j3Y
-Ip7GA/LGDirrELsVP9U=
+AdNPMk1+7YsrxiyGPcCy4ppR/W2xOSabegISmBepy2ky3Y8xFUAZVhj/yX4UjqGPFiNdYiO0W1B2
+gpsQ8yMpbWgo3rmyN5zwqpnvTSxwzf62ak+G0h+QSa377EbRQh3GJ/DyWWk3FPEV9OxfhN/GCJLW
+4wdScSnJpNgJaE9d0MI=
 </ds:SignatureValue>
 </ds:Signature><saml2:Subject><saml2:NameID Format="urn:esg:openid">Test Openid</saml2:NameID></saml2:Subject><saml2:AuthnStatement><saml2:AuthnContext><saml2:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:X509</saml2:AuthnContextClassRef></saml2:AuthnContext></saml2:AuthnStatement></saml2:Assertion>
