@@ -36,7 +36,7 @@ import esg.saml.auth.service.api.SAMLAuthenticationStatementFacade;
 import esg.saml.common.SAMLBuilder;
 import esg.saml.common.SAMLInvalidStatementException;
 import esg.saml.common.SecurityManager;
-import esg.utils.xml.Serializer;
+import esg.saml.utils.xml.Serializer;
 
 /**
  * Implementation of {@link SAMLAuthenticationStatementFacade} that stores the optional signing and trusted credentials.

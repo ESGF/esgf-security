@@ -24,7 +24,7 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.core.io.ClassPathResource;
 
 import esg.saml.common.SOAPServiceClient;
-import esg.utils.ssl.CertUtils;
+import esg.saml.utils.ssl.CertUtils;
 
 /**
  * Example client to contact a deployed ESG SAML Authorization Service via SOAP binding.

@@ -1,4 +1,4 @@
-package esg.utils.ssl;
+package esg.saml.utils.ssl;
 
 import org.springframework.core.io.ClassPathResource;
 
