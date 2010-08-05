@@ -12,3 +12,4 @@ Version 1.2.2
 
 Version 1.1.2.2
 - Changed versioning schema to include datanode schema at the beginning
+- Moved utils subpackage to esg.saml.utils
