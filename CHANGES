@@ -9,3 +9,6 @@ Version 1.2.1
 
 Version 1.2.2
 - Implementation of optional white-listing for Attribute and Authorization Services
+
+Version 1.1.2.2
+- Changed versioning schema to include datanode schema at the beginning
