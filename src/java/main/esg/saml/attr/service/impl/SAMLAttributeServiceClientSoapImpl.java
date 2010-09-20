@@ -19,10 +19,12 @@
 package esg.saml.attr.service.impl;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.opensaml.saml2.core.Assertion;
+import org.opensaml.saml2.core.Attribute;
 import org.opensaml.saml2.core.AttributeQuery;
 import org.opensaml.saml2.core.Response;
 import org.opensaml.ws.soap.soap11.Body;
@@ -66,12 +68,28 @@ public class SAMLAttributeServiceClientSoapImpl implements SAMLAttributeServiceC
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Build attribute request with given set of query attributes.  Note null
+	 * attributes will set default ESG attributes - see 
+	 * buildAttributeRequest(final String openid)
+	 * 
+	 * P J Kershaw 08/09/10
+	 * 
+	 * @param openid
+	 * @param attributes
+	 * @return
+	 * @throws MarshallingException
 	 */
-	public String buildAttributeRequest(final String openid) throws MarshallingException {
-		
+	public String buildAttributeRequest(final String openid, 
+			List<Attribute> attributes) throws MarshallingException {
 		// build attribute query
-		final AttributeQuery attributeQuery = requestBuilder.buildAttributeQueryRequest(openid, issuer);
+		AttributeQuery attributeQuery = null;
+		if (attributes == null) {
+			attributeQuery = requestBuilder.buildAttributeQueryRequest(openid, 
+					issuer);
+		} else {
+			attributeQuery = requestBuilder.buildAttributeQueryRequest(openid, 
+					issuer, attributes);
+		}			
 		
 		// embed into SOAP envelop
 		final Envelope soapRequestEnvelope = samlBuilder.getSOAPEnvelope();
@@ -85,7 +103,13 @@ public class SAMLAttributeServiceClientSoapImpl implements SAMLAttributeServiceC
 		if (LOG.isDebugEnabled()) LOG.debug("SOAP request:\n"+xml);
 		
 		return xml;
-
+	}
+		
+	/**
+	 * {@inheritDoc}
+	 */
+	public String buildAttributeRequest(final String openid) throws MarshallingException {
+		return this.buildAttributeRequest(openid, null);
 	}
 
 	/**
