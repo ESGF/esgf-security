@@ -18,13 +18,16 @@
  ******************************************************************************/
 package esg.saml.attr.service.impl;
 
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import esg.saml.attr.service.api.SAMLAttributes;
 
 /**
  * Bean implementation of the {@link SAMLAttributes} interface.
+ * Note that this implementation naturally orders the attributes by name and value.
  */
 public class SAMLAttributesImpl implements SAMLAttributes {
 	
@@ -44,9 +47,9 @@ public class SAMLAttributesImpl implements SAMLAttributes {
 	private String issuer;
 	
 	/**
-	 * Note that attributes are naturally ordered.
+	 * Note that attributes are naturally ordered by name.
 	 */
-	private Set<String> attributes = new TreeSet<String>();
+	private Map<String,Set<String>> attributes = new TreeMap<String,Set<String>>();
 
 	public String getFirstName() {
 		return firstName;
@@ -80,12 +83,8 @@ public class SAMLAttributesImpl implements SAMLAttributes {
 		this.email = email;
 	}
 
-	public Set<String> getAttributes() {
+	public Map<String,Set<String>> getAttributes() {
 		return attributes;
-	}
-
-	public void setAttributes(Set<String> attributes) {
-		this.attributes = attributes;
 	}
 
 	public String getIssuer() {
@@ -94,6 +93,13 @@ public class SAMLAttributesImpl implements SAMLAttributes {
 
 	public void setIssuer(String issuer) {
 		this.issuer = issuer;
+	}
+	
+	public void addAttribute(String name, String value) {
+		if (attributes.get(name)==null) {
+			attributes.put(name, new TreeSet<String>());
+		}
+		attributes.get(name).add(value);
 	}
 	
 }

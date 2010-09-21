@@ -20,10 +20,11 @@
                <saml2:Attribute FriendlyName="EmailAddress" Name="urn:esg:email:address" NameFormat="http://www.w3.org/2001/XMLSchema#string">
                   <saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">Test Email</saml2:AttributeValue>
                </saml2:Attribute>
-               <saml2:Attribute FriendlyName="GroupRole" Name="urn:esg:group:role" NameFormat="groupRole">
-                  <saml2:AttributeValue>
-                     <esg:groupRole xmlns:esg="http://www.esg.org" group="TestGroup" role="default"/>
-                  </saml2:AttributeValue>
+               <saml2:Attribute Name="urn:esgf:test:grouprole" NameFormat="http://www.w3.org/2001/XMLSchema#string">
+                  <saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">group_TestGroup_role_default</saml2:AttributeValue>
+               </saml2:Attribute>
+               <saml2:Attribute Name="urn:esgf:test:grouprole" NameFormat="http://www.w3.org/2001/XMLSchema#string">
+                  <saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">group_TestGroup_role_publisher</saml2:AttributeValue>
                </saml2:Attribute>
             </saml2:AttributeStatement>
          </saml2:Assertion>

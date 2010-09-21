@@ -18,11 +18,13 @@
  ******************************************************************************/
 package esg.saml.attr.service.impl;
 
+import java.util.List;
+
+import org.opensaml.saml2.core.Attribute;
 import org.opensaml.saml2.core.AttributeQuery;
 
 import esg.saml.attr.service.api.SAMLAttributeQueryRequestBuilder;
 import esg.saml.common.SAMLBuilder;
-import esg.saml.common.SAMLParameters;
 
 /**
  * Standard implementation of {@link SAMLAttributeQueryRequestBuilder} to request the user attributes
@@ -46,9 +48,7 @@ class SAMLAttributeQueryRequestBuilderImpl implements SAMLAttributeQueryRequestB
     	
     }
 
-	/**
-	 * {@inheritDoc}
-	 */
+/*
 	public AttributeQuery buildAttributeQueryRequest(final String openid, final String issuer) {
 					
 		// <?xml version="1.0" encoding="UTF-8"?>
@@ -77,6 +77,43 @@ class SAMLAttributeQueryRequestBuilderImpl implements SAMLAttributeQueryRequestB
 		
 		return attributeQuery;
 			
+	}
+	*/
+	
+	/**
+	 * Make an attribute query with a custom set of attributes.  An empty or
+	 * null List can be passed indicating to the server recipient that all
+	 * possible attributes should be retrieved for this client.
+	 * 
+	 * @param openid
+	 * @param issuer
+	 * @param attributes
+	 * @return
+	 */
+	public AttributeQuery buildAttributeQueryRequest(final String openid, final String issuer, final List<Attribute> attributes) {
+		
+		// <?xml version="1.0" encoding="UTF-8"?>
+		//  <samlp:AttributeQuery xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="c9a2bd30-6186-46d7-a8f3-e51367921f51" IssueInstant="2009-07-28T15:24:52.895Z" Version="2.0"/>
+		final AttributeQuery attributeQuery = builder.getAttributeQuery(includeFlag);
+		List<Attribute> queryAttributes = attributeQuery.getAttributes();
+		
+        // <saml:Issuer Format="urn:oasis:names:tc:SAML:1.1:nameid-format:x509SubjectName">Test Gateway</saml:Issuer>
+        attributeQuery.setIssuer( builder.getIssuer(issuer) );
+        
+        // <saml:Subject>
+        // 		<saml:NameID Format="urn:esg:openid">http://test.openid.com/testUserValid</saml:NameID>
+        // </saml:Subject>
+        attributeQuery.setSubject( builder.getSubject(openid) );	
+        
+        // add requested attributes
+        if (attributes!=null) {
+        	for (Attribute attribute : attributes) {
+        		queryAttributes.add(attribute);
+        	}
+        }
+		
+		return attributeQuery;
+		
 	}
 	
 	void setIncludeFlag(boolean includeFlag) {

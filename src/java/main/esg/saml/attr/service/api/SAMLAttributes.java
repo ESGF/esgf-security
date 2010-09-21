@@ -18,6 +18,7 @@
  ******************************************************************************/
 package esg.saml.attr.service.api;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -49,12 +50,20 @@ public interface SAMLAttributes {
 	 * Retrieves access control specific attributes.
 	 * @return
 	 */
-	Set<String> getAttributes();
+	Map<String,Set<String>> getAttributes();
 
 	/**
 	 * Sets access control specific attributes.
 	 * @param attributes
 	 */
-	void setAttributes(Set<String> attributes);
+	//void setAttributes(Map<String,Set<String>> attributes);
+	
+	/**
+	 * Adds a value to a named attribute
+	 * (existing values are retained).
+	 * @param name
+	 * @param value
+	 */
+	void addAttribute(String name, String value);
 
 }

@@ -40,6 +40,9 @@ public class SAMLTestParameters {
 	
 	public final static String TEST_ACTION = Action.READ_ACTION;
 	
+	// test attribute
+	public final static String TEST_ATTRIBUTE_NAME = "urn:esgf:test:grouprole";
+	
 	// authentication test files
 	public final static String AUTHENTICATION_FILE = "esg/saml/auth/service/data/SAMLauthenticationStatement.xml";
 	public final static String AUTHENTICATION_FILE_SIGNED = "esg/saml/auth/service/data/SAMLauthenticationStatementSigned.xml";
@@ -50,9 +53,10 @@ public class SAMLTestParameters {
 	public final static String ATTRIBUTES_FILE_SIGNED ="esg/saml/attr/service/data/SAMLattributeStatementSigned.xml";
 	public final static String ATTRIBUTES_FILE_BADC ="esg/saml/attr/service/data/SAMLattributeStatementBADC.xml";
 	public final static String ATTRIBUTES_FILE_PARTIAL ="esg/saml/attr/service/data/SAMLattributeStatementPartial.xml";
-	public final static String ATTRIBUTE_REQUEST ="esg/saml/attr/service/data/SAMLattributeQuery.xml";
-	public final static String ATTRIBUTE_VALID_REQUEST ="esg/saml/attr/service/data/SAMLattributeQueryValidRequest.xml";
+	public final static String ATTRIBUTE_REQUEST_EMPTY ="esg/saml/attr/service/data/SAMLattributeQueryEmpty.xml";
+	public final static String ATTRIBUTE_REQUEST_WITH_ATTRIBUTES ="esg/saml/attr/service/data/SAMLattributeQueryWithAttributes.xml";
 	public final static String ATTRIBUTE_RESPONSE_SUCCESS ="esg/saml/attr/service/data/SAMLattributeQueryResponseSuccess.xml";
+	public final static String ATTRIBUTE_RESPONSE_WITH_ATTRIBUTES_SUCCESS ="esg/saml/attr/service/data/SAMLattributeQueryResponseWithAttributesSuccess.xml";
 	public final static String ATTRIBUTE_INVALID_REQUEST ="esg/saml/attr/service/data/SAMLattributeQueryInvalidRequest.xml";
 	public final static String ATTRIBUTE_RESPONSE_FAILURE ="esg/saml/attr/service/data/SAMLattributeQueryResponseFailure.xml";
 	public final static String ATTRIBUTE_PARTIAL_REQUEST ="esg/saml/attr/service/data/SAMLattributeQueryPartialRequest.xml";

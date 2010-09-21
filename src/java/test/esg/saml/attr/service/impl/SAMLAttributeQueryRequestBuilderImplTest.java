@@ -18,10 +18,14 @@
  ******************************************************************************/
 package esg.saml.attr.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
+import org.opensaml.saml2.core.Attribute;
 import org.opensaml.saml2.core.AttributeQuery;
 import org.opensaml.xml.ConfigurationException;
 import org.opensaml.xml.util.XMLHelper;
@@ -30,6 +34,7 @@ import org.w3c.dom.Node;
 
 import esg.saml.authz.service.impl.SAMLAuthorizationFactoryTrivialImpl;
 import esg.saml.common.SAMLBuilder;
+import esg.saml.common.SAMLParameters;
 import esg.saml.common.SAMLTestParameters;
 import eske.utils.xml.XmlChecker;
 
@@ -64,15 +69,42 @@ public class SAMLAttributeQueryRequestBuilderImplTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void testBuildAttributeQueryRequest() throws Exception {
+	public void testBuildEmptyAttributeQueryRequest() throws Exception {
 		
 		if (SAMLBuilder.isInitailized()) {
 			final AttributeQuery attributeQuery 
-				= samlAttributeQueryRequestBuilder.buildAttributeQueryRequest(SAMLTestParameters.IDENTIFIER, SAMLTestParameters.ISSUER);
+				= samlAttributeQueryRequestBuilder.buildAttributeQueryRequest(SAMLTestParameters.IDENTIFIER, SAMLTestParameters.ISSUER, new ArrayList<Attribute>());
 			final Element attributeQueryRequestElement = builder.marshall(attributeQuery);
 			final String xml = XMLHelper.prettyPrintXML((Node)attributeQueryRequestElement);
 			if (LOG.isDebugEnabled()) LOG.debug(xml);
-	        XmlChecker.compare(xml, SAMLTestParameters.ATTRIBUTE_REQUEST);
+	        XmlChecker.compare(xml, SAMLTestParameters.ATTRIBUTE_REQUEST_EMPTY);
+		}
+		
+	}
+	
+	/**
+	 * Tests building a SAML AttributeQuery for a given OpenID.
+	 * @throws Exception
+	 */
+	@Test
+	public void testBuildAttributeQueryRequestWithAttributes() throws Exception {
+		
+		if (SAMLBuilder.isInitailized()) {
+			
+			// requested attributes
+			final List<Attribute> attributes = new ArrayList<Attribute>();
+			attributes.add( builder.getAttribute(SAMLParameters.FIRST_NAME, null, null) );
+			attributes.add( builder.getAttribute(SAMLParameters.LAST_NAME, null, null) );
+			attributes.add( builder.getAttribute(SAMLParameters.EMAIL_ADDRESS, null, null) );
+			attributes.add( builder.getAttribute(SAMLTestParameters.TEST_ATTRIBUTE_NAME, null, null) );
+			
+			final AttributeQuery attributeQuery 
+				= samlAttributeQueryRequestBuilder.buildAttributeQueryRequest(SAMLTestParameters.IDENTIFIER, SAMLTestParameters.ISSUER, attributes);
+			final Element attributeQueryRequestElement = builder.marshall(attributeQuery);
+			final String xml = XMLHelper.prettyPrintXML((Node)attributeQueryRequestElement);
+			if (LOG.isDebugEnabled()) LOG.debug(xml);
+	        XmlChecker.compare(xml, SAMLTestParameters.ATTRIBUTE_REQUEST_WITH_ATTRIBUTES);
+	        
 		}
 		
 	}
