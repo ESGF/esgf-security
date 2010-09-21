@@ -41,9 +41,14 @@ public class SecureSAMLAuthorizationServiceSOAPClient {
 	private static final String ENDPOINT = "https://localhost:8443/esg-saml/saml/soap/secure/authorizationService.htm";
 	private static final String SAML_REQUEST = "esg/saml/authz/main/SAMLauthorizationQueryRequest.xml";
 	
-	// Query the Authorization Service on the ESG-JPL Gateway - must use a client-trustore that contains teh JPL server certificate
+	// Query the Authorization Service on the ESG-JPL Gateway - must use a client-trustore that contains the JPL server certificate
 	//private static final String ENDPOINT = "https://esg-gateway.jpl.nasa.gov/saml/soap/secure/authorizationService.htm";
 	//private static final String SAML_REQUEST = "esg/saml/authz/main/SAMLauthorizationQueryRequest_JPL.xml";
+	
+	// Query the Authorization Service on the ESG-PCMDI Gateway - must use a client-trustore that contains the PCMDI server certificate
+	//private static final String ENDPOINT = "https://pcmdi3.llnl.gov/esgcet/saml/soap/secure/authorizationService.htm";
+	//private static final String SAML_REQUEST = "esg/saml/authz/main/SAMLauthorizationQueryRequest_PCMDI.xml";
+
 	  
 	  public static void main(String[] args) throws Exception {
 		  
