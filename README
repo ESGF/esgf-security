@@ -65,7 +65,7 @@ as a bean named "samlAttributeFactory" (replacing SAMLAttributeFactoryTrivialImp
     
 2b) secure URL endpoint: https://localhost:8443/esg-saml/saml/soap/secure/authorizationService.htm
     First follow the steps to setup mutual authentication (see below),
-    then run the client esg.saml.attr.main.SecureSAMLAuthorizationServiceSOAPClient to execute a test query.
+    then run the client esg.saml.authz.main.SecureSAMLAuthorizationServiceSOAPClient to execute a test query.
 
 Note that the SAML Authorization Service uses the class SAMLAuthorizationFactoryTrivialImpl which is a trivial implementation of SAMLAuthorizationFactory
 that returns valid authorizations only for the test user identifier "Test Openid" (for all resources and actions). 

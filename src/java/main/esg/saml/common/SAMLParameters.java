@@ -28,10 +28,10 @@ public interface SAMLParameters {
     public final static String FIRST_NAME = "urn:esg:first:name";
     public final static String LAST_NAME = "urn:esg:last:name";
     public final static String EMAIL_ADDRESS = "urn:esg:email:address";
-    //public final static String GROUP_ROLE = "urn:esg:group:role";
     public final static String OPENID = "urn:esg:openid";
     
-    public final static String AC_ATTRIBUTE = "urn:badc:security:authz:1.0:attr";
+    //public final static String GROUP_ROLE = "urn:esg:group:role";
+    //public final static String AC_ATTRIBUTE = "urn:badc:security:authz:1.0:attr";
     
     public final static String FIRST_NAME_FRIENDLY = "FirstName";
     public final static String LAST_NAME_FRIENDLY = "LastName";

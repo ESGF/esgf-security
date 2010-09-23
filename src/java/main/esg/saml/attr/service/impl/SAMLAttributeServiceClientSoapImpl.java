@@ -79,7 +79,7 @@ public class SAMLAttributeServiceClientSoapImpl implements SAMLAttributeServiceC
 	 * @return
 	 * @throws MarshallingException
 	 */
-	public String buildAttributeRequest(final String openid, List<Attribute> attributes) throws MarshallingException {
+	public String buildAttributeRequest(final String openid, final List<Attribute> attributes) throws MarshallingException {
 		
 		// build attribute query
 		final AttributeQuery attributeQuery = requestBuilder.buildAttributeQueryRequest(openid, issuer, attributes);

@@ -34,7 +34,7 @@ public interface SAMLAttributeServiceClient {
 	/**
 	 * Method to build a serialized SAML attribute request for a user with given OpenID.
 	 * @param openid : the user unique identifier.
-	 * @param attributes : the named attributes to request - if empty, server will send all attributes available.
+	 * @param attributes : the named attributes to request - if empty or null, the server will send all attributes available.
 	 * @return the SAML attribute request (with binding) serialized as string, to be sent to the SAML attribute service.
 	 */
 	String buildAttributeRequest(String identifier, List<Attribute> attributes) throws MarshallingException;

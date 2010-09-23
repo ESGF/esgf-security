@@ -32,7 +32,7 @@ public interface SAMLAttributeQueryRequestBuilder {
 	 * Method to build a SAML {@link AttributeQuery} request for a user with given identifier.
 	 * @param openid : the user's OpenID.
 	 * @param issuer : the identity issuing the request.
-	 * @param attributes : the named attributes to request - if empty, all server will send all attributes available.
+	 * @param attributes : the named attributes to request - if empty or null, the server will send all attributes available.
 	 * @return the SAML attribute query request.
 	 */
 	AttributeQuery buildAttributeQueryRequest(String identifier, String issuer, final List<Attribute> attributes);

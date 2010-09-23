@@ -1,3 +1,9 @@
+Version 1.3.0
+- Changed the Attribute Service to issue attributes with configurable names (as opposed to the same fixed attribute name).
+  Note that this change alters the API of the SAMLAttributes interface, and consequently of the SAMLAttributesFactory interface:
+  any implementation of the factory interface must now generate attributes that have both a name and a value.
+- Inserted example code to query Authorization Services deployed at ESG-JPL and ESG-PCMDI Gateways
+
 Version 1.2.0
 - Added BSD Open Source License
 - Changed log file name to avoid possible conflicts with other applications

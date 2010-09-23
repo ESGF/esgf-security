@@ -110,7 +110,7 @@ import org.w3c.dom.Element;
 
 
 /**
- * Utility class to build, marshall, serialize and embed SAML objects.
+ * Utility class to build, marshal, serialize and embed SAML objects.
  * This class is a singleton to enforce sharing of factories and XML parsers.
  */
 public class SAMLBuilder {

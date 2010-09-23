@@ -36,7 +36,7 @@ import esg.saml.common.SAMLBuilder;
 import esg.saml.common.SAMLParameters;
 
 /**
- * Standard implementation of {@link SAMLAssertionHandler}.
+ * Standard implementation of {@link SAMLAttributeStatementHandler}.
  */
 class SAMLAttributeStatementHandlerImpl implements SAMLAttributeStatementHandler {
 		    
@@ -102,7 +102,6 @@ class SAMLAttributeStatementHandlerImpl implements SAMLAttributeStatementHandler
 	    	
 	    	for (final Attribute attribute : requestedAttributes) {
 	    		final String attName = attribute.getName();
-	    		System.out.println("requesting attname="+attName);
 	    		
 	    		if (attName.equals(SAMLParameters.FIRST_NAME)) {
 		            
@@ -127,7 +126,6 @@ class SAMLAttributeStatementHandlerImpl implements SAMLAttributeStatementHandler
 	    	    	attributeStatement.getAttributes().add( builder.getAttribute(SAMLParameters.EMAIL_ADDRESS, SAMLParameters.EMAIL_ADDRESS_FRIENDLY, samlAttributes.getEmail()) );
 	    			
 	    		} else {
-	    			System.out.println("attname="+attName);
 		    		if (samlAttributes.getAttributes().containsKey(attName)) {
 		    			for (final String attValue : samlAttributes.getAttributes().get(attName)) {	
 		    				attributeStatement.getAttributes().add( builder.getAttribute(attName, null, attValue) );

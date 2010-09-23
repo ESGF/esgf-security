@@ -23,6 +23,10 @@ import java.util.Set;
 
 /**
  * Interface representing the attributes contained in a SAML attribute assertion.
+ * Note that attributes are divided into two categories: "personal attributes" (first/last name and email)
+ * have a fixed type (a.k.a. SAML name) and single value, and set via specific setter properties; 
+ * other attributes like access control attributes have a configurable type and multiple values, 
+ * and are stored and retrieved through a map.
  */
 public interface SAMLAttributes {
 
@@ -51,12 +55,6 @@ public interface SAMLAttributes {
 	 * @return
 	 */
 	Map<String,Set<String>> getAttributes();
-
-	/**
-	 * Sets access control specific attributes.
-	 * @param attributes
-	 */
-	//void setAttributes(Map<String,Set<String>> attributes);
 	
 	/**
 	 * Adds a value to a named attribute

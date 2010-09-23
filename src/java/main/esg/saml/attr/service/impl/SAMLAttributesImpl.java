@@ -18,6 +18,7 @@
  ******************************************************************************/
 package esg.saml.attr.service.impl;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -84,7 +85,7 @@ public class SAMLAttributesImpl implements SAMLAttributes {
 	}
 
 	public Map<String,Set<String>> getAttributes() {
-		return attributes;
+		return Collections.unmodifiableMap(attributes);
 	}
 
 	public String getIssuer() {

@@ -47,38 +47,6 @@ class SAMLAttributeQueryRequestBuilderImpl implements SAMLAttributeQueryRequestB
     	this.builder = SAMLBuilder.getInstance();
     	
     }
-
-/*
-	public AttributeQuery buildAttributeQueryRequest(final String openid, final String issuer) {
-					
-		// <?xml version="1.0" encoding="UTF-8"?>
-		//  <samlp:AttributeQuery xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="c9a2bd30-6186-46d7-a8f3-e51367921f51" IssueInstant="2009-07-28T15:24:52.895Z" Version="2.0"/>
-		final AttributeQuery attributeQuery = builder.getAttributeQuery(includeFlag);
-        
-        // <saml:Issuer Format="urn:oasis:names:tc:SAML:1.1:nameid-format:x509SubjectName">Test Gateway</saml:Issuer>
-        attributeQuery.setIssuer( builder.getIssuer(issuer) );
-        
-        // <saml:Subject>
-        // 		<saml:NameID Format="urn:esg:openid">http://test.openid.com/testUserValid</saml:NameID>
-        // </saml:Subject>
-        attributeQuery.setSubject( builder.getSubject(openid) );
-        
-        // <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" FriendlyName="FirstName" Name="urn:esg:first:name" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
-        attributeQuery.getAttributes().add( builder.getAttribute(SAMLParameters.FIRST_NAME, SAMLParameters.FIRST_NAME_FRIENDLY, null) );
-        
-        // <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" FriendlyName="LastName" Name="urn:esg:last:name" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
-        attributeQuery.getAttributes().add( builder.getAttribute(SAMLParameters.LAST_NAME, SAMLParameters.LAST_NAME_FRIENDLY, null) );
-        
-        // <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" FriendlyName="EmailAddress" Name="urn:esg:email:address" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
-        attributeQuery.getAttributes().add( builder.getAttribute(SAMLParameters.EMAIL_ADDRESS, SAMLParameters.EMAIL_ADDRESS_FRIENDLY, null) );
-        
-        // <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" FriendlyName="GroupRole" Name="urn:esg:group:role" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
-        attributeQuery.getAttributes().add( builder.getAttribute(SAMLParameters.GROUP_ROLE, SAMLParameters.GROUP_ROLE_FRIENDLY, null) );
-		
-		return attributeQuery;
-			
-	}
-	*/
 	
 	/**
 	 * Make an attribute query with a custom set of attributes.  An empty or

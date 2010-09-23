@@ -20,7 +20,6 @@ package esg.saml.attr.service.impl;
 
 import esg.saml.attr.service.api.SAMLAttributeFactory;
 import esg.saml.attr.service.api.SAMLAttributes;
-import esg.saml.common.SAMLTestParameters;
 import esg.saml.common.SAMLUnknownPrincipalException;
 
 /**
@@ -31,6 +30,8 @@ public class SAMLAttributeFactoryTrivialImpl implements SAMLAttributeFactory {
 	public SAMLAttributeFactoryTrivialImpl() {}
 	
 	private String issuer;
+
+	private String samlAttributeName = "urn:esgf:test:grouprole";
 	
 	public SAMLAttributes newInstance(final String identifier) throws SAMLUnknownPrincipalException {
 		
@@ -45,8 +46,8 @@ public class SAMLAttributeFactoryTrivialImpl implements SAMLAttributeFactory {
 			samlAttributes.setEmail("Test Email");
 			
 			// access control attributes
-			samlAttributes.addAttribute(SAMLTestParameters.TEST_ATTRIBUTE_NAME, "group_TestGroup_role_default");
-			samlAttributes.addAttribute(SAMLTestParameters.TEST_ATTRIBUTE_NAME, "group_TestGroup_role_publisher");
+			samlAttributes.addAttribute(samlAttributeName, "group_TestGroup_role_default");
+			samlAttributes.addAttribute(samlAttributeName, "group_TestGroup_role_publisher");
 			
 			// authority
 			samlAttributes.setIssuer(this.getIssuer());
@@ -57,6 +58,14 @@ public class SAMLAttributeFactoryTrivialImpl implements SAMLAttributeFactory {
 			throw new SAMLUnknownPrincipalException("Unknown principal: "+identifier);
 		}
 		
+	}
+	
+	/**
+	 * Method to configure the "name" of the SAML attributes issued by this factory implementation.
+	 * @param samlAttributeName
+	 */
+	public void setSamlAttributeName(String samlAttributeName) {
+		this.samlAttributeName = samlAttributeName;
 	}
 	
 	public String getIssuer() {
