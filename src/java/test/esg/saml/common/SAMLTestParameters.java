@@ -41,7 +41,8 @@ public class SAMLTestParameters {
 	public final static String TEST_ACTION = Action.READ_ACTION;
 	
 	// test attribute
-	public final static String TEST_ATTRIBUTE_NAME = "urn:esgf:test:grouprole";
+	public final static String TEST_ATTRIBUTE_NAME = "urn:esgf:test:attribute_name";
+	public final static String TEST_GROUPROLE_ATTRIBUTE_NAME = "urn:esgf:test:grouprole";
 	
 	// authentication test files
 	public final static String AUTHENTICATION_FILE = "esg/saml/auth/service/data/SAMLauthenticationStatement.xml";

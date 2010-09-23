@@ -374,14 +374,14 @@ public class SAMLBuilder {
 	    
 	}
 	
-    //  <saml:Attribute FriendlyName="GroupRole" Name="urn:esg:group:role" NameFormat="groupRole">
-	/*public Attribute getGroupRoleAttribute() {
+    //  <saml:Attribute FriendlyName="GroupRole" Name="urn:esgf:jpl:role" NameFormat="groupRole">
+	public Attribute getGroupRoleAttribute(final String name) {
         final Attribute grAttribute = attributeBuilder.buildObject();
-        grAttribute.setName(SAMLParameters.GROUP_ROLE);
+        grAttribute.setName(name);
         grAttribute.setNameFormat(XSGroupRole.TYPE_LOCAL_NAME);
         grAttribute.setFriendlyName(SAMLParameters.GROUP_ROLE_FRIENDLY);
         return grAttribute;
-	}*/
+	}
 
     //	<saml:AttributeValue>
     //		<esg:groupRole xmlns:esg="http://www.esg.org" group="Test Group A" role="default"/>

@@ -14,7 +14,8 @@
     <bean name="samlAttributeService" class="esg.saml.attr.service.impl.SAMLAttributeServiceSoapImpl" />
  	<!-- Example implementation of SAMLAttributeFactory, configured to write SAML attributes of a specific "name" -->
   	<bean id="samlAttributeFactory" class="esg.saml.attr.service.impl.SAMLAttributeFactoryTrivialImpl">
-  		<property name="samlAttributesName"><value>urn:esgf:test:grouprole</value></property>
+  		<property name="samlStringAttributeName"><value>urn:esgf:test:attribute_name</value></property>
+  		<property name="samlGroupRoleAttributeName"><value>urn:esgf:test:grouprole</value></property>
   	</bean>
   	
   	<!-- ESG SAML-based Authorization Service stack (with example white list) -->

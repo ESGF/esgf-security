@@ -7,5 +7,5 @@
    <saml2:Attribute xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" Name="urn:esg:first:name" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
    <saml2:Attribute xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" Name="urn:esg:last:name" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
    <saml2:Attribute xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" Name="urn:esg:email:address" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>   
-   <saml2:Attribute xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" Name="urn:esgf:test:grouprole" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
+   <saml2:Attribute xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" Name="urn:esgf:test:attribute_name" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
 </saml2p:AttributeQuery>

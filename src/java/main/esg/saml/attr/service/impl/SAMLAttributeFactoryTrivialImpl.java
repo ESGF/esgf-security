@@ -31,7 +31,8 @@ public class SAMLAttributeFactoryTrivialImpl implements SAMLAttributeFactory {
 	
 	private String issuer;
 
-	private String samlAttributeName = "urn:esgf:test:grouprole";
+	private String samlStringAttributeName = "urn:esgf:test:attribute_name";
+	private String samlGroupRoleAttributeName = "urn:esgf:test:grouprole";
 	
 	public SAMLAttributes newInstance(final String identifier) throws SAMLUnknownPrincipalException {
 		
@@ -46,8 +47,12 @@ public class SAMLAttributeFactoryTrivialImpl implements SAMLAttributeFactory {
 			samlAttributes.setEmail("Test Email");
 			
 			// access control attributes
-			samlAttributes.addAttribute(samlAttributeName, "group_TestGroup_role_default");
-			samlAttributes.addAttribute(samlAttributeName, "group_TestGroup_role_publisher");
+			samlAttributes.addAttribute(samlStringAttributeName, "test_attribute_value1");
+			samlAttributes.addAttribute(samlStringAttributeName, "test_attribute_value2");
+			
+			// (group,role) attributes
+			samlAttributes.addGroupAndRole(samlGroupRoleAttributeName, new GroupRoleImpl("all_users","admin"));
+			samlAttributes.addGroupAndRole(samlGroupRoleAttributeName, new GroupRoleImpl("super_users","standard"));
 			
 			// authority
 			samlAttributes.setIssuer(this.getIssuer());
@@ -60,12 +65,31 @@ public class SAMLAttributeFactoryTrivialImpl implements SAMLAttributeFactory {
 		
 	}
 	
+
+	public String getSamlStringAttributeName() {
+		return samlStringAttributeName;
+	}
+
+
+	public String getSamlGroupRoleAttributeName() {
+		return samlGroupRoleAttributeName;
+	}
+
+
 	/**
-	 * Method to configure the "name" of the SAML attributes issued by this factory implementation.
+	 * Method to configure the "name" of the string-based SAML attributes issued by this factory implementation.
 	 * @param samlAttributeName
 	 */
-	public void setSamlAttributeName(String samlAttributeName) {
-		this.samlAttributeName = samlAttributeName;
+	public void setSamlStringAttributeName(String samlAttributeName) {
+		this.samlStringAttributeName = samlAttributeName;
+	}
+	
+	/**
+	 * Method to configure the "name" of the complex (group,role) SAML attributes issued by this factory implementation.
+	 * @param samlAttributeName
+	 */
+	public void setSamlGroupRoleAttributeName(String samlGroupRoleAttributeName) {
+		this.samlGroupRoleAttributeName = samlGroupRoleAttributeName;
 	}
 	
 	public String getIssuer() {

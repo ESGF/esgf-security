@@ -76,6 +76,7 @@ public class SAMLAttributeStatementHandlerImplTest {
 			requestAttributes.add( builder.getAttribute(SAMLParameters.LAST_NAME, SAMLParameters.LAST_NAME_FRIENDLY, null) );
 			requestAttributes.add( builder.getAttribute(SAMLParameters.EMAIL_ADDRESS, SAMLParameters.EMAIL_ADDRESS_FRIENDLY, null) );
 			requestAttributes.add( builder.getAttribute(SAMLTestParameters.TEST_ATTRIBUTE_NAME, null, null) );		
+			requestAttributes.add( builder.getAttribute(SAMLTestParameters.TEST_GROUPROLE_ATTRIBUTE_NAME, null, null) );
 		}
 		
 	}
@@ -148,10 +149,17 @@ public class SAMLAttributeStatementHandlerImplTest {
 	        Assert.assertEquals("Wrong user last name", testAttributes.getLastName(), samlAttributes.getLastName() );
 	        Assert.assertEquals("Wrong user email address", testAttributes.getEmail(), samlAttributes.getEmail() );
 	        
-	        Assert.assertEquals("Number of attributes does not match", testAttributes.getAttributes().size(), samlAttributes.getAttributes().size());
-	        for (final String attributeName : testAttributes.getAttributes().keySet()) {
-	        	 Assert.assertTrue("Missing attribute detected:"+attributeName, samlAttributes.getAttributes().containsKey(attributeName));
-	        }
+	        // compare to expected simple attributes
+	        Assert.assertEquals("Number of string attributes keys does not match", testAttributes.getAttributes().size(), samlAttributes.getGroupAndRoles().size());
+	        Assert.assertEquals("Number of string attributes values does not match", testAttributes.getAttributes().get(SAMLTestParameters.TEST_ATTRIBUTE_NAME).size(), samlAttributes.getAttributes().get(SAMLTestParameters.TEST_ATTRIBUTE_NAME).size());
+	        Assert.assertTrue("Missing string attribute from parsing attribute statement", samlAttributes.getAttributes().get(SAMLTestParameters.TEST_ATTRIBUTE_NAME).contains("test_attribute_value1") );
+	        Assert.assertTrue("Missing string attribute from parsing attribute statement", samlAttributes.getAttributes().get(SAMLTestParameters.TEST_ATTRIBUTE_NAME).contains("test_attribute_value2") );
+	        
+	        // compare to expected (group,role) attributes
+	        Assert.assertEquals("Number of (group,role) attributes keys does not match", testAttributes.getGroupAndRoles().size(), samlAttributes.getGroupAndRoles().size());
+	        Assert.assertEquals("Number of (group,role) attributes values does not match", testAttributes.getGroupAndRoles().get(SAMLTestParameters.TEST_GROUPROLE_ATTRIBUTE_NAME).size(), samlAttributes.getGroupAndRoles().get(SAMLTestParameters.TEST_GROUPROLE_ATTRIBUTE_NAME).size());
+	        Assert.assertTrue("Missing (group,role) attribute from parsing attribute statement", samlAttributes.getGroupAndRoles().get(SAMLTestParameters.TEST_GROUPROLE_ATTRIBUTE_NAME).contains(new GroupRoleImpl("all_users","admin")) );
+	        Assert.assertTrue("Missing (group,role) attribute from parsing attribute statement", samlAttributes.getGroupAndRoles().get(SAMLTestParameters.TEST_GROUPROLE_ATTRIBUTE_NAME).contains(new GroupRoleImpl("super_users","standard")) );
 		}
 		
 	}

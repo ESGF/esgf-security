@@ -23,10 +23,13 @@ import java.util.Set;
 
 /**
  * Interface representing the attributes contained in a SAML attribute assertion.
- * Note that attributes are divided into two categories: "personal attributes" (first/last name and email)
- * have a fixed type (a.k.a. SAML name) and single value, and set via specific setter properties; 
- * other attributes like access control attributes have a configurable type and multiple values, 
- * and are stored and retrieved through a map.
+ * Note that attributes can be of three categories: 
+ * <ul>
+ * <li> "personal attributes" (first/last name and email) have a fixed type (a.k.a. SAML name) and single value, 
+ *      and are set via specific setter properties; 
+ * <li> generic access control attributes are simple strings, have a configurable type and multiple values, and are stored and retrieved through a map.
+ * <li> complex access control attributes are of type GroupRole, have a configurable type, and are stored and retrieved through a map.
+ * </ul>
  */
 public interface SAMLAttributes {
 
@@ -51,7 +54,7 @@ public interface SAMLAttributes {
 	void setIssuer(String issuer);
 
 	/**
-	 * Retrieves access control specific attributes.
+	 * Retrieves string-based access control attributes.
 	 * @return
 	 */
 	Map<String,Set<String>> getAttributes();
@@ -63,5 +66,18 @@ public interface SAMLAttributes {
 	 * @param value
 	 */
 	void addAttribute(String name, String value);
+	
+	/**
+	 * Retrieves complex (group,role) access control attributes.
+	 * @return
+	 */
+	Map<String, Set<GroupRole>> getGroupAndRoles();
+	
+	/**
+	 * Adds a (group,role) access control attribute.
+	 * @param name
+	 * @param grouprole
+	 */
+	void addGroupAndRole(String name, GroupRole grouprole);
 
 }

@@ -13,11 +13,21 @@
       <saml2:Attribute FriendlyName="EmailAddress" Name="urn:esg:email:address" NameFormat="http://www.w3.org/2001/XMLSchema#string">
          <saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">Test Email</saml2:AttributeValue>
       </saml2:Attribute>
-      <saml2:Attribute Name="urn:esgf:test:grouprole" NameFormat="http://www.w3.org/2001/XMLSchema#string">
-         <saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">group_TestGroup_role_default</saml2:AttributeValue>
+      <saml2:Attribute Name="urn:esgf:test:attribute_name" NameFormat="http://www.w3.org/2001/XMLSchema#string">
+         <saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">test_attribute_value1</saml2:AttributeValue>
       </saml2:Attribute>
-      <saml2:Attribute Name="urn:esgf:test:grouprole" NameFormat="http://www.w3.org/2001/XMLSchema#string">
-         <saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">group_TestGroup_role_publisher</saml2:AttributeValue>
+      <saml2:Attribute Name="urn:esgf:test:attribute_name" NameFormat="http://www.w3.org/2001/XMLSchema#string">
+         <saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">test_attribute_value2</saml2:AttributeValue>
       </saml2:Attribute>
+      <saml2:Attribute FriendlyName="GroupRole" Name="urn:esgf:test:grouprole" NameFormat="groupRole">
+      <saml2:AttributeValue>
+             <esg:groupRole xmlns:esg="http://www.esg.org" group="all_users" role="admin"/>
+          </saml2:AttributeValue>
+       </saml2:Attribute>
+       <saml2:Attribute FriendlyName="GroupRole" Name="urn:esgf:test:grouprole" NameFormat="groupRole">
+          <saml2:AttributeValue>
+             <esg:groupRole xmlns:esg="http://www.esg.org" group="super_users" role="standard"/>
+          </saml2:AttributeValue>
+       </saml2:Attribute>
    </saml2:AttributeStatement>
 </saml2:Assertion>
