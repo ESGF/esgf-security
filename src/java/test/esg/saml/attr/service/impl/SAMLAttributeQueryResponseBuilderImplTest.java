@@ -62,13 +62,13 @@ public class SAMLAttributeQueryResponseBuilderImplTest {
 	}
 	
 	/**
-	 * Tests building a SAML Response for a valid OpenID.
+	 * Tests building a SAML Response for a valid OpenID and all attributes.
 	 */
 	@Test
 	public void testBuildAttributeQueryResponseSuccess() throws Exception {
 
 		if (SAMLBuilder.isInitailized()) {
-			final InputStream inputStream = new ClassPathResource( SAMLTestParameters.ATTRIBUTE_VALID_REQUEST).getInputStream();
+			final InputStream inputStream = new ClassPathResource( SAMLTestParameters.ATTRIBUTE_REQUEST_EMPTY).getInputStream();
 	        final BasicParserPool parser = new BasicParserPool();
 	        final Document document = parser.parse(inputStream);
 	        final AttributeQuery attributeQueryRequest = (AttributeQuery)builder.unmarshall(document.getDocumentElement());
@@ -78,6 +78,27 @@ public class SAMLAttributeQueryResponseBuilderImplTest {
 	        final String xml = XMLHelper.prettyPrintXML((Node)attributeQueryResponseElement);
 	        if (LOG.isDebugEnabled()) LOG.debug(xml);
 	        XmlChecker.compare(xml,  SAMLTestParameters.ATTRIBUTE_RESPONSE_SUCCESS);
+		}
+
+	}
+	
+	/**
+	 * Tests building a SAML Response for a valid OpenID and specific attributes.
+	 */
+	@Test
+	public void testBuildAttributeQueryResponseWithAttributesSuccess() throws Exception {
+
+		if (SAMLBuilder.isInitailized()) {
+			final InputStream inputStream = new ClassPathResource( SAMLTestParameters.ATTRIBUTE_REQUEST_WITH_ATTRIBUTES).getInputStream();
+	        final BasicParserPool parser = new BasicParserPool();
+	        final Document document = parser.parse(inputStream);
+	        final AttributeQuery attributeQueryRequest = (AttributeQuery)builder.unmarshall(document.getDocumentElement());
+	        
+	        final Response response = samlAttribuuteQueryResponseBuilder.buildAttributeQueryResponse(attributeQueryRequest);
+	        final Element attributeQueryResponseElement = builder.marshall(response);
+	        final String xml = XMLHelper.prettyPrintXML((Node)attributeQueryResponseElement);
+	        if (LOG.isDebugEnabled()) LOG.debug(xml);
+	        XmlChecker.compare(xml,  SAMLTestParameters.ATTRIBUTE_RESPONSE_WITH_ATTRIBUTES_SUCCESS);
 		}
 
 	}

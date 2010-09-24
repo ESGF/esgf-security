@@ -12,7 +12,7 @@
 			<saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" FriendlyName="FirstName" Name="urn:esg:first:name" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
             <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" FriendlyName="LastName" Name="urn:esg:last:name" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
             <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" FriendlyName="EmailAddress" Name="urn:esg:email:address" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
-            <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" FriendlyName="GroupRole" Name="urn:esg:group:role" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
+            <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Name="urn:esgf:test:attribute_name" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
 		</samlp:AttributeQuery>
 	</soap11:Body>
 </soap11:Envelope>

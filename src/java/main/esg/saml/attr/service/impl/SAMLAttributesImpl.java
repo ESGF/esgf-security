@@ -18,13 +18,18 @@
  ******************************************************************************/
 package esg.saml.attr.service.impl;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
+import esg.saml.attr.service.api.GroupRole;
 import esg.saml.attr.service.api.SAMLAttributes;
 
 /**
  * Bean implementation of the {@link SAMLAttributes} interface.
+ * Note that this implementation naturally orders the attributes by SAML name.
  */
 public class SAMLAttributesImpl implements SAMLAttributes {
 	
@@ -44,9 +49,15 @@ public class SAMLAttributesImpl implements SAMLAttributes {
 	private String issuer;
 	
 	/**
-	 * Note that attributes are naturally ordered.
+	 * Map storing string-based, multi-valued access control attributes.
+	 * Note that (simple) attributes are naturally ordered by name.
 	 */
-	private Set<String> attributes = new TreeSet<String>();
+	private Map<String,Set<String>> attributes = new TreeMap<String,Set<String>>();
+	
+	/**
+	 * Map storing (group,role) attributes, naturally ordered by name.
+	 */
+	private Map<String, Set<GroupRole>> grouproles = new TreeMap<String,Set<GroupRole>>();
 
 	public String getFirstName() {
 		return firstName;
@@ -80,12 +91,8 @@ public class SAMLAttributesImpl implements SAMLAttributes {
 		this.email = email;
 	}
 
-	public Set<String> getAttributes() {
-		return attributes;
-	}
-
-	public void setAttributes(Set<String> attributes) {
-		this.attributes = attributes;
+	public Map<String,Set<String>> getAttributes() {
+		return Collections.unmodifiableMap(attributes);
 	}
 
 	public String getIssuer() {
@@ -95,5 +102,26 @@ public class SAMLAttributesImpl implements SAMLAttributes {
 	public void setIssuer(String issuer) {
 		this.issuer = issuer;
 	}
+	
+	public void addAttribute(String name, String value) {
+		if (attributes.get(name)==null) {
+			attributes.put(name, new TreeSet<String>());
+		}
+		attributes.get(name).add(value);
+	}
+
+	@Override
+	public void addGroupAndRole(String name, GroupRole grouprole) {
+		if (grouproles.get(name)==null) {
+			grouproles.put(name, new TreeSet<GroupRole>());
+		}
+		grouproles.get(name).add(grouprole);
+	}
+
+	@Override
+	public Map<String, Set<GroupRole>> getGroupAndRoles() {
+		return Collections.unmodifiableMap(grouproles);
+	}
+	
 	
 }

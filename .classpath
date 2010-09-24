@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src/java/main"/>
 	<classpathentry kind="src" path="src/java/test"/>
 	<classpathentry kind="lib" path="lib/fetched/XSGroupRole-1.0.0.jar"/>
-	<classpathentry kind="lib" path="lib/fetched/activation-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/commons-logging-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/jaxb-xjc-2.2.jar"/>
 	<classpathentry kind="lib" path="lib/ivy-2.1.0.jar"/>

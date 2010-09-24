@@ -79,17 +79,10 @@ public class SAMLAttributeServiceClientSoapImpl implements SAMLAttributeServiceC
 	 * @return
 	 * @throws MarshallingException
 	 */
-	public String buildAttributeRequest(final String openid, 
-			List<Attribute> attributes) throws MarshallingException {
+	public String buildAttributeRequest(final String openid, final List<Attribute> attributes) throws MarshallingException {
+		
 		// build attribute query
-		AttributeQuery attributeQuery = null;
-		if (attributes == null) {
-			attributeQuery = requestBuilder.buildAttributeQueryRequest(openid, 
-					issuer);
-		} else {
-			attributeQuery = requestBuilder.buildAttributeQueryRequest(openid, 
-					issuer, attributes);
-		}			
+		final AttributeQuery attributeQuery = requestBuilder.buildAttributeQueryRequest(openid, issuer, attributes);
 		
 		// embed into SOAP envelop
 		final Envelope soapRequestEnvelope = samlBuilder.getSOAPEnvelope();
@@ -103,13 +96,6 @@ public class SAMLAttributeServiceClientSoapImpl implements SAMLAttributeServiceC
 		if (LOG.isDebugEnabled()) LOG.debug("SOAP request:\n"+xml);
 		
 		return xml;
-	}
-		
-	/**
-	 * {@inheritDoc}
-	 */
-	public String buildAttributeRequest(final String openid) throws MarshallingException {
-		return this.buildAttributeRequest(openid, null);
 	}
 
 	/**

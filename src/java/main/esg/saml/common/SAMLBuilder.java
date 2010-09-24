@@ -110,7 +110,7 @@ import org.w3c.dom.Element;
 
 
 /**
- * Utility class to build, marshall, serialize and embed SAML objects.
+ * Utility class to build, marshal, serialize and embed SAML objects.
  * This class is a singleton to enforce sharing of factories and XML parsers.
  */
 public class SAMLBuilder {
@@ -374,10 +374,10 @@ public class SAMLBuilder {
 	    
 	}
 	
-    //  <saml:Attribute FriendlyName="GroupRole" Name="urn:esg:group:role" NameFormat="groupRole">
-	public Attribute getGroupRoleAttribute() {
+    //  <saml:Attribute FriendlyName="GroupRole" Name="urn:esgf:jpl:role" NameFormat="groupRole">
+	public Attribute getGroupRoleAttribute(final String name) {
         final Attribute grAttribute = attributeBuilder.buildObject();
-        grAttribute.setName(SAMLParameters.GROUP_ROLE);
+        grAttribute.setName(name);
         grAttribute.setNameFormat(XSGroupRole.TYPE_LOCAL_NAME);
         grAttribute.setFriendlyName(SAMLParameters.GROUP_ROLE_FRIENDLY);
         return grAttribute;

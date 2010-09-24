@@ -18,6 +18,9 @@
  ******************************************************************************/
 package esg.saml.attr.service.api;
 
+import java.util.List;
+
+import org.opensaml.saml2.core.Attribute;
 import org.opensaml.saml2.core.AttributeQuery;
 
 /**
@@ -29,8 +32,9 @@ public interface SAMLAttributeQueryRequestBuilder {
 	 * Method to build a SAML {@link AttributeQuery} request for a user with given identifier.
 	 * @param openid : the user's OpenID.
 	 * @param issuer : the identity issuing the request.
+	 * @param attributes : the named attributes to request - if empty or null, the server will send all attributes available.
 	 * @return the SAML attribute query request.
 	 */
-	AttributeQuery buildAttributeQueryRequest(String identifier, String issuer);
+	AttributeQuery buildAttributeQueryRequest(String identifier, String issuer, final List<Attribute> attributes);
 	
 }

@@ -18,6 +18,9 @@
  ******************************************************************************/
 package esg.saml.attr.service.api;
 
+import java.util.List;
+
+import org.opensaml.saml2.core.Attribute;
 import org.opensaml.xml.io.MarshallingException;
 import org.opensaml.xml.io.UnmarshallingException;
 import org.opensaml.xml.parse.XMLParserException;
@@ -31,9 +34,10 @@ public interface SAMLAttributeServiceClient {
 	/**
 	 * Method to build a serialized SAML attribute request for a user with given OpenID.
 	 * @param openid : the user unique identifier.
+	 * @param attributes : the named attributes to request - if empty or null, the server will send all attributes available.
 	 * @return the SAML attribute request (with binding) serialized as string, to be sent to the SAML attribute service.
 	 */
-	String buildAttributeRequest(String identifier) throws MarshallingException;
+	String buildAttributeRequest(String identifier, List<Attribute> attributes) throws MarshallingException;
 
 	/**
 	 * Method to parse a serialized SAML attribute response into a user object.

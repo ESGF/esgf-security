@@ -32,7 +32,7 @@ public interface SAMLAttributeStatementHandler {
 	/**
 	 * Method to build a SAML Attribute Statement assertion for a given user.
 	 * @param samlAttributes : object containing the user attributes.
-	 * @param requestedAttributes : list of SAML attributes included in the SAML request.
+	 * @param requestedAttributes : list of SAML attributes included in the SAML request - if empty or null, the server will send all attributes available.
 	 * @return : SAML attribute statement assertion about the given user.
 	 */
 	Assertion buildAttributeStatement(SAMLAttributes samlAttributes, List<Attribute> requestedAttributes);
