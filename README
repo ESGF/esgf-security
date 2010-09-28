@@ -47,11 +47,11 @@ the services are available as follows:
 1) ESG Attribute service
 
 1a) non-secure URL endpoint: http://localhost:8080/esg-saml/saml/soap/secure/attributeService.htm
-    Run the client esg.saml.attr.main.SAMLAttributeServiceSOAPClient to execute a test query.
+    Run the client esg.security.attr.main.SAMLAttributeServiceSOAPClient to execute a test query.
     
 1b) secure URL endpoint: https://localhost:8443/esg-saml/saml/soap/secure/attributeService.htm
     First follow the steps to setup mutual authentication (see below),
-    then run the client esg.saml.attr.main.SecureSAMLAttributeServiceSOAPClient to execute a test query.
+    then run the client esg.security.attr.main.SecureSAMLAttributeServiceSOAPClient to execute a test query.
 
 Note that by default, the ESG Attribute Service uses the class SAMLAttributeFactoryTrivialImpl which is a trivial implementation of SAMLAttributeFactory
 that returns valid attributes only for a user identifier equal to "Test Openid". To use the service in conjunction with a specific
@@ -61,11 +61,11 @@ as a bean named "samlAttributeFactory" (replacing SAMLAttributeFactoryTrivialImp
 2) ESG Authorization Service
 
 2a) non-secure URL endpoint: http://localhost:8080/esg-saml/saml/soap/secure/authorizationService.htm
-    Run the client esg.saml.authz.main.SAMLAuthorizationServiceSOAPClient to execute a test query.
+    Run the client esg.security.authz.main.SAMLAuthorizationServiceSOAPClient to execute a test query.
     
 2b) secure URL endpoint: https://localhost:8443/esg-saml/saml/soap/secure/authorizationService.htm
     First follow the steps to setup mutual authentication (see below),
-    then run the client esg.saml.authz.main.SecureSAMLAuthorizationServiceSOAPClient to execute a test query.
+    then run the client esg.security.authz.main.SecureSAMLAuthorizationServiceSOAPClient to execute a test query.
 
 Note that the SAML Authorization Service uses the class SAMLAuthorizationFactoryTrivialImpl which is a trivial implementation of SAMLAuthorizationFactory
 that returns valid authorizations only for the test user identifier "Test Openid" (for all resources and actions). 

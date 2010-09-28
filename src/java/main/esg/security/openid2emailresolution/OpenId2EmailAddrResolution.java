@@ -33,11 +33,11 @@ import org.opensaml.xml.io.MarshallingException;
 import org.opensaml.xml.io.UnmarshallingException;
 import org.opensaml.xml.parse.XMLParserException;
 
-import esg.saml.attr.service.impl.SAMLAttributeServiceClientSoapImpl;
-import esg.saml.attr.service.impl.SAMLAttributesImpl;
-import esg.saml.common.SAMLParameters;
 import esg.security.DnWhitelistX509TrustMgr;
 import esg.security.HttpsClient;
+import esg.security.attr.service.impl.SAMLAttributeServiceClientSoapImpl;
+import esg.security.attr.service.impl.SAMLAttributesImpl;
+import esg.security.common.SAMLParameters;
 import esg.security.exceptions.DnWhitelistX509TrustMgrInitException;
 import esg.security.exceptions.HttpsClientInitException;
 import esg.security.exceptions.HttpsClientRetrievalException;

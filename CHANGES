@@ -3,6 +3,8 @@ Version 1.3.0
 - Changed the Attribute Service API to support both string-based simple attributes, and (group,role) complex attributes
 - Removed all code related to parse attribute strings into (group,role) pairs
 - Inserted example code to query Authorization Services deployed at ESG-JPL and ESG-PCMDI Gateways
+- Merged with contributions from BADC
+- Repackaged from "esg.saml" to "esg.security"
 
 Note that the above changes alter the API of the SAMLAttributes interface, and consequently of the SAMLAttributesFactory interface:
 any implementation of the factory interface must now generate attributes that have both a name and a value, either as simple strings
@@ -22,4 +24,4 @@ Version 1.2.2
 
 Version 1.1.2.2
 - Changed versioning schema to include datanode schema at the beginning
-- Moved utils subpackage to esg.saml.utils
+- Moved utils subpackage to esg.security.utils

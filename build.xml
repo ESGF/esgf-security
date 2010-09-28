@@ -694,7 +694,7 @@ Builds the project via ant (obviously).
       <bottom><![CDATA[<i><a href="http://esgf.org/" target="_top">ESGF</a> / <a href="http://esgf.org/LICENSE" target="_top">BSD OpenSource License</a></i>]]></bottom>
       <tag name="todo" scope="all" description="To do:"/>
       <group title="ESG SAML Component Packages" packages="esg.saml*"/>
-      <group title="ESG SAML Common Packages" packages="esg.saml.common*"/>
+      <group title="ESG SAML Common Packages" packages="esg.security.common*"/>
       <group title="ESG SAML Utility Packages" packages="esg.saml.util*"/>
       <link offline="true" href="http://java.sun.com/javase/6/docs/api/" packagelistLoc="${java.io.tmpdir}"/>
       <link href="http://java.sun.com/javase/6/docs/api/"/>
