@@ -14,23 +14,10 @@
  */
 package esg.security.openid2emailresolution;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -39,16 +26,6 @@ import java.util.Set;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.X509TrustManager;
-
-import esg.saml.attr.service.impl.SAMLAttributeServiceClientSoapImpl;
-import esg.saml.attr.service.impl.SAMLAttributesImpl;
-import esg.saml.common.SAMLParameters;
 
 import org.opensaml.saml2.core.Attribute;
 import org.opensaml.saml2.core.impl.AttributeBuilder;
@@ -56,6 +33,9 @@ import org.opensaml.xml.io.MarshallingException;
 import org.opensaml.xml.io.UnmarshallingException;
 import org.opensaml.xml.parse.XMLParserException;
 
+import esg.saml.attr.service.impl.SAMLAttributeServiceClientSoapImpl;
+import esg.saml.attr.service.impl.SAMLAttributesImpl;
+import esg.saml.common.SAMLParameters;
 import esg.security.DnWhitelistX509TrustMgr;
 import esg.security.HttpsClient;
 import esg.security.exceptions.DnWhitelistX509TrustMgrInitException;
