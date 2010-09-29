@@ -16,7 +16,7 @@
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package esg.security.auth.service.impl;
+package esg.security.authn.service.impl;
 
 import java.io.File;
 import java.util.HashMap;
@@ -32,7 +32,7 @@ import org.opensaml.xml.security.credential.Credential;
 import org.springframework.util.Assert;
 import org.w3c.dom.Element;
 
-import esg.security.auth.service.api.SAMLAuthenticationStatementFacade;
+import esg.security.authn.service.api.SAMLAuthenticationStatementFacade;
 import esg.security.common.SAMLBuilder;
 import esg.security.common.SAMLInvalidStatementException;
 import esg.security.common.SecurityManager;

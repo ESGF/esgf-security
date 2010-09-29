@@ -16,7 +16,7 @@
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package esg.security.auth.service.impl;
+package esg.security.authn.service.impl;
 
 import java.io.InputStream;
 
@@ -32,7 +32,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import esg.security.auth.service.impl.SAMLAuthenticationStatementHandlerImpl;
+import esg.security.authn.service.impl.SAMLAuthenticationStatementHandlerImpl;
 import esg.security.common.SAMLBuilder;
 import esg.security.common.SAMLTestParameters;
 import esg.security.common.SAMLUnknownPrincipalException;

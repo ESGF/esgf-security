@@ -45,9 +45,9 @@ public class SAMLTestParameters {
 	public final static String TEST_GROUPROLE_ATTRIBUTE_NAME = "urn:esgf:test:grouprole";
 	
 	// authentication test files
-	public final static String AUTHENTICATION_FILE = "esg/security/auth/service/data/SAMLauthenticationStatement.xml";
-	public final static String AUTHENTICATION_FILE_SIGNED = "esg/security/auth/service/data/SAMLauthenticationStatementSigned.xml";
-	public final static String AUTHENTICATION_FILE_SIGNED_INVALID = "esg/security/auth/service/data/SAMLauthenticationStatementSignedInvalid.xml";
+	public final static String AUTHENTICATION_FILE = "esg/security/authn/service/data/SAMLauthenticationStatement.xml";
+	public final static String AUTHENTICATION_FILE_SIGNED = "esg/security/authn/service/data/SAMLauthenticationStatementSigned.xml";
+	public final static String AUTHENTICATION_FILE_SIGNED_INVALID = "esg/security/authn/service/data/SAMLauthenticationStatementSignedInvalid.xml";
 		
 	// attributes test files
 	public final static String ATTRIBUTES_FILE ="esg/security/attr/service/data/SAMLattributeStatement.xml";

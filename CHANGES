@@ -5,6 +5,7 @@ Version 1.3.0
 - Inserted example code to query Authorization Services deployed at ESG-JPL and ESG-PCMDI Gateways
 - Merged with contributions from BADC
 - Repackaged from "esg.saml" to "esg.security"
+- Repackaged "esg.security.auth" to "esg.security.authn"
 
 Note that the above changes alter the API of the SAMLAttributes interface, and consequently of the SAMLAttributesFactory interface:
 any implementation of the factory interface must now generate attributes that have both a name and a value, either as simple strings
