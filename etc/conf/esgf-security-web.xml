@@ -14,7 +14,7 @@
 	</context-param>
 	<context-param>
 		<param-name>webAppRootKey</param-name>
-		<param-value>esg-saml.root</param-value>
+		<param-value>esgf-security.root</param-value>
 	</context-param>
     
 	<!-- Spring Dispatcher servlet -->

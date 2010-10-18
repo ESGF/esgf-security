@@ -51,10 +51,10 @@
 /**
    Description:
 
-   This is the ant build file for the esg-saml project.  This
+   This is the ant build file for the esgf-security project.  This
    file should not be modified.  A user may set the values of the
    properties used in this file by defining the property file
-   $HOME/.esg-saml.ant.properties which will override the values set
+   $HOME/.esgf-security.ant.properties which will override the values set
    here.  An example of such a file is located in this etc directory.
  
 **/
@@ -66,10 +66,10 @@ Description:
 Builds the project via ant (obviously).
 -->
 
-<project name="esg-saml" default="make" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="esgf-security" default="make" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
 
   <!-- Default properties for this module - can be overridden in etc/${module}.ant.properties -->
-  <property name="module" value="esg-saml"/>
+  <property name="module" value="esgf-security"/>
   <property name="organization" value="Earth Systems Grid Federation"/>
 
   <!--
@@ -359,7 +359,7 @@ Builds the project via ant (obviously).
     <mkdir dir="${dist_dir}" />
     <jar destfile="${dist_dir}/${module}-common-${version_num}.jar">
       <fileset dir="${build_dir}"
-	       includes="esg/saml/common/**"/>
+	       includes="esg/security/common/**"/>
       <manifest>
 	<attribute name="Organization" value="${organization}"/>
 	<attribute name="Author"       value="${author}"/>
@@ -367,7 +367,7 @@ Builds the project via ant (obviously).
 	<attribute name="Module"       value="${module}"/>
 	<attribute name="Version"      value="${version_num}"/>
 	<attribute name="Release-Name" value="${release_name}"/>
-	<section name="esg/saml/common/">
+	<section name="esg/security/common/">
 	  <attribute name="Sealed" value="false"/>
 	</section>
       </manifest>
@@ -383,7 +383,7 @@ Builds the project via ant (obviously).
     <mkdir dir="${dist_dir}" />
     <jar destfile="${dist_dir}/${module}-fe-${version_num}.jar">
       <fileset dir="${build_dir}" 
-	       includes="esg/saml/**,esg/**/common/**,**/*.properties"
+	       includes="esg/security/**,esg/**/common/**,**/*.properties"
 	       excludes="**/test/**,**/${module}.properties/**"/>
       <manifest>
 	<attribute name="Organization" value="${organization}"/>
@@ -393,7 +393,7 @@ Builds the project via ant (obviously).
 	<attribute name="Version"      value="${version_num}"/>
 	<attribute name="Release-Name" value="${release_name}"/>
 	<attribute name="Main-Class"   value="${main_class}"/>
-	<section name="esg/saml/">
+	<section name="esg/security/">
 	  <attribute name="Sealed" value="false"/>
 	</section>
       </manifest>
@@ -401,7 +401,7 @@ Builds the project via ant (obviously).
   </target>
 
   <target name="make_connector_jar" depends="make"
-	  description="(Creates the jar file distribution for node connector component to saml [non-java] component)">
+	  description="(Creates the jar file distribution for node connector component to security [non-java] component)">
     <echo message="JAR -  ${build_dir} ->> ${dist_dir}/${module}-connector-${version_num}.jar"/> 
     <delete> 
       <fileset dir="." includes="${dist_dir}/${module}-connector-${version_num}.jar"/>
@@ -418,7 +418,7 @@ Builds the project via ant (obviously).
 	<attribute name="Module"       value="${module}"/>
 	<attribute name="Version"      value="${version_num}"/>
 	<attribute name="Release-Name" value="${release_name}"/>
-	<section name="esg/node/saml/connector/">
+	<section name="esg/node/security/connector/">
 	  <attribute name="Sealed" value="false"/>
 	</section>
       </manifest>
@@ -597,7 +597,7 @@ Builds the project via ant (obviously).
 
   <!--
       To run a single test case...
-      EXAMPLE: ant test -Dtestcase=esg.node.saml.connector.ESGsamlTest
+      EXAMPLE: ant test -Dtestcase=esg.node.security.connector.ESGsecurityTest
       (unless="tests_uptodate")
     -->
   <target name="test" depends="make_test"
@@ -693,9 +693,9 @@ Builds the project via ant (obviously).
       <doctitle><![CDATA[<h1>${module}</h1>]]></doctitle>
       <bottom><![CDATA[<i><a href="http://esgf.org/" target="_top">ESGF</a> / <a href="http://esgf.org/LICENSE" target="_top">BSD OpenSource License</a></i>]]></bottom>
       <tag name="todo" scope="all" description="To do:"/>
-      <group title="ESG SAML Component Packages" packages="esg.saml*"/>
-      <group title="ESG SAML Common Packages" packages="esg.security.common*"/>
-      <group title="ESG SAML Utility Packages" packages="esg.saml.util*"/>
+      <group title="ESG SECURITY Component Packages" packages="esg.security*"/>
+      <group title="ESG SECURITY Common Packages" packages="esg.security.common*"/>
+      <group title="ESG SECURITY Utility Packages" packages="esg.security.util*"/>
       <link offline="true" href="http://java.sun.com/javase/6/docs/api/" packagelistLoc="${java.io.tmpdir}"/>
       <link href="http://java.sun.com/javase/6/docs/api/"/>
     </javadoc>

@@ -18,7 +18,7 @@ the Ivy jar must be copied into the Eclipse-specific Ant lib directory, or into 
 
 After downloading the module from the ESGF GIT repository, cd to the top-level module directory and run ant:
 
-cd esg-saml
+cd esgf-security
 
 ant make_dist
 will create the jar and war files in the dist/ subdirectory.
@@ -41,15 +41,15 @@ module distribution, then instruct Eclipse to "refresh" the content directory fo
 Deployment of the web application is controlled by the file esg/saml/config/application-context-specific.xml (in the src folder): 
 comment out whichever service stack is not going to be deployed.
 
-Assuming that the servlet container is started on localhost on ports 8080/8443, and that the application is deployed at the "esg-saml" context, 
+Assuming that the servlet container is started on localhost on ports 8080/8443, and that the application is deployed at the "esgf-security" context, 
 the services are available as follows:
 
 1) ESG Attribute service
 
-1a) non-secure URL endpoint: http://localhost:8080/esg-saml/saml/soap/secure/attributeService.htm
+1a) non-secure URL endpoint: http://localhost:8080/esgf-security/saml/soap/secure/attributeService.htm
     Run the client esg.security.attr.main.SAMLAttributeServiceSOAPClient to execute a test query.
     
-1b) secure URL endpoint: https://localhost:8443/esg-saml/saml/soap/secure/attributeService.htm
+1b) secure URL endpoint: https://localhost:8443/esgf-security/saml/soap/secure/attributeService.htm
     First follow the steps to setup mutual authentication (see below),
     then run the client esg.security.attr.main.SecureSAMLAttributeServiceSOAPClient to execute a test query.
 
@@ -60,10 +60,10 @@ as a bean named "samlAttributeFactory" (replacing SAMLAttributeFactoryTrivialImp
 
 2) ESG Authorization Service
 
-2a) non-secure URL endpoint: http://localhost:8080/esg-saml/saml/soap/secure/authorizationService.htm
+2a) non-secure URL endpoint: http://localhost:8080/esgf-security/saml/soap/secure/authorizationService.htm
     Run the client esg.security.authz.main.SAMLAuthorizationServiceSOAPClient to execute a test query.
     
-2b) secure URL endpoint: https://localhost:8443/esg-saml/saml/soap/secure/authorizationService.htm
+2b) secure URL endpoint: https://localhost:8443/esgf-security/saml/soap/secure/authorizationService.htm
     First follow the steps to setup mutual authentication (see below),
     then run the client esg.security.authz.main.SecureSAMLAuthorizationServiceSOAPClient to execute a test query.
 
