@@ -12,9 +12,11 @@
  * @author pjkersha
  * @version $Revision: 7462 $
  */
-package esg.security.yadis.exception;
+package esg.security.yadis.exceptions;
 
 public class YadisRetrievalException extends Exception {
+
+	private static final long serialVersionUID = -2152448988592968958L;
 
 	public YadisRetrievalException(String message, Exception e) {
 		super(message, e);

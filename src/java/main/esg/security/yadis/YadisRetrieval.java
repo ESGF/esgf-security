@@ -22,8 +22,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -32,10 +30,10 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
 
-import esg.security.DnWhitelistX509TrustMgr;
-import esg.security.exceptions.DnWhitelistX509TrustMgrInitException;
-import esg.security.yadis.exception.XrdsParseException;
-import esg.security.yadis.exception.YadisRetrievalException;
+import esg.security.utils.ssl.DnWhitelistX509TrustMgr;
+import esg.security.utils.ssl.exceptions.DnWhitelistX509TrustMgrInitException;
+import esg.security.yadis.exceptions.XrdsParseException;
+import esg.security.yadis.exceptions.YadisRetrievalException;
 
 /**
  * Retrieve a Yadis document and parse it returning the required service
@@ -142,72 +140,16 @@ public class YadisRetrieval
 	 * @throws XrdsParseException error parsing XRD document
 	 * @throws YadisRetrievalException error GETing the content
 	 */
-	public List retrieveAndParse(URL yadisURL, Set targetTypes) throws 
+	public List<XrdsServiceElem> retrieveAndParse(URL yadisURL, 
+			Set<String> targetTypes) throws 
 		XrdsParseException, YadisRetrievalException
 	{
 		String yadisDocContent;
 		yadisDocContent = retrieve(yadisURL);
 
 		XrdsDoc xrdsDoc = new XrdsDoc();
-		List serviceElems = xrdsDoc.parse(yadisDocContent, targetTypes);
+		List<XrdsServiceElem> serviceElems = xrdsDoc.parse(yadisDocContent, 
+															targetTypes);
 		return serviceElems;
-	}
-	
-	public static void main(String[] args) throws IOException {
-		// Input Whitelist DNs as a string array
-		//	X500Principal [] whitelist = {
-		//	new X500Principal("CN=ceda.ac.uk, OU=RAL-SPBU, O=Science and Technology Facilities Council, C=GB")
-		//};
-		
-		// Input DNs from a file
-		InputStream propertiesFile = 
-			DnWhitelistX509TrustMgr.class.getResourceAsStream(
-								"DnWhitelistX509TrustMgr.properties");
-
-		YadisRetrieval yadis = null;
-		try {
-			yadis = new YadisRetrieval(propertiesFile);
-		} catch (YadisRetrievalException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		URL yadisURL = new URL("https://ceda.ac.uk/openid/Philip.Kershaw");
-//		URL yadisURL = new URL("https://localhost:7443/openid/PJKershaw");
-		
-		// 1) Retrieve as string content
-		String content = null;
-		try {
-			content = yadis.retrieve(yadisURL);
-			
-		} catch (YadisRetrievalException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		System.out.println("Yadis content = " + content);
-		
-		// 2) Retrieve as list of services
-		List<XrdsServiceElem> serviceElems = null;
-		
-		// Retrieve only services matching these type(s)
-		String elem [] = {"urn:esg:security:attribute-service"};
-		Set<String> targetTypes = new HashSet(Arrays.asList(elem));
-		try {
-			serviceElems = yadis.retrieveAndParse(yadisURL, targetTypes);
-			
-		} catch (XrdsParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (YadisRetrievalException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		if (serviceElems.isEmpty())
-			System.out.println("No services found for " + elem[0] + " type");
-		
-		for (XrdsServiceElem serviceElem : serviceElems)
-			System.out.println(serviceElem);
 	}
 }

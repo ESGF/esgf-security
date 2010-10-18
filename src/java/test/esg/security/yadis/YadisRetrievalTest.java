@@ -18,47 +18,44 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 
+import org.junit.Assert;
 import org.junit.Test;
 
-import esg.security.utils.ssl.DnWhitelistX509TrustMgr;
-import esg.security.yadis.exception.XrdsParseException;
-import esg.security.yadis.exception.YadisRetrievalException;
+import esg.security.yadis.exceptions.XrdsParseException;
+import esg.security.yadis.exceptions.YadisRetrievalException;
+
 
 public class YadisRetrievalTest {
 	@Test
-	public void testRetrieval() throws IOException {
-		// Input Whitelist DNs as a string array
-		//	X500Principal [] whitelist = {
-		//	new X500Principal("CN=ceda.ac.uk, OU=RAL-SPBU, O=Science and Technology Facilities Council, C=GB")
-		//};
+	public void testRetrieval() throws IOException, XrdsParseException, 
+		YadisRetrievalException {
+		
+		InputStream propertiesFile = 
+			YadisRetrievalTest.class.getResourceAsStream(
+								"YadisRetrievalTest.properties");
+		
+    	Properties applicationProps = new Properties();
+		Assert.assertTrue("Properties file is not set", propertiesFile != null);
+    	applicationProps.load(propertiesFile);
+		
+		// Key store file may be null in which case standard locations are
+		// searched instead
+		URL yadisURL = new URL(applicationProps.getProperty("yadisURL", null));
 		
 		// Input DNs from a file
-		InputStream propertiesFile = 
-			DnWhitelistX509TrustMgr.class.getResourceAsStream(
-								"DnWhitelistX509TrustMgr.properties");
-
-		YadisRetrieval yadis = null;
-		try {
-			yadis = new YadisRetrieval(propertiesFile);
-		} catch (YadisRetrievalException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		InputStream whiteListPropertiesFile = 
+			YadisRetrievalTest.class.getResourceAsStream(
+												"yadis-retrieval.properties");
+		Assert.assertTrue("SSL Properties file is not set", propertiesFile != null);
 		
-		URL yadisURL = new URL("https://ceda.ac.uk/openid/Philip.Kershaw");
-//		URL yadisURL = new URL("https://localhost:7443/openid/PJKershaw");
+		YadisRetrieval yadis = new YadisRetrieval(whiteListPropertiesFile);
 		
 		// 1) Retrieve as string content
 		String content = null;
-		try {
-			content = yadis.retrieve(yadisURL);
-			
-		} catch (YadisRetrievalException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		content = yadis.retrieve(yadisURL);
 
 		System.out.println("Yadis content = " + content);
 		
@@ -69,21 +66,16 @@ public class YadisRetrievalTest {
 		String elem [] = {"urn:esg:security:attribute-service"};
 		HashSet<String> hashSet = new HashSet<String>(Arrays.asList(elem));
 		Set<String> targetTypes = hashSet;
-		try {
-			serviceElems = yadis.retrieveAndParse(yadisURL, targetTypes);
-			
-		} catch (XrdsParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (YadisRetrievalException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		serviceElems = yadis.retrieveAndParse(yadisURL, targetTypes);
 		
 		if (serviceElems.isEmpty())
 			System.out.println("No services found for " + elem[0] + " type");
 		
-		for (XrdsServiceElem serviceElem : serviceElems)
+		Assert.assertEquals(serviceElems.toArray().length, 3);
+		for (XrdsServiceElem serviceElem : serviceElems) {
 			System.out.println(serviceElem);
+			Assert.assertTrue("Local ID is null", 
+					serviceElem.getLocalId() != null);
+		}
 	}
 }

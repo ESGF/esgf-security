@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.Principal;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashSet;
@@ -208,6 +207,11 @@ public class DnWhitelistX509TrustMgr implements X509TrustManager {
 
     	// create application properties with default
     	Properties applicationProps = new Properties();
+    	
+    	if (propertiesFile == null) {
+    		throw new DnWhitelistX509TrustMgrInitException(
+					"Properties file is null");
+    	}
     	
     	try {
 			applicationProps.load(propertiesFile);

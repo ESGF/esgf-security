@@ -29,7 +29,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
-import esg.security.yadis.exception.XrdsParseException;
+import esg.security.yadis.exceptions.XrdsParseException;
 
 public class XrdsDocTest {
 	@Test
@@ -38,6 +38,7 @@ public class XrdsDocTest {
 		IOException, XPathExpressionException, XrdsParseException {
 		
 		URL url = this.getClass().getResource("yadis.xml");
+		Assert.assertTrue("Yadis file not found", url != null);
 		File yadisDocFile = new File(url.getFile());
 		XrdsDoc yadisParser = new XrdsDoc();
 		StringBuffer contents = new StringBuffer();

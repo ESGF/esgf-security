@@ -17,7 +17,7 @@
 package esg.security.yadis;
 
 import java.util.Set;
-import java.util.Arrays;
+
 
 /**
  * Encapsulates the (OpenID-related) information extracted in
@@ -28,18 +28,18 @@ import java.util.Arrays;
  *
  * @author jbufu
  */
-public class XrdsServiceElem implements Comparable {
+public class XrdsServiceElem implements Comparable<Object> {
 
 	    private int servicePriority;
 	    private int uriPriority;
-	    private Set types;
+	    private Set<String> types;
 	    private String uri;
 	    private String localId;
 	    private String delegate;
 	    public static final int LOWEST_PRIORITY = -1;
 	    private String canonicalId;
 
-	    public XrdsServiceElem(String uri, Set types,
+	    public XrdsServiceElem(String uri, Set<String> types,
 	                       int servicePriority, int uriPriority, String localId, 
 	                       String delegate, String canonicalId)
 	    {
@@ -68,16 +68,15 @@ public class XrdsServiceElem implements Comparable {
 	        this.uriPriority = uriPriority;
 	    }
 
-	    public Set getTypes() {
+	    public Set<String> getTypes() {
 	        return types;
 	    }
 
-	    public void setTypes(Set types) {
+	    public void setTypes(Set<String> types) {
 	        this.types = types;
 	    }
 
-	    public boolean matchesType(String type)
-	    {
+	    public boolean matchesType(String type) {
 	        return types != null && types.contains(type);
 	    }
 

@@ -10,23 +10,13 @@
  * 
  * Licence: Apache License 2.0
  * 
- * $Id: XrdsDoc.java 7462 2010-09-08 15:21:10Z pjkersha $
- * 
  * @author pjkersha
- * @version $Revision: 7462 $
  */
 package esg.security.yadis;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -36,29 +26,18 @@ import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.DocumentType;
-import org.w3c.dom.Entity;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.ErrorHandler;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import esg.security.yadis.exception.XrdsParseException;
+import esg.security.yadis.exceptions.XrdsParseException;
 
 
-public class XrdsDoc {
-    private static final Log _log = LogFactory.getLog(XrdsDoc.class);
-    private static final boolean DEBUG = _log.isDebugEnabled();
-    
+public class XrdsDoc {    
     public static final String W3C_XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
     public static final String JAXP_SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
     public static final String JAXP_SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
@@ -121,15 +100,16 @@ public class XrdsDoc {
         }
     }
 
-    protected Map extractElementsByParent(String ns, String elem, Set parents, 
-    		Document document)
+    protected Map<Node, String> extractElementsByParent(String ns, String elem, 
+    		Set<Node> parents, Document document)
     {
-        Map result = new HashMap();
+        Map<Node, String> result = new HashMap<Node, String>();
         NodeList nodes = document.getElementsByTagNameNS(ns, elem);
         Node node;
         for (int i = 0; i < nodes.getLength(); i++) {
             node = nodes.item(i);
-            if (node == null || !parents.contains(node.getParentNode())) continue;
+            if (node == null || !parents.contains(node.getParentNode())) 
+            	continue;
 
             String localId = node.getFirstChild() != null && 
             	node.getFirstChild().getNodeType() == Node.TEXT_NODE ?
@@ -140,13 +120,13 @@ public class XrdsDoc {
         return result;
     }
     
-    protected void addServiceType(Map serviceTypes, Node serviceNode, 
-    		String type)
+    protected void addServiceType(Map<Node, Set<String>> serviceTypes, 
+    		Node serviceNode, String type)
     {
-        Set types = (Set) serviceTypes.get(serviceNode);
+        Set<String> types = serviceTypes.get(serviceNode);
         if (types == null)
         {
-            types = new HashSet();
+            types = new HashSet<String>();
             serviceTypes.put(serviceNode, types);
         }
         types.add(type);
@@ -166,7 +146,8 @@ public class XrdsDoc {
         return 0;
     }
     
-    public List parse(String input, Set targetTypes) throws XrdsParseException
+    public List<XrdsServiceElem> parse(String input, Set<String> targetTypes) 
+    	throws XrdsParseException
     {
         Document document = parseXmlInput(input);
 
@@ -193,8 +174,8 @@ public class XrdsDoc {
 
         // extract the services that match the specified target types
         NodeList types = document.getElementsByTagNameNS(XRD_NS, XRD_ELEM_TYPE);
-        Map serviceTypes = new HashMap();
-        Set selectedServices = new HashSet();
+        HashMap<Node, Set<String>> serviceTypes = new HashMap<Node, Set<String>>();
+        Set<Node> selectedServices = new HashSet<Node>();
         Node typeNode, serviceNode;
         for (int i = 0; i < types.getLength(); i++) {
             typeNode = types.item(i);
@@ -216,16 +197,17 @@ public class XrdsDoc {
         }
 
         // extract local IDs
-        Map serviceLocalIDs = extractElementsByParent(XRD_NS, XRD_ELEM_LOCALID, 
+        Map<Node, String> serviceLocalIDs = extractElementsByParent(XRD_NS, 
+        		XRD_ELEM_LOCALID, 
         		selectedServices, 
         		document);
-        Map serviceDelegates = extractElementsByParent(OPENID_NS, 
+        Map<Node, String> serviceDelegates = extractElementsByParent(OPENID_NS, 
         		OPENID_ELEM_DELEGATE, 
         		selectedServices, 
         		document);
 
         // build XrdsServiceEndpoints for all URIs in the found services
-        List result = new ArrayList();
+        List<XrdsServiceElem> result = new ArrayList<XrdsServiceElem>();
         NodeList uris = document.getElementsByTagNameNS(XRD_NS, XRD_ELEM_URI);
         Node uriNode;
         for (int i = 0; i < uris.getLength(); i++) {
@@ -239,7 +221,7 @@ public class XrdsDoc {
                 uriNode.getFirstChild().getNodeValue() : null;
 
             serviceNode = uriNode.getParentNode();
-            Set typeSet = (Set) serviceTypes.get(serviceNode);
+            Set<String> typeSet = serviceTypes.get(serviceNode);
 
             String localId = (String) serviceLocalIDs.get(serviceNode);
             String delegate = (String) serviceDelegates.get(serviceNode);
@@ -250,69 +232,13 @@ public class XrdsDoc {
             result.add(endpoint);
         }
 
-        Collections.sort(result);
         return result;
     }
     
     // Parse Yadis document extracting the given target types
-    public List parse(String yadisDocContent) throws XrdsParseException
+    public List<XrdsServiceElem> parse(String yadisDocContent) throws 
+    	XrdsParseException
     {
     	return parse(yadisDocContent, null);
     }
-    
-	/**
-	 * TODO: move this test harness to unit tests
-	 * @param args
-	 * @throws IOException 
-	 * @throws SAXException 
-	 * @throws ParserConfigurationException 
-	 * @throws XPathExpressionException 
-	 * @throws XrdsParseException 
-	 */
-	public static void main(String[] args) throws ParserConfigurationException, 
-		SAXException, 
-		IOException, XPathExpressionException, XrdsParseException {
-				        
-        String yadisDocFilePath = "/home/pjkersha/workspace/EsgYadisParser/data/yadis.xml";
-		XrdsDoc yadisParser = new XrdsDoc();
-		StringBuffer contents = new StringBuffer();
-
-		FileReader fileReader = new FileReader(yadisDocFilePath);
-		BufferedReader in = new BufferedReader(fileReader); 
-		try 
-		{ 		
-			String text = null;
-
-			while ((text = in.readLine()) != null)
-			{ 
-				contents.append(text);
-				contents.append(System.getProperty("line.separator"));
-			} 
-			in.close(); 
-		} 
-		catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        } 
-		catch (IOException e)
-        {
-            e.printStackTrace();
-        } 
-        finally
-        {
-            try
-            {
-                if (in != null)
-                {
-                    in.close();
-                }
-            } catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-        }
-         
-		String yadisDocContent = contents.toString();		
-		yadisParser.parse(yadisDocContent);
-	}
 }

@@ -27,6 +27,8 @@ import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.Attribute;
 import org.opensaml.saml2.core.AttributeQuery;
 import org.opensaml.saml2.core.Response;
+import org.opensaml.saml2.core.Status;
+import org.opensaml.saml2.core.StatusCode;
 import org.opensaml.ws.soap.soap11.Body;
 import org.opensaml.ws.soap.soap11.Envelope;
 import org.opensaml.xml.io.MarshallingException;
@@ -39,6 +41,7 @@ import org.w3c.dom.Node;
 import esg.security.attr.service.api.SAMLAttributeServiceClient;
 import esg.security.attr.service.api.SAMLAttributeStatementHandler;
 import esg.security.attr.service.api.SAMLAttributes;
+import esg.security.attr.service.api.exceptions.SAMLAttributeServiceClientResponseException;
 import esg.security.common.SAMLBuilder;
 
 /**
@@ -68,23 +71,31 @@ public class SAMLAttributeServiceClientSoapImpl implements SAMLAttributeServiceC
 	}
 
 	/**
-	 * Build attribute request with given set of query attributes.  Note null
-	 * attributes will set default ESG attributes - see 
-	 * buildAttributeRequest(final String openid)
+	 * Build attribute query with given set of query attributes.  Note null
+	 * attributes will set default ESG attributes 
 	 * 
 	 * P J Kershaw 08/09/10
 	 * 
 	 * @param openid
 	 * @param attributes
-	 * @return
+	 * @return query
 	 * @throws MarshallingException
 	 */
-	public String buildAttributeRequest(final String openid, final List<Attribute> attributes) throws MarshallingException {
+	public AttributeQuery buildAttributeQuery(final String openid, 
+			final List<Attribute> attributes) {
 		
 		// build attribute query
-		final AttributeQuery attributeQuery = requestBuilder.buildAttributeQueryRequest(openid, issuer, attributes);
+		AttributeQuery attributeQuery = requestBuilder.buildAttributeQueryRequest(openid, issuer, attributes);
 		
-		// embed into SOAP envelop
+		return attributeQuery;
+	}
+	
+	/**
+	 * Embed query into SOAP envelop
+	 * @param attributeQuery
+	 * @throws MarshallingException 
+	 */
+	private String serialiseAttributeQuery(final AttributeQuery attributeQuery) throws MarshallingException {
 		final Envelope soapRequestEnvelope = samlBuilder.getSOAPEnvelope();
 		final Body soapRequestBody = samlBuilder.getSOAPBody();
 		soapRequestBody.getUnknownXMLObjects().add(attributeQuery);
@@ -99,9 +110,33 @@ public class SAMLAttributeServiceClientSoapImpl implements SAMLAttributeServiceC
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Make attributeQuery and serialise
+	 * @throws MarshallingException 
 	 */
-	public SAMLAttributes parseAttributeResponse(final String attributeResponse) throws XMLParserException, UnmarshallingException {
+	public String buildAttributeRequest(final String openid, final List<Attribute> attributes) 
+		throws MarshallingException {
+		
+		AttributeQuery attributeQuery = buildAttributeQuery(openid, attributes);
+		return serialiseAttributeQuery(attributeQuery);
+	}
+	
+	/**
+	 * Make serialised query
+	 */
+	public String buildAttributeRequest(final AttributeQuery attributeQuery) 
+		throws MarshallingException {
+		
+		return serialiseAttributeQuery(attributeQuery);
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * @throws SAMLAttributeServiceClientResponseException 
+	 */
+	public SAMLAttributes parseAttributeResponse(AttributeQuery attributeQuery,
+			final String attributeResponse) 
+		throws XMLParserException, UnmarshallingException, 
+			SAMLAttributeServiceClientResponseException {
 		
 		// empty attributes by default
 		SAMLAttributes attributes = new SAMLAttributesImpl();
@@ -115,6 +150,29 @@ public class SAMLAttributeServiceClientSoapImpl implements SAMLAttributeServiceC
         final Body soapResponseBody = soapResponseEnvelope.getBody();
         final Response samlResponse = (Response)soapResponseBody.getUnknownXMLObjects().get(0);
         
+        if (attributeQuery != null) {
+	        String queryID = attributeQuery.getID();
+	        if (! queryID.equals(samlResponse.getInResponseTo())) {
+	        	throw new SAMLAttributeServiceClientResponseException(
+	        			"SAML Attribute response InResponseTo ID \"" +
+	        			samlResponse.getInResponseTo() + 
+	        			"\" doesn't match the original query ID \"" + queryID
+	        			 + "\"");        	
+	        }
+        } else {
+        	if (LOG.isDebugEnabled()) LOG.debug("Skipping InResponseTo ID " +
+        		"check - the corresponding query was not passed to this method");
+        }
+        
+        Status status = samlResponse.getStatus();
+        String statusValue = status.getStatusCode().getValue();
+        if (! statusValue.equals(StatusCode.SUCCESS_URI)) {
+        	throw new SAMLAttributeServiceClientResponseException(
+        			"SAML Attribute query response set an " +
+        			"error status: " + statusValue + ", " +
+        			status.getStatusMessage());
+        }
+        
         // SAML object > User object
         final Collection<Assertion> assertions = samlResponse.getAssertions();
         for (final Assertion assertion : assertions) {
@@ -123,5 +181,15 @@ public class SAMLAttributeServiceClientSoapImpl implements SAMLAttributeServiceC
 
         return attributes;
 	}
-	
+
+
+	/**
+	 * {@inheritDoc}
+	 * @throws SAMLAttributeServiceClientSoapImplResponseException 
+	 */
+	public SAMLAttributes parseAttributeResponse(final String attributeResponse) 
+		throws XMLParserException, UnmarshallingException, 
+			SAMLAttributeServiceClientResponseException {
+		return parseAttributeResponse(null, attributeResponse);
+	}
 }
