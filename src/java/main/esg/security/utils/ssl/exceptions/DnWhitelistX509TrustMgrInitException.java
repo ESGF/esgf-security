@@ -15,7 +15,7 @@
  * @author pjkersha
  * @version $Revision: 7493 $
  */
-package esg.security.exceptions;
+package esg.security.utils.ssl.exceptions;
 
 
 public class DnWhitelistX509TrustMgrInitException extends Exception {

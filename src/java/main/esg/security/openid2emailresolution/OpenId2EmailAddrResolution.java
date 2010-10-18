@@ -14,7 +14,6 @@
  */
 package esg.security.openid2emailresolution;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -28,25 +27,27 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
 import org.opensaml.saml2.core.Attribute;
+import org.opensaml.saml2.core.AttributeQuery;
 import org.opensaml.saml2.core.impl.AttributeBuilder;
 import org.opensaml.xml.io.MarshallingException;
 import org.opensaml.xml.io.UnmarshallingException;
 import org.opensaml.xml.parse.XMLParserException;
 
-import esg.security.DnWhitelistX509TrustMgr;
-import esg.security.HttpsClient;
+import esg.security.attr.service.api.exceptions.SAMLAttributeServiceClientResponseException;
 import esg.security.attr.service.impl.SAMLAttributeServiceClientSoapImpl;
 import esg.security.attr.service.impl.SAMLAttributesImpl;
 import esg.security.common.SAMLParameters;
-import esg.security.exceptions.DnWhitelistX509TrustMgrInitException;
-import esg.security.exceptions.HttpsClientInitException;
-import esg.security.exceptions.HttpsClientRetrievalException;
 import esg.security.openid2emailresolution.exceptions.AttributeServiceQueryException;
 import esg.security.openid2emailresolution.exceptions.NoMatchingXrdsServiceException;
+import esg.security.utils.ssl.DnWhitelistX509TrustMgr;
+import esg.security.utils.ssl.HttpsClient;
+import esg.security.utils.ssl.exceptions.DnWhitelistX509TrustMgrInitException;
+import esg.security.utils.ssl.exceptions.HttpsClientInitException;
+import esg.security.utils.ssl.exceptions.HttpsClientRetrievalException;
 import esg.security.yadis.XrdsServiceElem;
 import esg.security.yadis.YadisRetrieval;
-import esg.security.yadis.exception.XrdsParseException;
-import esg.security.yadis.exception.YadisRetrievalException;
+import esg.security.yadis.exceptions.XrdsParseException;
+import esg.security.yadis.exceptions.YadisRetrievalException;
 
 
 /**
@@ -59,6 +60,7 @@ import esg.security.yadis.exception.YadisRetrievalException;
  */
 public class OpenId2EmailAddrResolution {
 	
+	private String attributeQueryIssuer;
 	private String attributeServiceType;
 	private DnWhitelistX509TrustMgr yadisX509TrustMgr;
 	private HttpsClient httpsClient;
@@ -69,12 +71,14 @@ public class OpenId2EmailAddrResolution {
 	 * Yadis and Attribute Service properties files set SSL settings for 
 	 * queries to these respective services
 	 * 
+	 * @param attributeQueryIssuer
 	 * @param attributeServiceType
 	 * @param yadisPropertiesFile
 	 * @param attributeServiceClientPropertiesFile
 	 * @throws YadisRetrievalException
 	 */
-	public OpenId2EmailAddrResolution(String attributeServiceType,
+	public OpenId2EmailAddrResolution(String attributeQueryIssuer,
+			String attributeServiceType,
 			InputStream yadisPropertiesFile, 
 			InputStream attributeServiceClientPropertiesFile) 
 				throws DnWhitelistX509TrustMgrInitException {
@@ -100,13 +104,17 @@ public class OpenId2EmailAddrResolution {
 		if (this.attributeServiceType == null)
 			this.attributeServiceType = DEF_ATTRIBUTE_SERVICE_XRD_SERVICE_TYPE;
 		else
-			this.attributeServiceType = attributeServiceType;	
+			this.attributeServiceType = attributeServiceType;
+		
+		this.attributeQueryIssuer = attributeQueryIssuer;
 	}
 	
-	public OpenId2EmailAddrResolution(InputStream yadisPropertiesFile, 
+	public OpenId2EmailAddrResolution(String attributeQueryIssuer,
+			InputStream yadisPropertiesFile, 
 			InputStream attributeServiceClientPropertiesFile) 
 	throws DnWhitelistX509TrustMgrInitException {
-		this(null, yadisPropertiesFile, attributeServiceClientPropertiesFile);
+		this(attributeQueryIssuer, null, yadisPropertiesFile, 
+				attributeServiceClientPropertiesFile);
 	}
 	
 	/**
@@ -126,8 +134,11 @@ public class OpenId2EmailAddrResolution {
 		
 		YadisRetrieval yadisRetriever = new YadisRetrieval(yadisX509TrustMgr);
 		List<XrdsServiceElem> serviceElems = null;
-		Set<String> targetTypes = new HashSet<String>() {{
-			add(attributeServiceType);}};
+		Set<String> targetTypes = new HashSet<String>() {
+			private static final long serialVersionUID = 1L; {
+			add(attributeServiceType);
+			}
+		};
 		
 		serviceElems = yadisRetriever.retrieveAndParse(openidURL, targetTypes);
 		
@@ -135,13 +146,9 @@ public class OpenId2EmailAddrResolution {
 			throw new NoMatchingXrdsServiceException("No matching XRDS " + 
 					"service element returned for OpenID URI: " + openidURL);
 		
-		// Sort into Priority order making use of XrdsServiceElem's compareTo
-		// logic
-		// TODO: verify this is working correctly!
-		Collections.sort(serviceElems);
-		
 		// Get Attribute Service URI from service element with the highest 
 		// priority
+		Collections.sort(serviceElems);
 		XrdsServiceElem priorityAttributeServiceElem = serviceElems.get(0);
 		URL attributeServiceEndpoint = null;
 		try {
@@ -166,16 +173,14 @@ public class OpenId2EmailAddrResolution {
 	 * @param openidURL
 	 * @return
 	 * @throws AttributeServiceQueryException
+	 * @throws  
 	 */
 	protected InternetAddress queryAttributeService(
 			URL attributeServiceEndpoint,
 			URL openidURL) throws AttributeServiceQueryException
-	{
-		// TODO: set issuer from SSL client cert DN
-		String issuer = "CN=localhost, OU=Security, O=NDG";
-		
+	{		
 		SAMLAttributeServiceClientSoapImpl attributeServiceClient = 
-			new SAMLAttributeServiceClientSoapImpl(issuer);
+			new SAMLAttributeServiceClientSoapImpl(attributeQueryIssuer);
 		
 		// Create query
 		AttributeBuilder attributeBuilder = new AttributeBuilder();
@@ -187,10 +192,14 @@ public class OpenId2EmailAddrResolution {
 		List<Attribute> attributes = new ArrayList<Attribute>();
 		attributes.add(emailAttribute);
 		
+		AttributeQuery attributeQuery = null;
+		attributeQuery = attributeServiceClient.buildAttributeQuery(
+															openidURL.toString(), 
+															attributes);
+		
 		String query = null;
 		try {
-			query = attributeServiceClient.buildAttributeRequest(
-					openidURL.toString(), attributes);
+			query = attributeServiceClient.buildAttributeRequest(attributeQuery);
 			
 		} catch (MarshallingException e) {
 			throw new AttributeServiceQueryException("Marshalling attribute " +
@@ -202,13 +211,15 @@ public class OpenId2EmailAddrResolution {
 			response = httpsClient.retrieve(attributeServiceEndpoint, query, null);
 			
 		} catch (HttpsClientRetrievalException e) {
-			throw new AttributeServiceQueryException("Sent attribute query", e);
+			throw new AttributeServiceQueryException("Error dispatching " +
+					"attribute query", e);
 		}
 		
 		SAMLAttributesImpl samlAttrs = null;
 		try {
 			samlAttrs = (SAMLAttributesImpl) 
-				attributeServiceClient.parseAttributeResponse(response);
+				attributeServiceClient.parseAttributeResponse(attributeQuery,
+						response);
 			
 		} catch (XMLParserException e) {
 			throw new AttributeServiceQueryException(
@@ -216,6 +227,10 @@ public class OpenId2EmailAddrResolution {
 		} catch (UnmarshallingException e) {
 			throw new AttributeServiceQueryException(
 					"Unmarshalling attribute query response", e);
+			
+		} catch (SAMLAttributeServiceClientResponseException e) {
+			throw new AttributeServiceQueryException(
+					"Error with attribute query response", e);
 		}
 		
 		String sEmail = samlAttrs.getEmail();
@@ -233,35 +248,6 @@ public class OpenId2EmailAddrResolution {
 					"Error parsing e-mail address", e);
 		}
 	    return email;
-	}
-	
-	public static void main(String[] args) throws IOException, 
-		NoMatchingXrdsServiceException, 
-		XrdsParseException, 
-		AttributeServiceQueryException, 
-		DnWhitelistX509TrustMgrInitException, 
-		YadisRetrievalException
-	{
-		// Input DNs for whitelisting read from file.  Different settings
-		// may be made for the Yadis and Attribute Service connections
-		InputStream yadisPropertiesFile = 
-			OpenId2EmailAddrResolution.class.getResourceAsStream(
-								"yadis-retrieval-ssl.properties");
-
-		InputStream attributeServiceClientPropertiesFile = 
-			OpenId2EmailAddrResolution.class.getResourceAsStream(
-								"attribute-service-client-ssl.properties");
-		
-		OpenId2EmailAddrResolution openid2EmailAddr = new 
-			OpenId2EmailAddrResolution(yadisPropertiesFile, 
-					attributeServiceClientPropertiesFile);
-		
-		URL yadisURL = new URL("https://localhost:7443/openid/philip.kershaw");
-
-		InternetAddress email;
-		email = openid2EmailAddr.resolve(yadisURL);
-		System.out.println("OpenID: " + yadisURL.toString() + " resolves to " +
-				"e-mail address: " + email.toString());
 	}
 }
 

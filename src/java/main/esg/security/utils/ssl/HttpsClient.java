@@ -1,4 +1,4 @@
-package esg.security;
+package esg.security.utils.ssl;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -16,7 +16,6 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
-import java.util.HashSet;
 import java.util.Properties;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -25,11 +24,11 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
-import javax.security.auth.x500.X500Principal;
 
-import esg.security.exceptions.DnWhitelistX509TrustMgrInitException;
-import esg.security.exceptions.HttpsClientInitException;
-import esg.security.exceptions.HttpsClientRetrievalException;
+import esg.security.utils.ssl.exceptions.DnWhitelistX509TrustMgrInitException;
+import esg.security.utils.ssl.exceptions.HttpsClientInitException;
+import esg.security.utils.ssl.exceptions.HttpsClientRetrievalException;
+
 
 public class HttpsClient {
 	private KeyManager[] keyManagers;
@@ -49,16 +48,18 @@ public class HttpsClient {
 		keyStoreFilePath = null;
 		
 		Properties props = loadProperties(propertiesFile);
+		if (keyStoreFilePath != null && keyStorePassphrase != null) {
 		
-		InputStream keyStoreIStream = null;
-		try {
-			keyStoreIStream = new FileInputStream(keyStoreFilePath);
-			
-		} catch (FileNotFoundException e) {
-			throw new HttpsClientInitException("Error reading "+
-					"\"" + keyStoreFilePath + "\" keystore", e);
+			InputStream keyStoreIStream = null;
+			try {
+				keyStoreIStream = new FileInputStream(keyStoreFilePath);
+				
+			} catch (FileNotFoundException e) {
+				throw new HttpsClientInitException("Error reading "+
+						"\"" + keyStoreFilePath + "\" keystore", e);
+			}
+			loadKeyStore(keyStoreIStream, keyStorePassphrase);
 		}
-		loadKeyStore(keyStoreIStream, keyStorePassphrase);
 		loadTrustMgr(props);
 	}
 	

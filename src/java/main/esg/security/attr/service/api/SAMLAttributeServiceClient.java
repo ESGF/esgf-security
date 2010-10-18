@@ -25,6 +25,8 @@ import org.opensaml.xml.io.MarshallingException;
 import org.opensaml.xml.io.UnmarshallingException;
 import org.opensaml.xml.parse.XMLParserException;
 
+import esg.security.attr.service.api.exceptions.SAMLAttributeServiceClientResponseException;
+
 /**
  * Client-side API for interacting with a {@link SAMLAttrbuteService}.
  * Note that this API is binding-agnostic.
@@ -43,7 +45,10 @@ public interface SAMLAttributeServiceClient {
 	 * Method to parse a serialized SAML attribute response into a user object.
 	 * @param attributeResponse :  the SAML attribute response obtained from the SAML service, serialized as string.
 	 * @return : object populated with attributes extracted from the SAML response.
+	 * @throws SAMLAttributeServiceClientSoapImplResponseException 
 	 */
-	SAMLAttributes parseAttributeResponse(String attributeResponse) throws XMLParserException, UnmarshallingException;
+	SAMLAttributes parseAttributeResponse(String attributeResponse) throws 
+		XMLParserException, UnmarshallingException, 
+		SAMLAttributeServiceClientResponseException;
 	
 }

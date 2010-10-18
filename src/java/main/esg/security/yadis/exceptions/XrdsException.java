@@ -12,9 +12,11 @@
  * @author pjkersha
  * @version $Revision: 7462 $
  */
-package esg.security.yadis.exception;
+package esg.security.yadis.exceptions;
 
 public class XrdsException extends Exception {
+
+	private static final long serialVersionUID = 2806533159657546936L;
 
 	public XrdsException(String message, Exception e) {
 		super(message, e);

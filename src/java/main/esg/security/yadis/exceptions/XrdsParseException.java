@@ -12,12 +12,12 @@
  * @author pjkersha
  * @version $Revision: 7462 $
  */
-package esg.security.yadis.exception;
-
-import javax.xml.parsers.ParserConfigurationException;
+package esg.security.yadis.exceptions;
 
 
 public class XrdsParseException extends XrdsException {
+
+	private static final long serialVersionUID = 8746448301477952070L;
 
 	public XrdsParseException(String message, Exception e) {
 		super(message, e);
