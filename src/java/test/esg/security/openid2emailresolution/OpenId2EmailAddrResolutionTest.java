@@ -8,6 +8,7 @@ import java.util.Properties;
 import javax.mail.internet.InternetAddress;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import esg.security.openid2emailresolution.exceptions.AttributeServiceQueryException;
@@ -19,6 +20,7 @@ import esg.security.yadis.exceptions.YadisRetrievalException;
 
 public class OpenId2EmailAddrResolutionTest {
 	@Test
+	@Ignore
 	public void testResolution() throws IOException, 
 		NoMatchingXrdsServiceException, 
 		XrdsParseException, 

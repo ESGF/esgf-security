@@ -26,6 +26,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
@@ -33,6 +34,7 @@ import esg.security.yadis.exceptions.XrdsParseException;
 
 public class XrdsDocTest {
 	@Test
+	@Ignore
 	public void testParseDoc() throws ParserConfigurationException, 
 		SAXException, 
 		IOException, XPathExpressionException, XrdsParseException {

@@ -33,7 +33,7 @@ import esg.security.common.SOAPServiceClient;
 public class SAMLAttributeServiceSOAPClient {
 
 	  // use HTTP endpoint for application deployed on localhost
-	  private static final String ENDPOINT = "http://localhost:8080/esg-saml/saml/soap/secure/attributeService.htm";  	  
+	  private static final String ENDPOINT = "http://localhost:8080/esgf-security/saml/soap/secure/attributeService.htm";  	  
 	  private static final String SAML_REQUEST = "esg/security/attr/main/SAMLattributeQueryRequest.xml";
 	  
 	  public static void main(String[] args) throws Exception {

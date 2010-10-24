@@ -22,6 +22,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import esg.security.yadis.exceptions.XrdsParseException;
@@ -30,6 +31,7 @@ import esg.security.yadis.exceptions.YadisRetrievalException;
 
 public class YadisRetrievalTest {
 	@Test
+	@Ignore
 	public void testRetrieval() throws IOException, XrdsParseException, 
 		YadisRetrievalException {
 		

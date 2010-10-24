@@ -38,7 +38,7 @@ module distribution, then instruct Eclipse to "refresh" the content directory fo
 
 >>> CONFIGURING AND RUNNING THE WEB APPLICATION
 
-Deployment of the web application is controlled by the file esg/saml/config/application-context-specific.xml (in the src folder): 
+Deployment of the web application is controlled by the file esg/security/config/application-context-specific.xml (in the src folder): 
 comment out whichever service stack is not going to be deployed.
 
 Assuming that the servlet container is started on localhost on ports 8080/8443, and that the application is deployed at the "esgf-security" context, 
@@ -78,15 +78,23 @@ and deploy it in the Spring context as a bean named "samlAuthorizationFactory" (
 In order to setup mutual authentication (and optional white-listing) between the client and server, the following steps must be followed:
 
 server side:
-- enable Tomcat to listen on a secure port (e.g. 8443)
-- configure Tomcat to use a keystore certificate (test certificate provided in distribution: server-cert.ks)
-- configure Tomcat to use the client certificate, if found (clientAuth="want")
-- mandate service non-secure endpoint (e.g. 8080) to redirect to service secure endpoint (e.g. 8443)
-- insert client's CA public key into server's trustore (example provided in dsitribution: servert-trustore.ks)
+
+- configure the Tomcat connector in server.xml to:
+	- listen on a secure port (e.g. 8443)
+	- use a keystore certificate (test certificate provided in distribution: server-cert.ks)
+	- use the client certificate, if found (clientAuth="want")
+	- mandate service non-secure endpoint (e.g. 8080) to redirect to service secure endpoint (e.g. 8443)
+	For example:
+	<Connector SSLEnabled="true" clientAuth="want" keystoreFile="/Users/cinquini/myApplications/apache-tomcat/server-cert.ks" maxThreads="150" port="8443" protocol="HTTP/1.1" scheme="https" secure="true" sslProtocol="TLS"/>
+	
+- configure Tomcat to use a trustore that contains the CA that issues the client certificate. 
+  For example, start Tomcat with these options:
+  -Djavax.net.ssl.trustStore=/Users/cinquini/myApplications/apache-tomcat/esg-truststore.ts -Djavax.net.ssl.trustStorePassword=changeit
+
 - optionally, configure the server with a white list that include's the client's certificate subject
 
 client side:
-- obtain a valid certificate in keystore format (example provided in distribution although expired: client-cert.ks)
+- obtain a valid certificate in keystore format from your CA
 - configure the client to use a trustore that contains the service's certificate (example provided in distribution: client-trustore.ks)
 
 >>> TECHNICAL NOTES
