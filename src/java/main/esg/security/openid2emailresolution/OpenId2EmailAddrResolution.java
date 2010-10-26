@@ -33,6 +33,7 @@ import org.opensaml.xml.io.MarshallingException;
 import org.opensaml.xml.io.UnmarshallingException;
 import org.opensaml.xml.parse.XMLParserException;
 
+import esg.security.attr.service.api.SAMLAttributeServiceClient;
 import esg.security.attr.service.api.exceptions.SAMLAttributeServiceClientResponseException;
 import esg.security.attr.service.impl.SAMLAttributeServiceClientSoapImpl;
 import esg.security.attr.service.impl.SAMLAttributesImpl;
@@ -179,7 +180,7 @@ public class OpenId2EmailAddrResolution {
 			URL attributeServiceEndpoint,
 			URL openidURL) throws AttributeServiceQueryException
 	{		
-		SAMLAttributeServiceClientSoapImpl attributeServiceClient = 
+		SAMLAttributeServiceClient attributeServiceClient = 
 			new SAMLAttributeServiceClientSoapImpl(attributeQueryIssuer);
 		
 		// Create query

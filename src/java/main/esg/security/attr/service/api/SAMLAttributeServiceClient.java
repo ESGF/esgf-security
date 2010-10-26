@@ -21,6 +21,7 @@ package esg.security.attr.service.api;
 import java.util.List;
 
 import org.opensaml.saml2.core.Attribute;
+import org.opensaml.saml2.core.AttributeQuery;
 import org.opensaml.xml.io.MarshallingException;
 import org.opensaml.xml.io.UnmarshallingException;
 import org.opensaml.xml.parse.XMLParserException;
@@ -34,21 +35,31 @@ import esg.security.attr.service.api.exceptions.SAMLAttributeServiceClientRespon
 public interface SAMLAttributeServiceClient {
 	
 	/**
-	 * Method to build a serialized SAML attribute request for a user with given OpenID.
+	 * Method to build a SAML attribute query for a user with given OpenID.
 	 * @param openid : the user unique identifier.
 	 * @param attributes : the named attributes to request - if empty or null, the server will send all attributes available.
 	 * @return the SAML attribute request (with binding) serialized as string, to be sent to the SAML attribute service.
 	 */
-	String buildAttributeRequest(String identifier, List<Attribute> attributes) throws MarshallingException;
+	AttributeQuery buildAttributeQuery(String identifier, List<Attribute> attributes);
+	
+	/**
+	 * Method to build a serialized SAML attribute request containing a given attribute query.
+	 * @param openid : the user unique identifier.
+	 * @param attributes : the named attributes to request - if empty or null, the server will send all attributes available.
+	 * @return the SAML attribute request (with binding) serialized as string, to be sent to the SAML attribute service.
+	 */
+	String buildAttributeRequest(AttributeQuery attributeQuery) throws MarshallingException;
 
 	/**
-	 * Method to parse a serialized SAML attribute response into a user object.
-	 * @param attributeResponse :  the SAML attribute response obtained from the SAML service, serialized as string.
-	 * @return : object populated with attributes extracted from the SAML response.
-	 * @throws SAMLAttributeServiceClientSoapImplResponseException 
+	 * Method to parse a serialized SAML attribute response.
+	 * @param attributeQuery
+	 * @param attributeResponse
+	 * @return
+	 * @throws XMLParserException
+	 * @throws UnmarshallingException
+	 * @throws SAMLAttributeServiceClientResponseException
 	 */
-	SAMLAttributes parseAttributeResponse(String attributeResponse) throws 
-		XMLParserException, UnmarshallingException, 
-		SAMLAttributeServiceClientResponseException;
+	SAMLAttributes parseAttributeResponse(final AttributeQuery attributeQuery, final String attributeResponse) 
+	               throws XMLParserException, UnmarshallingException, SAMLAttributeServiceClientResponseException;
 	
 }

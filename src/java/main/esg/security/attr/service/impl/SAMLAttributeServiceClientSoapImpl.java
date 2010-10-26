@@ -133,8 +133,7 @@ public class SAMLAttributeServiceClientSoapImpl implements SAMLAttributeServiceC
 	 * {@inheritDoc}
 	 * @throws SAMLAttributeServiceClientResponseException 
 	 */
-	public SAMLAttributes parseAttributeResponse(AttributeQuery attributeQuery,
-			final String attributeResponse) 
+	public SAMLAttributes parseAttributeResponse(final AttributeQuery attributeQuery, final String attributeResponse) 
 		throws XMLParserException, UnmarshallingException, 
 			SAMLAttributeServiceClientResponseException {
 		
@@ -182,14 +181,4 @@ public class SAMLAttributeServiceClientSoapImpl implements SAMLAttributeServiceC
         return attributes;
 	}
 
-
-	/**
-	 * {@inheritDoc}
-	 * @throws SAMLAttributeServiceClientSoapImplResponseException 
-	 */
-	public SAMLAttributes parseAttributeResponse(final String attributeResponse) 
-		throws XMLParserException, UnmarshallingException, 
-			SAMLAttributeServiceClientResponseException {
-		return parseAttributeResponse(null, attributeResponse);
-	}
 }
