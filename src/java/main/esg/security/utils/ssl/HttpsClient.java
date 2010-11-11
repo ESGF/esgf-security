@@ -72,6 +72,10 @@ public class HttpsClient {
 	
 	protected Properties loadProperties(InputStream propertiesFile) 
 		throws HttpsClientInitException {
+		
+		if (propertiesFile == null) {
+			throw new HttpsClientInitException("Null properties file");
+		}
     	// create application properties with default
     	Properties applicationProps = new Properties();
     	
