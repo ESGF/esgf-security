@@ -1,0 +1,29 @@
+#*****************************************************************#
+# Copyright (c) 2009  Larence Livermore National Security (LLNS)  #
+# All rights reserved.						  #
+#*****************************************************************#
+
+# This is a manifest, listing all the files to be posted to the
+# distribution server.
+
+[esgf-security]
+
+#Basic text files...
+../CHANGES
+../INSTALL
+../LICENSE
+../TODO
+../README
+
+#Installation script...
+#./esg-security
+
+#Software Artifacts...
+../dist/esgf-security-1.1.3.0.tar.gz
+../dist/esgf-security.war
+../dist/esgf-security-1.1.3.0.jar
+../dist/esgf-security-common-1.1.3.0.jar
+../dist/esgf-security-connector-1.1.3.0.jar
+../dist/esgf-security-fe-1.1.3.0.jar
+../dist/esgf-security-test-1.1.3.0.jar
+
