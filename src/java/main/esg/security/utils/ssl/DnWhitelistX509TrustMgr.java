@@ -314,7 +314,7 @@ public class DnWhitelistX509TrustMgr implements X509TrustManager {
     	
     	// Default trust manager may throw a certificate exception
         pkixTrustManager.checkServerTrusted(chain, authType);
-        
+
 		// If chain is OK following previous check, then execute whitelisting of 
         // DN
 		checkPeerCertDN(chain);
