@@ -19,6 +19,7 @@
 package esg.security.authn.service.impl;
 
 import java.io.File;
+import java.security.cert.Certificate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +29,7 @@ import org.opensaml.saml2.core.Assertion;
 import org.opensaml.xml.io.UnmarshallingException;
 import org.opensaml.xml.parse.XMLParserException;
 import org.opensaml.xml.security.SecurityException;
+import org.opensaml.xml.security.SecurityHelper;
 import org.opensaml.xml.security.credential.Credential;
 import org.springframework.util.Assert;
 import org.w3c.dom.Element;
@@ -117,7 +119,27 @@ public class SAMLAuthenticationStatementFacadeImpl implements SAMLAuthentication
 		}
 		
 	}
-
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public String parseAuthenticationStatement(final Certificate cert, final String xml) throws SAMLInvalidStatementException {
+		
+		try {
+			
+			final Element assertionElement = builder.parse(xml);
+	        final Assertion assertion = (Assertion)builder.unmarshall(assertionElement); 
+	        this.validateAssertion(cert, assertion);        
+	        return samlAuthenticationStatementHandler.parseAuthenticationStatement(assertion);
+        
+		} catch(XMLParserException e) {
+			throw new SAMLInvalidStatementException(e);
+		} catch(UnmarshallingException e) {
+			throw new SAMLInvalidStatementException(e);
+		}
+		
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -154,6 +176,27 @@ public class SAMLAuthenticationStatementFacadeImpl implements SAMLAuthentication
 
 	}
 
+	/**
+	 * Utility method to validate a SAML assertion versus the current trustore.
+	 * @param cert certificate to be used for the validation
+	 * @param assertion assertion to validate
+	 * @throws SAMLInvalidStatementException
+	 */
+	private void validateAssertion(final Certificate cert, final Assertion assertion) throws SAMLInvalidStatementException {
+		//this is completely unnecessary but a public interface must be changed to avoid creating a map...
+		HashMap<String, Credential> trustedCredential = new HashMap<String,Credential>();
+		
+		trustedCredential.put("", SecurityHelper.getSimpleCredential(cert.getPublicKey(), null));
+		try {
+			if (!builder.validateSignature(assertion, trustedCredential)) {
+				throw new SAMLInvalidStatementException("SAML statement signature is invalid");
+			}
+		} catch(SecurityException e) {
+			throw new SAMLInvalidStatementException(e);
+		}
+
+	}
+	
 	/**
 	 * Method to disable inclusion of dates in statements for testing.
 	 * @param includeFlag

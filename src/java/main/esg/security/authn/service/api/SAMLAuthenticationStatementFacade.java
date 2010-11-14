@@ -19,6 +19,7 @@
 package esg.security.authn.service.api;
 
 import java.io.File;
+import java.security.cert.Certificate;
 
 import esg.security.common.SAMLInvalidStatementException;
 
@@ -52,6 +53,15 @@ public interface SAMLAuthenticationStatementFacade {
 	 * @throws SAMLInvalidStatementException : if the SAML statement did not validate.
 	 */
 	String parseAuthenticationStatement(String xml, boolean validateSignature) throws SAMLInvalidStatementException;
+	
+	/**
+	 * Method to process a SAML authentication statement and extracted the asserted identity.
+	 * @param cert : certificate used for validating the signature
+	 * @param xml : the SAML authentication statement serialized as a string.
+	 * @return : the asserted identity.
+	 * @throws SAMLInvalidStatementException : if the SAML statement did not validate.
+	 */
+	String parseAuthenticationStatement(Certificate cert, String xml) throws SAMLInvalidStatementException;
 	
 	/**
 	 * Method to specify the optional credential to sign SAML assertions.
