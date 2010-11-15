@@ -3,6 +3,7 @@ package esg.security.utils.ssl;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertPath;
@@ -13,6 +14,7 @@ import java.util.Arrays;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -74,7 +76,11 @@ public class CertUtils {
 	public static CertPath retrieveCertificates(final String url, boolean validate) 
 		throws SSLPeerUnverifiedException, MalformedURLException, IOException , CertificateException{
 		CertPath cp = null;
-		HttpsURLConnection sslConnection = (HttpsURLConnection)(new URL(url)).openConnection();
+		URLConnection c = (new URL(url)).openConnection();
+		//we can't work with http connections
+		if (!(c instanceof HttpsURLConnection)) throw new MalformedURLException("Only https allowed");
+		
+		HttpsURLConnection sslConnection = (HttpsURLConnection)c;
 		if (!validate) {
 			//to avoid validation an empty TrustManager must be set in place.
 			try {
@@ -100,12 +106,17 @@ public class CertUtils {
 			}
 
 		}
-		sslConnection.connect();
+		try {
+		    sslConnection.connect();
+		} catch (SSLHandshakeException e) {
+            throw new SSLPeerUnverifiedException("Target is not trusted");
+        }
 
 		CertificateFactory cf = CertificateFactory.getInstance("X.509");
 		cp = cf.generateCertPath(Arrays.asList(sslConnection.getServerCertificates()));
 		
-		//set back the SSL factory
+		//done
+		sslConnection.disconnect();
 		
 		return cp;
 		
