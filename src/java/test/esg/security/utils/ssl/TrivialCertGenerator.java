@@ -134,9 +134,12 @@ public class TrivialCertGenerator {
 		            chain[0].verify(chain[1].getPublicKey());
 		        } catch (SignatureException e) {
                     //order is probably wrong! Correct it.
+		            chain = chain.clone(); 
 		            ArrayUtils.reverse(chain);
-		            //we might assure the chain is valid indeed...
+		            //we might assure the chain is valid indeed..
+		            
                 }
+		        
 		    }
 			//save key
 			ks.setKeyEntry("myKey", key, "changeit".toCharArray(), chain);
