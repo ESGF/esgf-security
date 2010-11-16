@@ -4,21 +4,46 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLPeerUnverifiedException;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
+import org.junit.After;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 
 public class EchoSSLServerTest {
-
+    private static SSLSocketFactory defaultSSLFact;
+    
+    @BeforeClass
+    public static void setupOnce() {
+        //System.setProperty("javax.net.debug","ssl,handshake,verbose");
+        defaultSSLFact = HttpsURLConnection.getDefaultSSLSocketFactory();
+    }
+    
+    @After
+    public void teardown() {
+        //not really necessary but informative
+        HttpsURLConnection.setDefaultSSLSocketFactory(defaultSSLFact);
+    }
+    
     @Test
     public void testEchoSSLServer() throws Exception {
         // basic test
@@ -100,7 +125,7 @@ public class EchoSSLServerTest {
         SSLContext sslc = SSLContext.getInstance("SSL");
         
         sslc.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
-        SSLContext.setDefault(sslc);
+        HttpsURLConnection.setDefaultSSLSocketFactory(sslc.getSocketFactory());
         
         CertUtils.retrieveCertificates("https://localhost:" + server.getPort(), true);
         server.stopServer();
@@ -124,7 +149,41 @@ public class EchoSSLServerTest {
             //ok!
         }
         
+        server.stopServer();
+    }
+    
+    @Test
+     public void testEchoMessage() throws Exception {
+        EchoSSLServer server = new EchoSSLServer();
+        String message = "This is a test message";
+        server.setMessage(message);
+        server.start();
+        
+        SSLContext sslc = SSLContext.getInstance("SSL");
+        
+        sslc.init(null, new TrustManager[] { new X509TrustManager() {
+            @Override
+            public X509Certificate[] getAcceptedIssuers() {return null;}
+            @Override
+            public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
+            @Override
+            public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
+        }}, null);
+        HttpsURLConnection.setDefaultSSLSocketFactory(sslc.getSocketFactory());
 
+        //check the server is sending the message ( a couple of times to be sure it doesn't hang/stop)
+        for (int i = 0; i < 3; i++) {
+            InputStream in = new URL("https://localhost:" + server.getPort()).openConnection().getInputStream();        
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            String response = br.readLine();
+            br.close();
+            
+            assertEquals(message, response);
+            System.out.println(i + "# message ok");
+            try { Thread.sleep(100); } catch (Exception e) {}
+        }
+        
+                
         server.stopServer();
     }
 }

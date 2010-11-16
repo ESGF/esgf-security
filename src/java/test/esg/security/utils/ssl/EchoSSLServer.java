@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -30,7 +31,7 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
 /**
- * A very simplistic EchoSSLServer for testing certificate interaction
+ * A very simplistic EchoSSLServer for testing certificate interaction.
  */
 public class EchoSSLServer extends Thread {
     private KeyStore keystore;
@@ -41,15 +42,27 @@ public class EchoSSLServer extends Thread {
     private char[] passPhrase;
     private ServerSocket ss;
     private KeyStore truststore;
-
+    private byte[] echoMessage;
+    private boolean verbose = false;
+    
+    /**
+     * A fully functional EchoSSLServer. If required, configure before starting.
+     */
     public EchoSSLServer() {
     }
 
+    /**
+     * @param ks keystore to use
+     * @param passphare passphare to use
+     */
     public void setKeystore(KeyStore ks, String passphare) {
         keystore = ks;
         passPhrase = passphare.toCharArray();
     }
 
+    /**
+     * @return the used keystore (private key)
+     */
     public KeyStore getKeystore() {
         if (keystore == null) {
             try {
@@ -61,6 +74,7 @@ public class EchoSSLServer extends Thread {
         }
         return keystore;
     }
+    
 
     private Certificate[] getCertChain() {
         if (serverCertChain == null) {
@@ -80,6 +94,7 @@ public class EchoSSLServer extends Thread {
     }
 
     /**
+     * Tells the sever to use this Certificate chain and key 
      * @param key private key for the server
      * @param chain chain to use as server certificate
      * @throws UnknownHostException If the CN in the DN does not match the one from this machine.
@@ -102,13 +117,45 @@ public class EchoSSLServer extends Thread {
         this.key = key;
         serverCertChain = chain;
     }
+    /**
+     * @param message message to echo. Set to null to cancel. If no echo message is
+     * present the server will echo what it gets (interactive).
+     */
+    public void setMessage(String message) {
+        try {
+            echoMessage = message.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            echoMessage = message.getBytes();
+        }
+    }
     
+    
+    public boolean isVerbose() {
+        return verbose;
+    }
+
+    /**
+     * @param verbose if stacktraces from exceptions should be printed.
+     */
+    public void setVerbose(boolean verbose) {
+        this.verbose = verbose;
+    }
+
+    /**
+     * @param port server will be listening to this port after started. Set to <=0
+     * to select the next free port.
+     */
     public void setPort(int port) {
         sslPort = port;
     }
+    
+    /**
+     * @return the port currently in use (if <=0 the server wasn't started yet)
+     */
     public int getPort() {
         return sslPort;
     }
+    
     private ServerSocket createServerSocket() throws IOException {
         SSLContext sslc;
         try {
@@ -186,19 +233,23 @@ public class EchoSSLServer extends Thread {
                 BufferedReader br = new BufferedReader(new InputStreamReader(
                         socket.getInputStream()));
                 OutputStream out = socket.getOutputStream();
-                message = "Welcome! Type " + quit + " to exit.\n";
-                out.write(message.getBytes());
-                String line;
-                while ((line = br.readLine()) != null) {
-                    System.out.println("line: " + line);
-                    message = "Echo: " + line + "\n";
+                if (echoMessage == null) {
+                    message = "Welcome! Type " + quit + " to exit.\n";
                     out.write(message.getBytes());
-                    if (line.equals(quit)) break;
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        System.out.println("line: " + line);
+                        message = "Echo: " + line + "\n";
+                        out.write(message.getBytes());
+                        if (line.equals(quit)) break;
+                    }
+                    out.write("Bye!\n".getBytes());
+                } else {
+                    out.write(echoMessage);
                 }
-                out.write("Bye!\n".getBytes());
                 socket.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                if (verbose) e.printStackTrace();
             }
         }
     }
