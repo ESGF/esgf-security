@@ -149,5 +149,7 @@ public class TrivialCertGeneratorTest {
         assertNull(ks.getCertificateChain(ks.getCertificateAlias(rootCert)));
         
     }
+    
+    
 
 }
