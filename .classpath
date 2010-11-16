@@ -47,5 +47,5 @@
 	<classpathentry kind="lib" path="lib/fetched/velocity-1.5.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/xmlsec-1.4.2.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/mail-1.4.1.jar"/>
-	<classpathentry kind="output" path="build/test"/>
+	<classpathentry kind="output" path="build"/>
 </classpath>
