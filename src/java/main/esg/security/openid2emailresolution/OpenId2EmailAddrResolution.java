@@ -14,6 +14,7 @@
  */
 package esg.security.openid2emailresolution;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -213,7 +214,10 @@ public class OpenId2EmailAddrResolution {
 			
 		} catch (HttpsClientRetrievalException e) {
 			throw new AttributeServiceQueryException("Error dispatching " +
-					"attribute query", e);
+					                                 "attribute query", e);
+		} catch (IOException e) {
+			throw new AttributeServiceQueryException("I/O error dispatching " +
+					                                 "attribute query", e);
 		}
 		
 		SAMLAttributesImpl samlAttrs = null;

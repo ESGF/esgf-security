@@ -17,6 +17,9 @@
 package esg.security.utils.ssl.exceptions;
 
 public class HttpsClientInitException extends Exception {
+
+	private static final long serialVersionUID = -2738340709577351942L;
+
 	public HttpsClientInitException(String message) {
 		super(message);
 	}
