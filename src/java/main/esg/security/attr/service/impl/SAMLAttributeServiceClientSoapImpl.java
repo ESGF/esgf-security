@@ -169,7 +169,7 @@ public class SAMLAttributeServiceClientSoapImpl implements SAMLAttributeServiceC
         	throw new SAMLAttributeServiceClientResponseException(
         			"SAML Attribute query response set an " +
         			"error status: " + statusValue + ", " +
-        			status.getStatusMessage());
+        			status.getStatusMessage().getMessage());
         }
         
         // SAML object > User object

@@ -17,6 +17,9 @@
 package esg.security.utils.ssl.exceptions;
 
 public class HttpsClientRetrievalException extends Exception {
+
+	private static final long serialVersionUID = 4944292011775810065L;
+
 	public HttpsClientRetrievalException(String message) {
 		super(message);
 	}

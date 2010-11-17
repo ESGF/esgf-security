@@ -19,6 +19,9 @@ package esg.security.utils.ssl.exceptions;
 
 
 public class DnWhitelistX509TrustMgrInitException extends Exception {
+
+	private static final long serialVersionUID = -8877672083367044221L;
+
 	public DnWhitelistX509TrustMgrInitException(String message) {
 		super(message);
 	}

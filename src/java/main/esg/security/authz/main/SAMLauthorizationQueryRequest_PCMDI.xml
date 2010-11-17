@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <soap11:Envelope xmlns:soap11="http://schemas.xmlsoap.org/soap/envelope/">
    <soap11:Body>
-	<samlp:AuthzDecisionQuery xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="7658c723-7aef-478c-badf-c6cee670761f" IssueInstant="2010-01-26T18:18:10.927Z" Resource="http://esg-test1.llnl.gov/thredds/fileServer/esg_dataroot/test/sftlf.nc" Version="2.0">
+	<samlp:AuthzDecisionQuery xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="7658c723-7aef-478c-badf-c6cee670761f" IssueInstant="2010-01-26T18:18:10.927Z" Resource="gsiftp://esg-test1.llnl.gov:2811//esg_dataroot/test/sftlf.nc" Version="2.0">
 	   <saml:Subject xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">
 	      <saml:NameID>https://pcmdi3.llnl.gov/esgcet/myopenid/rootAdmin</saml:NameID>
 	   </saml:Subject>

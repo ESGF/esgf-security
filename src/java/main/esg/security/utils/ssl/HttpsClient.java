@@ -42,12 +42,30 @@ public class HttpsClient {
 	protected String keyStoreFilePath;
 	protected String keyStorePassphrase;
 	
-	public HttpsClient(InputStream propertiesFile) 
-		throws HttpsClientInitException {
+	public HttpsClient(InputStream propertiesFile) throws HttpsClientInitException {
 		keyStorePassphrase = null;
 		keyStoreFilePath = null;
 		
 		Properties props = loadProperties(propertiesFile);
+		if (keyStoreFilePath != null && keyStorePassphrase != null) {
+		
+			InputStream keyStoreIStream = null;
+			try {
+				keyStoreIStream = new FileInputStream(keyStoreFilePath);
+				
+			} catch (FileNotFoundException e) {
+				throw new HttpsClientInitException("Error reading "+
+						"\"" + keyStoreFilePath + "\" keystore", e);
+			}
+			loadKeyStore(keyStoreIStream, keyStorePassphrase);
+		}
+		loadTrustMgr(props);
+	}
+
+	public HttpsClient(Properties props) throws HttpsClientInitException {
+		keyStorePassphrase = null;
+		keyStoreFilePath = null;
+		
 		if (keyStoreFilePath != null && keyStorePassphrase != null) {
 		
 			InputStream keyStoreIStream = null;
@@ -76,6 +94,7 @@ public class HttpsClient {
 		if (propertiesFile == null) {
 			throw new HttpsClientInitException("Null properties file");
 		}
+		
     	// create application properties with default
     	Properties applicationProps = new Properties();
     	
@@ -188,9 +207,10 @@ public class HttpsClient {
 	 * @param keyStorePassphrase
 	 * @return
 	 * @throws HttpsClientRetrievalException
+	 * @throws IOException 
 	 */
 	public String retrieve(URL uri, String query, String requestMethod)
-			throws HttpsClientRetrievalException {
+			throws HttpsClientRetrievalException, IOException {
 		
 		// Enable defaults for HTTP request method
 		if (requestMethod == null) 
@@ -254,11 +274,12 @@ public class HttpsClient {
 		}
 		
 		InputStream ins = null;
-		try {
-			ins = connection.getInputStream();
-		} catch (IOException e) {
-			throw new HttpsClientRetrievalException("Getting input stream", e);
-		}
+		
+		/*
+		 * Leave IOException to be thrown from here so that caller can 
+		 * delineate this kind of error from the SSL/keystore initialisation
+		 */
+		ins = connection.getInputStream();
 		
 	    InputStreamReader isr = new InputStreamReader(ins);
 	    BufferedReader in = new BufferedReader(isr);
