@@ -5,6 +5,7 @@ import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
@@ -152,13 +153,26 @@ public class TrivialCertGenerator {
 	 * @param key private key (if null no private cert set)
 	 * @param trusted trusted certificates to add to this trustore
 	 * @return the created trustore
-	 * @throws Exception if anything goes wrong
+	 * @throws KeyStoreException If the certificates cannot be added to keystore/truststore.
 	 */
-	public static KeyStore packKeyStore(KeyStore ks, Certificate[] chain, PrivateKey key, Certificate[] trusted) throws Exception {
+	public static KeyStore packKeyStore(KeyStore ks, Certificate[] chain, PrivateKey key, Certificate[] trusted) throws KeyStoreException  {
 		if (ks == null) {
-			ks = KeyStore.getInstance("JKS");
+			try {
+                ks = KeyStore.getInstance("JKS");
+            } catch (KeyStoreException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 			//this initializes the trustore, it doesn't matter if it's empty this is required.
-			ks.load(null, "changeit".toCharArray());
+			try {
+                ks.load(null, "changeit".toCharArray());
+            } catch (NoSuchAlgorithmException e) {
+                //can't happen
+            } catch (CertificateException e) {
+              //can't happen
+            } catch (IOException e) {
+              //can't happen
+            }
 		}
 		if (chain != null && key != null) {
 		    if (chain.length > 1) {
@@ -171,6 +185,8 @@ public class TrivialCertGenerator {
 		            ArrayUtils.reverse(chain);
 		            //we might assure the chain is valid indeed..
 		            
+                } catch (Exception e) {
+                    //don't care at this point
                 }
 		        
 		    }
@@ -181,7 +197,6 @@ public class TrivialCertGenerator {
 			for (int i = 0; i < trusted.length; i++) {
 				ks.setCertificateEntry("trusted" + i, trusted[i]);
 			}
-			
 		}
 		return ks;
 	}
