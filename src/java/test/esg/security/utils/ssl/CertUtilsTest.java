@@ -68,7 +68,7 @@ public class CertUtilsTest {
         String urlRight = "https://localhost:" + port;
 	    EchoSSLServer server = new EchoSSLServer();
 	    
-	    server.setCertificate(keyPairChain[0].getPrivate(), new Certificate[]{chain[0]});
+	    server.setServerCertificate(keyPairChain[0].getPrivate(), new Certificate[]{chain[0]});
 	    server.setPort(port);
 	    server.start();
         
@@ -93,7 +93,7 @@ public class CertUtilsTest {
         assertEquals(1, list.size());
         assertEquals(chain[0], list.get(0));
         
-        server.stopServer();
+        server.stop();
 	}
 
     @Test
@@ -102,7 +102,7 @@ public class CertUtilsTest {
         String urlRight = "https://localhost:" + port;
         EchoSSLServer server = new EchoSSLServer();
 
-        server.setCertificate(keyPairChain[chain.length-1].getPrivate(),
+        server.setServerCertificate(keyPairChain[chain.length-1].getPrivate(),
                 chain);
         server.setPort(port);
         server.start();
@@ -117,7 +117,7 @@ public class CertUtilsTest {
         assertArrayEquals(chain, serverChain);
        
 
-        server.stopServer();
+        server.stop();
     }
     
     @Test
@@ -128,7 +128,7 @@ public class CertUtilsTest {
         
         
 
-        server.setCertificate(keyPairChain[0].getPrivate(), new Certificate[]{chain[0]});
+        server.setServerCertificate(keyPairChain[0].getPrivate(), new Certificate[]{chain[0]});
         server.setPort(port);
         server.start();
         
@@ -155,7 +155,7 @@ public class CertUtilsTest {
         assertEquals(chain[0],
                 CertUtils.retrieveCertificates(urlRight, true).getCertificates().get(0));
         
-        server.stopServer();
+        server.stop();
     }
     
     @Test
@@ -166,7 +166,7 @@ public class CertUtilsTest {
         
         
         //set the whole chain as certificate
-        server.setCertificate(keyPairChain[chain.length-1].getPrivate(), chain);
+        server.setServerCertificate(keyPairChain[chain.length-1].getPrivate(), chain);
         server.setPort(port);
         server.start();
         
@@ -198,7 +198,7 @@ public class CertUtilsTest {
         assertEquals(chain.length, certs.length);
         assertArrayEquals(chain, certs);
         
-        server.stopServer();
+        server.stop();
     }
     
 }

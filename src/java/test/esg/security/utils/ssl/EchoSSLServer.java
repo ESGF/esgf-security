@@ -33,7 +33,7 @@ import javax.net.ssl.X509TrustManager;
 /**
  * A very simplistic EchoSSLServer for testing certificate interaction.
  */
-public class EchoSSLServer extends Thread {
+public class EchoSSLServer implements Runnable {
     private KeyStore keystore;
     private int sslPort = 0;
     private boolean running = false;
@@ -44,6 +44,7 @@ public class EchoSSLServer extends Thread {
     private KeyStore truststore;
     private byte[] echoMessage;
     private boolean verbose = false;
+    private Thread thread;
     
     /**
      * A fully functional EchoSSLServer. If required, configure before starting.
@@ -66,7 +67,7 @@ public class EchoSSLServer extends Thread {
     public KeyStore getKeystore() {
         if (keystore == null) {
             try {
-                keystore = packKeyStore(null, getCertChain(), key, null);
+                keystore = packKeyStore(null, getCertificateChain(), key, null);
                 passPhrase = "changeit".toCharArray();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -76,7 +77,17 @@ public class EchoSSLServer extends Thread {
     }
     
 
-    private Certificate[] getCertChain() {
+    /**
+     * @return the keypair of this server.
+     */
+    public KeyPair getKeyPair() {
+        return new KeyPair(getCertificate().getPublicKey(), key);
+    }
+    
+    /**
+     * @return the certificate chain of this server.
+     */
+    public Certificate[] getCertificateChain() {
         if (serverCertChain == null) {
             try {
                 KeyPair keyPair = TrivialCertGenerator.generateRSAKeyPair();
@@ -92,31 +103,80 @@ public class EchoSSLServer extends Thread {
         }
         return serverCertChain;
     }
+    
+    /**
+     * @return the certificate of this server. If you need the complete chain
+     *         call {@link #getCertificateChain()}
+     */
+    public Certificate getCertificate() {
+        return getCertificateChain()[0];
+    }
 
     /**
-     * Tells the sever to use this Certificate chain and key 
+     * Tells the sever to use this Certificate and key
+     * 
+     * @param key private key for the server
+     * @param certificate to use as server certificate
+     * @throws UnknownHostException If the CN from the certificate's DN does not
+     *             match the one from this machine.
+     */
+    public void setServerCertificate(PrivateKey key, Certificate certificate) throws UnknownHostException {
+        setServerCertificate(key, new Certificate[]{certificate});
+    }
+    
+    /**
+     * Tells the sever to use this Certificate chain and key
+     * 
      * @param key private key for the server
      * @param chain chain to use as server certificate
-     * @throws UnknownHostException If the CN in the DN does not match the one from this machine.
+     * @throws UnknownHostException If the CN in the DN does not match the one
+     *             from this machine.
      */
-    public void setCertificate(PrivateKey key, Certificate[] chain) throws UnknownHostException {
-        if (chain[0] instanceof X509Certificate ){
-            String dnName = ((X509Certificate)chain[0]).getSubjectDN().getName();
+    public void setServerCertificate(PrivateKey key, Certificate[] chain)
+            throws UnknownHostException {
+        if (key == null) throw new IllegalArgumentException("Null key");
+        if (chain == null) throw new IllegalArgumentException("Null chain");
+        if (chain.length < 1) throw new IllegalArgumentException("Empty chain");
+        if (chain[0] instanceof X509Certificate) {
+            String dnName = ((X509Certificate) chain[0]).getSubjectDN()
+                    .getName();
             int res = dnName.indexOf("CN=") + 3;
             String cnName = dnName.substring(res, dnName.indexOf(',', res));
             InetAddress cnAdd = InetAddress.getByName(cnName);
-            
-            if (! (cnAdd.isAnyLocalAddress() || cnAdd.isLoopbackAddress()))
-                throw new UnknownHostException("The provided hostname " + cnName 
-                        + " is not the localhost.");
-        }
-        //clean up
-        keystore = null;
 
-        
-        this.key = key;
-        serverCertChain = chain;
+            if (!(cnAdd.isAnyLocalAddress() || cnAdd.isLoopbackAddress())) throw new UnknownHostException(
+                    "The provided hostname " + cnName
+                            + " is not the localhost.");
+
+            // if here everything went fine.
+            // clean up
+            keystore = null;
+
+            this.key = key;
+            serverCertChain = chain;
+
+        } else {
+            throw new IllegalArgumentException("Certificate "
+                    + chain[0].getType() + " Not supported (only X509).");
+        }
     }
+
+    /**
+     * @param cert add this cert to the server's trustore
+     * @throws KeyStoreException Certificate couldn't be added to the keystore
+     */
+    public void trustCertificate(Certificate cert) throws KeyStoreException {
+        trustCertificate(new Certificate[] { cert });
+    }
+
+    /**
+     * @param cert add these certs to the server's trustore
+     * @throws KeyStoreException Certificates couldn't be added to the keystore
+     */
+    public void trustCertificate(Certificate[] cert) throws KeyStoreException {
+        TrivialCertGenerator.packKeyStore(getKeystore(), null, null, cert);
+    }
+    
     /**
      * @param message message to echo. Set to null to cancel. If no echo message is
      * present the server will echo what it gets (interactive).
@@ -254,7 +314,9 @@ public class EchoSSLServer extends Thread {
         }
     }
 
-    @Override
+    /**
+     * starts the server with the current parameters.
+     */
     public synchronized void start() {
         if (!running) {
             running = true;
@@ -264,13 +326,26 @@ public class EchoSSLServer extends Thread {
                 e.printStackTrace();
                 throw new Error ("Can't create server socket.");
             }
-            super.start();
+            thread = new Thread(this);
+            thread.start();
         } else {
             System.err.println("Already running.");
         }
     }
-
-    public synchronized void stopServer() {
+    
+    /**
+     * Restart the server. Some changes (new certificate) only will take place after you restart the
+     * server.
+     */
+    public synchronized void restart() {
+        stop();
+        start();
+    }
+    
+    /**
+     * Stop the server.
+     */
+    public synchronized void stop() {
         running = false;
         if (ss != null) {
             try {

@@ -1,6 +1,10 @@
 package esg.security.utils.ssl;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -53,7 +57,7 @@ public class EchoSSLServerTest {
 
         System.out.println("Running on " + port);
         assertTrue(port > 0);
-        server.stopServer();
+        server.stop();
     }
 
     @Test
@@ -65,7 +69,7 @@ public class EchoSSLServerTest {
         KeyPair kp = TrivialCertGenerator.generateRSAKeyPair();
         Certificate cert = TrivialCertGenerator.createSelfSignedCertificate(kp,
                 "CN=localhost, OU=Test unit, L=DE");
-        server.setCertificate(kp.getPrivate(), new Certificate[] { cert });
+        server.setServerCertificate(kp.getPrivate(), new Certificate[] { cert });
         server.start();
 
         // get the certificate
@@ -74,8 +78,45 @@ public class EchoSSLServerTest {
                 .getCertificates().get(0);
         assertEquals(cert, serverCert);
         
-        server.stopServer();
+        server.stop();
     }
+
+    @Test
+    public void testEchoSSLServerBasic() throws Exception {
+        EchoSSLServer server = new EchoSSLServer();
+        server.start();
+        
+        //port
+        int port = server.getPort();
+        assertTrue(port > 0);
+        
+        //chain and access
+        Certificate[] gotChain = CertUtils
+                .retrieveCertificates("https://localhost:" + port, false)
+                .getCertificates().toArray(new Certificate[0]);
+        Certificate[] serverChain = server.getCertificateChain();
+        assertNotNull(serverChain);
+        assertArrayEquals(gotChain, serverChain);
+        
+        //cert
+        Certificate cert = server.getCertificate();
+        assertNotNull(cert);
+        assertEquals(cert, serverChain[0]);
+        
+        //keystore
+        KeyStore ks = server.getKeystore();
+        String serverAlias = ks.getCertificateAlias(cert);
+        assertTrue(ks.isKeyEntry(serverAlias));
+        
+        //addTrustCert
+        KeyPair kp = TrivialCertGenerator.generateRSAKeyPair();
+        Certificate trustCert = TrivialCertGenerator.createSelfSignedCertificate(kp, "CN=Sometest, L=DE");
+        assertNull(ks.getCertificateAlias(trustCert));
+        server.trustCertificate(trustCert);
+        assertNotNull(ks.getCertificateAlias(trustCert));
+        assertFalse(ks.isKeyEntry(ks.getCertificateAlias(trustCert)));
+        
+    } 
 
     @Test
     public void testEchoSSLServerWrongDN() throws Exception {
@@ -85,7 +126,7 @@ public class EchoSSLServerTest {
         //get a host that's not this one
         
         try {
-            server.setCertificate(kp.getPrivate(),
+            server.setServerCertificate(kp.getPrivate(),
                     new Certificate[] { TrivialCertGenerator
                             .createSelfSignedCertificate(kp,
                                     "CN=www.google.com, OU=Test unit, L=DE") });
@@ -128,7 +169,7 @@ public class EchoSSLServerTest {
         HttpsURLConnection.setDefaultSSLSocketFactory(sslc.getSocketFactory());
         
         CertUtils.retrieveCertificates("https://localhost:" + server.getPort(), true);
-        server.stopServer();
+        server.stop();
     }
     @Test
     public void testEchoSSLClientValidationWrong() throws Exception {
@@ -149,7 +190,7 @@ public class EchoSSLServerTest {
             //ok!
         }
         
-        server.stopServer();
+        server.stop();
     }
     
     @Test
@@ -184,6 +225,6 @@ public class EchoSSLServerTest {
         }
         
                 
-        server.stopServer();
+        server.stop();
     }
 }
