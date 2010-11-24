@@ -15,12 +15,12 @@ import org.junit.Test;
 
 import esg.security.utils.ssl.exceptions.HttpsClientInitException;
 import esg.security.utils.ssl.exceptions.HttpsClientRetrievalException;
-import esg.security.utils.ssl.HttpsClient;
 
 
 public class HttpsClientTest {
 
 	public final static String PROPERTIES_FILE = "https-client-test.properties";
+	public final static String TRUSTSTORE_FILE = "https-client-test-truststore.ks";
 	public final static String TEST01_URI = "test01.uri";
 	public final static String TEST02_URI = "test02.uri";
 	public final static String URI = "https://pcmdi3.llnl.gov";
@@ -32,7 +32,12 @@ public class HttpsClientTest {
 		InputStream propertiesFile = this.getClass().getResourceAsStream(PROPERTIES_FILE);
 		
     	props = new Properties();
-		props.load(propertiesFile);		
+		props.load(propertiesFile);
+		
+		//Find the file from this classloader and put the path in the proper variable
+		props.put("esg.security.utils.ssl.DnWhitelistX509TrustMgr.trustStoreFilePath", 
+		        this.getClass().getResource(TRUSTSTORE_FILE).getFile());
+		
 	}
 	
 	@Test
