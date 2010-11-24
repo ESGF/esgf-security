@@ -19,6 +19,10 @@
 package esg.security.authn.service.impl;
 
 import java.io.File;
+import java.security.KeyStore;
+import java.security.cert.Certificate;
+import java.util.Date;
+import java.util.TimeZone;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
@@ -29,11 +33,13 @@ import org.junit.Test;
 import org.opensaml.xml.ConfigurationException;
 import org.springframework.core.io.ClassPathResource;
 
-import esg.security.authn.service.impl.SAMLAuthenticationStatementFacadeImpl;
+import esg.security.authn.service.api.SAMLAuthentication;
 import esg.security.common.SAMLBuilder;
 import esg.security.common.SAMLInvalidStatementException;
+import esg.security.common.SAMLParameters;
 import esg.security.common.SAMLTestParameters;
 import esg.security.common.SAMLUnknownPrincipalException;
+import esg.security.utils.ssl.TrivialCertGenerator;
 import eske.utils.xml.XmlChecker;
 
 public class SAMLStatementFacadeImplTest {
@@ -262,6 +268,78 @@ public class SAMLStatementFacadeImplTest {
 		
 	} 
 	
+	/**
+     * GetAuthentication: check the authentication retrieval 
+     */
+    @Test
+    public void testGetAuthentication() throws Exception {
+        statementFacade.setIncludeFlag(true);
+        setKeystore();
+        setTrustore();
+        
+        Assert.assertTrue(SAMLBuilder.isInitailized());
+        String identity = "thisIsMe" ;
+        String saml = statementFacade.buildSignedAuthenticationStatement(identity);
+        String oid = statementFacade.parseAuthenticationStatement(saml, true);
+        
+        KeyStore ks = TrivialCertGenerator.loadKeystore(new ClassPathResource(
+                SAMLTestParameters.TRUSTORE_PATH).getFile(),
+                SAMLTestParameters.TRUSTORE_PASSWORD);
+        Certificate cert = ks.getCertificate(SAMLTestParameters.KEYSTORE_ALIAS);
+        
+        SAMLAuthentication authentication = statementFacade.getAuthentication(cert, saml);
+        Assert.assertEquals(oid, authentication.getIdentity());
+        
+        //assure it gets the proper valid from (current time)
+        long now = new java.util.Date().getTime();
+        Assert.assertTrue(now > authentication.getValidFrom().getTime());
+        Assert.assertTrue(now < authentication.getValidFrom().getTime() + 5 * 1000);
+        
+        //check the date is as expected (within 5 seconds of lifetime)
+        long span = authentication.getValidTo().getTime() - now;
+        long samlSpan = SAMLParameters.ASSERTION_LIFETIME_IN_SECONDS * 1000;
+        Assert.assertTrue(span > samlSpan - 5 * 1000);
+        Assert.assertTrue(span <= samlSpan);
+        
+        Assert.assertEquals(saml, authentication.getSaml());
+        
+    }
+    
+    /**
+     * Timezones: check the authentication retrieval 
+     */
+    @Test
+    public void testTimezones() throws Exception {
+        statementFacade.setIncludeFlag(true);
+        setKeystore();
+        setTrustore();
+
+        //prepare the test
+        Assert.assertTrue(SAMLBuilder.isInitailized());
+        String identity = "thisIsMe" ;
+        KeyStore ks = TrivialCertGenerator.loadKeystore(new ClassPathResource(
+                SAMLTestParameters.TRUSTORE_PATH).getFile(),
+                SAMLTestParameters.TRUSTORE_PASSWORD);
+        Certificate cert = ks.getCertificate(SAMLTestParameters.KEYSTORE_ALIAS);
+        TimeZone tz1 = TimeZone.getTimeZone("GMT-10:00");
+        TimeZone tz2 = TimeZone.getTimeZone("GMT+10:00");
+
+        
+        // write saml at time zone 1 GMT-10:00
+        TimeZone.setDefault(tz1);
+        String saml = statementFacade.buildSignedAuthenticationStatement(identity);
+        
+        //read SAML at time zone GTM+11:00
+        TimeZone.setDefault(tz2);
+        SAMLAuthentication authentication = statementFacade.getAuthentication(cert, saml);
+        long diff = new Date().getTime() - authentication.getValidFrom().getTime();
+        Assert.assertTrue(diff > 0);
+        Assert.assertTrue(diff < 5 * 1000);
+       
+    }
+    
+
+    
 	/**
 	 * Method to set trusted credentials on the class instance under test.
 	 * @throws Exception

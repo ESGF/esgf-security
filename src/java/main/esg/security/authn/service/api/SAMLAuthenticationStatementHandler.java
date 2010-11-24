@@ -18,6 +18,8 @@
  ******************************************************************************/
 package esg.security.authn.service.api;
 
+import java.util.Date;
+
 import org.opensaml.saml2.core.Assertion;
 
 /**
@@ -40,5 +42,19 @@ public interface SAMLAuthenticationStatementHandler {
 	 * @return : the asserted identity.
 	 */
 	String parseAuthenticationStatement(Assertion assertion);
+
+    /**
+     * Extract the NotAfterOrOn field from a SAML assertion.
+     * @param assertion a saml assertion.
+     * @return the valid to field extracted from it.
+     */
+    Date getValidTo(final Assertion assertion);
 	
+	
+    /**
+     * Extract the NotBefore field from a SAML assertion.
+     * @param assertion a saml assertion.
+     * @return the valid to field extracted from it.
+     */
+    Date getValidFrom(final Assertion assertion);
 }

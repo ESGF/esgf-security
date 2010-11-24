@@ -18,6 +18,8 @@ import sun.security.x509.X509CertImpl;
 
 import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
 
+import esg.security.common.SAMLTestParameters;
+
 
 public class TrivialCertGeneratorTest {
     private static KeyPair kp;
@@ -150,6 +152,20 @@ public class TrivialCertGeneratorTest {
         
     }
     
-    
+    /**
+     * LoadKeystore: loads a keystore
+     */
+    @Test
+    public void testLoadKeystore() throws Exception {
+        String ksFile = this.getClass()
+                .getResource("/" + SAMLTestParameters.KEYSTORE_PATH).getFile();
+        assertNotNull(ksFile);
+        KeyStore ks = loadKeystore(new java.io.File(ksFile),
+                SAMLTestParameters.KEYSTORE_PASSWORD);
+        assertNotNull(ks);
+
+        assertTrue(ks.isKeyEntry(SAMLTestParameters.KEYSTORE_ALIAS));
+        
+    }
 
 }

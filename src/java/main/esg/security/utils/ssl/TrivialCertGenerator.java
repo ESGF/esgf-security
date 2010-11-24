@@ -1,6 +1,9 @@
 package esg.security.utils.ssl;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -146,6 +149,30 @@ public class TrivialCertGenerator {
 		return cert;
 	}
 	
+    /**
+     * @param keystore keystore in PKIX
+     * @param pass the keystore password.
+     * @return
+     * @throws IOException if file cannot be opend
+     * @throws KeyStoreException keystore format not supported
+     * @throws NoSuchAlgorithmException keystore format not supported
+     * @throws CertificateException if any of the certificates in the keystore could not be loaded.
+     */
+    public static KeyStore loadKeystore(File keystore, String pass)
+            throws IOException, KeyStoreException, NoSuchAlgorithmException,
+            CertificateException {
+        
+        KeyStore ks = KeyStore.getInstance("JKS");
+        InputStream in = new FileInputStream(keystore);
+        char[] passphrase = (pass == null) ? null : pass.toCharArray();
+        ks.load(in, passphrase);
+        
+        in.close();
+        
+        return ks;
+    }
+	
+
 	/**
 	 * One method for everything, not perfect but it does the work for the time being.
 	 * @param ks KeyStore to use, if null a new one with pass "changeit" will be created

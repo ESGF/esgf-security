@@ -34,6 +34,7 @@ import org.opensaml.xml.security.credential.Credential;
 import org.springframework.util.Assert;
 import org.w3c.dom.Element;
 
+import esg.security.authn.service.api.SAMLAuthentication;
 import esg.security.authn.service.api.SAMLAuthenticationStatementFacade;
 import esg.security.common.SAMLBuilder;
 import esg.security.common.SAMLInvalidStatementException;
@@ -48,6 +49,7 @@ public class SAMLAuthenticationStatementFacadeImpl implements SAMLAuthentication
 	
 	private final SAMLBuilder builder;
 	private SAMLAuthenticationStatementHandlerImpl samlAuthenticationStatementHandler;
+	
 	
 	/**
 	 * Optional credential to sign SAML statements.
@@ -123,22 +125,28 @@ public class SAMLAuthenticationStatementFacadeImpl implements SAMLAuthentication
 	/**
 	 * {@inheritDoc}
 	 */
-	public String parseAuthenticationStatement(final Certificate cert, final String xml) throws SAMLInvalidStatementException {
+	public SAMLAuthentication getAuthentication(final Certificate cert, final String xml) throws SAMLInvalidStatementException {
 		
 		try {
 			
 			final Element assertionElement = builder.parse(xml);
 	        final Assertion assertion = (Assertion)builder.unmarshall(assertionElement); 
-	        this.validateAssertion(cert, assertion);        
-	        return samlAuthenticationStatementHandler.parseAuthenticationStatement(assertion);
+	        this.validateAssertion(cert, assertion);
+	        return new SAMLAuthentication(
+	                samlAuthenticationStatementHandler.parseAuthenticationStatement(assertion),
+	                xml,
+	                samlAuthenticationStatementHandler.getValidTo(assertion),
+	                samlAuthenticationStatementHandler.getValidFrom(assertion));
+	        //return samlAuthenticationStatementHandler.parseAuthenticationStatement(assertion);
         
 		} catch(XMLParserException e) {
 			throw new SAMLInvalidStatementException(e);
 		} catch(UnmarshallingException e) {
 			throw new SAMLInvalidStatementException(e);
 		}
-		
 	}
+	
+	
 	
 	/**
 	 * {@inheritDoc}

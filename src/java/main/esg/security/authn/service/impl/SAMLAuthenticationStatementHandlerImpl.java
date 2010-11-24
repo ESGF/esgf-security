@@ -18,9 +18,12 @@
  ******************************************************************************/
 package esg.security.authn.service.impl;
 
+import java.util.Date;
+
 import org.joda.time.DateTime;
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.AuthnStatement;
+import org.opensaml.saml2.core.Conditions;
 import org.opensaml.saml2.core.Subject;
 
 import esg.security.authn.service.api.SAMLAuthenticationStatementHandler;
@@ -99,7 +102,29 @@ class SAMLAuthenticationStatementHandlerImpl implements SAMLAuthenticationStatem
 		}
 		
 	}
-
+	
+    /**
+     * {@inheritDoc}
+     */
+    public Date getValidTo(final Assertion assertion) {
+        Conditions conditions = assertion.getConditions();
+        if (conditions!=null) {
+            return conditions.getNotOnOrAfter().toDate();
+        } else {
+            return null;
+        }
+    }
+    /**
+     * {@inheritDoc}
+     */
+    public Date getValidFrom(final Assertion assertion) {
+        Conditions conditions = assertion.getConditions();
+        if (conditions!=null) {
+            return conditions.getNotBefore().toDate();
+        } else {
+            return null;
+        }
+    }
 	void setIncludeFlag(boolean includeFlag) {
 		this.includeFlag = includeFlag;
 	}

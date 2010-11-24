@@ -27,8 +27,7 @@ import esg.security.common.SAMLInvalidStatementException;
  * High level API to build and process SAML authentication statements.
  */
 public interface SAMLAuthenticationStatementFacade {
-	
-	/**
+    /**
 	 * Method to generate a SAML authentication statement.
 	 * @param identity : the identity asserted in the SAML statement.
 	 * @param issuer : the issuer of the SAML statement.
@@ -61,7 +60,7 @@ public interface SAMLAuthenticationStatementFacade {
 	 * @return : the asserted identity.
 	 * @throws SAMLInvalidStatementException : if the SAML statement did not validate.
 	 */
-	String parseAuthenticationStatement(Certificate cert, String xml) throws SAMLInvalidStatementException;
+	SAMLAuthentication getAuthentication(Certificate cert, String xml) throws SAMLInvalidStatementException;
 	
 	/**
 	 * Method to specify the optional credential to sign SAML assertions.
