@@ -109,6 +109,7 @@ public class CertUtils {
 		try {
 		    sslConnection.connect();
 		} catch (SSLHandshakeException e) {
+		    sslConnection.disconnect();
             throw new SSLPeerUnverifiedException("Target is not trusted");
         }
 
