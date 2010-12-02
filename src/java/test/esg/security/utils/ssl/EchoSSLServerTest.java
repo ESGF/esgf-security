@@ -117,6 +117,48 @@ public class EchoSSLServerTest {
         assertFalse(ks.isKeyEntry(ks.getCertificateAlias(trustCert)));
         
     } 
+    
+    @Test
+    public void testEchoSSLServerRestart() throws Exception {
+        KeyPair kp = TrivialCertGenerator.generateRSAKeyPair();
+        String DN1 = "L=DE, OU=test-1, CN=localhost";
+        String DN2 = "L=DE, OU=test-2, CN=localhost";
+        
+        Certificate cert1 = TrivialCertGenerator.createSelfSignedCertificate(kp, DN1);
+        Certificate cert2 = TrivialCertGenerator.createSelfSignedCertificate(kp, DN2);
+        
+        EchoSSLServer server = new EchoSSLServer();
+        //put first cert
+        server.setServerCertificate(kp.getPrivate(), cert1);
+        //start the server
+        server.start();
+        
+        //port
+        int port = server.getPort();
+        assertTrue(port > 0);
+        
+        //Check first cert
+        Certificate gotCert = CertUtils
+                .retrieveCertificates("https://localhost:" + port, false)
+                .getCertificates().toArray(new Certificate[0])[0];
+        assertEquals(cert1, gotCert);
+        assertEquals(cert1, server.getCertificate());
+        
+        //put second one while server is running
+        server.setServerCertificate(kp.getPrivate(), cert2);
+        
+        //restart server
+        server.restart();
+
+        //Check second cert
+        gotCert = CertUtils
+                .retrieveCertificates("https://localhost:" + server.getPort(), false)
+                .getCertificates().toArray(new Certificate[0])[0];
+        assertEquals(cert2, gotCert);
+        assertEquals(cert2, server.getCertificate());
+
+        
+    } 
 
     @Test
     public void testEchoSSLServerWrongDN() throws Exception {

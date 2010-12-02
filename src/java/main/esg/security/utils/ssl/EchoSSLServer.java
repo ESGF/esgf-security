@@ -45,12 +45,11 @@ public class EchoSSLServer implements Runnable {
     private byte[] echoMessage;
     private boolean verbose = false;
     private Thread thread;
-    
+
     /**
      * A fully functional EchoSSLServer. If required, configure before starting.
      */
-    public EchoSSLServer() {
-    }
+    public EchoSSLServer() {}
 
     /**
      * @param ks keystore to use
@@ -75,7 +74,6 @@ public class EchoSSLServer implements Runnable {
         }
         return keystore;
     }
-    
 
     /**
      * @return the keypair of this server.
@@ -83,7 +81,7 @@ public class EchoSSLServer implements Runnable {
     public KeyPair getKeyPair() {
         return new KeyPair(getCertificate().getPublicKey(), key);
     }
-    
+
     /**
      * @return the certificate chain of this server.
      */
@@ -103,7 +101,7 @@ public class EchoSSLServer implements Runnable {
         }
         return serverCertChain;
     }
-    
+
     /**
      * @return the certificate of this server. If you need the complete chain
      *         call {@link #getCertificateChain()}
@@ -120,10 +118,11 @@ public class EchoSSLServer implements Runnable {
      * @throws UnknownHostException If the CN from the certificate's DN does not
      *             match the one from this machine.
      */
-    public void setServerCertificate(PrivateKey key, Certificate certificate) throws UnknownHostException {
-        setServerCertificate(key, new Certificate[]{certificate});
+    public void setServerCertificate(PrivateKey key, Certificate certificate)
+            throws UnknownHostException {
+        setServerCertificate(key, new Certificate[] { certificate });
     }
-    
+
     /**
      * Tells the sever to use this Certificate chain and key
      * 
@@ -140,8 +139,10 @@ public class EchoSSLServer implements Runnable {
         if (chain[0] instanceof X509Certificate) {
             String dnName = ((X509Certificate) chain[0]).getSubjectDN()
                     .getName();
-            int res = dnName.indexOf("CN=") + 3;
-            String cnName = dnName.substring(res, dnName.indexOf(',', res));
+            int start = dnName.indexOf("CN=") + 3;
+            int stop = dnName.indexOf(',', start);
+            String cnName = stop < 0 ? dnName.substring(start) : dnName
+                    .substring(start, stop);
             InetAddress cnAdd = InetAddress.getByName(cnName);
 
             if (!(cnAdd.isAnyLocalAddress() || cnAdd.isLoopbackAddress())) throw new UnknownHostException(
@@ -176,10 +177,10 @@ public class EchoSSLServer implements Runnable {
     public void trustCertificate(Certificate[] cert) throws KeyStoreException {
         TrivialCertGenerator.packKeyStore(getKeystore(), null, null, cert);
     }
-    
+
     /**
-     * @param message message to echo. Set to null to cancel. If no echo message is
-     * present the server will echo what it gets (interactive).
+     * @param message message to echo. Set to null to cancel. If no echo message
+     *            is present the server will echo what it gets (interactive).
      */
     public void setMessage(String message) {
         try {
@@ -188,8 +189,7 @@ public class EchoSSLServer implements Runnable {
             echoMessage = message.getBytes();
         }
     }
-    
-    
+
     public boolean isVerbose() {
         return verbose;
     }
@@ -202,40 +202,46 @@ public class EchoSSLServer implements Runnable {
     }
 
     /**
-     * @param port server will be listening to this port after started. Set to <=0
-     * to select the next free port.
+     * @param port server will be listening to this port after started. Set to
+     *            <=0 to select the next free port.
      */
     public void setPort(int port) {
         sslPort = port;
     }
-    
+
     /**
      * @return the port currently in use (if <=0 the server wasn't started yet)
      */
     public int getPort() {
+        // if not defined but already started return the port of the socket
+        // if (sslPort <= 0 && ss != null) return ss.getLocalPort();
+
+        // in any other case return the port
         return sslPort;
     }
-    
+
     private ServerSocket createServerSocket() throws IOException {
         SSLContext sslc;
         try {
-            
+
             sslc = SSLContext.getInstance("SSL");
             KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
             kmf.init(getKeystore(), passPhrase);
-            sslc.init(kmf.getKeyManagers(), getTrustManagers(), new SecureRandom());
-            
+            sslc.init(kmf.getKeyManagers(), getTrustManagers(),
+                    new SecureRandom());
+
             SSLServerSocket ss;
             if (sslPort <= 0) {
-                ss = (SSLServerSocket)sslc.getServerSocketFactory().createServerSocket(0);
+                ss = (SSLServerSocket) sslc.getServerSocketFactory()
+                        .createServerSocket(0);
                 sslPort = ss.getLocalPort();
-            } else { 
-                ss = (SSLServerSocket)sslc.getServerSocketFactory().createServerSocket(
-                        sslPort);
+            } else {
+                ss = (SSLServerSocket) sslc.getServerSocketFactory()
+                        .createServerSocket(sslPort);
             }
-            
+
             prepareServerSocket(ss);
-            
+
             return ss;
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -254,29 +260,37 @@ public class EchoSSLServer implements Runnable {
 
     private void prepareServerSocket(SSLServerSocket ss) {
         ss.setWantClientAuth(false);
-        ss.setNeedClientAuth(truststore!=null);
+        ss.setNeedClientAuth(truststore != null);
     }
 
-    private TrustManager[] getTrustManagers() throws NoSuchAlgorithmException, KeyStoreException {
+    private TrustManager[] getTrustManagers() throws NoSuchAlgorithmException,
+            KeyStoreException {
         if (truststore == null) {
             return new TrustManager[] { new X509TrustManager() {
                 @Override
-                public X509Certificate[] getAcceptedIssuers() {return null;}
+                public X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+
                 @Override
-                public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
+                public void checkServerTrusted(X509Certificate[] arg0,
+                        String arg1) throws CertificateException {}
+
                 @Override
-                public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
-            }};
+                public void checkClientTrusted(X509Certificate[] arg0,
+                        String arg1) throws CertificateException {}
+            } };
         } else {
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+            TrustManagerFactory tmf = TrustManagerFactory
+                    .getInstance("SunX509");
             tmf.init(truststore);
             return tmf.getTrustManagers();
         }
     }
 
     /**
-     * @param trustStore truststore with the client certificates for client validation.
-     * set to null to turn it off.
+     * @param trustStore truststore with the client certificates for client
+     *            validation. set to null to turn it off.
      */
     public void setValidateClient(KeyStore trustStore) {
         truststore = trustStore;
@@ -319,29 +333,29 @@ public class EchoSSLServer implements Runnable {
      */
     public synchronized void start() {
         if (!running) {
-            running = true;
             try {
                 ss = createServerSocket();
             } catch (IOException e) {
                 e.printStackTrace();
-                throw new Error ("Can't create server socket.");
+                throw new Error("Can't create server socket.");
             }
+            running = true;
             thread = new Thread(this);
             thread.start();
         } else {
             System.err.println("Already running.");
         }
     }
-    
+
     /**
-     * Restart the server. Some changes (new certificate) only will take place after you restart the
-     * server.
+     * Restart the server. Some changes (new certificate) only will take place
+     * after you restart the server.
      */
     public synchronized void restart() {
         stop();
         start();
     }
-    
+
     /**
      * Stop the server.
      */
@@ -350,9 +364,13 @@ public class EchoSSLServer implements Runnable {
         if (ss != null) {
             try {
                 ss.close();
-            } catch (IOException e) {
-            }
+            } catch (IOException e) {}
             ss = null;
+        }
+        // assure this thread is not hanged somewhere else
+        if (thread != null) {
+            thread.interrupt();
+            thread = null;
         }
     }
 
