@@ -7,6 +7,7 @@ import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
+import java.util.Date;
 import java.util.Enumeration;
 
 import javax.crypto.Cipher;
@@ -14,7 +15,10 @@ import javax.crypto.Cipher;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import sun.security.x509.CertificateValidity;
+import sun.security.x509.CertificateVersion;
 import sun.security.x509.X509CertImpl;
+import sun.security.x509.X509CertInfo;
 
 import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
 
@@ -96,7 +100,68 @@ public class TrivialCertGeneratorTest {
         assertEquals(DN, cert.getIssuerDN().toString());
         assertEquals(kp.getPublic(), cert.getPublicKey());
     }
+    
+    @Test
+    public void testCreateCertificateInfo() throws Exception {
+        String DN = "CN=TestCN, OU=TestOU";
+        //Date now = new Date();
+        long now = System.currentTimeMillis();
+        
+        X509CertInfo info = getDefaultInfo(kp, DN);
+        
+        //check DN
+        assertEquals(DN, info.get(X509CertInfo.SUBJECT).toString());
+        
+        //check self signed
+        assertEquals(DN, info.get(X509CertInfo.ISSUER).toString());
+        //check version
+        assertEquals(CertificateVersion.V3,
+                ((CertificateVersion) info.get(X509CertInfo.VERSION))
+                        .get(CertificateVersion.VERSION));
+        //check validity
+        long notBefore = ((Date) ((CertificateValidity) info
+                .get(X509CertInfo.VALIDITY))
+                .get(CertificateValidity.NOT_BEFORE)).getTime();
+        long notAfter = ((Date) ((CertificateValidity) info
+                .get(X509CertInfo.VALIDITY)).get(CertificateValidity.NOT_AFTER)).getTime();
+        
+        long tenYears = 10 * 365 * 24 * 60 * 60 * 1000L;
+        long inTenYears = tenYears + now;
 
+        //check validation start
+        assertTrue(notBefore > now - 5 * 1000);
+        assertTrue(notBefore < now + 5 * 1000);
+        
+        //check validation duration
+        assertEquals(tenYears, notAfter - notBefore);
+
+        //check validation end
+        assertTrue(notAfter > inTenYears - 5 * 1000);
+        assertTrue(notAfter < inTenYears + 5 * 1000);
+        
+        //...more to be checked...
+    }
+    
+    /**
+     * CertificateCreationFromInfo: 
+     */
+    @Test
+    public void testCertificateCreationFromInfo() throws Exception {
+        String DN = "CN=TestCN, OU=TestOU";
+        
+        X509CertInfo info = getDefaultInfo(kp, DN);
+        
+        //change validity
+        Date date1 = new Date(System.currentTimeMillis() + 365 * 24 * 60 * 60 * 1000L);
+        Date date2 = new Date(date1.getTime() + 365 * 24 * 60 * 60 * 1000L);
+        info.set(X509CertInfo.VALIDITY, new CertificateValidity(date1,date2));
+        
+        X509CertImpl c = createCertificate(info, kp.getPrivate());
+        assertEquals(date1, c.getNotBefore());
+        assertEquals(date2, c.getNotAfter());
+        
+    }
+    
     @Test
     public void testPackKeyStore() throws Exception {
         String rootDN = "CN=Root, OU=TestOU";
