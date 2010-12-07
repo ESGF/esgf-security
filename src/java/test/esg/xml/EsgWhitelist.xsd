@@ -41,6 +41,13 @@
                     <xsd:element name="organization" type="xsd:string" />
                     <xsd:element name="commonName" type="xsd:string" />
                     <xsd:element name="hostname" type="xsd:string" />
+                    <xsd:element name="id" type="xsd:string" />
+                    <xsd:element name="description" type="xsd:string" />
+                    <xsd:element name="baseUrl" type="xsd:string" />
+                    <xsd:element name="baseSecureUrl" type="xsd:string" />
+                    <xsd:element name="identity" type="xsd:string" />
+                    <xsd:element name="administratorPersonal" type="xsd:string" />
+                    <xsd:element name="administratorEmail" type="xsd:string" />
                     <xsd:element name="myproxy">
                       <xsd:complexType>
                         <xsd:attribute name="port" type="xsd:int" />
@@ -54,6 +61,18 @@
                       </xsd:complexType>
                     </xsd:element>
                     <xsd:element name="authorizationService">
+                      <xsd:complexType>
+                        <xsd:attribute name="url" type="xsd:string" />
+                        <xsd:attribute name="AuthorizationAuthority" type="xsd:string" />
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="oaiRepository">
+                      <xsd:complexType>
+                        <xsd:attribute name="url" type="xsd:string" />
+                        <xsd:attribute name="AuthorizationAuthority" type="xsd:string" />
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="identityProvider">
                       <xsd:complexType>
                         <xsd:attribute name="url" type="xsd:string" />
                         <xsd:attribute name="AuthorizationAuthority" type="xsd:string" />

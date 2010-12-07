@@ -159,9 +159,36 @@
       <organization>BADC</organization>
       <commonName>ESG-BADC</commonName>
       <hostname>myproxy.ceda.ac.uk</hostname>
+      <id>5abbeca4-835e-4fdb-8fbc-0be206191027</id>
+      <description>British Atmospheric Data Centre</description>
+      <baseUrl>http://cmip-gw.badc.rl.ac.uk/</baseUrl>
+      <baseSecureUrl>https://cmip-gw.badc.rl.ac.uk/</baseSecureUrl>
+      <identity>CN=cmip-gw.badc.rl.ac.uk, O=Science and Technology Facilities Council, ST=Science and Technology Facilities Council</identity>
+      <administratorPersonal>ESG-BADC Gateway Administrator</administratorPersonal>
+      <administratorEmail>Maurizio.Nagni@stfc.rl.ac.uk</administratorEmail>
       <myproxy port="7512"  AuthorizationAuthority="CN=Centre for Environmental Data Archival, O=STFC RAL, DC=ceda, DC=ac, DC=uk" />
-      <attributeService url="" AuthorizationAuthority="" />
+      <attributeService url="https://cmip-gw.badc.rl.ac.uk/saml/soap/secure/attributeService.htm" AuthorizationAuthority="" />
       <authorizationService url="https://ceda.ac.uk/OpenID/Provider/server" AuthorizationAuthority="CN=ceda.ac.uk, OU=RAL-SPBU, O=Science and Technology Facilities Council, C=GB" />
+      <oaiRepository url="http://cmip-gw.badc.rl.ac.uk/oai/repository.htm" AuthorizationAuthority="" />
+      <identityProvider url="" AuthorizationAuthority="" />
+    </gateway>
+
+    <gateway>
+      <organization>BADC</organization>
+      <commonName>ESG-BADC-TEST</commonName>
+      <hostname>myproxy.ceda.ac.uk</hostname>
+      <id>23fc66d2-9cdc-425d-bec4-552e002d6b56</id>
+      <description>British Atmospheric Data Centre</description>
+      <baseUrl>http://cmip-gw2.badc.rl.ac.uk/</baseUrl>
+      <baseSecureUrl>https://cmip-gw2.badc.rl.ac.uk/</baseSecureUrl>
+      <identity>CN=cmip-gw2.badc.rl.ac.uk, O=Science and Technology Facilities Council, ST=Science and Technology Facilities Council</identity>
+      <administratorPersonal>ESG-BADC Gateway Administrator</administratorPersonal>
+      <administratorEmail>Maurizio.Nagni@stfc.rl.ac.uk</administratorEmail>
+      <myproxy port="7512"  AuthorizationAuthority="CN=Centre for Environmental Data Archival, O=STFC RAL, DC=ceda, DC=ac, DC=uk" />
+      <attributeService url="https://cmip-gw2.badc.rl.ac.uk/saml/soap/secure/attributeService.htm" AuthorizationAuthority="" />
+      <authorizationService url="https://ceda.ac.uk/OpenID/Provider/server" AuthorizationAuthority="CN=ceda.ac.uk, OU=RAL-SPBU, O=Science and Technology Facilities Council, C=GB" />
+      <oaiRepository url="http://cmip-gw2.badc.rl.ac.uk/oai/repository.htm" AuthorizationAuthority="" />
+      <identityProvider url="" AuthorizationAuthority="" />
     </gateway>
     <gateway>
       <organization>PCMDI</organization>
@@ -172,15 +199,24 @@
       <authorizationService url="https://pcmdi3.llnl.gov/openid/provider.htm" AuthorizationAuthority="CN=pcmdi3.llnl.gov, OU=ICCD, O=Lawrence Livermore National Laboratory, L=Livermore, ST=California, C=US" />
     </gateway>
     <gateway>
-      <organization>JPL 1</organization>
-      <commonName>ESG-JPL1</commonName>
-      <hostname>jpl-esg.jpl.nasa.gov</hostname>
+      <organization>NASA 1</organization>
+      <commonName>ESG-JPL</commonName>
+      <hostname>esg-jpl.jpl.nasa.gov</hostname>
+      <id>06a37cfd-5ca5-4e5a-bc6b-797dbdace482</id>
+      <description>Earth System Grid gateway at the Jet Propulsion Laboratory</description>
+      <baseUrl>http://esg-gateway.jpl.nasa.gov/</baseUrl>
+      <baseSecureUrl>https://esg-gateway.jpl.nasa.gov/</baseSecureUrl>
+      <identity>CN=esg-jpl.jpl.nasa.gov, OU=Services, DC=doegrids, DC=org</identity>
+      <administratorPersonal>ESG-JPL Administrator</administratorPersonal>
+      <administratorEmail>administrator AT esg-jpl.jpl.nasa.gov</administratorEmail>
       <myproxy port="7512"  AuthorizationAuthority="CN=jpl-esg.jpl.nasa.gov, OU=ESG-JPL, O=ESG" />
-      <attributeService url="" AuthorizationAuthority="" />
+      <attributeService url="https://esg-gateway.jpl.nasa.gov/saml/soap/secure/attributeService.htm" AuthorizationAuthority="" />
       <authorizationService url="https://jpl-esg.jpl.nasa.gov/openid/provider.htm" AuthorizationAuthority="CN=esg-gateway.jpl.nasa.gov, OU=Domain Control Validated - RapidSSL(R), OU=See www.rapidssl.com/resources/cps (c)10, OU=GT59609478, O=esg-gateway.jpl.nasa.gov, C=US, serialNumber=1DfLTHkkGVP1MEf8YZcSQrs4iIRBLY2Y" />
+      <oaiRepository url="http://esg-gateway.jpl.nasa.gov/oai/repository.htm" AuthorizationAuthority="" />
+      <identityProvider url="https://esg-gateway.jpl.nasa.gov/openid/provider.htm" AuthorizationAuthority="" />
     </gateway>
     <gateway>
-      <organization>JPL 2</organization>
+      <organization>NASA 2</organization>
       <commonName>ESG-JPL2</commonName>
       <hostname>esg-gateway.jpl.nasa.gov</hostname>
       <attributeService url="" AuthorizationAuthority="" />
@@ -209,24 +245,42 @@
       <authorizationService url="https://openid.ornl.gov/openid/provider.htm" AuthorizationAuthority="CN=openid.ornl.gov, O=Oak Ridge National Laboratory, L=Oak Ridge, ST=Tennessee, C=US" />
     </gateway>
     <gateway>
-      <organization>DKRZ 1</organization>
-      <commonName>ESG-DKRZ1</commonName>
+      <organization>WDCC</organization>
+      <commonName>ESG-WDCC</commonName>
       <hostname>ipcc-ar5.dkrz.de</hostname>
+      <id>1bcca350-835e-4fdb-8fbc-0be206191027</id>
+      <description>Earth System Grid gateway at the World Data Center for Climate</description>
+      <baseUrl>http://ipcc-ar5.dkrz.de</baseUrl>
+      <baseSecureUrl>https://ipcc-ar5.dkrz.de</baseSecureUrl>
+      <identity>CN=ipcc-ar5.dkrz.de, OU=WDCC, O=DKRZ, C=DE</identity>
+      <administratorPersonal>ESG Gateway Administrator</administratorPersonal>
+      <administratorEmail>estanislao.gonzalez AT zmaw.de</administratorEmail>
       <myproxy port="7512"  AuthorizationAuthority="CN=ESG-DKRZ ipcc-ar5, OU=WDCC, O=DKRZ, C=DE" />
-      <attributeService url="" AuthorizationAuthority="" />
+      <attributeService url="https://ipcc-ar5.dkrz.de/saml/soap/secure/attributeService.htm" AuthorizationAuthority="" />
       <authorizationService url="https://ipcc-ar5.dkrz.de/openid/provider.htm" AuthorizationAuthority="CN=ipcc-ar5.dkrz.de, OU=WDCC, O=DKRZ, L=Hamburg, C=DE" />
+      <oaiRepository url="https://ipcc-ar5.dkrz.de/oai/repository.htm" AuthorizationAuthority="" />
+      <identityProvider url="https://ipcc-ar5.dkrz.de/openid/provider.htm" AuthorizationAuthority="" />
     </gateway>
-    <gateway organization="DKRZ 2">
-      <organization>DKRZ 2</organization>
-      <commonName>ESG-DKRZ2</commonName>
+    <gateway>
+      <organization>WDCC 2</organization>
+      <commonName>ESG-WDCC2</commonName>
       <hostname>albedo2.dkrz.de</hostname>
+      <id>a1bed020-835e-4fdb-8fbc-0be206191027</id>
+      <description>Earth System Grid gateway at the World Data Center for Climate</description>
+      <baseUrl>http://albedo2.dkrz.de/esgcet</baseUrl>
+      <baseSecureUrl>https://albedo2.dkrz.de/esgcet</baseSecureUrl>
+      <identity>CN=albedo2.dkrz.de, OU=WDCC, O=DKRZ, C=DE</identity>
+      <administratorPersonal>ESG Gateway Administrator</administratorPersonal>
+      <administratorEmail>estanislao.gonzalez AT zmaw.de</administratorEmail>
       <myproxy port="7512"  AuthorizationAuthority="CN=ESG-DKRZ CA (albedo2), OU=WDCC, O=DKRZ, C=DE" />
-      <attributeService url="" AuthorizationAuthority="" />
-      <authorizationService url="https://albedo2.dkrz.de/esgcet/openid/provider.htm" AuthorizationAuthority="CN=albedo2.dkrz.de, OU=WDCC, O=DKRZ, L=Hamburg, C=DE" />
+      <attributeService url="https://albedo2.dkrz.de/esgcet/saml/soap/secure/attributeService.htm" AuthorizationAuthority="" />
+      <authorizationService url="https://albedo2.dkrz.de/esgcet/openid/provider.htm" AuthorizationAuthority="" />
+      <oaiRepository url="https://albedo2.dkrz.de/esgcet/oai/repository.htm" AuthorizationAuthority="" />
+      <identityProvider url="https://albedo2.dkrz.de/esgcet/openid/provider.htm" AuthorizationAuthority="" />
     </gateway>
-    <gateway organization="NERSC">
-      <organization>BADC</organization>
-      <commonName>ESG-BADC</commonName>
+    <gateway>
+      <organization>NERSC</organization>
+      <commonName>ESG-NERSC</commonName>
       <hostname>esg.nersc.gov</hostname>
       <myproxy port="7512"  AuthorizationAuthority="CN=NERSC Gateway CA, OU=esg.nersc.gov, OU=ESG-NERSC, O=ESG" />
       <attributeService url="" AuthorizationAuthority="" />

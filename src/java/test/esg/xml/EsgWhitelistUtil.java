@@ -23,6 +23,7 @@ import esg.xml.EsgWhitelist.TrustedServices.OpenIdIdentityProvider;
 import esg.xml.EsgWhitelist.TrustedServices.Gateway.Myproxy;
 import esg.xml.EsgWhitelist.TrustedServices.Gateway.AttributeService;
 import esg.xml.EsgWhitelist.TrustedServices.Gateway.AuthorizationService;
+import esg.xml.EsgWhitelist.TrustedServices.Gateway.OaiRepository;
 
 public class EsgWhitelistUtil
 {
@@ -79,7 +80,11 @@ public class EsgWhitelistUtil
         {
             Gateway gateway = (Gateway)iter.next(); 
             System.out.print("Gateway Org = " + gateway.getOrganization() + ", CommonName = " + gateway.getCommonName());
-            System.out.println(", Hostname = " + gateway.getHostname());
+            System.out.println(", Hostname = " + gateway.getHostname() + ", id = " + gateway.getId());
+            System.out.println("Description = " + gateway.getDescription());
+            System.out.println("Base URL = " + gateway.getBaseUrl() + ", Secure Base URL = " + gateway.getBaseSecureUrl());
+            System.out.println("Identity = " + gateway.getIdentity());
+            System.out.println("Administrator Personal = " + gateway.getAdministratorPersonal() + ", Email = " + gateway.getAdministratorEmail());
             if (gateway.getAttributeService() != null)
             {
                 AttributeService as = gateway.getAttributeService();
@@ -96,6 +101,15 @@ public class EsgWhitelistUtil
                 {
                     System.out.println("    Authorization Service URL = " + as.getUrl());
                     System.out.println("    Authorization Service Authority = " + as.getAuthorizationAuthority());
+                }
+            }
+            if (gateway.getOaiRepository() != null)
+            {
+                OaiRepository or = gateway.getOaiRepository();
+                if ((or.getUrl().length() > 0) || (or.getAuthorizationAuthority().length() > 0))
+                {
+                    System.out.println("    OAI Repository Service URL = " + or.getUrl());
+                    System.out.println("    OAI Repository Service Authority = " + or.getAuthorizationAuthority());
                 }
             }
             if (gateway.getMyproxy() != null)
