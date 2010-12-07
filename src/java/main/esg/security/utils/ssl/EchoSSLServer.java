@@ -214,7 +214,7 @@ public class EchoSSLServer implements Runnable {
      */
     public int getPort() {
         // if not defined but already started return the port of the socket
-        // if (sslPort <= 0 && ss != null) return ss.getLocalPort();
+        if (sslPort <= 0 && ss != null) return ss.getLocalPort();
 
         // in any other case return the port
         return sslPort;
@@ -234,7 +234,6 @@ public class EchoSSLServer implements Runnable {
             if (sslPort <= 0) {
                 ss = (SSLServerSocket) sslc.getServerSocketFactory()
                         .createServerSocket(0);
-                sslPort = ss.getLocalPort();
             } else {
                 ss = (SSLServerSocket) sslc.getServerSocketFactory()
                         .createServerSocket(sslPort);
