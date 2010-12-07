@@ -19,11 +19,7 @@
 #./esg-security
 
 #Software Artifacts...
-../dist/esgf-security-1.0.0.tar.gz
-../dist/esgf-security.war
-../dist/esgf-security-1.0.0.jar
-../dist/esgf-security-common-1.0.0.jar
-../dist/esgf-security-connector-1.0.0.jar
-../dist/esgf-security-fe-1.0.0.jar
-../dist/esgf-security-test-1.0.0.jar
+../dist/esgf-security-1.0.2.tar.gz
+../dist/esgf-security-1.0.2.jar
+../dist/esgf-security-test-1.0.2.jar
 
