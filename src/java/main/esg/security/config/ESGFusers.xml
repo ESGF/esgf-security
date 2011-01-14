@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<users>
+
+	<user identity="https://esg-gateway.jpl.nasa.gov/myopenid/rootAdmin">
+		<attribute attribute_type="CMIP5 Research" attribute_value="User"/>
+		<attribute attribute_type="CMIP5 Research" attribute_value="Admin"/>
+		<attribute attribute_type="CMIP5 Commercial" attribute_value="Admin"/>
+		<attribute attribute_type="AIRS" attribute_value="User"/>
+	</user>
+
+</users>

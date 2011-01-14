@@ -41,8 +41,6 @@ public class SAMLAttributesImpl implements SAMLAttributes {
 	
 	private String email;
 	
-	public SAMLAttributesImpl() {}
-	
 	/**
 	 * The authority that issued these attributes.
 	 */
@@ -59,6 +57,21 @@ public class SAMLAttributesImpl implements SAMLAttributes {
 	 */
 	private Map<String, Set<GroupRole>> grouproles = new TreeMap<String,Set<GroupRole>>();
 
+	/**
+	 * No argument constructor
+	 */
+	public SAMLAttributesImpl() {}
+	
+	/**
+	 * Minimal arguments constructor.
+	 * @param openid
+	 * @param issuer
+	 */
+	public SAMLAttributesImpl(String openid, String issuer) {
+		this.openid = openid;
+		this.issuer = issuer;
+	}
+	
 	public String getFirstName() {
 		return firstName;
 	}
@@ -123,5 +136,16 @@ public class SAMLAttributesImpl implements SAMLAttributes {
 		return Collections.unmodifiableMap(grouproles);
 	}
 	
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer("Openid="+openid+" First Name="+firstName+" Last Name="+lastName+" Email="+email+" Issuer="+issuer);
+		for (final String attType : attributes.keySet()) {
+			sb.append("\n\tAttribute type="+attType+" value(s)=");
+			for (final String attValue : attributes.get(attType)) {
+				sb.append(attValue+" ");
+			}
+		}
+		return sb.toString();
+	}
 	
 }

@@ -16,48 +16,23 @@
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package esg.security.authz.service.impl;
+package esg.security.registry.service.api;
 
-import java.util.Vector;
+import java.net.URL;
 
-import esg.security.authz.service.api.SAMLAuthorization;
+import esg.security.attr.service.api.SAMLAttributeService;
 
-public class SAMLAuthorizationImpl implements SAMLAuthorization {
-
-	private String resource;
-	private String decision;
-	private Vector<String> actions;
+/**
+ * API for federation-wide registration services.
+ * @author luca.cinquini
+ */
+public interface RegistryService {
 	
-	public SAMLAuthorizationImpl() {
-		this.actions = new Vector<String>();
-	}
-	
-	public String getResource() {
-		return this.resource;
-	}
-	
-	public void setResource(String resource) {
-		this.resource = resource;
-	}
-	
-	public String getDecision() {
-		return this.decision;
-	}
+	/**
+	 * Method to retrieve the {@link SAMLAttributeService} URL that manages a given attribute type.
+	 * @param attribute
+	 * @return
+	 */
+	URL getAttributeService(String attributeType) throws UnknownPolicyAttributeTypeException;
 
-	public void setDecision(String decision) {
-		this.decision = decision;
-	}
-
-	public Vector<String> getActions() {
-		return this.actions;
-	}
-	
-	public void addAction(String action) {
-		this.actions.add(action);
-	}
-
-	public void setActions(Vector<String> actions) {
-		this.actions = actions;
-	}
-	
 }

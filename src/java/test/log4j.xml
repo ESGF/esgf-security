@@ -3,21 +3,21 @@
 <log4j:configuration threshold="all" xmlns:log4j="http://jakarta.apache.org/log4j/">
 
 	<!--  Appenders  -->
-	<appender name="stdout" class="org.apache.log4j.ConsoleAppender">
+	<appender name="esgf-out" class="org.apache.log4j.ConsoleAppender">
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="conversionPattern" value="[%p] %C: %m%n" />
 		</layout>
 	</appender>
 
 	<!-- Loggers -->
-	<logger name="esg.saml" additivity="false">
+	<logger name="esg.security" additivity="false">
 		<level value="DEBUG" />
-		<appender-ref ref="stdout" />
+		<appender-ref ref="esgf-out" />
 	</logger>
 	
 	<root>
 		<priority value="INFO" />
-		<appender-ref ref="stdout" />
+		<appender-ref ref="esgf-out" />
 	</root>
 
 </log4j:configuration>

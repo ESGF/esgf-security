@@ -18,6 +18,7 @@
  ******************************************************************************/
 package esg.security.attr.service.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -29,6 +30,7 @@ import org.opensaml.saml2.core.AttributeQuery;
 import org.opensaml.saml2.core.Response;
 import org.opensaml.saml2.core.Status;
 import org.opensaml.saml2.core.StatusCode;
+import org.opensaml.saml2.core.impl.AttributeBuilder;
 import org.opensaml.ws.soap.soap11.Body;
 import org.opensaml.ws.soap.soap11.Envelope;
 import org.opensaml.xml.io.MarshallingException;
@@ -71,8 +73,7 @@ public class SAMLAttributeServiceClientSoapImpl implements SAMLAttributeServiceC
 	}
 
 	/**
-	 * Build attribute query with given set of query attributes.  Note null
-	 * attributes will set default ESG attributes 
+	 * Build attribute query with given set of query attributes. Note null attributes will set default ESG attributes. 
 	 * 
 	 * P J Kershaw 08/09/10
 	 * 
@@ -81,13 +82,27 @@ public class SAMLAttributeServiceClientSoapImpl implements SAMLAttributeServiceC
 	 * @return query
 	 * @throws MarshallingException
 	 */
-	public AttributeQuery buildAttributeQuery(final String openid, 
-			final List<Attribute> attributes) {
+	public AttributeQuery buildAttributeQuery(final String openid, final List<Attribute> attributes) {
 		
 		// build attribute query
 		AttributeQuery attributeQuery = requestBuilder.buildAttributeQueryRequest(openid, issuer, attributes);
 		
 		return attributeQuery;
+	}
+	
+	public AttributeQuery buildStringAttributeQuery(final String openid, final List<String> attributes) {
+		
+		final List<Attribute> _attributes = new ArrayList<Attribute>();
+		final AttributeBuilder attributeBuilder = new AttributeBuilder();
+		for (final String attribute : attributes) {
+			Attribute att = attributeBuilder.buildObject();
+			att.setName(attribute);
+			att.setNameFormat("http://www.w3.org/2001/XMLSchema#string");
+			_attributes.add(att);
+		}
+		
+		return this.buildAttributeQuery(openid, _attributes);
+		
 	}
 	
 	/**
@@ -110,7 +125,7 @@ public class SAMLAttributeServiceClientSoapImpl implements SAMLAttributeServiceC
 	}
 
 	/**
-	 * Make attributeQuery and serialise
+	 * Make attributeQuery and serialize
 	 * @throws MarshallingException 
 	 */
 	public String buildAttributeRequest(final String openid, final List<Attribute> attributes) 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<policies>
+
+	<policy resource="\Acmip5.*" attribute_type="CMIP5 Research" attribute_value="User" action="Read"/>
+	<policy resource="\Acmip5.*" attribute_type="CMIP5 Commercial" attribute_value="User" action="Read"/>
+	<policy resource="\Acmip5.*" attribute_type="CMIP5 Research"  attribute_value="Admin" action="Write"/>
+	<policy resource=".+\.airs\..+" attribute_type="AIRS" attribute_value="User" action="Read"/>
+	<policy resource=".+\.airs\..+" attribute_type="AIRS" attribute_value="Admin" action="Write"/>
+
+</policies>

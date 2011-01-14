@@ -1,29 +1,23 @@
 package esg.xml;
 
+import java.io.FileInputStream;
 import java.util.Iterator;
 import java.util.List;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import esg.xml.EsgWhitelist;
 import esg.xml.EsgWhitelist.TrustedCAs;
-import esg.xml.EsgWhitelist.TrustedCAs.PkiCA;
 import esg.xml.EsgWhitelist.TrustedCAs.OpenIdCA;
-
+import esg.xml.EsgWhitelist.TrustedCAs.PkiCA;
 import esg.xml.EsgWhitelist.TrustedServices;
-import esg.xml.EsgWhitelist.TrustedServices.Gateway;
 import esg.xml.EsgWhitelist.TrustedServices.Datanode;
-import esg.xml.EsgWhitelist.TrustedServices.OpenIdIdentityProvider;
-
-import esg.xml.EsgWhitelist.TrustedServices.Gateway.Myproxy;
+import esg.xml.EsgWhitelist.TrustedServices.Gateway;
 import esg.xml.EsgWhitelist.TrustedServices.Gateway.AttributeService;
 import esg.xml.EsgWhitelist.TrustedServices.Gateway.AuthorizationService;
+import esg.xml.EsgWhitelist.TrustedServices.Gateway.Myproxy;
 import esg.xml.EsgWhitelist.TrustedServices.Gateway.OaiRepository;
+import esg.xml.EsgWhitelist.TrustedServices.OpenIdIdentityProvider;
 
 public class EsgWhitelistUtil
 {

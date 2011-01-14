@@ -32,7 +32,7 @@ import esg.security.common.SOAPServiceClient;
 public class SAMLAuthorizationServiceSOAPClient {
 
 	  private static final String ENDPOINT = "http://localhost:8080/esgf-security/saml/soap/secure/authorizationService.htm";
-	  private static final String SAML_REQUEST = "esg/security/authz/main/SAMLauthorizationQueryRequest.xml";
+	  private static final String SAML_REQUEST = "esg/security/authz/main/SAMLauthorizationQueryRequest2.xml";
 	  
 	  public static void main(String[] args) throws Exception {
 		  			  

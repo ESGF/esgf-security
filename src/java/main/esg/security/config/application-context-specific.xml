@@ -12,10 +12,15 @@
     	<property name="whiteListCertificateProvider" ref="whiteList"/>
     </bean>
     <bean name="samlAttributeService" class="esg.security.attr.service.impl.SAMLAttributeServiceSoapImpl" />
- 	<!-- Example implementation of SAMLAttributeFactory, configured to write SAML attributes of a specific "name" -->
+ 	<!-- Example implementation of SAMLAttributeFactory, configured to write SAML attributes of a specific "name"
   	<bean id="samlAttributeFactory" class="esg.security.attr.service.impl.SAMLAttributeFactoryTrivialImpl">
   		<property name="samlStringAttributeName"><value>urn:esgf:test:attribute_name</value></property>
   		<property name="samlGroupRoleAttributeName"><value>urn:esgf:test:grouprole</value></property>
+  	</bean> -->
+  	<!-- Example implementation that looks up user attributes in local XML file -->
+  	<bean id="samlAttributeFactory" class="esg.security.attr.service.impl.SAMLAttributeFactoryLocalXmlImpl">
+  		<constructor-arg index="0"><value>ESGF Attribute Service</value></constructor-arg>
+  		<constructor-arg index="1"><value>esg/security/config/ESGFusers.xml</value></constructor-arg>
   	</bean>
   	
   	<!-- ESG SAML-based Authorization Service stack (with example white list) -->
@@ -23,7 +28,20 @@
   		<property name="whiteListCertificateProvider" ref="whiteList"/>
   	</bean>
   	<bean name="samlAuthorizationService" class="esg.security.authz.service.impl.SAMLAuthorizationServiceSoapImpl" />
-  	<bean id="samlAuthorizationFactory" class="esg.security.authz.service.impl.SAMLAuthorizationFactoryTrivialImpl"/>
+  	<!-- <bean id="samlAuthorizationFactory" class="esg.security.authz.service.impl.SAMLAuthorizationFactoryTrivialImpl"/> -->
+  	
+  	<bean id="samlAuthorizationFactory" class="esg.security.authz.service.impl.SAMLAuthorizationFactoryImpl">
+  		<constructor-arg index="0"><value>ESGF Authorization Service</value></constructor-arg>
+  		<constructor-arg index="1" ref="policyService"/>
+  		<constructor-arg index="2" ref="registryService"/>
+  	</bean>
+  	
+  	<bean id="policyService" class="esg.security.policy.service.impl.PolicyServiceLocalXmlImpl">
+  		<constructor-arg index="0"><value>esg/security/config/ESGFpolicies.xml</value></constructor-arg>
+  	</bean>
+  	<bean id="registryService" class="esg.security.registry.service.impl.RegistryServiceLocalXmlImpl">
+  		<constructor-arg index="0"><value>esg/security/config/ESGFregistry.xml</value></constructor-arg>
+  	</bean>
   	
   	<!-- Example white list -->
   	<bean name="whiteList" class="esg.security.common.WhiteListCertificateProvider">

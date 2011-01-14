@@ -19,39 +19,23 @@
 package esg.xml;
 
 import java.util.List;
-import java.util.Iterator;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import esg.xml.EsgWhitelistUtil;
-
-import esg.xml.EsgWhitelist;
-import esg.xml.EsgWhitelist.TrustedCAs;
-import esg.xml.EsgWhitelist.TrustedCAs.PkiCA;
-import esg.xml.EsgWhitelist.TrustedCAs.OpenIdCA;
-
-import esg.xml.EsgWhitelist.TrustedServices;
-import esg.xml.EsgWhitelist.TrustedServices.Gateway;
-import esg.xml.EsgWhitelist.TrustedServices.Datanode;
-import esg.xml.EsgWhitelist.TrustedServices.OpenIdIdentityProvider;
-
-import esg.xml.EsgWhitelist.TrustedServices.Gateway.Myproxy;
-import esg.xml.EsgWhitelist.TrustedServices.Gateway.AttributeService;
-import esg.xml.EsgWhitelist.TrustedServices.Gateway.AuthorizationService;
-
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
+
+import esg.xml.EsgWhitelist.TrustedCAs;
+import esg.xml.EsgWhitelist.TrustedCAs.OpenIdCA;
+import esg.xml.EsgWhitelist.TrustedCAs.PkiCA;
+import esg.xml.EsgWhitelist.TrustedServices;
+import esg.xml.EsgWhitelist.TrustedServices.Datanode;
+import esg.xml.EsgWhitelist.TrustedServices.Gateway;
+import esg.xml.EsgWhitelist.TrustedServices.OpenIdIdentityProvider;
 
 public class EsgWhitelistTest {
 	

@@ -16,33 +16,59 @@
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package esg.security.attr.main;
+package esg.security.registry.service.impl;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.springframework.core.io.ClassPathResource;
 
-import esg.security.common.SOAPServiceClient;
+import esg.security.registry.service.api.RegistryService;
+import esg.security.registry.service.api.UnknownPolicyAttributeTypeException;
+import esg.security.utils.xml.Parser;
 
 /**
- * Example client to contact a deployed ESG SAML Attribute Service via SOAP binding.
- * This class is setup to query a SAML Attribute Service deployed on localhost on the non-secure port 8080, 
- * without any mutual authentication.
+ * Implementation of {@link RegistryService} backed up by a local XML configuration file.
+ * 
+ * @author luca.cinquini
  */
-public class SAMLAttributeServiceSOAPClient {
-
-	  // use HTTP endpoint for application deployed on localhost
-	  private static final String ENDPOINT = "http://localhost:8080/esgf-security/saml/soap/secure/attributeService.htm";  	  
-	  private static final String SAML_REQUEST = "esg/security/attr/main/SAMLattributeQueryRequest2.xml";
-	  
-	  public static void main(String[] args) throws Exception {
-		  
-		  final File file = new ClassPathResource(SAML_REQUEST).getFile();
-		  final String samlRequest = FileUtils.readFileToString(file);
-		  final SOAPServiceClient client = new SOAPServiceClient();
-		  client.doSoap(ENDPOINT, samlRequest);
-					  
-	  }
+public class RegistryServiceLocalXmlImpl implements RegistryService {
 	
+	// local storage of attribute type to attribute service mapping
+	private Map<String, URL> attributeServices = new HashMap<String, URL>();
+	
+	public RegistryServiceLocalXmlImpl(final String xmlFilePath) throws Exception {
+		
+		final File file = new ClassPathResource(xmlFilePath).getFile();
+		parseRegistry(file);
+	}
+
+	@Override
+	public URL getAttributeService(final String attributeType) throws UnknownPolicyAttributeTypeException {
+		if (attributeServices.containsKey(attributeType)) {
+			return attributeServices.get(attributeType);
+		} else {
+			throw new UnknownPolicyAttributeTypeException("Cannot resolve attribute type="+attributeType);
+		}
+	}
+
+	// method to parse the XML registry into the local map.
+	void parseRegistry(final File file) throws MalformedURLException, IOException, JDOMException {
+		
+		final Document doc = Parser.toJDOM(file.getAbsolutePath(), false);
+		final Element root = doc.getRootElement();
+		
+		for (final Object attr : root.getChildren("attribute")) {
+			final Element _attr = (Element)attr;
+			attributeServices.put(_attr.getAttributeValue("type"), new URL(_attr.getAttributeValue("service")));
+		}
+		
+	}
 }

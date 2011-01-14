@@ -43,6 +43,12 @@ public class SAMLAuthorizationsImpl implements SAMLAuthorizations {
 	public SAMLAuthorizationsImpl() {
 		this.authorizations = new Vector<SAMLAuthorization>();
 	}
+	
+	public SAMLAuthorizationsImpl(final String identity, final String issuer) {
+		this();
+		this.identity = identity;
+		this.issuer = issuer;
+	}
 
 	public Vector<SAMLAuthorization> getAuthorizations() {
 		return this.authorizations;

@@ -34,6 +34,7 @@ import esg.security.attr.service.api.exceptions.SAMLAttributeServiceClientRespon
  */
 public interface SAMLAttributeServiceClient {
 	
+	
 	/**
 	 * Method to build a SAML attribute query for a user with given OpenID.
 	 * @param openid : the user unique identifier.
@@ -41,6 +42,14 @@ public interface SAMLAttributeServiceClient {
 	 * @return the SAML attribute request (with binding) serialized as string, to be sent to the SAML attribute service.
 	 */
 	AttributeQuery buildAttributeQuery(String identifier, List<Attribute> attributes);
+	
+	/**
+	 * Simplified method to build a SAML attribute query for string-type attributes.
+	 * @param openid : the user unique identifier.
+	 * @param attributes : the named attributes to request - if empty or null, the server will send all attributes available.
+	 * @return the SAML attribute request (with binding) serialized as string, to be sent to the SAML attribute service.
+	 */
+	AttributeQuery buildStringAttributeQuery(String identifier, List<String> attributes);
 	
 	/**
 	 * Method to build a serialized SAML attribute request containing a given attribute query.

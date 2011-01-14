@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<registry>
+
+	<attribute type="CMIP5 Research" service="http://localhost:8080/esgf-security/saml/soap/secure/attributeService.htm"/>
+	<attribute type="CMIP5 Commercial" service="http://localhost:8080/esgf-security/saml/soap/secure/attributeService.htm"/>
+	<attribute type="AIRS" service="http://localhost:8080/esgf-security/saml/soap/secure/attributeService.htm"/>
+
+</registry>

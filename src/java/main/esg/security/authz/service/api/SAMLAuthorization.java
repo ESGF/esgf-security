@@ -36,4 +36,6 @@ public interface SAMLAuthorization {
 	Vector<String> getActions();
 
 	void setActions(Vector<String> actions);
+	
+	void addAction(String action);
 }
