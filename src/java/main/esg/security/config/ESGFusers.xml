@@ -2,7 +2,7 @@
 
 <users>
 
-	<user identity="https://esg-gateway.jpl.nasa.gov/myopenid/rootAdmin">
+	<user openid="https://esg-gateway.jpl.nasa.gov/myopenid/rootAdmin" first_name="root" last_name="admin" email="root@admin">
 		<attribute attribute_type="CMIP5 Research" attribute_value="User"/>
 		<attribute attribute_type="CMIP5 Research" attribute_value="Admin"/>
 		<attribute attribute_type="CMIP5 Commercial" attribute_value="Admin"/>

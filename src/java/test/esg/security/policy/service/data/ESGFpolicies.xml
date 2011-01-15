@@ -7,5 +7,6 @@
 	<policy resource="\Acmip5.*" attribute_type="CMIP5 Research"  attribute_value="Admin" action="Write"/>
 	<policy resource=".+\.airs\..+" attribute_type="AIRS" attribute_value="User" action="Read"/>
 	<policy resource=".+\.airs\..+" attribute_type="AIRS" attribute_value="Admin" action="Write"/>
+	<policy resource=".*mls.*" attribute_type="MLS" attribute_value="User" action="Read"/>
 
 </policies>

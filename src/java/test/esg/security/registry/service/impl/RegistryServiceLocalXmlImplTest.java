@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import esg.security.registry.service.api.RegistryService;
+import esg.security.registry.service.api.UnknownPolicyAttributeTypeException;
 
 /**
  * Test class for {@link RegistryServiceLocalXmlImpl}
@@ -32,6 +33,11 @@ public class RegistryServiceLocalXmlImplTest {
 		Assert.assertEquals(service.getAttributeService("CMIP5 Commercial"), new URL("https://pcmdi3.llnl.gov/esgcet/saml/soap/secure/attributeService.htm"));
 		Assert.assertEquals(service.getAttributeService("AIRS"), new URL("https://esg-gateway.jpl.nasa.gov/saml/soap/secure/attributeService.htm"));
 		
+	}
+	
+	@Test(expected=UnknownPolicyAttributeTypeException.class)
+	public void testGetAttributeServiceForUnkwonType() throws Exception {
+		service.getAttributeService("DoesNotExist");	
 	}
 	
 }

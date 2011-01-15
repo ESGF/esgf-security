@@ -26,3 +26,10 @@ Version 1.2.2
 Version 1.1.2.2
 - Changed versioning schema to include datanode schema at the beginning
 - Moved utils subpackage to esg.security.utils
+
+1.0.2
+- Changed versioning number
+
+1.1.0
+Provided stub implementations of PolicyService, RegistryService, AttributeService and AuthorizationService that are backed up by local XML files.
+

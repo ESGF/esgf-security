@@ -23,6 +23,7 @@ public class PolicyServiceLocalXmlImplTest {
 	private final String ATT_TYPE1 = "CMIP5 Research";
 	private final String ATT_TYPE2 = "CMIP5 Commercial";
 	private final String ATT_TYPE3 = "AIRS";
+	private final String ATT_TYPE4 = "MLS";
 	
 	private final String ATT_VALUEA = "User";
 	private final String ATT_VALUEB = "Admin";
@@ -44,6 +45,10 @@ public class PolicyServiceLocalXmlImplTest {
 		testPolicy("cmip5.mymodel", "Delete", new String[] {}, new String[] {} );
 		testPolicy("nasa.jpl.airs.monthly.file", "Read", new String[] { ATT_TYPE3 }, new String[] { ATT_VALUEA } );
 		testPolicy("nasa.jpl.airs.monthly.file", "Write", new String[] { ATT_TYPE3 }, new String[] { ATT_VALUEB } );
+		testPolicy("", "Read", new String[] {}, new String[] {} );
+		testPolicy("cmip5", "", new String[] {}, new String[] {} );
+		testPolicy("xxmlsxx", "Read", new String[] { ATT_TYPE4 }, new String[] { ATT_VALUEA } );
+		testPolicy("xxmlsxx", "Write", new String[] {}, new String[] {} );
 		
 	}
 	
