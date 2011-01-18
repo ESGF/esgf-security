@@ -246,7 +246,7 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 	}
 	
 	private void log(String s) {
-		if (LOG.isDebugEnabled()) System.out.println(s);
+		if (LOG.isDebugEnabled()) LOG.debug(s);
 	}
 
 }

@@ -51,7 +51,7 @@ public class Parser {
 	  
 		// input arguments
 		if (args.length!=2) {
-			System.out.println("USAGE: ucar.xml.Parser xmlURI validate");
+			System.out.println("USAGE: esg.security.utils.xml.Parser xmlURI validate");
 			System.exit(-1);
 		}
 		String xmlUri = args[0];

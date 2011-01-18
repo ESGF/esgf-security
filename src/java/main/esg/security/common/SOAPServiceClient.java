@@ -87,7 +87,6 @@ public class SOAPServiceClient {
 	}
 	
 	private void log(final String message) {
-		System.out.println(message);
 		if (LOG.isDebugEnabled()) LOG.debug(message);
 	}
 

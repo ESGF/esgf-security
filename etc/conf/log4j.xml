@@ -10,7 +10,7 @@
 	</appender>
 
 	<!-- Loggers -->
-	<logger name="esg.saml" additivity="false">
+	<logger name="esg" additivity="false">
 		<level value="DEBUG" />
 		<appender-ref ref="esgSamlLog" />
 	</logger>

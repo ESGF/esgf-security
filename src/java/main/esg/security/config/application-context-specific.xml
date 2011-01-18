@@ -9,7 +9,7 @@
       	
     <!--ESG SAML-based Attribute Service stack (with example white list) -->
     <bean name="attributeServiceController" class="esg.security.attr.web.SAMLAttributeServiceSoapController">
-    	<property name="whiteListCertificateProvider" ref="whiteList"/>
+    	<!-- <property name="whiteListCertificateProvider" ref="whiteList"/> -->
     </bean>
     <bean name="samlAttributeService" class="esg.security.attr.service.impl.SAMLAttributeServiceSoapImpl" />
  	<!-- Example implementation of SAMLAttributeFactory, configured to write SAML attributes of a specific "name"
@@ -25,7 +25,7 @@
   	
   	<!-- ESG SAML-based Authorization Service stack (with example white list) -->
   	<bean name="authorizationServiceController" class="esg.security.authz.web.SAMLAuthorizationServiceSoapController">
-  		<property name="whiteListCertificateProvider" ref="whiteList"/>
+  		<!-- <property name="whiteListCertificateProvider" ref="whiteList"/> -->
   	</bean>
   	<bean name="samlAuthorizationService" class="esg.security.authz.service.impl.SAMLAuthorizationServiceSoapImpl" />
   	<!-- <bean id="samlAuthorizationFactory" class="esg.security.authz.service.impl.SAMLAuthorizationFactoryTrivialImpl"/> -->
