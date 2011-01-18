@@ -96,7 +96,7 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 		for (final String action : actions) {
 			
 			// default decision for this action
-			String decision = DecisionTypeEnumeration.INDETERMINATE.toString();
+			String decision = DecisionTypeEnumeration.DENY.toString();
 			
 			// retrieve user attributes from each service, if it was not queried already
 			for (final URL url : attServiceMap.keySet()) {
