@@ -2,8 +2,11 @@
 
 <registry>
 
-	<attribute type="CMIP5 Research" service="http://localhost:8080/esgf-security/saml/soap/secure/attributeService.htm"/>
-	<attribute type="CMIP5 Commercial" service="http://localhost:8080/esgf-security/saml/soap/secure/attributeService.htm"/>
-	<attribute type="AIRS" service="http://localhost:8080/esgf-security/saml/soap/secure/attributeService.htm"/>
+        <!-- Attributes controlled by PCMDI Attribute Service -->
+        <attribute type="CMIP5 Research" service="http://esg-test1.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm"/>
+        <attribute type="CMIP5 Commercial" service="http://esg-test1.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm"/>
+
+        <!-- Attributes controlled by NASA Attribute Service -->
+        <attribute type="NASA OBS" service="http://esg-vm.jpl.nasa.gov/esgf-security/saml/soap/secure/attributeService.htm"/>
 
 </registry>
