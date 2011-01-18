@@ -38,6 +38,9 @@ public class SAMLAttributeFactoryLocalXmlImpl implements SAMLAttributeFactory {
 	@Override
 	public SAMLAttributes newInstance(String identifier) throws SAMLUnknownPrincipalException {
 		if (attributes.containsKey(identifier)) {
+			// return ALL available attributes:
+			// the invoking service takes care of selecting the required types,
+			// or returning all attributes if none is specified
 			return attributes.get(identifier);
 		} else {
 			throw new SAMLUnknownPrincipalException("Unknown identifier: "+identifier);
