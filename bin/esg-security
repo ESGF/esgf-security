@@ -100,12 +100,12 @@ init() {
 # In update mode it will always pull down latest after archiving old
 #
 setup_security() {
+    init
+
     echo -n "Checking for security services ${esgf_security_version}"
     check_webapp_version "${security_context_root}" "${esgf_security_version}"
     local ret=$?
     ((ret == 0)) && (( ! force_install )) && echo " [OK]" && return 0
-    
-    init
     
     echo
     echo "*******************************"
