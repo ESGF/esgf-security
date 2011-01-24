@@ -16,7 +16,7 @@
 ../README
 
 #Installation script...
-#./esg-security
+./esg-security
 
 #Software Artifacts...
 ../dist/esgf-security-1.0.2.tar.gz
