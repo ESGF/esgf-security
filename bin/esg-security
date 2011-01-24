@@ -63,7 +63,7 @@ VERBOSE=${VERBOSE:-0}
 esg_dist_url=http://198.128.245.140/dist
 envfile="/etc/esg.env"
 
-security_version=${security_version:-"0.9.1"}
+esgf_security_version=${esgf_security_version:-"0.9.1"}
 
 #--------------
 #User Defined / Setable (public)
@@ -100,8 +100,8 @@ init() {
 # In update mode it will always pull down latest after archiving old
 #
 setup_security() {
-    echo -n "Checking for security services ${security_version}"
-    check_webapp_version "${security_context_root}" "${security_version}"
+    echo -n "Checking for security services ${esgf_security_version}"
+    check_webapp_version "${security_context_root}" "${esgf_security_version}"
     local ret=$?
     ((ret == 0)) && (( ! force_install )) && echo " [OK]" && return 0
     
@@ -173,7 +173,7 @@ setup_security() {
 }
 
 write_security_install_log() {
-    echo "$(date ${date_format}) webapp:${security_context_root}=${security_version} ${security_app_home}" >> ${install_logfile}
+    echo "$(date ${date_format}) webapp:${security_context_root}=${esgf_security_version} ${security_app_home}" >> ${install_logfile}
     dedup ${install_logfile}
     return 0
 }
