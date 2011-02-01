@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <policies>
-        <!-- URLs matching /cmip5/ -->
+
+        <!-- URLs matching */cmip5/* -->
         <policy resource=".*\/cmip5\/.*" attribute_type="CMIP5 Research" attribute_value="User" action="Read"/>
         <policy resource=".*\/cmip5\/.*" attribute_type="CMIP5 Research" attribute_value="Admin" action="Write"/>
-        <policy resource=".*\/cmip5\/.*" attribute_type="CMIP5 Commercial" attribute_value="User" action="Read"/>
+       
+        <!-- URLs matching */test/* -->
         <policy resource=".*\/test\/.*" attribute_type="Test Attribute" attribute_value="User" action="Read"/>
+        <policy resource=".*\/test\/.*" attribute_type="Test Attribute" attribute_value="Admin" action="Write"/>
 
-        <!-- URLs matching /nasa/ -->
+        <!-- URLs matching */nasa/* -->
         <policy resource=".*\/nasa\/.*" attribute_type="NASA OBS" attribute_value="User" action="Read"/>
         <policy resource=".*\/nasa\/.*" attribute_type="NASA OBS" attribute_value="Admin" action="Write"/>
 
