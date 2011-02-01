@@ -5,6 +5,7 @@
         <!-- Attributes controlled by PCMDI Attribute Service -->
         <attribute type="CMIP5 Research" service="https://esg-test1.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm"/>
         <attribute type="CMIP5 Commercial" service="https://esg-test1.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm"/>
+        <attribute type="Test Attribute" service="http://localhost:8080/esgf-security/saml/soap/secure/attributeService.htm"/>
 
         <!-- Attributes controlled by NASA Attribute Service -->
         <attribute type="NASA OBS" service="https://esg-vm.jpl.nasa.gov/esgf-security/saml/soap/secure/attributeService.htm"/>

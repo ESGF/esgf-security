@@ -26,6 +26,8 @@ import esg.security.utils.xml.Parser;
  * The XML file contains regular expressions matching the resource identifiers, and this service implementation will return
  * the policy statements for the first match found, for the given action.
  * 
+ * Note that this implementation disregards the case of the "action" parameter (i.e. "Read" and "read" are considered identical).
+ * 
  * @author luca.cinquini
  *
  */
@@ -49,7 +51,7 @@ public class PolicyServiceLocalXmlImpl implements PolicyService {
 			Matcher matcher = pattern.matcher(resource);
 			if (matcher.matches()) {
 				for (final PolicyStatement pstmt : policies.get(pattern)) {
-					if (pstmt.getAction().toString().equals(action)) {
+					if (pstmt.getAction().toString().equalsIgnoreCase(action)) {
 						attributes.add(pstmt.getAttribute());
 					}
 				}

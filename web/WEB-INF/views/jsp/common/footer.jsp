@@ -1,1 +1,1 @@
-FOOTER
+<p/>BSD Open Source License

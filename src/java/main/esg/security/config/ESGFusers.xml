@@ -2,11 +2,12 @@
 
 <users>
 
-	<user openid="https://esg-gateway.jpl.nasa.gov/myopenid/rootAdmin" first_name="root" last_name="admin" email="root@admin">
+	<user openid="https://localhost:8443/esgf-idp/openid/testUser" first_name="test" last_name="user" email="test@user">
 	        <attribute attribute_type="CMIP5 Research" attribute_value="User"/>
 	        <attribute attribute_type="CMIP5 Research" attribute_value="Admin"/>
 	        <attribute attribute_type="CMIP5 Commercial" attribute_value="Admin"/>
 	        <attribute attribute_type="AIRS" attribute_value="User"/>
+	        <attribute attribute_type="Test Attribute" attribute_value="User"/>
 	</user>
 	
 	<user openid="https://esg-gateway.jpl.nasa.gov/myopenid/cinquiniluca" first_name="Luca" last_name="Cinquini" email="luca.cinquini@jpl.nasa.gov">

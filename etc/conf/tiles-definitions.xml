@@ -7,10 +7,10 @@
 	
 	<definition name="empty-layout" template="/WEB-INF/views/jsp/layouts/layout-template.jsp" >
 				
-		<put-attribute name="title" value="Spring Project" />
+		<put-attribute name="title" value="ESGF Web Application" />
 		
 		<!-- <head> -->
-		<put-attribute name="head" value="/WEB-INF/views/jsp/common/yui.jsp" />
+		<put-attribute name="head" value="/WEB-INF/views/jsp/common/head.jsp" />
 					
 		<!-- <body> -->
 		<put-attribute name="header" value="/WEB-INF/views/jsp/common/header.jsp"  />

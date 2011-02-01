@@ -52,5 +52,7 @@
   		</constructor-arg>
   	</bean>
   	
+  	<!-- Test controller -->
+  	<bean name="testController" class="esg.security.webclient.TestController" />
 
 </beans>

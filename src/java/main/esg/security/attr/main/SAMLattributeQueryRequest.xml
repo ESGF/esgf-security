@@ -3,14 +3,15 @@
       <samlp:AttributeQuery xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="9b0061a4-7102-4e21-8748-5a993b95548e" IssueInstant="2009-08-05T19:20:09.089Z" Version="2.0">
          <saml:Issuer xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Format="urn:oasis:names:tc:SAML:1.1:nameid-format:x509SubjectName">Test SAML Client</saml:Issuer>
          <saml:Subject xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">
-            <!-- <saml:NameID Format="urn:esg:openid">Test Openid</saml:NameID> -->
-            <saml:NameID Format="urn:esg:openid">https://esg-gateway.jpl.nasa.gov/myopenid/cinquiniluca</saml:NameID>
+            <saml:NameID Format="urn:esg:openid">https://localhost:8443/esgf-idp/openid/testUser</saml:NameID>
+            <!--  <saml:NameID Format="urn:esg:openid">https://esg-gateway.jpl.nasa.gov/myopenid/cinquiniluca</saml:NameID> -->
             <!--  <saml:NameID Format="urn:esg:openid">https://pcmdi3.llnl.gov/esgcet/myopenid/rootAdmin</saml:NameID> -->
          </saml:Subject>
          <!-- uncomment below to request specific attributes -->
          <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" FriendlyName="FirstName" Name="urn:esg:first:name" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
          <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" FriendlyName="LastName" Name="urn:esg:last:name" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
          <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" FriendlyName="EmailAddress" Name="urn:esg:email:address" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
+         <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Name="CMIP5 Research" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
          <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" FriendlyName="GroupRole" Name="urn:esgf:test:grouprole" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
 		 <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" FriendlyName="GroupRole" Name="urn:esg:group:role" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
       </samlp:AttributeQuery>

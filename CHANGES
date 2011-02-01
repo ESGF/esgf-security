@@ -33,3 +33,7 @@ Version 1.1.2.2
 1.1.0
 Provided stub implementations of PolicyService, RegistryService, AttributeService and AuthorizationService that are backed up by local XML files.
 
+Version 1.1.1
+- Provided web application home page with facility to test the Attribute and Autorization services.
+
+

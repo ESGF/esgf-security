@@ -82,6 +82,8 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 	@Override
 	public SAMLAuthorizations newInstance(String identifier, String resource, Vector<String> actions) throws SAMLUnknownPrincipalException {
 		
+		log("Attempting authorization of user="+identifier+" to resource="+resource+" for action="+actions.get(0));
+		
 		final SAMLAuthorizations authorizations = new SAMLAuthorizationsImpl(identifier, this.issuer);
 		
 		// get map(action, att_type+): for each action it maps to the attribute types that must be queried from the attribute service
