@@ -16,8 +16,8 @@ import esg.security.attr.service.api.SAMLAttributes;
 import esg.security.common.SAMLUnknownPrincipalException;
 import esg.security.utils.xml.Parser;
 
-import esg.node.components.idp.SAMLDAO;
-import esg.node.components.idp.SAMLUserInfo;
+import esg.node.components.security.UserInfo;
+import esg.node.components.security.UserInfoDAO;
 
 /**
  * Implementation of {@link SAMLAttributeFactory} backed up by node's "esgcet" RDBMS database.
@@ -29,31 +29,29 @@ public class SAMLAttributeFactoryDAOImpl implements SAMLAttributeFactory {
 	final private String issuer;
 
     private SAMLAttributes attributes = null;
-    private SAMLDAO samlDAO = null;
+    private userInfoDAO userInfoDAO = null;
 	
 	public SAMLAttributeFactoryDAOImpl(final String issuer, Properties props) throws Exception {
 		
 		this.issuer = issuer;
-        this.samlDAO = new SAMLDAO(props);
+        this.userInfoDAO = new UserInfoDAO(props);
 		
 	}
 
 	@Override
 	public SAMLAttributes newInstance(String identifier) throws SAMLUnknownPrincipalException {        
-        samlDAO.setIdentifier(identifier);
-        SAMLMUserInfo samlUserInfo = samlDAO.getAttributesForId();
+        UserInfo userInfo = userInfoDAO.getAttributesForId(identifier);
 
         //Note: as an optimization could put an LRU cache mapping
         //identifier to resultant attributes object so don't have to
         //hit the database as much.
-		if (samlUserInfo != null) {
-            attributes = new SAMLAttributes();
-            attributes.setFirstName(samlUserInfo.getFirstName());
-            attributes.setLastName(samlUserInfo.getLastName());
-            attributes.setOpenid(samlUserInfo.getOpenid());
-            attributes.setEmail(samlUserInfo.getEmail());
-            attributes.setIssuer(this.issuer);
-            //TODO: what do I do about attribute_type and attribute_value??
+		if (userInfo != null) {
+            attributes = new SAMLAttributesImpl(identifier, issuer);
+            attributes.setFirstName(userInfo.getFirstName());
+            attributes.setLastName(userInfo.getLastName());
+            attributes.setOpenid(userInfo.getOpenid());
+            attributes.setEmail(userInfo.getEmail());
+            attributes.setAttributes(userInfo.getAttributes());
 			return attributes.get(identifier);
 		} else {
 			throw new SAMLUnknownPrincipalException("Unknown identifier: "+identifier);
