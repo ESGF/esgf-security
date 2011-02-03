@@ -63,7 +63,7 @@ public interface SAMLAttributes {
 	 * Sets the string-based access control attributes.
 	 * @return
 	 */
-    setAttributes(Map<String,Set<String>>);
+    void setAttributes(Map<String,Set<String>> attributes);
 	
 	/**
 	 * Adds a value to a named attribute

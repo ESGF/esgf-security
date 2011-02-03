@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -29,7 +30,7 @@ public class SAMLAttributeFactoryDAOImpl implements SAMLAttributeFactory {
 	final private String issuer;
 
     private SAMLAttributes attributes = null;
-    private userInfoDAO userInfoDAO = null;
+    private UserInfoDAO userInfoDAO = null;
 	
 	public SAMLAttributeFactoryDAOImpl(final String issuer, Properties props) throws Exception {
 		
@@ -52,7 +53,7 @@ public class SAMLAttributeFactoryDAOImpl implements SAMLAttributeFactory {
             attributes.setOpenid(userInfo.getOpenid());
             attributes.setEmail(userInfo.getEmail());
             attributes.setAttributes(userInfo.getGroups());
-			return attributes.get(identifier);
+			return attributes;
 		} else {
 			throw new SAMLUnknownPrincipalException("Unknown identifier: "+identifier);
 		}
@@ -67,12 +68,7 @@ public class SAMLAttributeFactoryDAOImpl implements SAMLAttributeFactory {
 	 * Debug method.
 	 */
 	public void print() {
-		
-		for (final String identity : attributes.keySet()) {
-			System.out.println("User="+identity);
-			System.out.println(attributes.get(identity));
-		}
-		
+        System.out.println(attributes);
 	}
 
 }
