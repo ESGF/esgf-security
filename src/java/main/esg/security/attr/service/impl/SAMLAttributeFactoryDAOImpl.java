@@ -40,7 +40,7 @@ public class SAMLAttributeFactoryDAOImpl implements SAMLAttributeFactory {
 
 	@Override
 	public SAMLAttributes newInstance(String identifier) throws SAMLUnknownPrincipalException {        
-        UserInfo userInfo = userInfoDAO.getAttributesForId(identifier);
+        UserInfo userInfo = userInfoDAO.getUserById(identifier);
 
         //Note: as an optimization could put an LRU cache mapping
         //identifier to resultant attributes object so don't have to
@@ -51,7 +51,7 @@ public class SAMLAttributeFactoryDAOImpl implements SAMLAttributeFactory {
             attributes.setLastName(userInfo.getLastName());
             attributes.setOpenid(userInfo.getOpenid());
             attributes.setEmail(userInfo.getEmail());
-            attributes.setAttributes(userInfo.getAttributes());
+            attributes.setAttributes(userInfo.getGroups());
 			return attributes.get(identifier);
 		} else {
 			throw new SAMLUnknownPrincipalException("Unknown identifier: "+identifier);
