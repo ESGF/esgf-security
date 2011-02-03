@@ -197,7 +197,10 @@ public class SAMLAuthorizationFactoryImplTest {
 		Assert.assertTrue( factory.isFree(policies) );
 		policies = policyService.getRequiredAttributes(resource, "Write");
 		Assert.assertFalse( factory.isFree(policies) );
+		resource = "/thisisnotfree/file";
+		Assert.assertFalse( factory.isFree(policies) );
 		
 	}
+	
 	
 }
