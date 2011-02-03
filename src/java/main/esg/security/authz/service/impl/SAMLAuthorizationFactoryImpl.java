@@ -36,11 +36,16 @@ import esg.xml.EsgWhitelist.TrustedServices.Gateway.AttributeService;
  *  <li>The {@link AttributeService}s endpoints from a {@link RegistryService}
  *  <li>The user attributes from the located {@link AttributeService}.
  * </ul>
+ * The default behavior or this service implementation is to deny access if no determination
+ * can be made to support a positive decision. 
+ * Freely available resources must be explicitly configured with the special attribute type "ANY".
  * 
  * @author luca.cinquini
  *
  */
 public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
+	
+	public final static String FREE_RESOURCE_ATTRIBUTE_TYPE = "ANY";
 	
 	/**
 	 * The identity issuing the authorization assertions.
@@ -100,24 +105,34 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 			// default decision for this action
 			String decision = DecisionTypeEnumeration.DENY.toString();
 			
-			// retrieve user attributes from each service, if it was not queried already
-			for (final URL url : attServiceMap.keySet()) {
+			// free action on resource
+			if (isFree(policyMap.get(action))) {
+				log("Action="+action+" on resource="+resource+" is allowed with NO resctrictions");	
+				decision = DecisionTypeEnumeration.PERMIT.toString();
 				
-				if (!userAttributesMap.containsKey(url)) {
-					// query remote attribute service
-					final SAMLAttributes samlAttributes = this.getUserAttributes(identifier, url, attServiceMap.get(url));
-					userAttributesMap.put(url, samlAttributes);
-				}
+			// restricted action on resource
+			} else {
+			
+				// retrieve user attributes from each service, if it was not queried already
+				for (final URL url : attServiceMap.keySet()) {
+					
+					if (!userAttributesMap.containsKey(url)) {
+						// query remote attribute service
+						final SAMLAttributes samlAttributes = this.getUserAttributes(identifier, url, attServiceMap.get(url));
+						userAttributesMap.put(url, samlAttributes);
+					}
+					
+					// match resource policies for this action to user attributes from this attribute service
+					boolean authorized = this.match(policyMap.get(action), userAttributesMap.get(url));
+					if (authorized) {
+						decision = DecisionTypeEnumeration.PERMIT.toString();
+						// don't query any more attribute services, for this action
+						break;
+					}
+					
+				} // loop over attribute services
 				
-				// match resource policies for this action to user attributes from this attribute service
-				boolean authorized = this.match(policyMap.get(action), userAttributesMap.get(url));
-				if (authorized) {
-					decision = DecisionTypeEnumeration.PERMIT.toString();
-					// don't query any more attribute services, for this action
-					break;
-				}
-				
-			} // loop over attribute services
+			}
 			
 			// create authorization statement for this resource, action
 			final SAMLAuthorization samlAuthorization = new SAMLAuthorizationImpl();
@@ -129,6 +144,23 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 		} // loop over request actions
 		
 		return authorizations;
+	}
+	
+	/**
+	 * Method to check whether a given set of policies entitles free access
+	 * @param policies
+	 * @return
+	 */
+	boolean isFree(final List<PolicyAttribute> policies) {
+		
+		for (final PolicyAttribute policy : policies) {
+			// found attribute that entitles free access
+			if (policy.getType().equalsIgnoreCase(FREE_RESOURCE_ATTRIBUTE_TYPE)) return true;
+		}
+		
+		// no free access by default
+		return false;
+		
 	}
 	
 	/**

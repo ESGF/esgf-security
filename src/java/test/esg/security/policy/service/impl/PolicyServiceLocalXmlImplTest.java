@@ -20,6 +20,9 @@ public class PolicyServiceLocalXmlImplTest {
 	
 	private PolicyService service;
 	
+	private final String ATT_TYPE_ANY = "ANY";
+	private final String ATT_TYPE_NONE = "NONE";
+	
 	private final String ATT_TYPE1 = "CMIP5 Research";
 	private final String ATT_TYPE2 = "CMIP5 Commercial";
 	private final String ATT_TYPE3 = "AIRS";
@@ -49,6 +52,17 @@ public class PolicyServiceLocalXmlImplTest {
 		testPolicy("cmip5", "", new String[] {}, new String[] {} );
 		testPolicy("xxmlsxx", "Read", new String[] { ATT_TYPE4 }, new String[] { ATT_VALUEA } );
 		testPolicy("xxmlsxx", "Write", new String[] {}, new String[] {} );
+		
+	}
+	
+	@Test
+	public void testFreeAccessIgnoreCase() {
+		
+		testPolicy("/root/free/myfile", "Read", new String[] { ATT_TYPE_ANY }, new String[] { "" } );
+		testPolicy("/root/free/myfile", "read", new String[] { ATT_TYPE_ANY }, new String[] { "" } );
+		
+		testPolicy("/root/free/myfile", "Write", new String[] { ATT_TYPE_NONE }, new String[] { "" } );
+		testPolicy("/root/free/myfile", "write", new String[] { ATT_TYPE_NONE }, new String[] { "" } );
 		
 	}
 	

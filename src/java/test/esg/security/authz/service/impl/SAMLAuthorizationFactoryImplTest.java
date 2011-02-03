@@ -36,12 +36,14 @@ public class SAMLAuthorizationFactoryImplTest {
 	private static String REGISTRY_FILE = "esg/security/registry/service/data/ESGFregistry.xml";
 	
 	private SAMLAuthorizationFactoryImpl factory;
+	private PolicyService policyService;
+	private RegistryService registryService;
 
 	@Before
 	public void setup() throws Exception {
 		
-		final PolicyService policyService = new PolicyServiceLocalXmlImpl(POLICY_FILE);
-		final RegistryService registryService = new RegistryServiceLocalXmlImpl(REGISTRY_FILE);
+		policyService = new PolicyServiceLocalXmlImpl(POLICY_FILE);
+		registryService = new RegistryServiceLocalXmlImpl(REGISTRY_FILE);
 		factory = new SAMLAuthorizationFactoryImpl(ISSUER, policyService, registryService);
 
 	}
@@ -185,6 +187,17 @@ public class SAMLAuthorizationFactoryImplTest {
 		userAttributes.addAttribute("CMIP5 Commercial","Admin");
 		Assert.assertEquals(false, factory.match(policies, userAttributes));
 	
+	}
+	
+	@Test
+	public void testIsFree() {
+		
+		String resource = "/root/free/somefile";
+		List<PolicyAttribute> policies = policyService.getRequiredAttributes(resource, "Read");
+		Assert.assertTrue( factory.isFree(policies) );
+		policies = policyService.getRequiredAttributes(resource, "Write");
+		Assert.assertFalse( factory.isFree(policies) );
+		
 	}
 	
 }

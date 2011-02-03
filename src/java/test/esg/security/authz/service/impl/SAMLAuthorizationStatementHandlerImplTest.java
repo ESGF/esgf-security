@@ -41,7 +41,6 @@ import esg.security.common.SAMLTestParameters;
 import esg.security.common.SAMLUnknownPrincipalException;
 import eske.utils.xml.XmlChecker;
 
-
 /**
  * Test class for {@link SAMLAuthorizationStatementHandlerImpl}.
  */
