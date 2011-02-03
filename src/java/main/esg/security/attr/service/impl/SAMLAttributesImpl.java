@@ -108,6 +108,10 @@ public class SAMLAttributesImpl implements SAMLAttributes {
 		return Collections.unmodifiableMap(attributes);
 	}
 
+    public void setAttributes(Map<String, Set<String>> attributes) {
+        this.attributes=attributes;
+    }
+
 	public String getIssuer() {
 		return issuer;
 	}
