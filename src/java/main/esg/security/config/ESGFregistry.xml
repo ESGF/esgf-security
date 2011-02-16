@@ -6,6 +6,6 @@
         
         <attribute type="Test Attribute" service="http://localhost:8080/esgf-security/saml/soap/secure/attributeService.htm"/>
 
-        <attribute type="NASA OBS" service="https://esg-vm.jpl.nasa.gov/esgf-security/saml/soap/secure/attributeService.htm"/>
+        <attribute type="NASA OBS" service="https://esg-datanode.jpl.nasa.gov/esgf-security/saml/soap/secure/attributeService.htm"/>
 
 </registry>
