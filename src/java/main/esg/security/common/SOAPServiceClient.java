@@ -41,6 +41,7 @@ public class SOAPServiceClient {
 	
 	public String doSoap(final String endpoint, final String soapRequest) {
 		
+		if (LOG.isDebugEnabled()) LOG.debug("Querying SOAP endpoint: "+endpoint);
 	    final PostMethod method = new PostMethod(endpoint);
 
 		try {
