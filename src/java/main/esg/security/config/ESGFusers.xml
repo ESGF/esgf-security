@@ -2,13 +2,23 @@
 
 <users>
 
-        <!-- esg-vm.jpl.nasa.gov users -->
+        <!-- esg-datanode.jpl.nasa.gov users -->
         <user openid="https://esg-datanode.jpl.nasa.gov/esgf-idp/openid/testUser" first_name="test" last_name="user" email="test@user">
                 <attribute attribute_type="CMIP5 Research" attribute_value="User"/>
                 <attribute attribute_type="NASA OBS" attribute_value="User"/>
                 <attribute attribute_type="Test Attribute" attribute_value="User"/>
         </user>
         <user openid="https://esg-datanode.jpl.nasa.gov/esgf-idp/openid/rootAdmin" first_name="root" last_name="admin" email="root@admin">
+                <attribute attribute_type="NASA OBS" attribute_value="Admin"/>
+        </user>
+        
+        <!-- test-datanode.jpl.nasa.gov users -->
+        <user openid="https://test-datanode.jpl.nasa.gov/esgf-idp/openid/testUser" first_name="test" last_name="user" email="test@user">
+                <attribute attribute_type="CMIP5 Research" attribute_value="User"/>
+                <attribute attribute_type="NASA OBS" attribute_value="User"/>
+                <attribute attribute_type="Test Attribute" attribute_value="User"/>
+        </user>
+        <user openid="https://test-datanode.jpl.nasa.gov/esgf-idp/openid/rootAdmin" first_name="root" last_name="admin" email="root@admin">
                 <attribute attribute_type="NASA OBS" attribute_value="Admin"/>
         </user>
 
