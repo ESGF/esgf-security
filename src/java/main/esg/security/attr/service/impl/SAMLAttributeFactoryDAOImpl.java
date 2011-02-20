@@ -52,7 +52,7 @@ public class SAMLAttributeFactoryDAOImpl implements SAMLAttributeFactory {
             attributes.setLastName(userInfo.getLastName());
             attributes.setOpenid(userInfo.getOpenid());
             attributes.setEmail(userInfo.getEmail());
-            attributes.setAttributes(userInfo.getGroups());
+            attributes.setAttributes(userInfo.getPermissions());
 			return attributes;
 		} else {
 			throw new SAMLUnknownPrincipalException("Unknown identifier: "+identifier);
