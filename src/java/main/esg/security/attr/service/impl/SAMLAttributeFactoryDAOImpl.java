@@ -17,8 +17,8 @@ import esg.security.attr.service.api.SAMLAttributes;
 import esg.security.common.SAMLUnknownPrincipalException;
 import esg.security.utils.xml.Parser;
 
-import esg.node.components.security.UserInfo;
-import esg.node.components.security.UserInfoDAO;
+import esg.node.security.UserInfo;
+import esg.node.security.UserInfoDAO;
 
 /**
  * Implementation of {@link SAMLAttributeFactory} backed up by node's "esgcet" RDBMS database.
