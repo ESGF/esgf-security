@@ -63,29 +63,28 @@
 **/
 package esg.node.security;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Properties;
+import static esg.common.Utils.getFQDN;
+import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
+
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import javax.sql.DataSource;
-import java.util.regex.Pattern;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.sql.DataSource;
 
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
-
-import static org.apache.commons.codec.digest.DigestUtils.*;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.impl.*;
 
 import esg.common.db.DatabaseResource;
-import static esg.common.Utils.*;
 
 public class UserInfoDAO implements Serializable {
 

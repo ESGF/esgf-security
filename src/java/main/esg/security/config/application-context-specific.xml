@@ -29,8 +29,10 @@
   		<constructor-arg index="0"><value>ESGF Attribute Service</value></constructor-arg>
   		<constructor-arg index="1" ref="dbProperties" />
   	</bean>
-  	<util:properties id="dbProperties" location="/WEB-INF/esgf-security.properties"/>
+  	<!-- <util:properties id="dbProperties" location="/WEB-INF/esgf-security.properties"/> -->
   	<!-- <util:properties id="dbProperties" location="classpath:esgf-security.properties"/> -->
+  	<util:properties id="dbProperties" location="file:///esg/conf/esgf-db.properties"/>
+
   	
   	<!-- ESG SAML-based Authorization Service stack (with example white list) -->
   	<bean name="authorizationServiceController" class="esg.security.authz.web.SAMLAuthorizationServiceSoapController">
