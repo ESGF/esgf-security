@@ -89,7 +89,12 @@ import static esg.common.Utils.*;
 
 public class UserInfoDAO implements Serializable {
 
-    //-------------------
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	//-------------------
     //Selection queries
     //-------------------
     private static final String idQuery = 
@@ -169,6 +174,7 @@ public class UserInfoDAO implements Serializable {
             log.warn("Input Properties parameter is: ["+props+"] - creating empty Properties obj");
             props = new Properties();
         }
+        
         
         //This is kind of tricky because the DatabaseResource is meant
         //to be set up once in the earliest part of this application.
