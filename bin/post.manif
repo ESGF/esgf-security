@@ -23,3 +23,7 @@
 ../dist/esgf-security-1.0.2.jar
 ../dist/esgf-security-test-1.0.2.jar
 ../dist/esgf-security.war
+
+#Python egg for database...
+../dist/esgf_security-0.1.1-py2.6.egg
+

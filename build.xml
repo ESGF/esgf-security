@@ -90,8 +90,11 @@ Builds the project via ant (obviously).
   <!-- **static defines** -->
   <property name="version_num" value="0.0.0"/>
   <filter token="version_num"  value="${version_num}"/>
+  <property name="db_version_num" value="0.0.0"/>
+  <filter token="db_version_num"  value="${db_version_num}"/>
   <property name="release_name" value="no_name"/>
   <filter token="release_name" value="${release_name}"/>
+  <filter token="module" value="${module}"/>
 
   <property name="log_dir" value="${basedir}/runlogs"/>
   <mkdir dir="${log_dir}" />
@@ -154,9 +157,13 @@ Builds the project via ant (obviously).
     <property name="test_coverage_file"   value="${basedir}/.cobertura.ser"/>
     <property name="ivy.lib.dir" value="${lib_fetched_dir}"/>
      
+    <property name="python_version"       value="2.6"/>
+    <property name="py_src_dir"	          value="${basedir}/src/python/esgf"/>
+
     <echo message="--------------------------------"/> 
     <echo message="module            = ${module} "/> 
     <echo message="version_num       = ${version_num} "/> 
+    <echo message="db_version_num    = ${db_version_num} "/> 
     <echo message="release_name      = ${release_name} "/> 
     <echo message="--------------------------------"/> 
     <echo message="src_dir           = ${src_dir}"/>
@@ -182,6 +189,9 @@ Builds the project via ant (obviously).
     <echo message="test_reports_dir     = ${test_reports_dir}"/>
     <echo message="test_coverage_dir    = ${test_coverage_dir}"/>
     <echo message="lib_deps_reports_dir = ${doc_dir_generated}/dep-reports"/>
+    <echo message="--------------------------------"/> 
+    <echo message="python_version    = ${python_version}"/>
+    <echo message="py_src_dir        = ${py_src_dir}"/>
     <echo message="--------------------------------"/> 
     <tstamp/>
   </target> 
@@ -404,7 +414,7 @@ Builds the project via ant (obviously).
 	  </target>
 
 
-  <target name="make_dist" depends="make_all_jars, make_war"
+  <target name="make_dist" depends="make_all_jars, make_war, make_python"
 	  description="(Creates full software distribution)">
     <delete file="${dist_dir}/${module}-${version_num}.tar.gz"/> 
     <tar destfile="${dist_dir}/${module}-${version_num}.tar">
@@ -468,7 +478,7 @@ Builds the project via ant (obviously).
 
   
   <target name="clean_all"
-	  depends="clean,clean_dist,clean_jaxb,dep_clean_libs"
+	  depends="clean,clean_dist,clean_jaxb,dep_clean_libs,clean_python"
 	  description="(Cleans out generatable artifacts)">
     <delete dir="${log_dir}"/>    
   </target>
@@ -749,14 +759,25 @@ Builds the project via ant (obviously).
       Python Targets....(calls targets defined in ${basedir}/src/python/build.xml
       ************************************************************
     -->
-  <target name="make_python">
-    <ant dir="${basedir}/src/python" antfile="build.xml" target="gen"/>
+  <target name="make_python" depends="init">
+    <copy file="${py_src_dir}/setup.py.tmpl" tofile="${py_src_dir}/setup.py" filtering="true"/>
+
+    <echo message="Building python egg"/>
+    <exec executable="./etc/db/make_python" dir="${basedir}">
+      <arg value="--all"/>
+      <arg value="${module}"/>
+      <arg value="${db_version_num}"/>
+      <arg value="${python_version}"/>
+    </exec>
   </target>
-                
+  
   <target name="clean_python">
-    <ant dir="${basedir}/src/python" antfile="build.xml" target="clean"/>
+    <echo message="Cleaning python build artifacts"/>
+    <exec executable="./etc/db/make_python" dir="${basedir}">
+      <arg value="--clean"/>
+    </exec>
   </target>
-	
+  
     <target name="make_endorsed" depends="init, init-ivy"
 	        description="--> retrieves jars that must be placed in the application endorsed directory">
     	

@@ -47,10 +47,12 @@
 	<classpathentry kind="lib" path="lib/fetched/slf4j-log4j12-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/velocity-1.5.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/xmlsec-1.4.2.jar"/>
-	<classpathentry kind="lib" path="lib/fetched/mail-1.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/jstl-1.1.2.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/xalan-2.7.1.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/xercesImpl-2.9.1.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/xml-apis-1.3.04.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/mail-1.4.3.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/commons-dbutils-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/esgf-node-manager-common-0.4.0.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

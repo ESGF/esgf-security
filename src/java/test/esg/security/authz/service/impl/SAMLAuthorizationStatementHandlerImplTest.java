@@ -34,8 +34,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import esg.security.authz.service.api.SAMLAuthorizations;
-import esg.security.authz.service.impl.SAMLAuthorizationFactoryTrivialImpl;
-import esg.security.authz.service.impl.SAMLAuthorizationStatementHandlerImpl;
 import esg.security.common.SAMLBuilder;
 import esg.security.common.SAMLTestParameters;
 import esg.security.common.SAMLUnknownPrincipalException;
