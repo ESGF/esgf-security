@@ -34,8 +34,7 @@ public class SAMLAttributeFactoryDAOImpl implements SAMLAttributeFactory {
         //Note: as an optimization could put an LRU cache mapping
         //identifier to resultant attributes object so don't have to
         //hit the database as much.
-		//if (userInfo != null) {
-		if (userInfo.getid()!=-1) {
+		if (userInfo.isValid()) {
             attributes = new SAMLAttributesImpl(identifier, issuer);
             attributes.setFirstName(userInfo.getFirstName());
             attributes.setLastName(userInfo.getLastName());
