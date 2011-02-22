@@ -63,22 +63,21 @@
 **/
 package esg.node.security;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Properties;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
 import javax.sql.DataSource;
 
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.impl.*;
 
 import esg.common.db.DatabaseResource;
 
@@ -88,7 +87,12 @@ public class GroupRoleDAO implements Serializable {
     //Insertion queries
     //-------------------
     
-    //Group Queries...
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	//Group Queries...
     private static final String hasGroupNameQuery =
         "SELECT * from esgf_security.group "+
         "WHERE name = ?";
