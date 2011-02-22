@@ -1,24 +1,12 @@
 package esg.security.attr.service.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
-
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.springframework.core.io.ClassPathResource;
-
-import esg.security.attr.service.api.SAMLAttributeFactory;
-import esg.security.attr.service.api.SAMLAttributes;
-import esg.security.common.SAMLUnknownPrincipalException;
-import esg.security.utils.xml.Parser;
 
 import esg.node.security.UserInfo;
 import esg.node.security.UserInfoDAO;
+import esg.security.attr.service.api.SAMLAttributeFactory;
+import esg.security.attr.service.api.SAMLAttributes;
+import esg.security.common.SAMLUnknownPrincipalException;
 
 /**
  * Implementation of {@link SAMLAttributeFactory} backed up by node's "esgcet" RDBMS database.
@@ -36,7 +24,7 @@ public class SAMLAttributeFactoryDAOImpl implements SAMLAttributeFactory {
 		
 		this.issuer = issuer;
         this.userInfoDAO = new UserInfoDAO(props);
-		
+        		
 	}
 
 	@Override
@@ -46,7 +34,8 @@ public class SAMLAttributeFactoryDAOImpl implements SAMLAttributeFactory {
         //Note: as an optimization could put an LRU cache mapping
         //identifier to resultant attributes object so don't have to
         //hit the database as much.
-		if (userInfo != null) {
+		//if (userInfo != null) {
+		if (userInfo.getid()!=-1) {
             attributes = new SAMLAttributesImpl(identifier, issuer);
             attributes.setFirstName(userInfo.getFirstName());
             attributes.setLastName(userInfo.getLastName());
