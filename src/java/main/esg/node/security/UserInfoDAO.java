@@ -64,7 +64,6 @@
 package esg.node.security;
 
 import static esg.common.Utils.getFQDN;
-import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
 
 import java.io.Serializable;
 import java.sql.ResultSet;
@@ -85,6 +84,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import esg.common.db.DatabaseResource;
+import esg.security.utils.encryption.MD5CryptPasswordEncoder;
+import esg.security.utils.encryption.PasswordEncoder;
 
 public class UserInfoDAO implements Serializable {
 
@@ -162,6 +163,8 @@ public class UserInfoDAO implements Serializable {
     private Matcher openidMatcher = null;
     private static Pattern usernamePattern = Pattern.compile("^[^/ @*%#!()+=]*$");
     private Matcher usernameMatcher = null;
+    
+    private PasswordEncoder encoder = new MD5CryptPasswordEncoder();
     
     //uses default values in the DatabaseResource to connect to database
     public UserInfoDAO() {
@@ -464,7 +467,7 @@ public class UserInfoDAO implements Serializable {
         if((newPassword == null) || (newPassword.equals(""))) return false; //should throw and esgf exception here with meaningful message
         int numRowsAffected = -1;
         try{
-            numRowsAffected = queryRunner.update(setPasswordQuery, md5Hex(newPassword), openid);
+            numRowsAffected = queryRunner.update(setPasswordQuery, encoder.encrypt(newPassword), openid);
         }catch(SQLException ex) {
             log.error(ex);
         }
@@ -476,7 +479,7 @@ public class UserInfoDAO implements Serializable {
     public boolean checkPassword(String openid, String queryPassword) {
         boolean isMatch = false;
         try{
-            isMatch = (md5Hex(queryPassword)).equals(queryRunner.query(getPasswordQuery, passwordQueryHandler, openid));
+        	isMatch = encoder.equals(queryPassword, queryRunner.query(getPasswordQuery, passwordQueryHandler, openid) );
         }catch(SQLException ex) {
             log.error(ex);
         }
@@ -535,9 +538,17 @@ public class UserInfoDAO implements Serializable {
         return (numRowsAffected > 0);
     }
     
+    public PasswordEncoder getEncoder() {
+		return encoder;
+	}
+
+	public void setEncoder(PasswordEncoder encoder) {
+		this.encoder = encoder;
+	}
+
     //------------------------------------
-    
-    public String toString() {
+	
+	public String toString() {
         StringBuilder out = new StringBuilder();
         out.append("DAO:["+this.getClass().getName()+"] - "+((dataSource == null) ? "[OK]" : "[INVALID]\n"));
         return out.toString();

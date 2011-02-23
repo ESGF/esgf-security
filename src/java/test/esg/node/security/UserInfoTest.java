@@ -63,16 +63,22 @@ package esg.node.security;
 
 **/
 
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.junit.Assume.*;
-import static org.apache.commons.codec.digest.DigestUtils.*;
-import static esg.common.Utils.*;
+import static esg.common.Utils.getFQDN;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-import java.util.Properties;
+import esg.security.utils.encryption.MD5HexPasswordEncoder;
+import esg.security.utils.encryption.PasswordEncoder;
 
 
 public class UserInfoTest {
@@ -81,6 +87,8 @@ public class UserInfoTest {
     private static UserInfoDAO userInfoDAO = null;
     private static GroupRoleDAO groupRoleDAO = null;
     private static UserInfo gavin = null;
+    
+    private static PasswordEncoder encoder;
  
     @BeforeClass
     public static void initTest() {
@@ -116,6 +124,9 @@ public class UserInfoTest {
         }
         assertNotNull(gavin);
         System.out.println(gavin);
+        
+        // retrieve PasswordEncoder directly from UserInfoDAO.
+        encoder = userInfoDAO.getEncoder();
     }
     
     @AfterClass
@@ -146,8 +157,8 @@ public class UserInfoTest {
             String origPassword = "foobar";
             String newPassword = "foobaralpha";
 
-            String origPasswordMd5Hex = md5Hex(origPassword);
-            String newPasswordMd5Hex  = md5Hex(newPassword);
+            String origPasswordMd5Hex = encoder.encrypt(origPassword);
+            String newPasswordMd5Hex  = encoder.encrypt(newPassword);
             
             System.out.print("Setting password: ["+origPassword+" -> "+origPasswordMd5Hex+"]");
             if(userInfoDAO.setPassword(gavin.getOpenid(),origPassword)) {
