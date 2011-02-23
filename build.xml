@@ -130,6 +130,7 @@ Builds the project via ant (obviously).
   	<property name="lib_endorsed_dir" value="${basedir}/lib/endorsed"/>
     <property name="build_dir"   	  value="${basedir}/build"/>
     <property name="dist_dir"   	  value="${basedir}/dist"/>
+    <property name="bin_dir"              value="${basedir}/bin"/>
     <property name="test_src_dir"  	  value="${basedir}/src/java/test"/>
     <property name="test_build_dir"       value="${basedir}/build/test"/>
     <property name="test_build_dir_inst"  value="${basedir}/build/test-instrumented" />
@@ -172,6 +173,7 @@ Builds the project via ant (obviously).
   	<echo message="lib_endorsed_dir  = ${lib_endorsed_dir}"/>
     <echo message="build_dir         = ${build_dir}"/>
     <echo message="dist_dir          = ${dist_dir}"/>
+    <echo message="bin_dir           = ${bin_dir}"/>
     <echo message="test_src_dir      = ${test_src_dir}"/>
     <echo message="test_build_dir    = ${test_build_dir}"/>
     <echo message="etc_dir           = ${etc_dir}"/>
