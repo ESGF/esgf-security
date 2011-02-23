@@ -735,7 +735,7 @@ Builds the project via ant (obviously).
       Artifact and Documentation distribution targets
       ************************************************************
     -->
-  <target name="post_docs"  depends="init">
+  <target name="post_docs"  depends="init" description="(posts generated documentatoin to web server)">
     <property name="orig.dir" value="${doc_dir_generated}"/>
     <property name="dest.server" value="esgf.org"/>
     <property name="dest.dir" value="www/${module}-site/"/>
@@ -758,7 +758,7 @@ Builds the project via ant (obviously).
     </exec>
   </target>
 
-  <target name="publish" depends="deliver">
+  <target name="publish" depends="deliver" description="(publishes built artifacts to artifact repository)">
     <ivy:publish resolver="esgf_repo_devel" 
                  organisation="org.esgf"
                  module="${module}"
