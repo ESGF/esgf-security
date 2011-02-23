@@ -249,16 +249,6 @@ Builds the project via ant (obviously).
                  pubrevision="${version_num}" status="milestone" />
   </target>
   
-  <target name="publish" depends="deliver">
-    <ivy:publish resolver="esgf_repo_devel" 
-                 organisation="org.esgf"
-                 module="${module}"
-                 revision="${version_num}"
-                 overwrite="true" haltonmissing="false">
-      <artifacts pattern="dist/[artifact]-[revision].[ext]"/>
-    </ivy:publish>
-  </target>
-
   <target name="dep_report" depends="deps" description="(Generates a report of library dependencies)">
     <mkdir dir="${lib_deps_reports_dir}"/>
     <ivy:report todir="${lib_deps_reports_dir}"/>
@@ -706,20 +696,6 @@ Builds the project via ant (obviously).
     <echo message="Web Site ----------> http://esgf.org/${module}-site/index.html"/>
   </target>
 
-  <target name="post"  depends="init">
-    <property name="orig.dir" value="${doc_dir_generated}"/>
-    <property name="dest.server" value="esgf.org"/>
-    <property name="dest.dir" value="www/${module}-site/"/>
-    
-    <echo message="orig.dir      = ${orig.dir} "/>
-    <echo message="dest.server   = ${dest.server} "/> 
-    <echo message="dest.dir      = ${dest.dir} "/> 
-    <echo message="dest.user     = ${dest.user} "/> 
-
-    <exec executable="rsync" dir="${basedir}">
-      <arg line="-caOvzl --chmod=g+r,a+r --exclude *~ --exclude semantic* ${orig.dir} ${dest.user}@${dest.server}:${dest.dir}"/>
-    </exec>
-  </target>
 
   <target name="make_web_dir" depends="make, init" 
 	  description="(Assembles the WEB-INF directory to run the web application in place.)">
@@ -754,6 +730,44 @@ Builds the project via ant (obviously).
   </target>
   
   
+  <!--
+      ************************************************************
+      Artifact and Documentation distribution targets
+      ************************************************************
+    -->
+  <target name="post_docs"  depends="init">
+    <property name="orig.dir" value="${doc_dir_generated}"/>
+    <property name="dest.server" value="esgf.org"/>
+    <property name="dest.dir" value="www/${module}-site/"/>
+    
+    <echo message="orig.dir      = ${orig.dir} "/>
+    <echo message="dest.server   = ${dest.server} "/> 
+    <echo message="dest.dir      = ${dest.dir} "/> 
+    <echo message="dest.user     = ${dest.user} "/> 
+
+    <exec executable="rsync" dir="${basedir}">
+      <arg line="-caOvzl --chmod=g+r,a+r --exclude *~ --exclude semantic* ${orig.dir} ${dest.user}@${dest.server}:${dest.dir}"/>
+    </exec>
+  </target>
+
+  <target name="post" depends="init" description="(posts built artifacts to distribution server)">
+    <copy file="${bin_dir}/post.manif.tmpl" tofile="${bin_dir}/post.manif" filtering="true"/>
+    <echo message="Posting Files To Distribution Server..."/>
+    <exec executable="post" dir="${basedir}/bin">
+      <arg value="--debug"/>
+    </exec>
+  </target>
+
+  <target name="publish" depends="deliver">
+    <ivy:publish resolver="esgf_repo_devel" 
+                 organisation="org.esgf"
+                 module="${module}"
+                 revision="${version_num}"
+                 overwrite="true" haltonmissing="false">
+      <artifacts pattern="dist/[artifact]-[revision].[ext]"/>
+    </ivy:publish>
+  </target>
+
   <!--
       ************************************************************
       Python Targets....(calls targets defined in ${basedir}/src/python/build.xml
