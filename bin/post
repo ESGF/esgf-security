@@ -72,6 +72,8 @@ manifest_file=${manifest_file:-$0.manif}
 esg_dist_url="rainbow.llnl.gov:/pcmdi_web/dist"
 current_dir=${current_dir:="esg_node"}
 
+[ -n "${xfer_user}" ] && xfer_user+="@" && echo "[${xfer_user}${esg_dist_url}]"
+
 fail=0
 good=0
 total=0
