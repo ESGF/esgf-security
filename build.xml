@@ -472,7 +472,8 @@ Builds the project via ant (obviously).
   <target name="clean_all"
 	  depends="clean,clean_dist,clean_jaxb,dep_clean_libs,clean_python"
 	  description="(Cleans out generatable artifacts)">
-    <delete dir="${log_dir}"/>    
+    <delete dir="${log_dir}"/>
+    <delete file="${bin_dir}/post.manif"/>
   </target>
   
   <!--
@@ -753,7 +754,7 @@ Builds the project via ant (obviously).
   </target>
 
   <target name="post" depends="init" description="(posts built artifacts to distribution server)">
-    <copy file="${bin_dir}/post.manif.tmpl" tofile="${bin_dir}/post.manif" filtering="true"/>
+    <copy file="${bin_dir}/post.manif.tmpl" tofile="${bin_dir}/post.manif" filtering="true" overwrite="true"/>
     <echo message="Posting Files To Distribution Server..."/>
     <exec executable="post" dir="${basedir}/bin">
       <arg value="--debug"/>
@@ -776,7 +777,7 @@ Builds the project via ant (obviously).
       ************************************************************
     -->
   <target name="make_python" depends="init">
-    <copy file="${py_src_dir}/setup.py.tmpl" tofile="${py_src_dir}/setup.py" filtering="true"/>
+    <copy file="${py_src_dir}/setup.py.tmpl" tofile="${py_src_dir}/setup.py" filtering="true" overwrite="true"/>
     <copy file="${py_src_dir}/scripts/esgf_security_initialize.tmpl" tofile="${py_src_dir}/scripts/esgf_security_initialize" filtering="true"/>
 
     <echo message="Building python egg"/>
