@@ -31,7 +31,7 @@
   	</bean>
   	<!-- <util:properties id="dbProperties" location="/WEB-INF/esgf-security.properties"/> -->
   	<!-- <util:properties id="dbProperties" location="classpath:esgf-security.properties"/> -->
-  	<util:properties id="dbProperties" location="file:///esg/conf/esgf-db.properties"/>
+  	<util:properties id="dbProperties" location="file:///esg/config/esgf-db.properties"/>
 
   	
   	<!-- ESG SAML-based Authorization Service stack (with example white list) -->
