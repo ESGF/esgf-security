@@ -193,7 +193,21 @@ public class UserInfoTest {
                 //This should fail! since the password is now foobaralpha! (right!?)
                 System.out.println("[OK]");
             }
-                                
+              
+            System.out.print("Checking admin's password against default: ");
+            if(userInfoDAO.checkPassword(userInfoDAO.getUserById("rootAdmin"),"esgrocks")) {
+                System.out.println("[MATCH]");
+            }else {
+                System.out.println("[NO MATCH]");
+            }
+
+            System.out.print("Checking admin's password against mismatch: ");
+            if(userInfoDAO.checkPassword(userInfoDAO.getUserById("rootAdmin"),"esgrockS")) {
+                System.out.println("[MATCH]");
+            }else {
+                System.out.println("[NO MATCH]");
+            }
+
         }else{
             System.out.println("[FAIL]");
             fail();

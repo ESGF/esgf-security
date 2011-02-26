@@ -1,59 +1,59 @@
 /***************************************************************************
-*                                                                          *
-*  Organization: Lawrence Livermore National Lab (LLNL)                    *
-*   Directorate: Computation                                               *
-*    Department: Computing Applications and Research                       *
-*      Division: S&T Global Security                                       *
-*        Matrix: Atmospheric, Earth and Energy Division                    *
-*       Program: PCMDI                                                     *
-*       Project: Earth Systems Grid Federation (ESGF) Data Node Software   *
-*  First Author: Gavin M. Bell (gavin@llnl.gov)                            *
-*                                                                          *
-****************************************************************************
-*                                                                          *
-*   Copyright (c) 2009, Lawrence Livermore National Security, LLC.         *
-*   Produced at the Lawrence Livermore National Laboratory                 *
-*   Written by: Gavin M. Bell (gavin@llnl.gov)                             *
-*   LLNL-CODE-420962                                                       *
-*                                                                          *
-*   All rights reserved. This file is part of the:                         *
-*   Earth System Grid Federation (ESGF) Data Node Software Stack           *
-*                                                                          *
-*   For details, see http://esgf.org/esg-node/                             *
-*   Please also read this link                                             *
-*    http://esgf.org/LICENSE                                               *
-*                                                                          *
-*   * Redistribution and use in source and binary forms, with or           *
-*   without modification, are permitted provided that the following        *
-*   conditions are met:                                                    *
-*                                                                          *
-*   * Redistributions of source code must retain the above copyright       *
-*   notice, this list of conditions and the disclaimer below.              *
-*                                                                          *
-*   * Redistributions in binary form must reproduce the above copyright    *
-*   notice, this list of conditions and the disclaimer (as noted below)    *
-*   in the documentation and/or other materials provided with the          *
-*   distribution.                                                          *
-*                                                                          *
-*   Neither the name of the LLNS/LLNL nor the names of its contributors    *
-*   may be used to endorse or promote products derived from this           *
-*   software without specific prior written permission.                    *
-*                                                                          *
-*   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS    *
-*   "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT      *
-*   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS      *
-*   FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL LAWRENCE    *
-*   LIVERMORE NATIONAL SECURITY, LLC, THE U.S. DEPARTMENT OF ENERGY OR     *
-*   CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,           *
-*   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT       *
-*   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF       *
-*   USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND    *
-*   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,     *
-*   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT     *
-*   OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF     *
-*   SUCH DAMAGE.                                                           *
-*                                                                          *
-***************************************************************************/
+ *                                                                          *
+ *  Organization: Lawrence Livermore National Lab (LLNL)                    *
+ *   Directorate: Computation                                               *
+ *    Department: Computing Applications and Research                       *
+ *      Division: S&T Global Security                                       *
+ *        Matrix: Atmospheric, Earth and Energy Division                    *
+ *       Program: PCMDI                                                     *
+ *       Project: Earth Systems Grid Federation (ESGF) Data Node Software   *
+ *  First Author: Gavin M. Bell (gavin@llnl.gov)                            *
+ *                                                                          *
+ ****************************************************************************
+ *                                                                          *
+ *   Copyright (c) 2009, Lawrence Livermore National Security, LLC.         *
+ *   Produced at the Lawrence Livermore National Laboratory                 *
+ *   Written by: Gavin M. Bell (gavin@llnl.gov)                             *
+ *   LLNL-CODE-420962                                                       *
+ *                                                                          *
+ *   All rights reserved. This file is part of the:                         *
+ *   Earth System Grid Federation (ESGF) Data Node Software Stack           *
+ *                                                                          *
+ *   For details, see http://esgf.org/esg-node/                             *
+ *   Please also read this link                                             *
+ *    http://esgf.org/LICENSE                                               *
+ *                                                                          *
+ *   * Redistribution and use in source and binary forms, with or           *
+ *   without modification, are permitted provided that the following        *
+ *   conditions are met:                                                    *
+ *                                                                          *
+ *   * Redistributions of source code must retain the above copyright       *
+ *   notice, this list of conditions and the disclaimer below.              *
+ *                                                                          *
+ *   * Redistributions in binary form must reproduce the above copyright    *
+ *   notice, this list of conditions and the disclaimer (as noted below)    *
+ *   in the documentation and/or other materials provided with the          *
+ *   distribution.                                                          *
+ *                                                                          *
+ *   Neither the name of the LLNS/LLNL nor the names of its contributors    *
+ *   may be used to endorse or promote products derived from this           *
+ *   software without specific prior written permission.                    *
+ *                                                                          *
+ *   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS    *
+ *   "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT      *
+ *   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS      *
+ *   FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL LAWRENCE    *
+ *   LIVERMORE NATIONAL SECURITY, LLC, THE U.S. DEPARTMENT OF ENERGY OR     *
+ *   CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,           *
+ *   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT       *
+ *   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF       *
+ *   USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND    *
+ *   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,     *
+ *   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT     *
+ *   OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF     *
+ *   SUCH DAMAGE.                                                           *
+ *                                                                          *
+ ***************************************************************************/
 package esg.node.security;
 
 /**
@@ -107,13 +107,17 @@ public class UserInfo {
         return this;
     }
     
-	public final String getOpenid() { return openid; }
+    public final String getOpenid() { return openid; }
     final UserInfo setOpenid(String openid) {
         this.openid = openid;
         return this;
     }
 
-	public String getFirstName() { return firstName; }
+    //--------------------------------------
+    //Open, public accessors and mutators
+    //--------------------------------------
+
+    public String getFirstName() { return firstName; }
     public UserInfo setFirstName(String firstName) {
         this.firstName = firstName;
         return this;
@@ -125,7 +129,7 @@ public class UserInfo {
         return this;
     }
     
-	public String getLastName() { return lastName; }
+    public String getLastName() { return lastName; }
     public UserInfo setLastName(String lastName) {
         this.lastName = lastName;
         return this;
@@ -137,44 +141,44 @@ public class UserInfo {
         return this;
     }
         
-	public final String getEmail() { return email; }
-	public final UserInfo setEmail(String email) {
+    public final String getEmail() { return email; }
+    public final UserInfo setEmail(String email) {
         this.email = email;
         return this;
     }
     
-	public String getDn() { return dn; }
-	public UserInfo setDn(String dn) {
+    public String getDn() { return dn; }
+    public UserInfo setDn(String dn) {
         this.dn = dn;
         return this;
     }
     
-	public String getOrganization() { return organization; }
-	public UserInfo setOrganization(String organization) {
+    public String getOrganization() { return organization; }
+    public UserInfo setOrganization(String organization) {
         this.organization = organization;
         return this;
     }
 
-	public String getOrgType() { return orgType; }
-	public UserInfo setOrgType(String orgType) {
+    public String getOrgType() { return orgType; }
+    public UserInfo setOrgType(String orgType) {
         this.orgType = orgType;
         return this;
     }
 
-	public String getCity() { return city; }
-	public UserInfo setCity(String city) {
+    public String getCity() { return city; }
+    public UserInfo setCity(String city) {
         this.city = city;
         return this;
     }
 
-	public String getState() { return state; }
-	public UserInfo setState(String state) {
+    public String getState() { return state; }
+    public UserInfo setState(String state) {
         this.state = state;
         return this;
     }
 
-	public String getCountry() { return country; }
-	public UserInfo setCountry(String country) {
+    public String getCountry() { return country; }
+    public UserInfo setCountry(String country) {
         this.country = country;
         return this;
     }

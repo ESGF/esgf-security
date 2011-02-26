@@ -263,6 +263,7 @@ public class UserInfoDAO implements Serializable {
 		return password;
 	    }
 	};
+        new InitAdmin();
     }
     
     public void setProperties(Properties props) { this.props = props; }
@@ -463,6 +464,14 @@ public class UserInfoDAO implements Serializable {
     //-------------------------------------------------------
 
     //Sets the password value for a given user (openid)
+    public boolean setPassword(UserInfo userInfo, String newPassword) {
+        if(!userInfo.isValid()) {
+            log.warn("Cannot Set Password of an invalid user");
+            return false;
+        }
+        return this.setPassword(userInfo.getOpenid(),newPassword);
+    }
+    
     synchronized boolean setPassword(String openid, String newPassword) {
         if((newPassword == null) || (newPassword.equals(""))) return false; //should throw and esgf exception here with meaningful message
         int numRowsAffected = -1;
@@ -476,6 +485,13 @@ public class UserInfoDAO implements Serializable {
     
     //Given a password, check to see if that password matches what is
     //in the database for this user (openid)
+    public boolean checkPassword(UserInfo userInfo, String queryPassword) {
+        if(!userInfo.isValid()) {
+            log.warn("Cannot Check Password of an invalid user");            
+            return false;
+        }
+        return this.checkPassword(userInfo.getOpenid(),queryPassword);   
+    }
     public boolean checkPassword(String openid, String queryPassword) {
         boolean isMatch = false;
         try{
@@ -488,7 +504,14 @@ public class UserInfoDAO implements Serializable {
     
     //Given the old password and the new password for a given user
     //(openid) update the password, only if the old password matches
-    public synchronized boolean changePassword(String openid, String queryPassword, String newPassword) {
+    public synchronized boolean changePassword(UserInfo userInfo, String queryPassword, String newPassword) {
+        if(!userInfo.isValid()) {
+            log.warn("Cannot Change Password of an invalid user");
+            return false;
+        }
+        return this.changePassword(userInfo.getOpenid(),queryPassword,newPassword);
+    }
+    synchronized boolean changePassword(String openid, String queryPassword, String newPassword) {
         boolean isSuccessful = false;
         if(checkPassword(openid,queryPassword)){
             isSuccessful = setPassword(openid,newPassword);
@@ -552,5 +575,29 @@ public class UserInfoDAO implements Serializable {
         StringBuilder out = new StringBuilder();
         out.append("DAO:["+this.getClass().getName()+"] - "+((dataSource == null) ? "[OK]" : "[INVALID]\n"));
         return out.toString();
+    }
+
+
+    //------------------------------------
+    //Encapsulate the Initialization of Admin user
+    //------------------------------------
+    private final class InitAdmin {
+        InitAdmin() { 
+            System.out.println("Initializing rootAdmin");
+            UserInfo rootAdmin = UserInfoDAO.this.getUserById("rootAdmin");
+            rootAdmin.
+                setFirstName("Gert").
+                setMiddleName("B").
+                setLastName("Frobe").
+                setEmail(UserInfoDAO.this.props.getProperty("security.admin.email","rootAdmin@some-esg-node.org")).
+                setOrganization(UserInfoDAO.this.props.getProperty("security.admin.org","ESGF.org")).
+                setCity(UserInfoDAO.this.props.getProperty("security.admin.city","Brooklyn")).
+                setState(UserInfoDAO.this.props.getProperty("security.admin.state","NY")).
+                setCountry(UserInfoDAO.this.props.getProperty("security.admin.country","USA")).
+                addPermission("wheel","super");
+            log.info("rootAdmin: "+rootAdmin);
+            UserInfoDAO.this.addUserInfo(rootAdmin);
+            UserInfoDAO.this.setPassword(rootAdmin,UserInfoDAO.this.props.getProperty("security.admin.passwd","esgrocks"));
+        }
     }
 }
