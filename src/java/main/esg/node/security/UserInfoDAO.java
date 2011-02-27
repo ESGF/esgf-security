@@ -19,9 +19,9 @@
  *   All rights reserved. This file is part of the:                         *
  *   Earth System Grid (ESG) Data Node Software Stack, Version 1.0          *
  *                                                                          *
- *   For details, see http://esgf.org/esg-node/                    *
+ *   For details, see http://esgf.org/esg-node/                             *
  *   Please also read this link                                             *
- *    http://esgf.org/LICENSE                                      *
+ *    http://esgf.org/LICENSE                                               *
  *                                                                          *
  *   * Redistribution and use in source and binary forms, with or           *
  *   without modification, are permitted provided that the following        *
@@ -90,11 +90,11 @@ import esg.security.utils.encryption.PasswordEncoder;
 public class UserInfoDAO implements Serializable {
 
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
-	//-------------------
+    //-------------------
     //Selection queries
     //-------------------
     private static final String idQuery = 
@@ -159,10 +159,10 @@ public class UserInfoDAO implements Serializable {
     private ResultSetHandler<Map<String,Set<String>>> userPermissionsResultSetHandler = null;
     private ResultSetHandler<Integer> idResultSetHandler = null;
     private ResultSetHandler<String> passwordQueryHandler = null;
-    private static Pattern openidUrlPattern = Pattern.compile("https://([^/ ]*)/.*[/]*/([^/ @*%#!()+=]*$)");
-    private Matcher openidMatcher = null;
-    private static Pattern usernamePattern = Pattern.compile("^[^/ @*%#!()+=]*$");
-    private Matcher usernameMatcher = null;
+
+    private static final String  adminName = "rootAdmin";
+    private static final Pattern openidUrlPattern = Pattern.compile("https://([^/ ]*)/.*[/]*/([^/ @*%#!()+=]*$)");
+    private static final Pattern usernamePattern = Pattern.compile("^[^/ @*%#!()+=]*$");
     
     private PasswordEncoder encoder = new MD5CryptPasswordEncoder();
     
@@ -294,7 +294,8 @@ public class UserInfoDAO implements Serializable {
 
         //Discern if they user put in a an openid url or just a username, 
         //set values accordingly...
-        openidMatcher = openidUrlPattern.matcher(id);
+        Matcher openidMatcher = openidUrlPattern.matcher(id);
+        Matcher usernameMatcher = null;
         if(openidMatcher.find()) {
             openid = id;
             username = openidMatcher.group(2);
@@ -307,7 +308,6 @@ public class UserInfoDAO implements Serializable {
                 System.out.println("Sorry money, your id is not well formed");
                 return null;
             }
-
         }
 
         log.info("openid = "+openid);
@@ -439,6 +439,10 @@ public class UserInfoDAO implements Serializable {
     }
 
     boolean deleteUserInfo(UserInfo userInfo) {
+        if (userInfo == null) {
+            log.trace("deleteUserInfo("+userInfo+") bad parameter!!!");
+            return false;
+        }
         if(userInfo.getid() > 0) {
             return this.deleteUser(userInfo.getOpenid());
         }
@@ -447,6 +451,17 @@ public class UserInfoDAO implements Serializable {
     
     synchronized boolean deleteUser(String openid) {
         int numRowsAffected = -1;
+        Matcher openidMatcher = openidUrlPattern.matcher(openid);
+        if(openidMatcher.find()) {
+            if(adminName.equals(openidMatcher.group(2))) {
+                log.warn("WARNING: Not permitted to delete "+adminName);
+                return false;
+            }
+        }else {
+            log.warn("Sorry, this openid ["+openid+"] is in valid!! Malformed");
+            return false;
+        }
+        
         try {
             log.trace("Deleting user with openid ["+openid+"] ");
             this.deleteAllUserPermissions(openid);
@@ -495,7 +510,7 @@ public class UserInfoDAO implements Serializable {
     public boolean checkPassword(String openid, String queryPassword) {
         boolean isMatch = false;
         try{
-        	isMatch = encoder.equals(queryPassword, queryRunner.query(getPasswordQuery, passwordQueryHandler, openid) );
+            isMatch = encoder.equals(queryPassword, queryRunner.query(getPasswordQuery, passwordQueryHandler, openid) );
         }catch(SQLException ex) {
             log.error(ex);
         }
@@ -562,22 +577,22 @@ public class UserInfoDAO implements Serializable {
     }
     
     public PasswordEncoder getEncoder() {
-		return encoder;
-	}
-
-	public void setEncoder(PasswordEncoder encoder) {
-		this.encoder = encoder;
-	}
-
+        return encoder;
+    }
+    
+    public void setEncoder(PasswordEncoder encoder) {
+        this.encoder = encoder;
+    }
+    
     //------------------------------------
-	
-	public String toString() {
+    
+    public String toString() {
         StringBuilder out = new StringBuilder();
         out.append("DAO:["+this.getClass().getName()+"] - "+((dataSource == null) ? "[OK]" : "[INVALID]\n"));
         return out.toString();
     }
-
-
+    
+    
     //------------------------------------
     //Encapsulate the Initialization of Admin user
     //------------------------------------

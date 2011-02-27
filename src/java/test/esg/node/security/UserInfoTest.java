@@ -67,6 +67,7 @@ import static esg.common.Utils.getFQDN;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 import java.util.Properties;
@@ -146,6 +147,9 @@ public class UserInfoTest {
         groupRoleDAO.deleteGroup("CMIP7_test");
         groupRoleDAO.deleteRole("lord");
         groupRoleDAO.deleteRole("king");
+        
+        assertFalse(userInfoDAO.deleteUserInfo(userInfoDAO.getUserById("rootAdmin")));
+        assertFalse(userInfoDAO.deleteUserInfo(userInfoDAO.getUserById("root+Admin")));
     }
 
     @Test
