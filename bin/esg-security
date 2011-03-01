@@ -181,6 +181,7 @@ setup_security() {
     #----------------------------
     
     popd >& /dev/null
+    configure_postgress
     write_security_install_log
     checked_done 0
 
