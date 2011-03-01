@@ -63,8 +63,6 @@ VERBOSE=${VERBOSE:-0}
 esg_dist_url=http://198.128.245.140/dist
 envfile="/etc/esg.env"
 
-esgf_security_version=${esgf_security_version:-"0.9.1"}
-
 #--------------
 #User Defined / Setable (public)
 #--------------
@@ -79,13 +77,29 @@ force_install=${force_install:-0}
 tomcat_user=${tomcat_user:-tomcat}
 tomcat_group=${tomcat_group:-$tomcat_user}
 tomcat_install_dir=${CATALINA_HOME:-${install_prefix}/tomcat}
+python_version=${python_version:-"2.6"}
+db_config_file=${esg_root_dir}/config/esgf-db.properties
+
 
 init() {
-    [ -n "${envfile}" ] && [ -e "${envfile}" ] && source ${envfile} && ((VERBOSE)) && printf "security services: sourcing environment from: ${envfile} \n"
+    #[ -n "${envfile}" ] && [ -e "${envfile}" ] && source ${envfile} && ((VERBOSE)) && printf "security services: sourcing environment from: ${envfile} \n"
 
     security_dist_url=${esg_dist_url}/esgf-security/esgf-security.war
     security_context_root=esgf-security
     security_app_home=${tomcat_install_dir}/webapps/${security_context_root}
+
+    esgf_security_version=${esgf_security_version:-"1.2.0"}
+    esgf_security_db_version=${esgf_security_db_version:-"0.1.4"}
+    esgf_security_egg_file=esgf_security-${esgf_security_db_version}-py${python_version}.egg
+    
+    #Database information....
+    node_db_name=${node_db_name:-"esgcet"}
+    postgress_driver=${postgress_driver:-org.postgresql.Driver}
+    postgress_protocol=${postgress_protocol:-jdbc:postgresql:}
+    postgress_host=${PGHOST:-localhost}
+    postgress_port=${PGPORT:-5432}
+    postgress_user=${PGUSER:-dbsuper}
+    pg_sys_acct_passwd=${pg_sys_acct_passwd:=${pg_secret:=changeme}}
     
 }
 
@@ -178,5 +192,63 @@ write_security_install_log() {
     return 0
 }
 
+#--------------------------------------------------
+#NOTE: This must be run AFTER the esg node web app
+#      installation/configuration (setup_node_manager) 
+#--------------------------------------------------
+configure_postgress() {
+    init
+
+    echo
+    echo "*******************************"
+    echo "Configuring Postgres... for ESGF Security"
+    echo "*******************************"
+    echo
+    
+    start_postgress
+
+    #Create the database...
+    echo "Creating esg node database: [${node_db_name}]"
+    echo "${postgress_install_dir}/bin/createdb ${node_db_name}"
+    ${postgress_install_dir}/bin/createdb ${node_db_name} >& /dev/null
+    (( $? > 1 )) && echo " ERROR: Could not create esg node database: ${node_db_name}" && return 0
+    echo 
+
+    mkdir -p ${workdir}/${node_dist_dir:-esgf-security-${esgf_security_version}}/db
+    pushd ${workdir}/${node_dist_dir:-esgf-security-${esgf_security_version}}/db >& /dev/null
+    [ $? != 0 ] && echo " ERROR: Could not find node distribution dir ${workdir}/${node_dist_dir}" && checked_done 1
+
+    #------------------------------------------------------------------------
+    #Based on the node type selection we build the appropriate database tables
+    #------------------------------------------------------------------------
+    
+    #download the egg file from the distribution server is necessary....
+    checked_get ${esgf_security_egg_file} ${esg_dist_url}/esgf-security/${esgf_security_egg_file} $((force_install))
+    (( $? > 1 )) && return 0
+
+    #install the egg....
+    ((DEBUG)) && "$cdat_home/bin/easy_install ${esgf_security_egg_file}"
+    $cdat_home/bin/easy_install ${esgf_security_egg_file}
+    [ $? != 0 ] && echo "ERROR: Could not create esgf security python module" && checked_done 1
+
+    #run the code to build the database and install sql migration...
+    ((DEBUG)) && echo "$cdat_home/bin/esgf_security_initialize --dburl ${postgress_user}:${pg_sys_acct_passwd}@${postgress_host}:${postgress_port}/${node_db_name} -c"
+    $cdat_home/bin/esgf_security_initialize --dburl ${postgress_user}:${pg_sys_acct_passwd}@${postgress_host}:${postgress_port}/${node_db_name} -c
+    [ $? != 0 ] && echo "ERROR: Could not create esgf security database tables in ${node_db_name}" && checked_done 1
+    
+    write_security_db_install_log
+    echo
+    
+    popd >& /dev/null
+    echo
+    echo
+    checked_done 0
+}
 
 
+
+write_security_db_install_log() {
+    echo "$(date ${date_format}) python:esgf_security=${esgf_security_db_version} " >> ${install_logfile}
+    dedup ${install_logfile}
+    return 0
+}
