@@ -252,16 +252,13 @@ ALTER TABLE ONLY permission
 -- Initialize groups
 --
 
-INSERT INTO esgf_security.group (id, name, description) VALUES (0,'wheel','Administrator Group');
-select nextval('esgf_security.group_id_seq'::regclass);
+INSERT INTO esgf_security.group (name, description) VALUES ('wheel','Administrator Group');
 
 --
 -- Initialize roles
 --
 
-INSERT INTO esgf_security.role (id,name,description) VALUES (0,'super', 'Super User');
-select nextval('esgf_security.role_id_seq'::regclass);
-
+INSERT INTO esgf_security.role (name,description) VALUES ('super', 'Super User');
 INSERT INTO esgf_security.role (name,description) VALUES ('none', 'None');
 INSERT INTO esgf_security.role (name,description) VALUES ('default', 'Standard');
 INSERT INTO esgf_security.role (name,description) VALUES ('publisher', 'Data Publisher');
