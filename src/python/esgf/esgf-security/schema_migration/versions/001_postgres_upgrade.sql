@@ -83,7 +83,7 @@ CREATE TABLE "user" (
 --
 
 CREATE SEQUENCE group_id_seq
-    START WITH 1
+    START WITH 2
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -102,7 +102,7 @@ ALTER SEQUENCE group_id_seq OWNED BY "group".id;
 --
 
 CREATE SEQUENCE role_id_seq
-    START WITH 1
+    START WITH 2
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -252,13 +252,13 @@ ALTER TABLE ONLY permission
 -- Initialize groups
 --
 
-INSERT INTO esgf_security.group (name, description) VALUES ('wheel','Administrator Group');
+INSERT INTO esgf_security.group (id, name, description) VALUES (1,'wheel','Administrator Group');
 
 --
 -- Initialize roles
 --
 
-INSERT INTO esgf_security.role (name,description) VALUES ('super', 'Super User');
+INSERT INTO esgf_security.role (id,name,description) VALUES (1,'super', 'Super User');
 INSERT INTO esgf_security.role (name,description) VALUES ('none', 'None');
 INSERT INTO esgf_security.role (name,description) VALUES ('default', 'Standard');
 INSERT INTO esgf_security.role (name,description) VALUES ('publisher', 'Data Publisher');
