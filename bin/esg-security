@@ -152,6 +152,8 @@ setup_security() {
         echo
     fi
 
+    configure_postgress
+
     mkdir -p ${workdir}
     [ $? != 0 ] && return 1
     pushd ${workdir} >& /dev/null
@@ -181,7 +183,6 @@ setup_security() {
     #----------------------------
     
     popd >& /dev/null
-    configure_postgress
     write_security_install_log
     checked_done 0
 
