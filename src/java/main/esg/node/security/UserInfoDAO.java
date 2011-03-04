@@ -346,8 +346,11 @@ public class UserInfoDAO implements Serializable {
         }
         return userInfo;
     }
-    
-    synchronized boolean addUserInfo(UserInfo userInfo) {
+
+    boolean addUserInfo(UserInfo userInfo) {
+        return this.addUser(userInfo);
+    }    
+    synchronized boolean addUser(UserInfo userInfo) {
         int userid = -1;
         int groupid = -1;
         int roleid = -1;
@@ -439,8 +442,11 @@ public class UserInfoDAO implements Serializable {
     }
 
     boolean deleteUserInfo(UserInfo userInfo) {
+        return this.deleteUser(userInfo);
+    }
+    boolean deleteUser(UserInfo userInfo) {
         if (userInfo == null) {
-            log.trace("deleteUserInfo("+userInfo+") bad parameter!!!");
+            log.trace("deleteUser("+userInfo+") bad parameter!!!");
             return false;
         }
         if(userInfo.getid() > 0) {
@@ -579,6 +585,9 @@ public class UserInfoDAO implements Serializable {
         return (numRowsAffected > 0);
     }
 
+    boolean deleteAllUserPermissions(UserInfo userInfo) {
+        return this.deleteAllUserPermissions(userInfo.getOpenid());
+    }
     synchronized boolean deleteAllUserPermissions(String openid) {
         int numRowsAffected = -1;
         try{
