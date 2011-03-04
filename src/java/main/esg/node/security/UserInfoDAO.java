@@ -539,6 +539,14 @@ public class UserInfoDAO implements Serializable {
     //Permission Manipulations
     //-------------------------------------------------------
 
+    synchronized boolean addPermission(UserInfo userInfo, String groupName, String roleName) {
+        if(!userInfo.isValid()) { 
+            //TODO: Throw an exception here
+            log.error("Cannot addPermission on an invalid user: "get);
+            return false; 
+        }
+        return this.addPermission(userInfo.getid(),groupName,roleName);
+    }
     synchronized boolean addPermission(int userid, String groupName, String roleName) {
         int numRowsAffected = -1;
         try{
@@ -551,6 +559,14 @@ public class UserInfoDAO implements Serializable {
         return (numRowsAffected > 0);
     }
 
+    synchronized boolean deletePermission(UserInfo userInfo, String groupName, String roleName) {
+        if(!userInfo.isValid()) { 
+            //TODO: Throw an exception here
+            log.error("Cannot deletePermission on an invalid user");
+            return false; 
+        }
+        return this.deletePermission(userInfo.getid(),groupName,roleName);
+    }
     synchronized boolean deletePermission(int userid, String groupName, String roleName) {
         int numRowsAffected = -1;
         try{

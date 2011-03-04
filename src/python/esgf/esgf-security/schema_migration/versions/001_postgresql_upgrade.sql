@@ -83,7 +83,7 @@ CREATE TABLE "user" (
 --
 
 CREATE SEQUENCE group_id_seq
-    START WITH 1
+    START WITH 2
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -102,7 +102,7 @@ ALTER SEQUENCE group_id_seq OWNED BY "group".id;
 --
 
 CREATE SEQUENCE role_id_seq
-    START WITH 1
+    START WITH 2
     INCREMENT BY 1
     NO MAXVALUE
     NO MINVALUE
@@ -249,14 +249,20 @@ ALTER TABLE ONLY permission
 
 
 --
+-- Initialize groups
+--
+
+INSERT INTO esgf_security.group (id, name, description) VALUES (1,'wheel','Administrator Group');
+
+--
 -- Initialize roles
 --
 
-INSERT INTO role VALUES (0, 'none', 'None');
-INSERT INTO role VALUES (1, 'default', 'Standard');
-INSERT INTO role VALUES (2, 'publisher', 'Data Publisher');
-INSERT INTO role VALUES (3, 'admin', 'Group Administrator');
-INSERT INTO role VALUES (4, 'super', 'Super User');
+INSERT INTO esgf_security.role (id,name,description) VALUES (1,'super', 'Super User');
+INSERT INTO esgf_security.role (name,description) VALUES ('none', 'None');
+INSERT INTO esgf_security.role (name,description) VALUES ('default', 'Standard');
+INSERT INTO esgf_security.role (name,description) VALUES ('publisher', 'Data Publisher');
+INSERT INTO esgf_security.role (name,description) VALUES ('admin', 'Group Administrator');
 
 --
 -- PostgreSQL database dump complete
