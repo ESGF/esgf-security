@@ -542,7 +542,7 @@ public class UserInfoDAO implements Serializable {
     synchronized boolean addPermission(UserInfo userInfo, String groupName, String roleName) {
         if(!userInfo.isValid()) { 
             //TODO: Throw an exception here
-            log.error("Cannot addPermission on an invalid user: "get);
+            log.error("Cannot addPermission on an invalid user ");
             return false; 
         }
         return this.addPermission(userInfo.getid(),groupName,roleName);
