@@ -197,6 +197,34 @@ public class UserInfo {
         this.permissions = permissions;
         return this;
     }
+
+    UserInfo setPermissions(String group, Set<String> roles) {
+        //lazily instantiate permissions map
+        if(permissions == null) {
+            permissions = new HashMap<String,Set<String>>();
+        }
+        
+        permissions.put(group, roles);
+        return this;        
+    }
+    
+    UserInfo addPermissions(String group, Set<String> roles) {
+        //lazily instantiate permissions map
+        if(permissions == null) {
+            permissions = new HashMap<String,Set<String>>();
+        }
+        
+        //lazily instantiate the set of values for group if not
+        //there
+        if((roleSet = permissions.get(group)) == null) {
+            roleSet = new HashSet<String>();
+        }
+        
+        //enter group associated with group value set
+        roleSet.addAll(roles);
+        permissions.put(group, roleSet);
+        return this;        
+    }
     
     UserInfo addPermission(String group, String role) {
         //lazily instantiate permissions map
