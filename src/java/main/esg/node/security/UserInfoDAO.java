@@ -161,8 +161,8 @@ public class UserInfoDAO implements Serializable {
     private ResultSetHandler<String> passwordQueryHandler = null;
 
     private static final String  adminName = "rootAdmin";
-    private static final Pattern openidUrlPattern = Pattern.compile("https://([^/ ]*)/.*[/]*/([^/ @*%#!()+=]*$)");
-    private static final Pattern usernamePattern = Pattern.compile("^[^/ @*%#!()+=]*$");
+    private static final Pattern openidUrlPattern = Pattern.compile("https://([^/ ]*)/.*[/]*/([^/ @*%#!()<>+=]*$)");
+    private static final Pattern usernamePattern = Pattern.compile("^[^/ @*%#!()<>+=]*$");
     
     private PasswordEncoder encoder = new MD5CryptPasswordEncoder();
     
@@ -253,16 +253,16 @@ public class UserInfoDAO implements Serializable {
                 permissions.put(groupName, roleSet);
             }
         };
-	
-	passwordQueryHandler = new ResultSetHandler<String>() {
-	    public String handle(ResultSet rs) throws SQLException {
-		String password = null;
-		while(rs.next()) {
-		    password = rs.getString(1);
-		}
-		return password;
-	    }
-	};
+        
+        passwordQueryHandler = new ResultSetHandler<String>() {
+            public String handle(ResultSet rs) throws SQLException {
+                String password = null;
+                while(rs.next()) {
+                    password = rs.getString(1);
+                }
+                return password;
+            }
+        };
         new InitAdmin();
     }
     
@@ -284,6 +284,12 @@ public class UserInfoDAO implements Serializable {
     //Query function calls... 
     //(NOTE: synchronized since there are two calls to database - can optimize around later)
     //------------------------------------
+    public synchronized UserInfo getUserByOpenid(String openid) {
+        if ((openidUrlPattern.matcher(openid)).find()) {
+            return getUserById(openid);
+        }
+        return null;
+    }
     public synchronized UserInfo getUserById(String id) {
         log.info("getUserById("+id+")");
         
@@ -302,7 +308,11 @@ public class UserInfoDAO implements Serializable {
         }else{
             usernameMatcher = usernamePattern.matcher(id);
             if(usernameMatcher.find()) {
-                openid = "https://"+getFQDN()+"/esgf-idp/openid/"+id;
+                String openidHost = props.getProperty("esgf.security.openid.host",getFQDN());
+                String openidPort = props.getProperty("esgf.security.openid.port","");
+                if(!openidPort.equals("")) { openidPort=":"+openidPort; }
+                
+                openid = "https://"+openidHost+openidPort+"/esgf-idp/openid/"+id;
                 username = id;
             }else {
                 System.out.println("Sorry money, your id is not well formed");
@@ -349,7 +359,7 @@ public class UserInfoDAO implements Serializable {
 
     boolean addUserInfo(UserInfo userInfo) {
         return this.addUser(userInfo);
-    }    
+    }
     synchronized boolean addUser(UserInfo userInfo) {
         int userid = -1;
         int groupid = -1;
@@ -359,8 +369,11 @@ public class UserInfoDAO implements Serializable {
             log.trace("Inserting UserInfo associated with username: ["+userInfo.getUserName()+"], into database");
 
             if(userInfo.getOpenid() == null) {
-                //should actually never get in here... vestige 
-                userInfo.setOpenid("https://"+getFQDN()+"/esgf-idp/openid/"+userInfo.getUserName());
+                //should actually NEVER get in here... vestige 
+                String openidHost = props.getProperty("esgf.security.openid.host",getFQDN());
+                String openidPort = props.getProperty("esgf.security.openid.port","");
+                if(!openidPort.equals("")) { openidPort=":"+openidPort; }
+                userInfo.setOpenid("https://"+openidHost+openidPort+"/esgf-idp/openid/"+userInfo.getUserName());
             }
 
             log.trace("Openid is ["+userInfo.getOpenid()+"]");
@@ -485,7 +498,7 @@ public class UserInfoDAO implements Serializable {
     //-------------------------------------------------------
 
     //Sets the password value for a given user (openid)
-    public boolean setPassword(UserInfo userInfo, String newPassword) {
+    boolean setPassword(UserInfo userInfo, String newPassword) {
         if(!userInfo.isValid()) {
             log.warn("Cannot Set Password of an invalid user");
             return false;
@@ -516,9 +529,15 @@ public class UserInfoDAO implements Serializable {
     public boolean checkPassword(String openid, String queryPassword) {
         boolean isMatch = false;
         try{
-            isMatch = encoder.equals(queryPassword, queryRunner.query(getPasswordQuery, passwordQueryHandler, openid) );
+            String cryptPassword = queryRunner.query(getPasswordQuery, passwordQueryHandler, openid);
+            if(cryptPassword == null) {
+                log.error("PASSWORD RETURNED FROM DATABASE for ["+openid+"] IS: "+cryptPassword);
+                return false;
+            }
+            isMatch = encoder.equals(queryPassword,cryptPassword);
         }catch(SQLException ex) {
             log.error(ex);
+            ex.printStackTrace();
         }
         return isMatch;
     }
@@ -532,7 +551,7 @@ public class UserInfoDAO implements Serializable {
         }
         return this.changePassword(userInfo.getOpenid(),queryPassword,newPassword);
     }
-    synchronized boolean changePassword(String openid, String queryPassword, String newPassword) {
+    public synchronized boolean changePassword(String openid, String queryPassword, String newPassword) {
         boolean isSuccessful = false;
         if(checkPassword(openid,queryPassword)){
             isSuccessful = setPassword(openid,newPassword);

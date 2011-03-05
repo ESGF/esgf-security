@@ -85,7 +85,8 @@ import esg.security.utils.encryption.PasswordEncoder;
 public class UserInfoTest {
 
     private static final Log log = LogFactory.getLog(UserInfoTest.class);
-    private static UserInfoDAO userInfoDAO = null;
+    //private static UserInfoDAO userInfoDAO = null;
+    private static UserInfoCredentialedDAO userInfoDAO = null;
     private static GroupRoleDAO groupRoleDAO = null;
     private static UserInfo gavin = null;
     
@@ -95,7 +96,8 @@ public class UserInfoTest {
     public static void initTest() {
         System.out.println("UserInfoTest initializing");
         
-        userInfoDAO = new UserInfoDAO(new Properties());
+        //userInfoDAO = new UserInfoDAO(new Properties());
+        userInfoDAO = new UserInfoCredentialedDAO("rootAdmin", "esgrocks",new Properties());
         groupRoleDAO = new GroupRoleDAO(new Properties());
 
         assertNotNull(userInfoDAO);
@@ -149,7 +151,7 @@ public class UserInfoTest {
         groupRoleDAO.deleteRole("king");
         
         assertFalse(userInfoDAO.deleteUserInfo(userInfoDAO.getUserById("rootAdmin")));
-        assertFalse(userInfoDAO.deleteUserInfo(userInfoDAO.getUserById("root+Admin")));
+        assertFalse(userInfoDAO.deleteUserInfo(userInfoDAO.getUserById("root<Admin>")));
     }
 
     @Test

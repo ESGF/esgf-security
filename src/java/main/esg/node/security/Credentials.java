@@ -46,45 +46,40 @@
 *   SUCH DAMAGE.                                                           *
 *                                                                          *
 ***************************************************************************/
+package esg.node.security;
 
 /**
    Description:
+   
+   Simple pair object to hold user credentials.
+   
+*/
+public final class Credentials {
 
-**/
-package esg.security.utils.encryption;
+    private final String id;
+    private final String password;
+    private final String pair;
+    private final String toString;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+    public Credentials(String id, String password) {
+        this.id=id;
+        this.password=password;
+        this.pair=id+password;
+        toString="[Credential: "+id+" ******* ]";
+    }
 
+    public String getid() { return id; }
+    String getPassword()  { return password;}
 
+    public int hashCode() { return pair.hashCode(); }
+    public boolean equals(Object o) { 
+        try{
+            return this.pair.equals(((Credentials)o).pair);
+        }catch(Throwable t) {
+            return false;
+        }
+    }
 
-public class MD5CryptPasswordEncoder implements PasswordEncoder {
-
-    private static final Log log = LogFactory.getLog(MD5CryptPasswordEncoder.class);
-	
-	/** Start of the salt string. */
-	private final static int START_SALT = 3;
-	
-	/** End of the salt string. */
-	private final static int STOP_SALT = 11;
-
-	@Override
-	public String encrypt(String clearTextPassword) {
-		return MD5Crypt.crypt(clearTextPassword);
-	}
-	
-	public boolean equals(final String clearTextPassword, final String encryptedPassword) {
-
-		// retrieve salt from encrypted password
-		// example format: $1$LvwVZUS8$FvU.yQWntcwpRiD6CLrQR1
-		final String salt = encryptedPassword.substring(START_SALT, STOP_SALT);
-
-		// use salt to encrypt the decrypted password
-		final String newEncryptedPassword = MD5Crypt.crypt(clearTextPassword, salt);
-
-		return newEncryptedPassword.equals(encryptedPassword);
-
-	}
-	
+    public String toString() { return toString; }
 
 }
