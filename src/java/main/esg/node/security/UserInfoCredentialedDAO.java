@@ -106,8 +106,24 @@ public class UserInfoCredentialedDAO {
     //NOTE: The credential check criteria is simple, but we
     //encapsulate it here so we can make things arbitrarily
     //complicated later and only have to do that in one place,
-    //here. :-)
+    //here. :-) -gavin
     public final boolean checkCredentials() { return (null != cred); }
+
+    //NOTE: Maybe checking for credentials to get a blank user info
+    //object is over kill? The real critical operation is adding one
+    //into the system.  But I think that I would like you to get
+    //stopped much earlier in the process than later in the process
+    //after you have potentially spent a bunch of time preparing the
+    //object. right?  So the general philosophy is don't make one if
+    //you can't raise one ;-). -gavin
+    public UserInfo getNewUserInfo() {
+        UserInfo userInfo = null;
+        if(!checkCredentials()) {
+            throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
+        }
+        userInfo = new UserInfo();
+        return userInfo;
+    }
 
     public UserInfo getUserByOpenid(String openid) {
         return userInfoDAO.getUserByOpenid(openid);
@@ -120,6 +136,9 @@ public class UserInfoCredentialedDAO {
         return userInfoDAO.refresh(userInfo);
     }
 
+    //---
+    //We want to make sure these manipulation calls are guarded
+    //---
     public boolean addUserInfo(UserInfo userInfo) {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
