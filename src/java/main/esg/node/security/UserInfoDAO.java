@@ -632,7 +632,7 @@ public class UserInfoDAO implements Serializable {
     
     public String toString() {
         StringBuilder out = new StringBuilder();
-        out.append("DAO:["+this.getClass().getName()+"] - "+((dataSource == null) ? "[OK]" : "[INVALID]\n"));
+        out.append("DAO:["+this.getClass().getName()+"] - "+((dataSource == null) ? "[OK]" : "[INVALID]"));
         return out.toString();
     }
     

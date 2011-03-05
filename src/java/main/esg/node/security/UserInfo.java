@@ -108,7 +108,7 @@ public class UserInfo {
     }
     
     public final String getOpenid() { return openid; }
-    final UserInfo setOpenid(String openid) {
+    public final UserInfo setOpenid(String openid) {
         this.openid = openid;
         return this;
     }

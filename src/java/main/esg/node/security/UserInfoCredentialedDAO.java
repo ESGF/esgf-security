@@ -85,9 +85,14 @@ public class UserInfoCredentialedDAO {
         UserInfo user = null;
         log.info("Checking credentials: "+cred);
         if(cred != null) {
+            //NOTE: we want to deprecate the use of the "ById" call
+            //and use the "ByOpenid" call this way we do everything by
+            //openid... however, for ease of testing purposes and thus
+            //general laziness right now, we will use the "ById"
+            //version.
             user = userInfoDAO.getUserById(cred.getid());
-            if(!user.isValid()) { log.trace("NOT valid"); return false; }
-            if(!user.getUserName().equals("rootAdmin")) { log.trace("NOT ROOT USER!!!"); return false; }
+            if(!user.isValid()) { log.trace("User ["+cred.getid()+"] is NOT a valid user on this system"); return false; }
+            if(!user.getUserName().equals("rootAdmin")) { log.trace("Sorry, Must be ROOT to use this DAO"); return false; }
         }
         if(userInfoDAO.checkPassword(user.getOpenid(),cred.getPassword())) {
             this.cred = cred;
@@ -98,6 +103,10 @@ public class UserInfoCredentialedDAO {
         return false;
     }
 
+    //NOTE: The credential check criteria is simple, but we
+    //encapsulate it here so we can make things arbitrarily
+    //complicated later and only have to do that in one place,
+    //here. :-)
     public final boolean checkCredentials() { return (null != cred); }
 
     public UserInfo getUserByOpenid(String openid) {
@@ -239,7 +248,7 @@ public class UserInfoCredentialedDAO {
     //-------------------------------------------------------
     
     public String toString() {
-        return userInfoDAO.toString();
+        return userInfoDAO.toString()+" "+cred;
     }
     
 

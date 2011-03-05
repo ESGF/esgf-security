@@ -56,7 +56,7 @@ package esg.node.security;
 */
 public final class Credentials {
 
-    private final String id;
+    private final String id; //openid (or username - [dep]) of local user account
     private final String password;
     private final String pair;
     private final String toString;
