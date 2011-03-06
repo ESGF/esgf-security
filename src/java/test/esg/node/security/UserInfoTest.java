@@ -359,6 +359,7 @@ public class UserInfoTest {
         log.info(gavin);
         log.info("Changed gavin's status (from 5 to 1) using GOOD token");
         assertTrue(userInfoDAO.changeStatus(gavin, 1, currentVerificationToken));
+        userInfoDAO.refresh(gavin); //reload state directly from database        
         log.info(gavin);
         log.info("Create new blank userInfo...");
         UserInfo lola = userInfoDAO.getNewUserInfo();
