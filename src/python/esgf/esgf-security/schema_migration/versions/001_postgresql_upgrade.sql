@@ -74,9 +74,10 @@ CREATE TABLE "user" (
     organization_type character varying(200),
     city character varying(100),
     state character varying(100),
-    country character varying(100)
+    country character varying(100),
+    status_code integer,
+    verification_token character varying(100)
 );
-
 
 --
 -- Name: group_id_seq; Type: SEQUENCE; Schema: esgf_security; Owner: -

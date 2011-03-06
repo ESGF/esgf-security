@@ -78,7 +78,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.*;
 
-public class UserInfo {
+public final class UserInfo {
 
     private static final Log log = LogFactory.getLog(UserInfo.class);
 
@@ -95,6 +95,8 @@ public class UserInfo {
     private String city = "";
     private String state = "";
     private String country = "";   
+    //NOTE: Status info would probably be best suited as an enum but for now... -gavin
+    private int statusCode = 1;
     private Map<String,Set<String>> permissions = null;    
     private Set<String> roleSet = null;
 
@@ -183,6 +185,11 @@ public class UserInfo {
         return this;
     }
 
+    public int getStatusCode() { return statusCode; }
+    UserInfo setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
+        return this;
+    }
 
     //--------------------------------------
     // Permissions (Groups and Roles) collecting
@@ -251,7 +258,26 @@ public class UserInfo {
     public final boolean isValid() {
         return ((this.id > 0) && (this.openid != null) && (this.userName != null));
     }
-    
+ 
+    //Create copy of internal state from source object.
+    void copy(UserInfo source) {
+        assert (this.id == source.id) : "Violation of copy semantics constraint! (this.id:"+this.id+" must be equal to source.id: "+source.id;
+        this.openid = source.openid;
+        this.firstName = source.firstName;
+        this.middleName = source.middleName;
+        this.lastName = source.lastName;
+        this.userName = source.userName;
+        this.email = source.email;
+        this.dn = source.dn;
+        this.organization = source.organization;
+        this.orgType = source.orgType;
+        this.city = source.city;
+        this.state = source.state;
+        this.country = source.country;
+        this.statusCode = source.statusCode;
+        this.permissions = source.permissions;
+        this.roleSet = source.roleSet;
+    }
     
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -269,6 +295,7 @@ public class UserInfo {
             .append("City:\t"+city+"\n")
             .append("State:\t"+state+"\n")
             .append("Country:\t"+country+"\n")
+            .append("StatusCode:\t"+statusCode+"\n")
             .append("Permissions (Groups and Roles):\n");
         
         if(this.permissions != null) {

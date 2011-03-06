@@ -209,6 +209,58 @@ public class UserInfoCredentialedDAO {
         return userInfoDAO.changePassword(openid,queryPassword,newPassword);
     }
     
+    //-------------------------------------------------------
+    //Account Status Manipulations
+    //-------------------------------------------------------
+    //Sets the status code value for a given user (openid)
+    public boolean setStatusCode(UserInfo userInfo, int newStatusCode) {
+        if(!checkCredentials()) {
+            throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
+        }
+        return userInfoDAO.setStatusCode(userInfo,newStatusCode);
+    }
+    public synchronized boolean setStatusCode(String openid, int newStatusCode) {
+        if(!checkCredentials()) {
+            throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
+        }
+        return userInfoDAO.setStatusCode(openid,newStatusCode);
+    }
+
+    //Given the old password and the new password for a given user
+    //(openid) update the password, only if the old password matches
+    public boolean changeStatus(UserInfo userInfo, int newStatusCode, String verificationToken) {
+        return userInfoDAO.changeStatus(userInfo,newStatusCode,verificationToken);
+    }
+    public synchronized boolean changeStatus(String openid, int newStatusCode, String verificationToken) {
+        return userInfoDAO.changeStatus(openid,newStatusCode,verificationToken);
+    }
+
+    public String genVerificationToken(UserInfo userInfo) {
+        if(!checkCredentials()) {
+            throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
+        }
+        return userInfoDAO.genVerificationToken(userInfo);
+    }
+    public String genVerificationToken(String openid) {
+        if(!checkCredentials()) {
+            throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
+        }
+        return userInfoDAO.genVerificationToken(openid);
+    }
+    public String getVerificationToken(UserInfo userInfo) {
+        if(!checkCredentials()) {
+            throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
+        }
+        return userInfoDAO.getVerificationToken(userInfo);
+    }
+    public String getVerificationToken(String openid) {
+        if(!checkCredentials()) {
+            throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
+        }
+        return userInfoDAO.getVerificationToken(openid);
+    }
+
+
 
     //-------------------------------------------------------
     //Permission Manipulations (Guarded)

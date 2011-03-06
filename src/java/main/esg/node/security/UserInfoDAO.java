@@ -95,10 +95,10 @@ public class UserInfoDAO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //-------------------
-    //Selection queries
+    //Selection queries (fills in the UserInfo data carrying object)
     //-------------------
     private static final String idQuery = 
-        "SELECT id, openid, firstname, middlename, lastname, username, email, dn, organization, organization_type, city, state, country "+
+        "SELECT id, openid, firstname, middlename, lastname, username, email, dn, organization, organization_type, city, state, country, status_code "+
         "FROM esgf_security.user "+
         "WHERE openid = ?";
 
@@ -108,17 +108,17 @@ public class UserInfoDAO implements Serializable {
     
     //User Queries...
     private static final String hasUserOpenidQuery =
-        "SELECT * from esgf_security.user "+
+        "SELECT id from esgf_security.user "+
         "WHERE openid = ?";
     private static final String updateUserQuery = 
         "UPDATE esgf_security.user "+
-        "SET openid = ?, firstname = ?, middlename = ?, lastname = ?, username = ?, email = ?, dn = ?, organization = ?, organization_type = ?, city = ?, state = ?, country = ? "+
+        "SET openid = ?, firstname = ?, middlename = ?, lastname = ?, username = ?, email = ?, dn = ?, organization = ?, organization_type = ?, city = ?, state = ?, country = ?, status_code = ? "+
         "WHERE id = ? ";
     private static final String getNextUserPrimaryKeyValQuery = 
         "SELECT NEXTVAL('esgf_security.user_id_seq')";
     private static final String addUserQuery = 
-        "INSERT INTO esgf_security.user (id, openid, firstname, middlename, lastname, username, email, dn, organization, organization_type, city, state, country) "+
-        "VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        "INSERT INTO esgf_security.user (id, openid, firstname, middlename, lastname, username, email, dn, organization, organization_type, city, state, country, status_code) "+
+        "VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String delUserQuery =
         "DELETE FROM esgf_security.user "+
         "WHERE openid = ?";
@@ -139,6 +139,22 @@ public class UserInfoDAO implements Serializable {
     private static final String delAllUserPermissionsQuery =
         "DELETE FROM esgf_security.permission WHERE user_id = (SELECT id FROM esgf_security.user WHERE openid = ?)";
 
+    //Status Queries
+    private static final String setStatusCodeQuery = 
+        "UPDATE esgf_security.user SET status_code = ? "+
+        "WHERE openid = ?";
+
+    private static final String changeStatusQuery = 
+        "UPDATE esgf_security.user SET status_code = ? "+
+        "WHERE verification_token = ? AND openid = ? ";
+
+    private static final String setVerificationTokenQuery =
+        "UPDATE esgf_security.user SET verification_token = ? "+
+        "WHERE openid = ? ";
+
+    private static final String getVerificationTokenQuery = 
+        "SELECT verification_token FROM esgf_security.user WHERE openid = ?";
+        
     //Password Queries...
     private static final String setPasswordQuery = 
         "UPDATE esgf_security.user SET password = ? "+
@@ -158,6 +174,7 @@ public class UserInfoDAO implements Serializable {
     private ResultSetHandler<UserInfo> userInfoResultSetHandler = null;
     private ResultSetHandler<Map<String,Set<String>>> userPermissionsResultSetHandler = null;
     private ResultSetHandler<Integer> idResultSetHandler = null;
+    private ResultSetHandler<String> singleStringResultSetHandler = null;
     private ResultSetHandler<String> passwordQueryHandler = null;
 
     private static final String  adminName = "rootAdmin";
@@ -203,6 +220,23 @@ public class UserInfoDAO implements Serializable {
                 return rs.getInt(1);
 	    }
 	};
+
+        this.singleStringResultSetHandler = new ResultSetHandler<String>() {
+	    public String handle(ResultSet rs) throws SQLException {
+                if(!rs.next()) { return null; }
+                return rs.getString(1);
+	    }
+	};
+
+        passwordQueryHandler = new ResultSetHandler<String>() {
+            public String handle(ResultSet rs) throws SQLException {
+                String password = null;
+                while(rs.next()) {
+                    password = rs.getString(1);
+                }
+                return password;
+            }
+        };
         
         //To handle the single record result
         userInfoResultSetHandler =  new ResultSetHandler<UserInfo>() {
@@ -222,7 +256,8 @@ public class UserInfoDAO implements Serializable {
                         .setOrgType(rs.getString(10))
                         .setCity(rs.getString(11))
                         .setState(rs.getString(12))
-                        .setCountry(rs.getString(13));
+                        .setCountry(rs.getString(13))
+                        .setStatusCode(rs.getInt(14));
                 }
                 return userInfo;
             }
@@ -254,15 +289,6 @@ public class UserInfoDAO implements Serializable {
             }
         };
         
-        passwordQueryHandler = new ResultSetHandler<String>() {
-            public String handle(ResultSet rs) throws SQLException {
-                String password = null;
-                while(rs.next()) {
-                    password = rs.getString(1);
-                }
-                return password;
-            }
-        };
         new InitAdmin();
     }
     
@@ -308,14 +334,14 @@ public class UserInfoDAO implements Serializable {
         }else{
             usernameMatcher = usernamePattern.matcher(id);
             if(usernameMatcher.find()) {
-                String openidHost = props.getProperty("esgf.security.openid.host",getFQDN());
-                String openidPort = props.getProperty("esgf.security.openid.port","");
+                String openidHost = props.getProperty("security.openid.host",getFQDN());
+                String openidPort = props.getProperty("security.openid.port","");
                 if(!openidPort.equals("")) { openidPort=":"+openidPort; }
                 
                 openid = "https://"+openidHost+openidPort+"/esgf-idp/openid/"+id;
                 username = id;
             }else {
-                System.out.println("Sorry money, your id is not well formed");
+                log.info("Sorry money, your id is not well formed");
                 return null;
             }
         }
@@ -352,7 +378,8 @@ public class UserInfoDAO implements Serializable {
     public synchronized UserInfo refresh(UserInfo userInfo) {
         if(userInfo.getid() > 0) {
             log.info("Refreshing ["+userInfo.getUserName()+"]...");
-            userInfo = getUserById(userInfo.getOpenid());
+            log.trace(" Openid: ["+userInfo.getOpenid()+"]");
+            userInfo.copy(getUserById(userInfo.getOpenid()));
         }
         return userInfo;
     }
@@ -369,11 +396,11 @@ public class UserInfoDAO implements Serializable {
             log.trace("Inserting UserInfo associated with username: ["+userInfo.getUserName()+"], into database");
 
             if(userInfo.getOpenid() == null) {
-                //should actually NEVER get in here... vestige 
-                String openidHost = props.getProperty("esgf.security.openid.host",getFQDN());
-                String openidPort = props.getProperty("esgf.security.openid.port","");
+                if(userInfo.getUserName() == null) return false;
+                String openidHost = props.getProperty("security.openid.host",getFQDN());
+                String openidPort = props.getProperty("security.openid.port","");
                 if(!openidPort.equals("")) { openidPort=":"+openidPort; }
-                userInfo.setOpenid("https://"+openidHost+openidPort+"/esgf-idp/openid/"+userInfo.getUserName());
+                userInfo.setOpenid("Constructing default openid: https://"+openidHost+openidPort+"/esgf-idp/openid/"+userInfo.getUserName());
             }
 
             log.trace("Openid is ["+userInfo.getOpenid()+"]");
@@ -398,6 +425,7 @@ public class UserInfoDAO implements Serializable {
                                                      userInfo.getCity(),
                                                      userInfo.getState(),
                                                      userInfo.getCountry(),
+                                                     userInfo.getStatusCode(),
                                                      userid
                                                      );
 
@@ -431,7 +459,8 @@ public class UserInfoDAO implements Serializable {
                                                  userInfo.getOrgType(),
                                                  userInfo.getCity(),
                                                  userInfo.getState(),
-                                                 userInfo.getCountry()
+                                                 userInfo.getCountry(),
+                                                 userInfo.getStatusCode()
                                                  );
             
             
@@ -558,7 +587,74 @@ public class UserInfoDAO implements Serializable {
         }
         return isSuccessful;
     }
-    
+
+    //-------------------------------------------------------
+    //Account Status Manipulations
+    //-------------------------------------------------------
+
+    //Sets the status code value for a given user (openid)
+    boolean setStatusCode(UserInfo userInfo, int newStatusCode) {
+        if(!userInfo.isValid()) {
+            log.warn("Cannot Set Status of an invalid user");
+            return false;
+        }
+        return this.setStatusCode(userInfo.getOpenid(),newStatusCode);
+    }
+    synchronized boolean setStatusCode(String openid, int newStatusCode) {
+        int numRowsAffected = -1;
+        try{
+            numRowsAffected = queryRunner.update(setStatusCodeQuery, newStatusCode, openid);
+        }catch(SQLException ex) {
+            log.error(ex);
+        }
+        return (numRowsAffected > 0);
+    }
+
+    //Given the old password and the new password for a given user
+    //(openid) update the password, only if the old password matches
+    public boolean changeStatus(UserInfo userInfo, int newStatusCode, String verificationToken) {
+        if(!userInfo.isValid()) {
+            log.warn("Cannot Change Status of an invalid user");
+            return false;
+        }
+        return this.changeStatus(userInfo.getOpenid(),newStatusCode,verificationToken);
+    }
+    public synchronized boolean changeStatus(String openid, int newStatusCode, String verificationToken) {
+        int numRowsAffected = -1;
+        try {
+            numRowsAffected = queryRunner.update(changeStatusQuery, newStatusCode, verificationToken, openid);
+        }catch(SQLException ex) {
+            log.error(ex);
+        }
+        return (numRowsAffected > 0);
+    }
+    String genVerificationToken(UserInfo userInfo) {
+        return genVerificationToken(userInfo.getOpenid());
+    }
+    String genVerificationToken(String openid) {
+        int numRowsAffected = -1;
+        //zoiks make new token
+        String verificationToken = java.util.UUID.randomUUID().toString();
+        try {
+            numRowsAffected = queryRunner.update(setVerificationTokenQuery, verificationToken, openid);
+        }catch(SQLException ex) {
+            log.error(ex);
+        }
+        return (numRowsAffected > 0) ? verificationToken : getVerificationToken(openid);
+    }
+
+    String getVerificationToken(UserInfo userInfo) {
+        return this.getVerificationToken(userInfo.getOpenid());
+    }
+    String getVerificationToken(String openid) {
+        String verificationToken = "null";
+        try {
+            verificationToken = queryRunner.query(getVerificationTokenQuery, singleStringResultSetHandler, openid);
+        }catch(SQLException ex) {
+            log.error(ex);
+        }
+        return verificationToken;
+    }
 
     //-------------------------------------------------------
     //Permission Manipulations
@@ -595,7 +691,7 @@ public class UserInfoDAO implements Serializable {
     synchronized boolean deletePermission(int userid, String groupName, String roleName) {
         int numRowsAffected = -1;
         try{
-            System.out.print("Deleting Permission ("+userid+", "+groupName+", "+roleName+") ");
+            log.trace("Deleting Permission ("+userid+", "+groupName+", "+roleName+") ");
             numRowsAffected = queryRunner.update(delPermissionQuery, userid, groupName, roleName);
             if (numRowsAffected >0) log.trace("[OK]"); else log.trace("[FAIL]");
         }catch(SQLException ex) {
@@ -610,7 +706,7 @@ public class UserInfoDAO implements Serializable {
     synchronized boolean deleteAllUserPermissions(String openid) {
         int numRowsAffected = -1;
         try{
-            System.out.print("Deleting All Permissions for openid = ["+openid+"] ");
+            log.trace("Deleting All Permissions for openid = ["+openid+"] ");
             numRowsAffected = queryRunner.update(delAllUserPermissionsQuery, openid);
             if (numRowsAffected > 0) log.trace("[OK]"); else log.trace("[FAIL]");
             log.trace(numRowsAffected+" permission entries removed");
@@ -653,6 +749,7 @@ public class UserInfoDAO implements Serializable {
                 setCity(UserInfoDAO.this.props.getProperty("security.admin.city","Brooklyn")).
                 setState(UserInfoDAO.this.props.getProperty("security.admin.state","NY")).
                 setCountry(UserInfoDAO.this.props.getProperty("security.admin.country","USA")).
+                setStatusCode(1).
                 addPermission("wheel","super");
             log.info("rootAdmin: "+rootAdmin);
             UserInfoDAO.this.addUserInfo(rootAdmin);

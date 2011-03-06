@@ -138,9 +138,9 @@ public class UserInfoTest {
         System.out.println("UserInfoTest Cleanup....");
         System.out.println("------------------------");
 
-        System.out.print("\nDeleting Gavin user object...");
+        log.info("\nDeleting Gavin user object...");
         if(userInfoDAO.deleteUserInfo(gavin)) System.out.println("[OK]"); else System.out.println("[FAIL]");
-
+        
         groupRoleDAO.deleteRole("user_test_renamed"); //changed name from "user_test"
         groupRoleDAO.deleteGroup("ARM_test");
         groupRoleDAO.deleteGroup("CMIP_NOW"); //changed name from "CMIP5_test"
@@ -334,6 +334,46 @@ public class UserInfoTest {
         
         System.out.println("\nDeleting Bob user object...");
         if(userInfoDAO.deleteUserInfo(bob)) System.out.println("[OK]"); else System.out.println("[FAIL]");
+    }
+
+    @Test
+    public void testStatus() {
+        log.info("Status testing...");
+        log.info("Before set status for gavin (status should be 1)");
+        log.info(gavin);
+        assertTrue(userInfoDAO.setStatusCode(gavin,5));
+        log.info("*gavin.getStatusCode() should be 1 = "+gavin.getStatusCode());
+        assertTrue((1 == gavin.getStatusCode()));
+        userInfoDAO.refresh(gavin); //reload state directly from database
+        log.info("After set status for gavin (status should be 5)");
+        log.info(gavin);
+        log.info("Setting verification token for gavin");
+        String generatedVerificationToken = userInfoDAO.genVerificationToken(gavin);
+        String currentVerificationToken = userInfoDAO.getVerificationToken(gavin);
+        log.info("Generated Verification Token = "+generatedVerificationToken);
+        log.info("Current Verification Token   = "+currentVerificationToken);
+        assertTrue(generatedVerificationToken.equals(currentVerificationToken));
+        log.info("Changed gavin's status (from 5 to 1) using BAD token (should still be 5)");
+        log.info("gavin.getStatusCode() = "+gavin.getStatusCode());
+        assertFalse(userInfoDAO.changeStatus(gavin, 1, "bad_token_value"));
+        log.info(gavin);
+        log.info("Changed gavin's status (from 5 to 1) using GOOD token");
+        assertTrue(userInfoDAO.changeStatus(gavin, 1, currentVerificationToken));
+        log.info(gavin);
+        log.info("Create new blank userInfo...");
+        UserInfo lola = userInfoDAO.getNewUserInfo();
+        log.info(lola);
+        lola.setUserName("lola");
+        lola.setLastName("Bell");
+        lola.setFirstName("Lola");
+        lola.setEmail("lola@6thcolumn.org");
+        lola.setOpenid("https://sixthcolumn.org/esgf-idp/openid/lola");
+        log.info("Now has username (lola), right?)");
+        log.info(lola);
+        assertTrue(userInfoDAO.addUser(lola));
+        log.info("New Verification Token for Lola: "+userInfoDAO.genVerificationToken(lola));
+        log.info(lola);
+        assertTrue(userInfoDAO.deleteUserInfo(lola));
     }
     
 }
