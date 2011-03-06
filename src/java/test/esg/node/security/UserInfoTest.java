@@ -341,11 +341,11 @@ public class UserInfoTest {
         log.info("Status testing...");
         log.info("Before set status for gavin (status should be 1)");
         log.info(gavin);
-        assertTrue(userInfoDAO.setStatusCode(gavin,5));
-        log.info("*gavin.getStatusCode() should be 1 = "+gavin.getStatusCode());
-        assertTrue((1 == gavin.getStatusCode()));
-        userInfoDAO.refresh(gavin); //reload state directly from database
-        log.info("After set status for gavin (status should be 5)");
+        assertTrue(userInfoDAO.setStatusCode(gavin,UserInfo.DISABLED)); //set status code in database not in user info object
+        log.info("*gavin.getStatusCode() should be "+UserInfo.ACTIVE+" = "+gavin.getStatusCode());
+        assertTrue((UserInfo.ACTIVE == gavin.getStatusCode()));
+        userInfoDAO.refresh(gavin); //reload state directly from database so now see accurate database state including status code
+        log.info("After set status for gavin (status should be "+UserInfo.DISABLED+")");
         log.info(gavin);
         log.info("Setting verification token for gavin");
         String generatedVerificationToken = userInfoDAO.genVerificationToken(gavin);
@@ -353,12 +353,12 @@ public class UserInfoTest {
         log.info("Generated Verification Token = "+generatedVerificationToken);
         log.info("Current Verification Token   = "+currentVerificationToken);
         assertTrue(generatedVerificationToken.equals(currentVerificationToken));
-        log.info("Changed gavin's status (from 5 to 1) using BAD token (should still be 5)");
+        log.info("Changed gavin's status (from "+UserInfo.DISABLED+" to "+UserInfo.ACTIVE+") using BAD token (should still be "+UserInfo.DISABLED+")");
         log.info("gavin.getStatusCode() = "+gavin.getStatusCode());
-        assertFalse(userInfoDAO.changeStatus(gavin, 1, "bad_token_value"));
+        assertFalse(userInfoDAO.changeStatus(gavin, UserInfo.ACTIVE, "bad_token_value"));
         log.info(gavin);
-        log.info("Changed gavin's status (from 5 to 1) using GOOD token");
-        assertTrue(userInfoDAO.changeStatus(gavin, 1, currentVerificationToken));
+        log.info("Changed gavin's status (from "+UserInfo.DISABLED+" to "+UserInfo.ACTIVE+") using GOOD token");
+        assertTrue(userInfoDAO.changeStatus(gavin, UserInfo.ACTIVE, currentVerificationToken));
         userInfoDAO.refresh(gavin); //reload state directly from database        
         log.info(gavin);
         log.info("Create new blank userInfo...");

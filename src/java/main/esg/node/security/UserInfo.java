@@ -82,6 +82,10 @@ public final class UserInfo {
 
     private static final Log log = LogFactory.getLog(UserInfo.class);
 
+    public static final int ACTIVE = 1;
+    public static final int PENDING = 0;
+    public static final int DISABLED = -1;
+
     private int id = -1;
     private String openid = null;
     private String firstName = null;

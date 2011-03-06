@@ -71,14 +71,14 @@ public class UserInfoCredentialedDAO {
     public UserInfoCredentialedDAO(Credentials cred, Properties props) {
         System.out.println("Instantiating DAO using "+cred+" privs");
         userInfoDAO = new UserInfoDAO(props);
-        checkCredentials(cred);
+        useCredentials(cred);
     }
 
     public UserInfoCredentialedDAO(String id, String password, Properties props) {
         this(new Credentials(id,password),props);
     }
 
-    final boolean checkCredentials(Credentials cred) {
+    public final boolean useCredentials(Credentials cred) {
         //TODO: So ideally there will be a policy that gets enforced
         //here to determine things like Which users can do what
         //actions etc...  for now... I'll make it "rootAdmin" only...
