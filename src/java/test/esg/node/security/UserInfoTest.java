@@ -359,8 +359,9 @@ public class UserInfoTest {
         log.info(gavin);
         log.info("Changed gavin's status (from "+UserInfo.DISABLED+" to "+UserInfo.ACTIVE+") using GOOD token");
         assertTrue(userInfoDAO.changeStatus(gavin, UserInfo.ACTIVE, currentVerificationToken));
-        userInfoDAO.refresh(gavin); //reload state directly from database        
+        userInfoDAO.refresh(gavin); //reload state directly from database
         log.info(gavin);
+
         log.info("Create new blank userInfo...");
         UserInfo lola = userInfoDAO.getNewUserInfo();
         log.info(lola);
@@ -372,6 +373,7 @@ public class UserInfoTest {
         log.info("Now has username (lola), right?)");
         log.info(lola);
         assertTrue(userInfoDAO.addUser(lola));
+
         log.info("New Verification Token for Lola: "+userInfoDAO.genVerificationToken(lola));
         log.info(lola);
         assertTrue(userInfoDAO.deleteUserInfo(lola));

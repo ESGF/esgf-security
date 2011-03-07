@@ -65,7 +65,6 @@ package esg.node.security;
 
 import static esg.common.Utils.getFQDN;
 
-import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -87,11 +86,8 @@ import esg.common.db.DatabaseResource;
 import esg.security.utils.encryption.MD5CryptPasswordEncoder;
 import esg.security.utils.encryption.PasswordEncoder;
 
-public class UserInfoDAO implements Serializable {
+public class UserInfoDAO {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
 
     //-------------------
@@ -310,14 +306,45 @@ public class UserInfoDAO implements Serializable {
     //Query function calls... 
     //(NOTE: synchronized since there are two calls to database - can optimize around later)
     //------------------------------------
+
+    /**
+       Fetches data from the backing store (database) using the openid
+       and put into UserInfo object (Additionally checks the openid
+       pattern for structural validity).  This call is <b>preferred</b> over
+       the other version of this method <code>getUserById</code>.
+       
+       @param openid openid of the user to be represented.
+       @return The UserInfo object that contains the salient state of
+       user associated with passed in openid. Null if openid pattern
+       is spurious.
+     */
     public synchronized UserInfo getUserByOpenid(String openid) {
         if ((openidUrlPattern.matcher(openid)).find()) {
             return getUserById(openid);
         }
         return null;
     }
+
+    /**
+       Fetched data from the backing store (database) using either the
+       full open id or just the user name (the last token of the
+       openid url).  If the username is used the rest of the openid
+       url is applied to it as if it was a <b>local</b> openid
+       serviced by this IDP.  Because this assumption is not always
+       valid and there can indeed be openids that are present in the
+       system that are not serviced locally, the use of <i>this
+       convenience feature is <b>discouraged</b></i> and the openid
+       should be used explicitly or use the
+       <code>getUserByOpenid</code> method directly.
+
+       @param openid openid of the user to be represented.
+       @return The UserInfo object that contains the salient state of
+       user associated with passed in openid. Null if openid pattern
+       is spurious.
+
+     */
     public synchronized UserInfo getUserById(String id) {
-        log.info("getUserById("+id+")");
+        log.info("getUserById ( "+id+" )");
         
         UserInfo userInfo = null;
         int affectedRecords = 0;
@@ -355,9 +382,9 @@ public class UserInfoDAO implements Serializable {
             userInfo = queryRunner.query(idQuery,userInfoResultSetHandler,openid);
 
             //IF does not already exist in our system, then create a
-            //skeleton instance suitable for adding... (setting openid
-            //and username) You know this object is not in the system
-            //because it's id will be -1.
+            //skeleton instance suitable for adding to... (setting
+            //openid and username) You know this object is not in the
+            //system because it's id will be -1.
             if(userInfo == null) {
                 userInfo = new UserInfo();
                 userInfo.setOpenid(openid);
@@ -374,9 +401,22 @@ public class UserInfoDAO implements Serializable {
         }
         return userInfo;
     }
-    
+
+    /**
+       Takes a <i>valid</i> UserInfo object input and replenishes it with data
+       directly from the backing store (database).  This method is
+       intended to be used in the case where there are manipulations
+       made directly to the database regarding information that be be
+       present in the UserInfo object's state.  This method will sync
+       the UserInfo object in question with the information from the
+       backing store (database) - ostensibly rewriting the object such
+       that it accurately reflects the state of the database.
+
+       @param userInfo Object containing state of data representing a user
+       @return UserInfo object reflecting the state of the database for this user.
+     */
     public synchronized UserInfo refresh(UserInfo userInfo) {
-        if(userInfo.getid() > 0) {
+        if((userInfo.getid() > 0) && userInfo.isValid()) {
             log.info("Refreshing ["+userInfo.getUserName()+"]...");
             log.trace(" Openid: ["+userInfo.getOpenid()+"]");
             userInfo.copy(getUserById(userInfo.getOpenid()));
@@ -384,9 +424,59 @@ public class UserInfoDAO implements Serializable {
         return userInfo;
     }
 
+    /**
+       Provides a round trip path from an input UserInfo data object
+       (ingress) to returned object reflecting stat of database
+       information (egreess). Takes the contents of a <i>valid</i>
+       UserInfo object and commits that data into the backing store
+       (database).  The data in the input UserInfo object is
+       rewritten/replenished directly from the backing store
+       (database) into the input UserInfo object and returned.  This
+       means that if the UserInfo was not posted to the backing store
+       (database) competely the returned object may not be the same as
+       the submitted object.  In practical matters this should not
+       happen since an unsuccessfull commit to the database will not
+       allow a rewrite of the input UserInfo object.
+
+       @param userInfo Object containing state of data representing a
+       user.  This may be a brand new user or previous user.
+       @return UserInfo object reflecting the state of the database for this user.
+    */
+    public synchronized UserInfo commit(UserInfo userInfo) {
+        if((userInfo.getid() > 0) && userInfo.isValid() ) {
+            log.info("Committing ["+userInfo.getUserName()+"]...");
+            log.trace(" Openid: ["+userInfo.getOpenid()+"]");
+            if(addUserInfo(userInfo)) {
+                userInfo.copy(getUserById(userInfo.getOpenid()));
+            }else {
+                //TODO: throw exception here.
+            }
+        }
+        return userInfo;        
+    }
+
+    /**
+       Push the state of the UserInfo object into the backing stosre
+       (database).  New UserInfo objects (that have all non-null
+       fields assigned) may use this method to create an entirely new
+       UserInfo presence. <i> same exact method as addUser </i>
+
+       @param userInfo Object containing state of data representing a user
+       @return boolean - true if adding was successfull, false if not
+    */
     boolean addUserInfo(UserInfo userInfo) {
         return this.addUser(userInfo);
     }
+
+    /**
+       Push the state of the UserInfo object into the backing stosre
+       (database).  New UserInfo objects (that have all non-null
+       fields assigned) may use this method to create an entirely new
+       UserInfo presence. <i> same exact method as addUserInfo </i>
+
+       @param userInfo Object containing state of data representing a user
+       @return boolean - true if adding was successfull, false if not
+    */
     synchronized boolean addUser(UserInfo userInfo) {
         int userid = -1;
         int groupid = -1;
@@ -483,9 +573,24 @@ public class UserInfoDAO implements Serializable {
         return (numRowsAffected > 0);
     }
 
+    /**
+       Removes user described by this UserInfo object. (same method as
+       <code>deleteUser</code>)
+       
+       @param userInfo <i>valid</i> UserInfo object presenting the user you wish to remove.
+       @return boolean - true if was able to successfully delete, false if not
+     */
     boolean deleteUserInfo(UserInfo userInfo) {
         return this.deleteUser(userInfo);
     }
+
+    /**
+       Removes user described by this UserInfo object. (same method as
+       <code>deleteUserInfo</code>)
+
+       @param userInfo <i>valid</i> UserInfo object presenting the user you wish to remove.
+       @return boolean - true if was able to successfully delete, false if not
+     */
     boolean deleteUser(UserInfo userInfo) {
         if (userInfo == null) {
             log.trace("deleteUser("+userInfo+") bad parameter!!!");
@@ -497,6 +602,12 @@ public class UserInfoDAO implements Serializable {
         return false;
     }
     
+    /**
+       Removes user associated with the input openid. 
+       
+       @param openid The openid value associated with the user to be deleted.
+       @return boolean - <i>true</i> if was able to successfully delete, <i>false</i> if not.
+    */
     synchronized boolean deleteUser(String openid) {
         int numRowsAffected = -1;
         Matcher openidMatcher = openidUrlPattern.matcher(openid);

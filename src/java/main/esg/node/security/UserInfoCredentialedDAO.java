@@ -133,7 +133,17 @@ public class UserInfoCredentialedDAO {
     }
     
     public UserInfo refresh(UserInfo userInfo) {
+        if(!checkCredentials()) {
+            throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
+        }
         return userInfoDAO.refresh(userInfo);
+    }
+
+    public UserInfo commit(UserInfo userInfo) {
+        if(!checkCredentials()) {
+            throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
+        }
+        return userInfoDAO.commit(userInfo);
     }
 
     //---
