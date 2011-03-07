@@ -48,11 +48,13 @@
 ***************************************************************************/
 package esg.node.security;
 
+import java.sql.SQLException;
 import java.util.Properties;
-import esg.security.utils.encryption.PasswordEncoder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import esg.security.utils.encryption.PasswordEncoder;
 
 /**
    Description:
@@ -68,17 +70,17 @@ public class UserInfoCredentialedDAO {
     private Credentials cred = null;
     private UserInfoDAO userInfoDAO = null;
 
-    public UserInfoCredentialedDAO(Credentials cred, Properties props) {
+    public UserInfoCredentialedDAO(Credentials cred, Properties props) throws SQLException {
         System.out.println("Instantiating DAO using "+cred+" privs");
         userInfoDAO = new UserInfoDAO(props);
         useCredentials(cred);
     }
 
-    public UserInfoCredentialedDAO(String id, String password, Properties props) {
+    public UserInfoCredentialedDAO(String id, String password, Properties props) throws SQLException {
         this(new Credentials(id,password),props);
     }
 
-    public final boolean useCredentials(Credentials cred) {
+    public final boolean useCredentials(Credentials cred) throws SQLException {
         //TODO: So ideally there will be a policy that gets enforced
         //here to determine things like Which users can do what
         //actions etc...  for now... I'll make it "rootAdmin" only...
@@ -125,21 +127,21 @@ public class UserInfoCredentialedDAO {
         return userInfo;
     }
 
-    public UserInfo getUserByOpenid(String openid) {
+    public UserInfo getUserByOpenid(String openid) throws SQLException {
         return userInfoDAO.getUserByOpenid(openid);
     }
-    public UserInfo getUserById(String id) {
+    public UserInfo getUserById(String id) throws SQLException {
         return userInfoDAO.getUserById(id);
     }
     
-    public UserInfo refresh(UserInfo userInfo) {
+    public UserInfo refresh(UserInfo userInfo) throws SQLException {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return userInfoDAO.refresh(userInfo);
     }
 
-    public UserInfo commit(UserInfo userInfo) {
+    public UserInfo commit(UserInfo userInfo) throws SQLException {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
@@ -149,32 +151,32 @@ public class UserInfoCredentialedDAO {
     //---
     //We want to make sure these manipulation calls are guarded
     //---
-    public boolean addUserInfo(UserInfo userInfo) {
+    public boolean addUserInfo(UserInfo userInfo) throws SQLException {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return userInfoDAO.addUserInfo(userInfo);
     }    
-    public boolean addUser(UserInfo userInfo) {
+    public boolean addUser(UserInfo userInfo) throws SQLException {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return userInfoDAO.addUser(userInfo);
     }
 
-    public boolean deleteUserInfo(UserInfo userInfo) {
+    public boolean deleteUserInfo(UserInfo userInfo) throws SQLException {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return userInfoDAO.deleteUserInfo(userInfo);
     }
-    public boolean deleteUser(UserInfo userInfo) {
+    public boolean deleteUser(UserInfo userInfo) throws SQLException {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return userInfoDAO.deleteUser(userInfo);
     }    
-    public boolean deleteUser(String openid) {
+    public boolean deleteUser(String openid) throws SQLException {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
@@ -187,14 +189,14 @@ public class UserInfoCredentialedDAO {
     //-------------------------------------------------------
 
     //Sets the password value for a given user (openid)
-    public boolean setPassword(UserInfo userInfo, String newPassword) {
+    public boolean setPassword(UserInfo userInfo, String newPassword) throws SQLException {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return userInfoDAO.setPassword(userInfo,newPassword);
     }
     
-    public boolean setPassword(String openid, String newPassword) {
+    public boolean setPassword(String openid, String newPassword) throws SQLException {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
@@ -203,19 +205,19 @@ public class UserInfoCredentialedDAO {
     
     //Given a password, check to see if that password matches what is
     //in the database for this user (openid)
-    public boolean checkPassword(UserInfo userInfo, String queryPassword) {
+    public boolean checkPassword(UserInfo userInfo, String queryPassword) throws SQLException {
         return userInfoDAO.checkPassword(userInfo,queryPassword);
     }
-    public boolean checkPassword(String openid, String queryPassword) {
+    public boolean checkPassword(String openid, String queryPassword) throws SQLException {
         return userInfoDAO.checkPassword(openid,queryPassword);
     }
     
     //Given the old password and the new password for a given user
     //(openid) update the password, only if the old password matches
-    public boolean changePassword(UserInfo userInfo, String queryPassword, String newPassword) {
+    public boolean changePassword(UserInfo userInfo, String queryPassword, String newPassword) throws SQLException {
         return userInfoDAO.changePassword(userInfo,queryPassword,newPassword);
     }
-    public boolean changePassword(String openid, String queryPassword, String newPassword) {
+    public boolean changePassword(String openid, String queryPassword, String newPassword) throws SQLException {
         return userInfoDAO.changePassword(openid,queryPassword,newPassword);
     }
     
@@ -223,13 +225,13 @@ public class UserInfoCredentialedDAO {
     //Account Status Manipulations
     //-------------------------------------------------------
     //Sets the status code value for a given user (openid)
-    public boolean setStatusCode(UserInfo userInfo, int newStatusCode) {
+    public boolean setStatusCode(UserInfo userInfo, int newStatusCode) throws SQLException {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return userInfoDAO.setStatusCode(userInfo,newStatusCode);
     }
-    public synchronized boolean setStatusCode(String openid, int newStatusCode) {
+    public synchronized boolean setStatusCode(String openid, int newStatusCode) throws SQLException {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
@@ -238,32 +240,32 @@ public class UserInfoCredentialedDAO {
 
     //Given the old password and the new password for a given user
     //(openid) update the password, only if the old password matches
-    public boolean changeStatus(UserInfo userInfo, int newStatusCode, String verificationToken) {
+    public boolean changeStatus(UserInfo userInfo, int newStatusCode, String verificationToken) throws SQLException {
         return userInfoDAO.changeStatus(userInfo,newStatusCode,verificationToken);
     }
-    public synchronized boolean changeStatus(String openid, int newStatusCode, String verificationToken) {
+    public synchronized boolean changeStatus(String openid, int newStatusCode, String verificationToken) throws SQLException {
         return userInfoDAO.changeStatus(openid,newStatusCode,verificationToken);
     }
 
-    public String genVerificationToken(UserInfo userInfo) {
+    public String genVerificationToken(UserInfo userInfo) throws SQLException {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return userInfoDAO.genVerificationToken(userInfo);
     }
-    public String genVerificationToken(String openid) {
+    public String genVerificationToken(String openid) throws SQLException {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return userInfoDAO.genVerificationToken(openid);
     }
-    public String getVerificationToken(UserInfo userInfo) {
+    public String getVerificationToken(UserInfo userInfo) throws SQLException {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return userInfoDAO.getVerificationToken(userInfo);
     }
-    public String getVerificationToken(String openid) {
+    public String getVerificationToken(String openid) throws SQLException {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
@@ -276,40 +278,40 @@ public class UserInfoCredentialedDAO {
     //Permission Manipulations (Guarded)
     //-------------------------------------------------------
 
-    public boolean addPermission(UserInfo userInfo, String groupName, String roleName) {
+    public boolean addPermission(UserInfo userInfo, String groupName, String roleName) throws SQLException {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return userInfoDAO.addPermission(userInfo,groupName,roleName);
     }
-    public boolean addPermission(int userid, String groupName, String roleName) {
+    public boolean addPermission(int userid, String groupName, String roleName) throws SQLException {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return userInfoDAO.addPermission(userid,groupName,roleName);
     }
     
-    public boolean deletePermission(UserInfo userInfo, String groupName, String roleName) {
+    public boolean deletePermission(UserInfo userInfo, String groupName, String roleName) throws SQLException {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return userInfoDAO.deletePermission(userInfo,groupName,roleName);
     }
-    public boolean deletePermission(int userid, String groupName, String roleName) {
+    public boolean deletePermission(int userid, String groupName, String roleName) throws SQLException {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return userInfoDAO.deletePermission(userid,groupName,roleName);
     }
     
-    public boolean deleteAllUserPermissions(UserInfo userInfo) {
+    public boolean deleteAllUserPermissions(UserInfo userInfo) throws SQLException {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return userInfoDAO.deleteAllUserPermissions(userInfo);
     }
     
-    public boolean deleteAllUserPermissions(String openid) {
+    public boolean deleteAllUserPermissions(String openid) throws SQLException {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }

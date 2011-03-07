@@ -318,7 +318,7 @@ public class UserInfoDAO {
        user associated with passed in openid. Null if openid pattern
        is spurious.
      */
-    public synchronized UserInfo getUserByOpenid(String openid) {
+    public synchronized UserInfo getUserByOpenid(String openid) throws SQLException {
         if ((openidUrlPattern.matcher(openid)).find()) {
             return getUserById(openid);
         }
@@ -343,7 +343,7 @@ public class UserInfoDAO {
        is spurious.
 
      */
-    public synchronized UserInfo getUserById(String id) {
+    public synchronized UserInfo getUserById(String id) throws SQLException {
         log.info("getUserById ( "+id+" )");
         
         UserInfo userInfo = null;
@@ -376,29 +376,25 @@ public class UserInfoDAO {
         log.info("openid = "+openid);
         log.info("username = "+username);
 
-        try{
-            log.trace("Issuing Query for info associated with id: ["+openid+"], from database");
-            if (openid==null) { return null; }
-            userInfo = queryRunner.query(idQuery,userInfoResultSetHandler,openid);
+        log.trace("Issuing Query for info associated with id: ["+openid+"], from database");
+        if (openid==null) { return null; }
+        userInfo = queryRunner.query(idQuery,userInfoResultSetHandler,openid);
 
-            //IF does not already exist in our system, then create a
-            //skeleton instance suitable for adding to... (setting
-            //openid and username) You know this object is not in the
-            //system because it's id will be -1.
-            if(userInfo == null) {
-                userInfo = new UserInfo();
-                userInfo.setOpenid(openid);
-                userInfo.setUserName(username);
-            }else {
-                userInfo.setPermissions(queryRunner.query(getPermissionsQuery,userPermissionsResultSetHandler,openid));
-            }
-            
-            //A bit of debugging and sanity checking...
-            log.trace(userInfo.toString());
-            
-        }catch(SQLException ex) {
-            log.error(ex);      
+        //IF does not already exist in our system, then create a
+        //skeleton instance suitable for adding to... (setting
+        //openid and username) You know this object is not in the
+        //system because it's id will be -1.
+        if(userInfo == null) {
+            userInfo = new UserInfo();
+            userInfo.setOpenid(openid);
+            userInfo.setUserName(username);
+        }else {
+            userInfo.setPermissions(queryRunner.query(getPermissionsQuery,userPermissionsResultSetHandler,openid));
         }
+        
+        //A bit of debugging and sanity checking...
+        log.trace(userInfo.toString());
+            
         return userInfo;
     }
 
@@ -415,7 +411,7 @@ public class UserInfoDAO {
        @param userInfo Object containing state of data representing a user
        @return UserInfo object reflecting the state of the database for this user.
      */
-    public synchronized UserInfo refresh(UserInfo userInfo) {
+    public synchronized UserInfo refresh(UserInfo userInfo) throws SQLException {
         if((userInfo.getid() > 0) && userInfo.isValid()) {
             log.info("Refreshing ["+userInfo.getUserName()+"]...");
             log.trace(" Openid: ["+userInfo.getOpenid()+"]");
@@ -442,7 +438,7 @@ public class UserInfoDAO {
        user.  This may be a brand new user or previous user.
        @return UserInfo object reflecting the state of the database for this user.
     */
-    public synchronized UserInfo commit(UserInfo userInfo) {
+    public synchronized UserInfo commit(UserInfo userInfo) throws SQLException {
         if((userInfo.getid() > 0) && userInfo.isValid() ) {
             log.info("Committing ["+userInfo.getUserName()+"]...");
             log.trace(" Openid: ["+userInfo.getOpenid()+"]");
@@ -464,7 +460,7 @@ public class UserInfoDAO {
        @param userInfo Object containing state of data representing a user
        @return boolean - true if adding was successfull, false if not
     */
-    boolean addUserInfo(UserInfo userInfo) {
+    boolean addUserInfo(UserInfo userInfo) throws SQLException {
         return this.addUser(userInfo);
     }
 
@@ -477,69 +473,34 @@ public class UserInfoDAO {
        @param userInfo Object containing state of data representing a user
        @return boolean - true if adding was successfull, false if not
     */
-    synchronized boolean addUser(UserInfo userInfo) {
-        int userid = -1;
-        int groupid = -1;
-        int roleid = -1;
-        int numRowsAffected = -1;
-        try{
-            log.trace("Inserting UserInfo associated with username: ["+userInfo.getUserName()+"], into database");
+    synchronized boolean addUser(UserInfo userInfo) throws SQLException {
+  
+    int userid = -1;
+    int groupid = -1;
+    int roleid = -1;
+    int numRowsAffected = -1;
+        log.trace("Inserting UserInfo associated with username: ["+userInfo.getUserName()+"], into database");
 
-            if(userInfo.getOpenid() == null) {
-                if(userInfo.getUserName() == null) return false;
-                String openidHost = props.getProperty("security.openid.host",getFQDN());
-                String openidPort = props.getProperty("security.openid.port","");
-                if(!openidPort.equals("")) { openidPort=":"+openidPort; }
-                String openid = "https://"+openidHost+openidPort+"/esgf-idp/openid/"+userInfo.getUserName();
-                log.debug("Constructing default openid: "+openid);
-                userInfo.setOpenid(openid);
-            }
+        if(userInfo.getOpenid() == null) {
+            if(userInfo.getUserName() == null) return false;
+            String openidHost = props.getProperty("security.openid.host",getFQDN());
+            String openidPort = props.getProperty("security.openid.port","");
+            if(!openidPort.equals("")) { openidPort=":"+openidPort; }
+            String openid = "https://"+openidHost+openidPort+"/esgf-idp/openid/"+userInfo.getUserName();
+            log.debug("Constructing default openid: "+openid);
+            userInfo.setOpenid(openid);
+        }
 
-            log.trace("Openid is ["+userInfo.getOpenid()+"]");
-            
-            //Check to see if there is an entry by this openid already....
-            userid = queryRunner.query(hasUserOpenidQuery,idResultSetHandler,userInfo.getOpenid());
-            
-            //If there *is*... then UPDATE that record
-            if(userid > 0) {
-                log.trace("I HAVE A USERID: "+userid);
-                assert (userid == userInfo.getid()) : "The database id ("+userid+") for this openid ("+userInfo.getOpenid()+") does NOT match this object's ("+userInfo.getid()+")";
-                numRowsAffected = queryRunner.update(updateUserQuery,
-                                                     userInfo.getOpenid(),
-                                                     userInfo.getFirstName(),
-                                                     userInfo.getMiddleName(),
-                                                     userInfo.getLastName(),
-                                                     userInfo.getUserName(),
-                                                     userInfo.getEmail(),
-                                                     userInfo.getDn(),
-                                                     userInfo.getOrganization(),
-                                                     userInfo.getOrgType(),
-                                                     userInfo.getCity(),
-                                                     userInfo.getState(),
-                                                     userInfo.getCountry(),
-                                                     userInfo.getStatusCode(),
-                                                     userid
-                                                     );
-
-                log.trace("SUBMITTING PERMISSIONS (update):");
-                if(userInfo.getPermissions() != null) {
-                    for(String groupName : userInfo.getPermissions().keySet()) {
-                        for(String roleName : userInfo.getPermissions().get(groupName)) {
-                            addPermission(userid,groupName,roleName);
-                        }
-                    }
-                }    
-                
-                return (numRowsAffected > 0);
-            }
-            
-            //If this user does not exist in the database then add (INSERT) a new one
-            log.trace("Whole new user: "+userInfo.getUserName());
-            userid = queryRunner.query(getNextUserPrimaryKeyValQuery ,idResultSetHandler);
-            log.trace("New ID to be assigned: "+userid);
-            
-            numRowsAffected = queryRunner.update(addUserQuery,
-                                                 userid,
+        log.trace("Openid is ["+userInfo.getOpenid()+"]");
+        
+        //Check to see if there is an entry by this openid already....
+        userid = queryRunner.query(hasUserOpenidQuery,idResultSetHandler,userInfo.getOpenid());
+        
+        //If there *is*... then UPDATE that record
+        if(userid > 0) {
+            log.trace("I HAVE A USERID: "+userid);
+            assert (userid == userInfo.getid()) : "The database id ("+userid+") for this openid ("+userInfo.getOpenid()+") does NOT match this object's ("+userInfo.getid()+")";
+            numRowsAffected = queryRunner.update(updateUserQuery,
                                                  userInfo.getOpenid(),
                                                  userInfo.getFirstName(),
                                                  userInfo.getMiddleName(),
@@ -552,26 +513,58 @@ public class UserInfoDAO {
                                                  userInfo.getCity(),
                                                  userInfo.getState(),
                                                  userInfo.getCountry(),
-                                                 userInfo.getStatusCode()
+                                                 userInfo.getStatusCode(),
+                                                 userid
                                                  );
-            
-            
-            //A bit of debugging and sanity checking...
-            userInfo.setid(userid);
-            log.trace(userInfo);
-            
-            log.trace("SUBMITTING PERMISSIONS (new):");
+
+            log.trace("SUBMITTING PERMISSIONS (update):");
             if(userInfo.getPermissions() != null) {
                 for(String groupName : userInfo.getPermissions().keySet()) {
                     for(String roleName : userInfo.getPermissions().get(groupName)) {
                         addPermission(userid,groupName,roleName);
                     }
                 }
-            }
+            }    
             
-        }catch(SQLException ex) {
-            log.error(ex);
+            return (numRowsAffected > 0);
         }
+        
+        //If this user does not exist in the database then add (INSERT) a new one
+        log.trace("Whole new user: "+userInfo.getUserName());
+        userid = queryRunner.query(getNextUserPrimaryKeyValQuery ,idResultSetHandler);
+        log.trace("New ID to be assigned: "+userid);
+        
+        numRowsAffected = queryRunner.update(addUserQuery,
+                                             userid,
+                                             userInfo.getOpenid(),
+                                             userInfo.getFirstName(),
+                                             userInfo.getMiddleName(),
+                                             userInfo.getLastName(),
+                                             userInfo.getUserName(),
+                                             userInfo.getEmail(),
+                                             userInfo.getDn(),
+                                             userInfo.getOrganization(),
+                                             userInfo.getOrgType(),
+                                             userInfo.getCity(),
+                                             userInfo.getState(),
+                                             userInfo.getCountry(),
+                                             userInfo.getStatusCode()
+                                             );
+        
+        
+        //A bit of debugging and sanity checking...
+        userInfo.setid(userid);
+        log.trace(userInfo);
+        
+        log.trace("SUBMITTING PERMISSIONS (new):");
+        if(userInfo.getPermissions() != null) {
+            for(String groupName : userInfo.getPermissions().keySet()) {
+                for(String roleName : userInfo.getPermissions().get(groupName)) {
+                    addPermission(userid,groupName,roleName);
+                }
+            }
+        }
+            
         return (numRowsAffected > 0);
     }
 
@@ -582,7 +575,7 @@ public class UserInfoDAO {
        @param userInfo <i>valid</i> UserInfo object presenting the user you wish to remove.
        @return boolean - true if was able to successfully delete, false if not
      */
-    boolean deleteUserInfo(UserInfo userInfo) {
+    boolean deleteUserInfo(UserInfo userInfo) throws SQLException {
         return this.deleteUser(userInfo);
     }
 
@@ -593,7 +586,7 @@ public class UserInfoDAO {
        @param userInfo <i>valid</i> UserInfo object presenting the user you wish to remove.
        @return boolean - true if was able to successfully delete, false if not
      */
-    boolean deleteUser(UserInfo userInfo) {
+    boolean deleteUser(UserInfo userInfo) throws SQLException {
         if (userInfo == null) {
             log.trace("deleteUser("+userInfo+") bad parameter!!!");
             return false;
@@ -610,7 +603,7 @@ public class UserInfoDAO {
        @param openid The openid value associated with the user to be deleted.
        @return boolean - <i>true</i> if was able to successfully delete, <i>false</i> if not.
     */
-    synchronized boolean deleteUser(String openid) {
+    synchronized boolean deleteUser(String openid) throws SQLException {
         int numRowsAffected = -1;
         Matcher openidMatcher = openidUrlPattern.matcher(openid);
         if(openidMatcher.find()) {
@@ -623,14 +616,11 @@ public class UserInfoDAO {
             return false;
         }
         
-        try {
-            log.trace("Deleting user with openid ["+openid+"] ");
-            this.deleteAllUserPermissions(openid);
-            numRowsAffected = queryRunner.update(delUserQuery,openid);
-            if (numRowsAffected >0) log.trace("[OK]"); else log.trace("[FAIL]");            
-        }catch(SQLException ex) {
-            log.error(ex);
-        }
+        log.trace("Deleting user with openid ["+openid+"] ");
+        this.deleteAllUserPermissions(openid);
+        numRowsAffected = queryRunner.update(delUserQuery,openid);
+        if (numRowsAffected >0) log.trace("[OK]"); else log.trace("[FAIL]");            
+
         return (numRowsAffected > 0);
     }
     
@@ -640,7 +630,7 @@ public class UserInfoDAO {
     //-------------------------------------------------------
 
     //Sets the password value for a given user (openid)
-    boolean setPassword(UserInfo userInfo, String newPassword) {
+    boolean setPassword(UserInfo userInfo, String newPassword) throws SQLException {
         if(!userInfo.isValid()) {
             log.warn("Cannot Set Password of an invalid user");
             return false;
@@ -648,52 +638,45 @@ public class UserInfoDAO {
         return this.setPassword(userInfo.getOpenid(),newPassword);
     }
     
-    synchronized boolean setPassword(String openid, String newPassword) {
+    synchronized boolean setPassword(String openid, String newPassword) throws SQLException {
         if((newPassword == null) || (newPassword.equals(""))) return false; //should throw and esgf exception here with meaningful message
         int numRowsAffected = -1;
-        try{
-            numRowsAffected = queryRunner.update(setPasswordQuery, encoder.encrypt(newPassword), openid);
-        }catch(SQLException ex) {
-            log.error(ex);
-        }
+        numRowsAffected = queryRunner.update(setPasswordQuery, encoder.encrypt(newPassword), openid);
         return (numRowsAffected > 0);
     }
     
     //Given a password, check to see if that password matches what is
     //in the database for this user (openid)
-    public boolean checkPassword(UserInfo userInfo, String queryPassword) {
+    public boolean checkPassword(UserInfo userInfo, String queryPassword) throws SQLException {
         if(!userInfo.isValid()) {
             log.warn("Cannot Check Password of an invalid user");            
             return false;
         }
         return this.checkPassword(userInfo.getOpenid(),queryPassword);   
     }
-    public boolean checkPassword(String openid, String queryPassword) {
+    public boolean checkPassword(String openid, String queryPassword) throws SQLException {
         boolean isMatch = false;
-        try{
-            String cryptPassword = queryRunner.query(getPasswordQuery, passwordQueryHandler, openid);
-            if(cryptPassword == null) {
-                log.error("PASSWORD RETURNED FROM DATABASE for ["+openid+"] IS: "+cryptPassword);
-                return false;
-            }
-            isMatch = encoder.equals(queryPassword,cryptPassword);
-        }catch(SQLException ex) {
-            log.error(ex);
-            ex.printStackTrace();
+        String cryptPassword = queryRunner.query(getPasswordQuery, passwordQueryHandler, openid);
+        if(cryptPassword == null) {
+            log.error("PASSWORD RETURNED FROM DATABASE for ["+openid+"] IS: "+cryptPassword);
+            return false;
         }
+        isMatch = encoder.equals(queryPassword,cryptPassword);
+
         return isMatch;
     }
     
     //Given the old password and the new password for a given user
     //(openid) update the password, only if the old password matches
-    public synchronized boolean changePassword(UserInfo userInfo, String queryPassword, String newPassword) {
+    public synchronized boolean changePassword(UserInfo userInfo, String queryPassword, String newPassword) throws SQLException {
         if(!userInfo.isValid()) {
             log.warn("Cannot Change Password of an invalid user");
             return false;
         }
         return this.changePassword(userInfo.getOpenid(),queryPassword,newPassword);
     }
-    public synchronized boolean changePassword(String openid, String queryPassword, String newPassword) {
+
+    public synchronized boolean changePassword(String openid, String queryPassword, String newPassword) throws SQLException {
         boolean isSuccessful = false;
         if(checkPassword(openid,queryPassword)){
             isSuccessful = setPassword(openid,newPassword);
@@ -706,66 +689,52 @@ public class UserInfoDAO {
     //-------------------------------------------------------
 
     //Sets the status code value for a given user (openid)
-    boolean setStatusCode(UserInfo userInfo, int newStatusCode) {
+    boolean setStatusCode(UserInfo userInfo, int newStatusCode) throws SQLException {
         if(!userInfo.isValid()) {
             log.warn("Cannot Set Status of an invalid user");
             return false;
         }
         return this.setStatusCode(userInfo.getOpenid(),newStatusCode);
     }
-    synchronized boolean setStatusCode(String openid, int newStatusCode) {
+    synchronized boolean setStatusCode(String openid, int newStatusCode) throws SQLException {
         int numRowsAffected = -1;
-        try{
-            numRowsAffected = queryRunner.update(setStatusCodeQuery, newStatusCode, openid);
-        }catch(SQLException ex) {
-            log.error(ex);
-        }
+        numRowsAffected = queryRunner.update(setStatusCodeQuery, newStatusCode, openid);
         return (numRowsAffected > 0);
     }
 
     //Given the old password and the new password for a given user
     //(openid) update the password, only if the old password matches
-    public boolean changeStatus(UserInfo userInfo, int newStatusCode, String verificationToken) {
+    public boolean changeStatus(UserInfo userInfo, int newStatusCode, String verificationToken) throws SQLException {
         if(!userInfo.isValid()) {
             log.warn("Cannot Change Status of an invalid user");
             return false;
         }
         return this.changeStatus(userInfo.getOpenid(),newStatusCode,verificationToken);
     }
-    public synchronized boolean changeStatus(String openid, int newStatusCode, String verificationToken) {
+    public synchronized boolean changeStatus(String openid, int newStatusCode, String verificationToken) throws SQLException {
         int numRowsAffected = -1;
-        try {
-            numRowsAffected = queryRunner.update(changeStatusQuery, newStatusCode, verificationToken, openid);
-        }catch(SQLException ex) {
-            log.error(ex);
-        }
+        numRowsAffected = queryRunner.update(changeStatusQuery, newStatusCode, verificationToken, openid);
         return (numRowsAffected > 0);
     }
-    String genVerificationToken(UserInfo userInfo) {
+    String genVerificationToken(UserInfo userInfo) throws SQLException {
         return genVerificationToken(userInfo.getOpenid());
     }
-    String genVerificationToken(String openid) {
+    String genVerificationToken(String openid) throws SQLException {
         int numRowsAffected = -1;
         //zoiks make new token
         String verificationToken = java.util.UUID.randomUUID().toString();
-        try {
-            numRowsAffected = queryRunner.update(setVerificationTokenQuery, verificationToken, openid);
-        }catch(SQLException ex) {
-            log.error(ex);
-        }
+        numRowsAffected = queryRunner.update(setVerificationTokenQuery, verificationToken, openid);
         return (numRowsAffected > 0) ? verificationToken : getVerificationToken(openid);
     }
 
-    String getVerificationToken(UserInfo userInfo) {
+    String getVerificationToken(UserInfo userInfo) throws SQLException {
         return this.getVerificationToken(userInfo.getOpenid());
     }
-    String getVerificationToken(String openid) {
+    
+    String getVerificationToken(String openid) throws SQLException {
         String verificationToken = "null";
-        try {
-            verificationToken = queryRunner.query(getVerificationTokenQuery, singleStringResultSetHandler, openid);
-        }catch(SQLException ex) {
-            log.error(ex);
-        }
+        verificationToken = queryRunner.query(getVerificationTokenQuery, singleStringResultSetHandler, openid);
+
         return verificationToken;
     }
 
@@ -773,7 +742,7 @@ public class UserInfoDAO {
     //Permission Manipulations
     //-------------------------------------------------------
 
-    synchronized boolean addPermission(UserInfo userInfo, String groupName, String roleName) {
+    synchronized boolean addPermission(UserInfo userInfo, String groupName, String roleName) throws SQLException {
         if(!userInfo.isValid()) { 
             //TODO: Throw an exception here
             log.error("Cannot addPermission on an invalid user ");
@@ -781,19 +750,17 @@ public class UserInfoDAO {
         }
         return this.addPermission(userInfo.getid(),groupName,roleName);
     }
-    synchronized boolean addPermission(int userid, String groupName, String roleName) {
+    synchronized boolean addPermission(int userid, String groupName, String roleName) throws SQLException {
         int numRowsAffected = -1;
-        try{
-            log.trace("Adding Permission ("+userid+", "+groupName+", "+roleName+") ");
-            numRowsAffected = queryRunner.update(addPermissionQuery, userid, groupName, roleName);
-            if (numRowsAffected >0) log.trace("[OK]"); else log.trace("[FAIL]");
-        }catch(SQLException ex) {
-            //log.error(ex);
-        }
+ 
+        log.trace("Adding Permission ("+userid+", "+groupName+", "+roleName+") ");
+        numRowsAffected = queryRunner.update(addPermissionQuery, userid, groupName, roleName);
+        if (numRowsAffected >0) log.trace("[OK]"); else log.trace("[FAIL]");
+
         return (numRowsAffected > 0);
     }
 
-    synchronized boolean deletePermission(UserInfo userInfo, String groupName, String roleName) {
+    synchronized boolean deletePermission(UserInfo userInfo, String groupName, String roleName) throws SQLException {
         if(!userInfo.isValid()) { 
             //TODO: Throw an exception here
             log.error("Cannot deletePermission on an invalid user");
@@ -801,31 +768,27 @@ public class UserInfoDAO {
         }
         return this.deletePermission(userInfo.getid(),groupName,roleName);
     }
-    synchronized boolean deletePermission(int userid, String groupName, String roleName) {
+    synchronized boolean deletePermission(int userid, String groupName, String roleName) throws SQLException {
+
         int numRowsAffected = -1;
-        try{
-            log.trace("Deleting Permission ("+userid+", "+groupName+", "+roleName+") ");
-            numRowsAffected = queryRunner.update(delPermissionQuery, userid, groupName, roleName);
-            if (numRowsAffected >0) log.trace("[OK]"); else log.trace("[FAIL]");
-        }catch(SQLException ex) {
-            log.error(ex);
-        }
+        log.trace("Deleting Permission ("+userid+", "+groupName+", "+roleName+") ");
+        numRowsAffected = queryRunner.update(delPermissionQuery, userid, groupName, roleName);
+        if (numRowsAffected >0) log.trace("[OK]"); else log.trace("[FAIL]");
+
         return (numRowsAffected > 0);
     }
 
-    boolean deleteAllUserPermissions(UserInfo userInfo) {
+    boolean deleteAllUserPermissions(UserInfo userInfo) throws SQLException {
         return this.deleteAllUserPermissions(userInfo.getOpenid());
     }
-    synchronized boolean deleteAllUserPermissions(String openid) {
+    synchronized boolean deleteAllUserPermissions(String openid) throws SQLException {
+       
         int numRowsAffected = -1;
-        try{
-            log.trace("Deleting All Permissions for openid = ["+openid+"] ");
-            numRowsAffected = queryRunner.update(delAllUserPermissionsQuery, openid);
-            if (numRowsAffected > 0) log.trace("[OK]"); else log.trace("[FAIL]");
-            log.trace(numRowsAffected+" permission entries removed");
-        }catch(SQLException ex) {
-            log.error(ex);
-        }
+        log.trace("Deleting All Permissions for openid = ["+openid+"] ");
+        numRowsAffected = queryRunner.update(delAllUserPermissionsQuery, openid);
+        if (numRowsAffected > 0) log.trace("[OK]"); else log.trace("[FAIL]");
+        log.trace(numRowsAffected+" permission entries removed");
+
         return (numRowsAffected > 0);
     }
     
@@ -851,22 +814,26 @@ public class UserInfoDAO {
     //------------------------------------
     private final class InitAdmin {
         InitAdmin() { 
-            System.out.println("Initializing rootAdmin");
-            UserInfo rootAdmin = UserInfoDAO.this.getUserById("rootAdmin");
-            rootAdmin.
-                setFirstName("Gert").
-                setMiddleName("B").
-                setLastName("Frobe").
-                setEmail(UserInfoDAO.this.props.getProperty("security.admin.email","rootAdmin@some-esg-node.org")).
-                setOrganization(UserInfoDAO.this.props.getProperty("security.admin.org","ESGF.org")).
-                setCity(UserInfoDAO.this.props.getProperty("security.admin.city","Brooklyn")).
-                setState(UserInfoDAO.this.props.getProperty("security.admin.state","NY")).
-                setCountry(UserInfoDAO.this.props.getProperty("security.admin.country","USA")).
-                setStatusCode(1).
-                addPermission("wheel","super");
-            log.info("rootAdmin: "+rootAdmin);
-            UserInfoDAO.this.addUserInfo(rootAdmin);
-            UserInfoDAO.this.setPassword(rootAdmin,UserInfoDAO.this.props.getProperty("security.admin.passwd","esgrocks"));
+            try {
+                System.out.println("Initializing rootAdmin");
+                UserInfo rootAdmin = UserInfoDAO.this.getUserById("rootAdmin");
+                rootAdmin.
+                    setFirstName("Gert").
+                    setMiddleName("B").
+                    setLastName("Frobe").
+                    setEmail(UserInfoDAO.this.props.getProperty("security.admin.email","rootAdmin@some-esg-node.org")).
+                    setOrganization(UserInfoDAO.this.props.getProperty("security.admin.org","ESGF.org")).
+                    setCity(UserInfoDAO.this.props.getProperty("security.admin.city","Brooklyn")).
+                    setState(UserInfoDAO.this.props.getProperty("security.admin.state","NY")).
+                    setCountry(UserInfoDAO.this.props.getProperty("security.admin.country","USA")).
+                    setStatusCode(1).
+                    addPermission("wheel","super");
+                log.info("rootAdmin: "+rootAdmin);
+                UserInfoDAO.this.addUserInfo(rootAdmin);
+                UserInfoDAO.this.setPassword(rootAdmin,UserInfoDAO.this.props.getProperty("security.admin.passwd","esgrocks"));
+            } catch(Exception ex) {
+                log.warn(ex);
+            }
         }
     }
 }

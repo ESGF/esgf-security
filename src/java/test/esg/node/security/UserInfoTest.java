@@ -64,12 +64,13 @@ package esg.node.security;
 **/
 
 import static esg.common.Utils.getFQDN;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
+import java.sql.SQLException;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -78,7 +79,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import esg.security.utils.encryption.MD5HexPasswordEncoder;
 import esg.security.utils.encryption.PasswordEncoder;
 
 
@@ -93,7 +93,7 @@ public class UserInfoTest {
     private static PasswordEncoder encoder;
  
     @BeforeClass
-    public static void initTest() {
+    public static void initTest() throws SQLException {
         System.out.println("UserInfoTest initializing");
         
         //userInfoDAO = new UserInfoDAO(new Properties());
@@ -133,7 +133,7 @@ public class UserInfoTest {
     }
     
     @AfterClass
-    public static void testCleanup() {
+    public static void testCleanup() throws SQLException {
         System.out.println("------------------------");
         System.out.println("UserInfoTest Cleanup....");
         System.out.println("------------------------");
@@ -155,7 +155,7 @@ public class UserInfoTest {
     }
 
     @Test
-    public void testPassword() {
+    public void testPassword() throws SQLException {
         System.out.print("Adding user "+gavin.getUserName()+" id="+gavin.getid()+" openid="+gavin.getOpenid()+": ");
         if(userInfoDAO.addUserInfo(gavin)) {
             System.out.println("[OK]");
@@ -221,7 +221,7 @@ public class UserInfoTest {
     }
     
     @Test
-    public void testGetUser() {
+    public void testGetUser() throws SQLException {
         UserInfo dean = userInfoDAO.getUserById("williams13");
         assertNotNull(dean);
         if(dean.isValid()) {
@@ -280,7 +280,7 @@ public class UserInfoTest {
     }
 
     @Test
-    public void testSetPermissions() {
+    public void testSetPermissions() throws SQLException {
         
         groupRoleDAO.addGroup("CMIP6_test");
         groupRoleDAO.addGroup("CMIP7_test");
@@ -337,7 +337,7 @@ public class UserInfoTest {
     }
 
     @Test
-    public void testStatus() {
+    public void testStatus() throws SQLException {
         log.info("Status testing...");
         log.info("Before set status for gavin (status should be 1)");
         log.info(gavin);
