@@ -341,12 +341,14 @@ public class UserInfoTest {
         log.info("Status testing...");
         log.info("Before set status for gavin (status should be 1)");
         log.info(gavin);
+
         assertTrue(userInfoDAO.setStatusCode(gavin,UserInfo.DISABLED)); //set status code in database not in user info object
         log.info("*gavin.getStatusCode() should be "+UserInfo.ACTIVE+" = "+gavin.getStatusCode());
         assertTrue((UserInfo.ACTIVE == gavin.getStatusCode()));
         userInfoDAO.refresh(gavin); //reload state directly from database so now see accurate database state including status code
         log.info("After set status for gavin (status should be "+UserInfo.DISABLED+")");
-        log.info(gavin);
+        log.info(gavin)
+;
         log.info("Setting verification token for gavin");
         String generatedVerificationToken = userInfoDAO.genVerificationToken(gavin);
         String currentVerificationToken = userInfoDAO.getVerificationToken(gavin);
@@ -374,6 +376,12 @@ public class UserInfoTest {
         log.info(lola);
         assertTrue(userInfoDAO.addUser(lola));
 
+        log.info("Changing the status code of lola object to PENDING");
+        lola.setStatusCode(UserInfo.PENDING); //set status code in the object not the database.
+        log.info("Pushing that into the database with committ");
+        userInfoDAO.commit(lola); //now push that into the database
+        log.info(lola);
+        
         log.info("New Verification Token for Lola: "+userInfoDAO.genVerificationToken(lola));
         log.info(lola);
         assertTrue(userInfoDAO.deleteUserInfo(lola));
