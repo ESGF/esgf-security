@@ -490,7 +490,9 @@ public class UserInfoDAO {
                 String openidHost = props.getProperty("security.openid.host",getFQDN());
                 String openidPort = props.getProperty("security.openid.port","");
                 if(!openidPort.equals("")) { openidPort=":"+openidPort; }
-                userInfo.setOpenid("Constructing default openid: https://"+openidHost+openidPort+"/esgf-idp/openid/"+userInfo.getUserName());
+                String openid = "https://"+openidHost+openidPort+"/esgf-idp/openid/"+userInfo.getUserName();
+                log.debug("Constructing default openid: "+openid);
+                userInfo.setOpenid(openid);
             }
 
             log.trace("Openid is ["+userInfo.getOpenid()+"]");
