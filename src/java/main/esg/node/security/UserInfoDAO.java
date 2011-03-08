@@ -134,6 +134,11 @@ public class UserInfoDAO {
         "role_id = (SELECT id FROM esgf_security.role WHERE name = ?)";
     private static final String delAllUserPermissionsQuery =
         "DELETE FROM esgf_security.permission WHERE user_id = (SELECT id FROM esgf_security.user WHERE openid = ?)";
+    private static final String existsPermissionQuery = 
+        "SELECT COUNT(*) FROM esgf_security.permission "+
+        "WHERE user_id = ? "+
+        "AND group_id = (SELECT id FROM esgf_security.group WHERE name = ? ) "+
+        "AND role_id = (SELECT id FROM esgf_security.role WHERE name = ? )";
 
     //Status Queries
     private static final String setStatusCodeQuery = 
@@ -170,6 +175,7 @@ public class UserInfoDAO {
     private ResultSetHandler<UserInfo> userInfoResultSetHandler = null;
     private ResultSetHandler<Map<String,Set<String>>> userPermissionsResultSetHandler = null;
     private ResultSetHandler<Integer> idResultSetHandler = null;
+    private ResultSetHandler<Boolean> existsResultSetHandler = null;
     private ResultSetHandler<String> singleStringResultSetHandler = null;
     private ResultSetHandler<String> passwordQueryHandler = null;
 
@@ -211,19 +217,26 @@ public class UserInfoDAO {
     
     public void init() {
         this.idResultSetHandler = new ResultSetHandler<Integer>() {
-	    public Integer handle(ResultSet rs) throws SQLException {
+            public Integer handle(ResultSet rs) throws SQLException {
                 if(!rs.next()) { return -1; }
                 return rs.getInt(1);
-	    }
-	};
-
+            }
+        };
+        
+        this.existsResultSetHandler = new ResultSetHandler<Boolean>() {
+            public Boolean handle(ResultSet rs) throws SQLException {
+                if(!rs.next()) { return false; }
+                return (rs.getInt(1) > 0);
+            }
+        };
+        
         this.singleStringResultSetHandler = new ResultSetHandler<String>() {
-	    public String handle(ResultSet rs) throws SQLException {
+            public String handle(ResultSet rs) throws SQLException {
                 if(!rs.next()) { return null; }
                 return rs.getString(1);
-	    }
-	};
-
+            }
+        };
+        
         passwordQueryHandler = new ResultSetHandler<String>() {
             public String handle(ResultSet rs) throws SQLException {
                 String password = null;
@@ -784,11 +797,21 @@ public class UserInfoDAO {
     synchronized boolean addPermission(int userid, String groupName, String roleName) {
         int numRowsAffected = -1;
         try{
+
             log.trace("Adding Permission ("+userid+", "+groupName+", "+roleName+") ");
-            numRowsAffected = queryRunner.update(addPermissionQuery, userid, groupName, roleName);
-            if (numRowsAffected >0) log.trace("[OK]"); else log.trace("[FAIL]");
+            if(!queryRunner.query(existsPermissionQuery, existsResultSetHandler, userid, groupName, roleName)) {
+                numRowsAffected = queryRunner.update(addPermissionQuery, userid, groupName, roleName);
+                if (numRowsAffected > 0) {
+                    log.trace("[ADDED]"); 
+                }else {
+                    log.warn("Was not able to add permission ("+userid+",["+groupName+"],["+roleName+"]) to database, already EXISTS?? Possible intra database concurrency issue!!!");
+                }
+            }else {
+                log.trace("[PERMISSION ALREADY EXISTS]");
+            }
+            
         }catch(SQLException ex) {
-            //log.error(ex);
+            log.error(ex);
         }
         return (numRowsAffected > 0);
     }
