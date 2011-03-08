@@ -94,7 +94,7 @@ public class UserInfoCredentialedDAO {
             if(!user.isValid()) { log.trace("User ["+cred.getid()+"] is NOT a valid user on this system"); return false; }
             if(!user.getUserName().equals("rootAdmin")) { log.trace("Sorry, Must be ROOT to use this DAO"); return false; }
         }
-        if(userInfoDAO.checkPassword(user.getOpenid(),cred.getPassword())) {
+        if((user != null) && userInfoDAO.checkPassword(user.getOpenid(),cred.getPassword())) {
             this.cred = cred;
             return true;
         }else{
