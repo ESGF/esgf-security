@@ -411,6 +411,7 @@ public class UserInfoDAO {
             
         }catch(SQLException ex) {
             log.error(ex);      
+            throw new ESGFDataAccessException(ex);
         }
         return userInfo;
     }
@@ -584,6 +585,7 @@ public class UserInfoDAO {
             
         }catch(SQLException ex) {
             log.error(ex);
+            throw new ESGFDataAccessException(ex);
         }
         return (numRowsAffected > 0);
     }
@@ -643,6 +645,7 @@ public class UserInfoDAO {
             if (numRowsAffected >0) log.trace("[OK]"); else log.trace("[FAIL]");            
         }catch(SQLException ex) {
             log.error(ex);
+            throw new ESGFDataAccessException(ex);
         }
         return (numRowsAffected > 0);
     }
@@ -668,6 +671,7 @@ public class UserInfoDAO {
             numRowsAffected = queryRunner.update(setPasswordQuery, encoder.encrypt(newPassword), openid);
         }catch(SQLException ex) {
             log.error(ex);
+            throw new ESGFDataAccessException(ex);
         }
         return (numRowsAffected > 0);
     }
@@ -692,7 +696,7 @@ public class UserInfoDAO {
             isMatch = encoder.equals(queryPassword,cryptPassword);
         }catch(SQLException ex) {
             log.error(ex);
-            ex.printStackTrace();
+            throw new ESGFDataAccessException(ex);
         }
         return isMatch;
     }
@@ -732,6 +736,7 @@ public class UserInfoDAO {
             numRowsAffected = queryRunner.update(setStatusCodeQuery, newStatusCode, openid);
         }catch(SQLException ex) {
             log.error(ex);
+            throw new ESGFDataAccessException(ex);
         }
         return (numRowsAffected > 0);
     }
@@ -751,6 +756,7 @@ public class UserInfoDAO {
             numRowsAffected = queryRunner.update(changeStatusQuery, newStatusCode, verificationToken, openid);
         }catch(SQLException ex) {
             log.error(ex);
+            throw new ESGFDataAccessException(ex);
         }
         return (numRowsAffected > 0);
     }
@@ -765,6 +771,7 @@ public class UserInfoDAO {
             numRowsAffected = queryRunner.update(setVerificationTokenQuery, verificationToken, openid);
         }catch(SQLException ex) {
             log.error(ex);
+            throw new ESGFDataAccessException(ex);
         }
         return (numRowsAffected > 0) ? verificationToken : getVerificationToken(openid);
     }
@@ -778,6 +785,7 @@ public class UserInfoDAO {
             verificationToken = queryRunner.query(getVerificationTokenQuery, singleStringResultSetHandler, openid);
         }catch(SQLException ex) {
             log.error(ex);
+            throw new ESGFDataAccessException(ex);
         }
         return verificationToken;
     }
@@ -812,6 +820,7 @@ public class UserInfoDAO {
             
         }catch(SQLException ex) {
             log.error(ex);
+            throw new ESGFDataAccessException(ex);
         }
         return (numRowsAffected > 0);
     }
@@ -832,6 +841,7 @@ public class UserInfoDAO {
             if (numRowsAffected >0) log.trace("[OK]"); else log.trace("[FAIL]");
         }catch(SQLException ex) {
             log.error(ex);
+            throw new ESGFDataAccessException(ex);
         }
         return (numRowsAffected > 0);
     }
@@ -848,6 +858,7 @@ public class UserInfoDAO {
             log.trace(numRowsAffected+" permission entries removed");
         }catch(SQLException ex) {
             log.error(ex);
+            throw new ESGFDataAccessException(ex);
         }
         return (numRowsAffected > 0);
     }
