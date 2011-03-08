@@ -65,7 +65,7 @@ public final class Credentials {
         this.id=id;
         this.password=password;
         this.pair=id+password;
-        toString="[Credential: "+id+" ******* ]";
+        toString="[Credential: "+id+" "+((password == null) ? "NULL" : "*******")+" ]";
     }
 
     public String getid() { return id; }
