@@ -23,6 +23,7 @@ public class SAMLAttributeFactoryDAOImpl implements SAMLAttributeFactory {
 	public SAMLAttributeFactoryDAOImpl(final String issuer, Properties props) throws Exception {
 		
 		this.issuer = issuer;
+		
         this.userInfoDAO = new UserInfoDAO(props);
         		
 	}

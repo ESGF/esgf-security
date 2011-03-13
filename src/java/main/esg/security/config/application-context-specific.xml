@@ -27,11 +27,12 @@
   	<!-- Production implementation that looks up users in a relational database -->
   	<bean id="samlAttributeFactory" class="esg.security.attr.service.impl.SAMLAttributeFactoryDAOImpl">
   		<constructor-arg index="0"><value>ESGF Attribute Service</value></constructor-arg>
-  		<constructor-arg index="1" ref="dbProperties" />
+  		<constructor-arg index="1" ref="esgfProperties" />
   	</bean>
   	<!-- <util:properties id="dbProperties" location="/WEB-INF/esgf-security.properties"/> -->
   	<!-- <util:properties id="dbProperties" location="classpath:esgf-security.properties"/> -->
-  	<util:properties id="dbProperties" location="file:///esg/config/esgf-db.properties"/>
+  	<!-- <util:properties id="dbProperties" location="file:///esg/config/esgf-db.properties"/> -->
+  	<bean id="esgfProperties" class="esg.node.security.ESGFProperties" />
 
   	
   	<!-- ESG SAML-based Authorization Service stack (with example white list) -->
