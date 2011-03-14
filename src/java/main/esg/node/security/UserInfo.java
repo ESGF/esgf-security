@@ -263,7 +263,7 @@ public final class UserInfo implements Serializable {
     //Check if this object is a "valid" object.  Valid objects must
     //have fulfill these conditions.
     public final boolean isValid() {
-        return ((this.id > 0) && (this.openid != null) && (this.userName != null) && (this.statusCode < 1));
+        return ((this.id > 0) && (this.openid != null) && (this.userName != null) && (this.statusCode == 1));
     }
  
     //Create copy of internal state from source object.
