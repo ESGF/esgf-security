@@ -90,7 +90,7 @@ init() {
     security_app_context_root=esgf-security
     security_app_home=${tomcat_install_dir}/webapps/${security_app_context_root}
 
-    esgf_security_version=${esgf_security_version:-"1.2.0"}
+    esgf_security_version=${esgf_security_version:-"1.2.1"}
     esgf_security_db_version=${esgf_security_db_version:-"0.1.4"}
     esgf_security_egg_file=esgf_security-${esgf_security_db_version}-py${python_version}.egg
     
