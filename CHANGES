@@ -44,3 +44,6 @@ Version 1.2.0
 
 Version 1.2.1
 - Switched to loading properties from esg.properties via ESGF Properties subclass
+
+Version 1.2.2
+- Switched property names to esgf.host, esgf.https.port
