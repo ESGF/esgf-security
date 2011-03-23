@@ -90,6 +90,14 @@ init() {
     security_app_context_root=esgf-security
     security_app_home=${tomcat_install_dir}/webapps/${security_app_context_root}
 
+    security_attribute_service_host=${security_attribute_service_host:-${esgf_host:-$(hostname --fqdn)}}
+    security_attribute_service_port=${security_attribute_service_post:-"443"}
+    security_attribute_service_endpoint=$(echo "https://${security_attribute_service_host}$( if ((security_attribute_service_port != 443)); then echo ":${secuirty_attribute_service_port}"; fi)/esgf-security/saml/soap/secure/attributeService.htm")
+
+    security_authz_service_host=${security_authz_service_host:-${esgf_host:-$(hostname --fqdn)}}
+    security_authz_service_port=${security_authz_service_post:-"443"}
+    security_authz_service_endpoint=$(echo "https://${security_authz_service_host}$( if ((security_authz_service_port != 443)); then echo ":${security_authz_service_port}"; fi)/esgf-security/saml/soap/secure/authorizationService.htm")
+
     esgf_security_version=${esgf_security_version:-"1.2.1"}
     esgf_security_db_version=${esgf_security_db_version:-"0.1.4"}
     esgf_security_egg_file=esgf_security-${esgf_security_db_version}-py${python_version}.egg
@@ -193,6 +201,9 @@ setup_security() {
 write_security_install_log() {
     echo "$(date ${date_format}) webapp:${security_app_context_root}=${esgf_security_version} ${security_app_home}" >> ${install_logfile}
     dedup ${install_logfile}
+    write_as_property security_app_home
+    write_as_property security_authz_service_endpoint
+    write_as_property security_attribute_service_endpoint
     return 0
 }
 
