@@ -374,8 +374,8 @@ public class UserInfoDAO {
         }else{
             usernameMatcher = usernamePattern.matcher(id);
             if(usernameMatcher.find()) {
-                String openidHost = props.getProperty("security.openid.host",getFQDN());
-                String openidPort = props.getProperty("security.openid.port","");
+                String openidHost = props.getProperty("esgf.host",getFQDN());
+                String openidPort = props.getProperty("esgf.https.port","");
                 if(!openidPort.equals("")) { openidPort=":"+openidPort; }
                 
                 openid = "https://"+openidHost+openidPort+"/esgf-idp/openid/"+id;
@@ -501,8 +501,8 @@ public class UserInfoDAO {
 
             if(userInfo.getOpenid() == null) {
                 if(userInfo.getUserName() == null) return false;
-                String openidHost = props.getProperty("security.openid.host",getFQDN());
-                String openidPort = props.getProperty("security.openid.port","");
+                String openidHost = props.getProperty("esgf.host",getFQDN());
+                String openidPort = props.getProperty("esgf.https.port","");
                 if(!openidPort.equals("")) { openidPort=":"+openidPort; }
                 String openid = "https://"+openidHost+openidPort+"/esgf-idp/openid/"+userInfo.getUserName();
                 log.debug("Constructing default openid: "+openid);
