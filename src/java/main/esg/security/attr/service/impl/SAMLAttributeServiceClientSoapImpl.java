@@ -59,6 +59,9 @@ public class SAMLAttributeServiceClientSoapImpl implements SAMLAttributeServiceC
 	
 	private final static Log LOG = LogFactory.getLog(SAMLAttributeServiceClientSoapImpl.class);
 	
+	private final static String STRING_TYPE = "http://www.w3.org/2001/XMLSchema#string";
+	private final static String GROUPROLE = "urn:esg:group:role"; // FIXME
+	
 	public SAMLAttributeServiceClientSoapImpl(final String issuer) {
 		
 		this.issuer = issuer;
@@ -97,9 +100,14 @@ public class SAMLAttributeServiceClientSoapImpl implements SAMLAttributeServiceC
 		for (final String attribute : attributes) {
 			Attribute att = attributeBuilder.buildObject();
 			att.setName(attribute);
-			att.setNameFormat("http://www.w3.org/2001/XMLSchema#string");
+			att.setNameFormat(STRING_TYPE);
 			_attributes.add(att);
 		}
+		// FIXME: temporary always request GroupRole for compatibility with legacy system
+		final Attribute att = attributeBuilder.buildObject();
+        att.setName(GROUPROLE);
+        att.setNameFormat(STRING_TYPE);
+        _attributes.add(att);
 		
 		return this.buildAttributeQuery(openid, _attributes);
 		
