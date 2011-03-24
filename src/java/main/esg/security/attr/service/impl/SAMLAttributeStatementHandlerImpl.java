@@ -180,6 +180,8 @@ class SAMLAttributeStatementHandlerImpl implements SAMLAttributeStatementHandler
 								final String groupName = groupRole.getGroup();
 								final String roleName = groupRole.getRole();
 								samlAttributes.addGroupAndRole(attribute.getName(), new GroupRoleImpl(groupName, roleName));
+								// FIXME (temporary): tranform GroupRole attribute into (attribute name, attribute type) pair
+								samlAttributes.addAttribute(groupName, roleName);
 							}
 							
 						} else {
