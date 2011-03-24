@@ -64,10 +64,10 @@ package esg.node.security;
 **/
 
 import static esg.common.Utils.getFQDN;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 import java.util.Properties;
@@ -78,7 +78,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import esg.security.utils.encryption.MD5HexPasswordEncoder;
+import esg.common.util.ESGFProperties;
 import esg.security.utils.encryption.PasswordEncoder;
 
 
@@ -91,13 +91,14 @@ public class UserInfoTest {
     private static UserInfo gavin = null;
     
     private static PasswordEncoder encoder;
- 
+     
     @BeforeClass
-    public static void initTest() {
-        System.out.println("UserInfoTest initializing");
+    public static void initTest() throws Exception {
+        log.info("UserInfoTest initializing");
         
         //userInfoDAO = new UserInfoDAO(new Properties());
-        userInfoDAO = new UserInfoCredentialedDAO("rootAdmin", "esgrocks",new Properties());
+        final Properties props = new ESGFProperties();
+        userInfoDAO = new UserInfoCredentialedDAO("rootAdmin", props.getProperty("security.admin.passwd"), props);
         groupRoleDAO = new GroupRoleDAO(new Properties());
 
         assertNotNull(userInfoDAO);
@@ -111,7 +112,7 @@ public class UserInfoTest {
         gavin = userInfoDAO.getUserById("bell51");
         assertNotNull(gavin);
         if(gavin.isValid()) {
-            System.out.println("Apparently gavin is present in the system!");
+            log.info("Apparently gavin is present in the system!");
         }else {
             gavin.setFirstName("Gavin").
                 setMiddleName("Max").
@@ -126,7 +127,7 @@ public class UserInfoTest {
                 addPermission("ARM_test","user_test");
         }
         assertNotNull(gavin);
-        System.out.println(gavin);
+        log.info(gavin);
         
         // retrieve PasswordEncoder directly from UserInfoDAO.
         encoder = userInfoDAO.getEncoder();
@@ -134,12 +135,12 @@ public class UserInfoTest {
     
     @AfterClass
     public static void testCleanup() {
-        System.out.println("------------------------");
-        System.out.println("UserInfoTest Cleanup....");
-        System.out.println("------------------------");
+        log.info("------------------------");
+        log.info("UserInfoTest Cleanup....");
+        log.info("------------------------");
 
         log.info("\nDeleting Gavin user object...");
-        if(userInfoDAO.deleteUserInfo(gavin)) System.out.println("[OK]"); else System.out.println("[FAIL]");
+        if(userInfoDAO.deleteUserInfo(gavin)) log.info("[OK]"); else log.info("[FAIL]");
         
         groupRoleDAO.deleteRole("user_test_renamed"); //changed name from "user_test"
         groupRoleDAO.deleteGroup("ARM_test");
@@ -158,7 +159,7 @@ public class UserInfoTest {
     public void testPassword() {
         System.out.print("Adding user "+gavin.getUserName()+" id="+gavin.getid()+" openid="+gavin.getOpenid()+": ");
         if(userInfoDAO.addUserInfo(gavin)) {
-            System.out.println("[OK]");
+            log.info("[OK]");
             
             String origPassword = "foobar";
             String newPassword = "foobaralpha";
@@ -168,16 +169,16 @@ public class UserInfoTest {
             
             System.out.print("Setting password: ["+origPassword+" -> "+origPasswordMd5Hex+"]");
             if(userInfoDAO.setPassword(gavin.getOpenid(),origPassword)) {
-                System.out.println("[OK]");
+                log.info("[OK]");
             }else {
-                System.out.println("[FAIL]");
+                log.info("[FAIL]");
             }
 
             System.out.print("Checking password: ");
             if(userInfoDAO.checkPassword(gavin.getOpenid(),origPassword)) {
-                System.out.println("[OK]");
+                log.info("[OK]");
             }else {
-                System.out.println("[FAIL]");
+                log.info("[FAIL]");
                 fail();
             }
 
@@ -185,37 +186,37 @@ public class UserInfoTest {
             System.out.print("["+origPassword+" -> "+origPasswordMd5Hex+"]");
             System.out.print("["+newPassword+" -> "+newPasswordMd5Hex+"]");
             if(userInfoDAO.changePassword(gavin.getOpenid(),origPassword,newPassword)) {
-                System.out.println("[OK]");
+                log.info("[OK]");
             }else{
-                System.out.println("[FAIL]");
+                log.info("[FAIL]");
                 fail("Problem with changing password!");
             }
 
             System.out.print("Checking password mismatch: ["+origPassword+" != "+newPassword+"]");
             if(userInfoDAO.checkPassword(gavin.getOpenid(),origPassword)) {
-                System.out.println("[FAIL]");
+                log.info("[FAIL]");
                 fail("Sorry, Passwords Should Not Match for this case");
             }else {
                 //This should fail! since the password is now foobaralpha! (right!?)
-                System.out.println("[OK]");
+                log.info("[OK]");
             }
               
             System.out.print("Checking admin's password against default: ");
             if(userInfoDAO.checkPassword(userInfoDAO.getUserById("rootAdmin"),"esgrocks")) {
-                System.out.println("[MATCH]");
+                log.info("[MATCH]");
             }else {
-                System.out.println("[NO MATCH]");
+                log.info("[NO MATCH]");
             }
 
             System.out.print("Checking admin's password against mismatch: ");
             if(userInfoDAO.checkPassword(userInfoDAO.getUserById("rootAdmin"),"esgrockS")) {
-                System.out.println("[MATCH]");
+                log.info("[MATCH]");
             }else {
-                System.out.println("[NO MATCH]");
+                log.info("[NO MATCH]");
             }
 
         }else{
-            System.out.println("[FAIL]");
+            log.info("[FAIL]");
             fail();
         }
     }
@@ -225,7 +226,7 @@ public class UserInfoTest {
         UserInfo dean = userInfoDAO.getUserById("williams13");
         assertNotNull(dean);
         if(dean.isValid()) {
-            System.out.println("Apparently dean is present in the system!");
+            log.info("Apparently dean is present in the system!");
         }else {
             dean.setFirstName("Dean").
                 setMiddleName("N").
@@ -241,41 +242,41 @@ public class UserInfoTest {
                 addPermission("CMIP5_test","admin").
                 addPermission("ARM_test","user_test");
         }
-        System.out.println(dean);
+        log.info(dean);
 
         boolean success = false;
         System.out.print("\nAdding Fresh Dean User To Database...");
-        if(userInfoDAO.addUserInfo(dean)) System.out.println("[OK]"); else { System.out.println("[FAIL]"); fail(); }
+        if(userInfoDAO.addUserInfo(dean)) log.info("[OK]"); else { log.info("[FAIL]"); fail(); }
         System.out.print(dean);
         
-        System.out.println("\nPulling Out Dean User From Database...");
+        log.info("\nPulling Out Dean User From Database...");
         dean = userInfoDAO.getUserById("https://"+getFQDN()+"/esgf-idp/openid/williams13");
 
-        System.out.println("\nModifying Dean user object...(middle name and email)");
+        log.info("\nModifying Dean user object...(middle name and email)");
         dean.setMiddleName("Neill");
         dean.setEmail("williams13@llnl.gov");
-        System.out.println(dean);
+        log.info(dean);
 
-        System.out.print("\nResubmitting Dean User To Database...");
-        if(userInfoDAO.addUserInfo(dean)) System.out.println("[OK]"); else { System.out.println("[FAIL]"); fail(); }
+        log.info("\nResubmitting Dean User To Database...");
+        if (userInfoDAO.addUserInfo(dean)) log.info("[OK]"); else { log.info("[FAIL]"); fail(); }
 
         //Hint: we only support openid URLs using httpS protocol (among other things)
-        System.out.println("\nIntentionally making a BAD call to getUserByID...");
+        log.info("\nIntentionally making a BAD call to getUserByID...");
         dean = userInfoDAO.getUserById("http://"+getFQDN()+"/esgf-idp/openid/williams13");
         assertNull(dean);
-        if(dean == null) System.out.println("[OK]"); else { System.out.println("[FAIL]"); fail(); }
+        if(dean == null) log.info("[OK]"); else { log.info("[FAIL]"); fail(); }
 
 
-        System.out.println("\nPulling Out Dean User From Database After Modifications, Using Openid...");
+        log.info("\nPulling Out Dean User From Database After Modifications, Using Openid...");
         dean = userInfoDAO.getUserById("https://"+getFQDN()+"/esgf-idp/openid/williams13");
-        if(dean != null) System.out.println("[OK]"); else { System.out.println("[FAIL]"); fail(); }
-        System.out.println(dean);
+        if(dean != null) log.info("[OK]"); else { log.info("[FAIL]"); fail(); }
+        log.info(dean);
 
         System.out.print("\nRe-Adding SAME Dean user object to database...");
-        if(userInfoDAO.addUserInfo(dean)) System.out.println("[OK]"); else { System.out.println("[FAIL]"); fail(); }
+        if(userInfoDAO.addUserInfo(dean)) log.info("[OK]"); else { log.info("[FAIL]"); fail(); }
 
-        System.out.println("\nDeleting Dean user object...");
-        if(userInfoDAO.deleteUserInfo(dean)) System.out.println("[OK]"); else { System.out.println("[FAIL]"); }
+        log.info("\nDeleting Dean user object...");
+        if(userInfoDAO.deleteUserInfo(dean)) log.info("[OK]"); else { log.info("[FAIL]"); }
         
     }
 
@@ -290,9 +291,9 @@ public class UserInfoTest {
 
         UserInfo bob = userInfoDAO.getUserById("drach1");
         if(bob.isValid()) {
-            System.out.println("\nApparently drach1 is present in the system!");
+            log.info("\nApparently drach1 is present in the system!");
         }else{
-            System.out.println("\nCreating Fresh Bob User");
+            log.info("\nCreating Fresh Bob User");
             bob.setFirstName("Bob").
                 setLastName("Drach").
                 setUserName("drach1").
@@ -311,29 +312,29 @@ public class UserInfoTest {
                 addPermission("CMIP7_test","admin");
         }
         
-        System.out.println(bob);
+        log.info(bob);
         
         System.out.print("Adding Bob into database... ");
-        if(userInfoDAO.addUserInfo(bob)) System.out.println("[OK]"); else System.out.println("[FAIL]");
+        if(userInfoDAO.addUserInfo(bob)) log.info("[OK]"); else log.info("[FAIL]");
 
         System.out.print("Renaming group CMIP5_test -> CMIP_NOW...");
         if(groupRoleDAO.renameGroup("CMIP5_test","CMIP_NOW")) 
-            System.out.println("[OK]"); else { System.out.println("[FAIL]"); fail(); }
+            log.info("[OK]"); else { log.info("[FAIL]"); fail(); }
 
         System.out.print("Renaming role god -> lord...");
         if(groupRoleDAO.renameRole("god","lord")) 
-            System.out.println("[OK]"); else { System.out.println("[FAIL]"); fail(); }
+            log.info("[OK]"); else { log.info("[FAIL]"); fail(); }
 
         System.out.print("Renaming role user_test -> user_test_renamed...");
         if(groupRoleDAO.renameRole("user_test","user_test_renamed"))
-            System.out.println("[OK]"); else { System.out.println("[FAIL]"); fail(); }
+            log.info("[OK]"); else { log.info("[FAIL]"); fail(); }
 
-        System.out.println("Refreshing Bob user object... ");
+        log.info("Refreshing Bob user object... ");
         bob = userInfoDAO.refresh(bob);
-        System.out.println(bob);
+        log.info(bob);
         
-        System.out.println("\nDeleting Bob user object...");
-        if(userInfoDAO.deleteUserInfo(bob)) System.out.println("[OK]"); else System.out.println("[FAIL]");
+        log.info("\nDeleting Bob user object...");
+        if(userInfoDAO.deleteUserInfo(bob)) log.info("[OK]"); else log.info("[FAIL]");
     }
 
     @Test

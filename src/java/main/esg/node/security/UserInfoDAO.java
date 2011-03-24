@@ -89,7 +89,7 @@ import esg.security.utils.encryption.PasswordEncoder;
 public class UserInfoDAO {
 
     private static final long serialVersionUID = 1L;
-
+    
     //-------------------
     //Selection queries (fills in the UserInfo data carrying object)
     //-------------------
@@ -885,22 +885,24 @@ public class UserInfoDAO {
     //------------------------------------
     private final class InitAdmin {
         InitAdmin() { 
-            System.out.println("Initializing rootAdmin");
-            UserInfo rootAdmin = UserInfoDAO.this.getUserById("rootAdmin");
-            rootAdmin.
-                setFirstName("Gert").
-                setMiddleName("B").
-                setLastName("Frobe").
-                setEmail(UserInfoDAO.this.props.getProperty("security.admin.email","rootAdmin@some-esg-node.org")).
-                setOrganization(UserInfoDAO.this.props.getProperty("security.admin.org","ESGF.org")).
-                setCity(UserInfoDAO.this.props.getProperty("security.admin.city","Brooklyn")).
-                setState(UserInfoDAO.this.props.getProperty("security.admin.state","NY")).
-                setCountry(UserInfoDAO.this.props.getProperty("security.admin.country","USA")).
-                setStatusCode(1).
-                addPermission("wheel","super");
+            log.info("Initializing rootAdmin");
+            UserInfo rootAdmin = getUserById("rootAdmin");
+            if (rootAdmin.isValid()) {
+                rootAdmin.
+                    setFirstName("Gert").
+                    setMiddleName("B").
+                    setLastName("Frobe").
+                    setEmail(UserInfoDAO.this.props.getProperty("security.admin.email","rootAdmin@some-esg-node.org")).
+                    setOrganization(UserInfoDAO.this.props.getProperty("security.admin.org","ESGF.org")).
+                    setCity(UserInfoDAO.this.props.getProperty("security.admin.city","Brooklyn")).
+                    setState(UserInfoDAO.this.props.getProperty("security.admin.state","NY")).
+                    setCountry(UserInfoDAO.this.props.getProperty("security.admin.country","USA")).
+                    setStatusCode(1).
+                    addPermission("wheel","super");
+                UserInfoDAO.this.addUserInfo(rootAdmin);
+                UserInfoDAO.this.setPassword(rootAdmin,UserInfoDAO.this.props.getProperty("security.admin.passwd","esgrocks"));
+            }
             log.info("rootAdmin: "+rootAdmin);
-            UserInfoDAO.this.addUserInfo(rootAdmin);
-            UserInfoDAO.this.setPassword(rootAdmin,UserInfoDAO.this.props.getProperty("security.admin.passwd","esgrocks"));
         }
     }
 }
