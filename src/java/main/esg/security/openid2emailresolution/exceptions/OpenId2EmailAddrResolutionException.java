@@ -16,6 +16,11 @@ package esg.security.openid2emailresolution.exceptions;
 
 public class OpenId2EmailAddrResolutionException extends Exception {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -956045359556836570L;
+
 	public OpenId2EmailAddrResolutionException(String message, Exception e) {
 		super(message, e);
 	}

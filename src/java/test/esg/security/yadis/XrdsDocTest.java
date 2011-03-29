@@ -14,13 +14,11 @@
  */
 package esg.security.yadis;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
@@ -30,62 +28,40 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
+import org.springframework.core.io.ClassPathResource;
+import org.apache.commons.io.IOUtils;
+
 import esg.security.yadis.exceptions.XrdsParseException;
 
-public class XrdsDocTest {
+public class XrdsDocTest {	
+	public static final String YADIS_FILEPATH = "esg/security/yadis/yadis.xml";
+	
 	@Test
-	@Ignore
+//	@Ignore		
 	public void testParseDoc() throws ParserConfigurationException, 
 		SAXException, 
 		IOException, XPathExpressionException, XrdsParseException {
 		
-		URL url = this.getClass().getResource("yadis.xml");
-		Assert.assertTrue("Yadis file not found", url != null);
-		File yadisDocFile = new File(url.getFile());
+		final InputStream yadisDocFile = new ClassPathResource(YADIS_FILEPATH).getInputStream();
+		StringWriter writer = new StringWriter();
+		IOUtils.copy(yadisDocFile, writer, "UTF-8");
+		String yadisDocContent = writer.toString();
+		
 		XrdsDoc yadisParser = new XrdsDoc();
-		StringBuffer contents = new StringBuffer();
-
-		FileReader fileReader = new FileReader(yadisDocFile);
-		BufferedReader in = new BufferedReader(fileReader); 
-		try 
-		{ 		
-			String text = null;
-
-			while ((text = in.readLine()) != null)
-			{ 
-				contents.append(text);
-				contents.append(System.getProperty("line.separator"));
-			} 
-			in.close(); 
-		} 
-		catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        } 
-		catch (IOException e)
-        {
-            e.printStackTrace();
-        } 
-        finally
-        {
-            try
-            {
-                if (in != null)
-                {
-                    in.close();
-                }
-            } catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-        }
-         
-		String yadisDocContent = contents.toString();		
+		
 		List<XrdsServiceElem> serviceElems = yadisParser.parse(yadisDocContent);
 		Assert.assertEquals(serviceElems.toArray().length, 3);
 		for (XrdsServiceElem elem : serviceElems) {
-			Assert.assertEquals(elem.getLocalId(), 
-					"https://somewhere.ac.uk/openid/PJKershaw");
+			String localId = elem.getLocalId();
+			if (localId != null) {
+				Assert.assertEquals(elem.getLocalId(), 
+						"https://openid.somewhere.ac.uk/PJKershaw");
+			}
+			Set<String> types = elem.getTypes();
+			System.out.printf("Service: Priority=%d; Type=%s; URI=%s;\n", 
+					elem.getServicePriority(),
+					types.toString(),
+					elem.getUri());
 		}
 	}
 

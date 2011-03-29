@@ -16,6 +16,11 @@ package esg.security.openid2emailresolution.exceptions;
 
 public class NoMatchingXrdsServiceException extends OpenId2EmailAddrResolutionException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1659060071820999242L;
+
 	public NoMatchingXrdsServiceException(String message, Exception e) {
 		super(message, e);
 	}

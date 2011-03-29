@@ -15,6 +15,11 @@
 package esg.security.openid2emailresolution.exceptions;
 
 public class AttributeServiceQueryException extends Exception {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1276530056097455351L;
+
 	public AttributeServiceQueryException(String message) {
 		super(message);
 	}
