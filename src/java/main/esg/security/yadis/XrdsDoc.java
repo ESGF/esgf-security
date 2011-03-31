@@ -16,7 +16,9 @@ package esg.security.yadis;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -53,12 +55,29 @@ public class XrdsDoc {
     public static final String XRD_ATTR_PRIORITY = "priority";
     public static final String OPENID_NS = "http://openid.net/xmlns/1.0";
     public static final String OPENID_ELEM_DELEGATE = "Delegate";
-      
+    
+    /**
+     * Parse string content into XML document
+     * 
+     * @param input
+     * @return
+     * @throws XrdsParseException
+     */
     protected Document parseXmlInput(String input) throws XrdsParseException
     {
         if (input == null)
             throw new XrdsParseException("No XML message set");
-
+        
+        InputStream xrdSchemaStream = this.getClass().getResourceAsStream(XRD_SCHEMA);
+        if (xrdSchemaStream == null)
+        	throw new XrdsParseException("Can't find XRD schema file \"" +
+        			XRD_SCHEMA + "\"");
+        
+        InputStream xrdsSchemaStream = this.getClass().getResourceAsStream(XRDS_SCHEMA);
+        if (xrdsSchemaStream == null)
+        	throw new XrdsParseException("Can't find XRDS schema file \"" +
+        			XRDS_SCHEMA + "\"");
+        
         try
         {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -66,8 +85,8 @@ public class XrdsDoc {
             dbf.setValidating(true);
             dbf.setAttribute(JAXP_SCHEMA_LANGUAGE, W3C_XML_SCHEMA);
             dbf.setAttribute(JAXP_SCHEMA_SOURCE, new Object[] {
-                this.getClass().getResourceAsStream(XRD_SCHEMA),
-                this.getClass().getResourceAsStream(XRDS_SCHEMA),
+                xrdSchemaStream,
+                xrdsSchemaStream,
             });
             DocumentBuilder builder = dbf.newDocumentBuilder();
             builder.setErrorHandler(new ErrorHandler() {
@@ -120,6 +139,12 @@ public class XrdsDoc {
         return result;
     }
     
+    /**
+     * 
+     * @param serviceTypes
+     * @param serviceNode
+     * @param type
+     */
     protected void addServiceType(Map<Node, Set<String>> serviceTypes, 
     		Node serviceNode, String type)
     {
@@ -132,6 +157,11 @@ public class XrdsDoc {
         types.add(type);
     }
 
+    /**
+     * Get the priority value for a given service element
+     * @param node
+     * @return
+     */
     protected int getPriority(Node node)
     {
         if (node.hasAttributes())
@@ -149,15 +179,18 @@ public class XrdsDoc {
     public List<XrdsServiceElem> parse(String input, Set<String> targetTypes) 
     	throws XrdsParseException
     {
+    	// Parse the string input into an XML document
         Document document = parseXmlInput(input);
 
-        NodeList XRDs = document.getElementsByTagNameNS(XRD_NS, XRD_ELEM_XRD);
-        Node lastXRD;
-        if (XRDs.getLength() < 1 || 
-        	(lastXRD = XRDs.item(XRDs.getLength() - 1)) == null)
+        // Get the list of XRD elements
+        NodeList xrdNodes = document.getElementsByTagNameNS(XRD_NS, XRD_ELEM_XRD);
+        Node lastXRD = null;
+        int numXrdNodes = xrdNodes.getLength();
+        if (numXrdNodes < 1 || 
+        	(lastXRD = xrdNodes.item(numXrdNodes - 1)) == null)
             throw new XrdsParseException("No XRD elements found.");
 
-        // get the canonical ID, if any (needed for XRIs)
+        // Get the canonical ID, if any (needed for XRIs)
         String canonicalId = null;
         Node canonicalIdNode;
         NodeList canonicalIDs = document.getElementsByTagNameNS(XRD_NS, 
@@ -172,10 +205,11 @@ public class XrdsDoc {
                 canonicalIdNode.getFirstChild().getNodeValue() : null;
         }
 
-        // extract the services that match the specified target types
+        // Extract the services that match the specified target types
         NodeList types = document.getElementsByTagNameNS(XRD_NS, XRD_ELEM_TYPE);
         HashMap<Node, Set<String>> serviceTypes = new HashMap<Node, Set<String>>();
         Set<Node> selectedServices = new HashSet<Node>();
+        
         Node typeNode, serviceNode;
         for (int i = 0; i < types.getLength(); i++) {
             typeNode = types.item(i);
@@ -185,12 +219,15 @@ public class XrdsDoc {
                 typeNode.getFirstChild().getNodeValue() : null;
             if (type == null) continue;
 
+            // The parent service element for this type
             serviceNode = typeNode.getParentNode();
-
-            if (targetTypes == null)
-            	selectedServices.add(serviceNode);
             
+            if (targetTypes == null) {
+            	// No target types were specified - get all the service types
+            	selectedServices.add(serviceNode);
+            }
             else if (targetTypes.contains(type))
+            	// Get the specified type
                 selectedServices.add(serviceNode);
             
             addServiceType(serviceTypes, serviceNode, type);
@@ -232,13 +269,14 @@ public class XrdsDoc {
             result.add(endpoint);
         }
 
+        Collections.sort(result);
         return result;
     }
     
     // Parse Yadis document extracting the given target types
     public List<XrdsServiceElem> parse(String yadisDocContent) throws 
-    	XrdsParseException
-    {
+    	XrdsParseException {
     	return parse(yadisDocContent, null);
     }
 }
+

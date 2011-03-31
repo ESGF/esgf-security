@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.Before;
 
 import esg.security.yadis.exceptions.XrdsParseException;
 import esg.security.yadis.exceptions.YadisRetrievalException;
@@ -39,9 +40,12 @@ public class YadisRetrievalTest {
 	public final String URL_PROPNAME = "yadisURL";
 	protected final static Log LOG = LogFactory.getLog(YadisRetrievalTest.class);
 	
-	@Test
-	public void testRetrieval() throws IOException, XrdsParseException, 
-		YadisRetrievalException {
+	protected URL yadisURL = null;
+	protected YadisRetrieval yadis = null;
+	
+	@Before
+	public void setUp() throws IOException, XrdsParseException, 
+			YadisRetrievalException {
 		
 		InputStream propertiesFile = 
 			YadisRetrievalTest.class.getResourceAsStream(PROPERTIES_FILE);
@@ -56,7 +60,7 @@ public class YadisRetrievalTest {
 					 "\"" + PROPERTIES_FILE + "\" file - skipping test!");
 			return;
 		}
-		URL yadisURL = new URL(sYadisURL);
+		yadisURL = new URL(sYadisURL);
 		
 		// Input DNs from a file
 		InputStream whiteListPropertiesFile = 
@@ -64,15 +68,44 @@ public class YadisRetrievalTest {
 												"yadis-retrieval.properties");
 		Assert.assertTrue("SSL Properties file is not set", propertiesFile != null);
 		
-		YadisRetrieval yadis = new YadisRetrieval(whiteListPropertiesFile);
+		yadis = new YadisRetrieval(whiteListPropertiesFile);
+	}
+	
+	/**
+	 * Retrieve XRDS document as a string with Yadis.
+	 * @throws IOException
+	 * @throws XrdsParseException
+	 * @throws YadisRetrievalException
+	 */
+	@Test
+	public void testRetrieval() throws IOException, XrdsParseException, 
+			YadisRetrievalException {
 		
-		// 1) Retrieve as string content
+		// skip test if no URL was set
+		if (yadisURL == null)
+			return;
+		
 		String content = null;
+		
 		content = yadis.retrieve(yadisURL);
 
-		System.out.println("Yadis content = " + content);
+		System.out.println("Retrieved XRDS = " + content);
+	}
+	
+	/**
+	 * Retrieve XRDS document with Yadis and parse into a list of services
+	 * @throws XrdsParseException
+	 * @throws YadisRetrievalException
+	 */
+	@Test
+	public void testRetrievalAndParse() throws XrdsParseException, 
+			YadisRetrievalException {
 		
-		// 2) Retrieve as list of services
+		// skip test if no URL was set
+		if (yadisURL == null)
+			return;
+		
+		// 2) 
 		List<XrdsServiceElem> serviceElems = null;
 		
 		// Retrieve only services matching these type(s)

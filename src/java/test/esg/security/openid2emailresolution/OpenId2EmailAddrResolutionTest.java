@@ -23,7 +23,12 @@ import esg.security.yadis.exceptions.YadisRetrievalException;
 public class OpenId2EmailAddrResolutionTest {
 	public final String ESGF_SECURITY_ATTRIBUTE_SERVICE_URN = 
 		"urn:esg:security:attribute-service";
-	public final String PROPERTIES_FILE = "OpenId2EmailAddrResolutionTest.properties";
+	public final String PROPERTIES_FILE = 
+		"OpenId2EmailAddrResolutionTest.properties";
+	public final String YADIS_RETRIEVAL_PROPERTIES_FILE = 
+		"yadis-retrieval.properties";
+	public final String ATTRIBUTE_SERVICE_CLIENT_SSL_PROPERTIES_FILE = 
+		"attribute-service-client-ssl.properties";
 	public final String URL_PROPNAME = "yadisURL";
 	public final String ATTRIBUTE_QUERY_ISSUER_PROPNAME = "attributeQueryIssuer";
 	protected final static Log LOG = LogFactory.getLog(YadisRetrievalTest.class);
@@ -65,11 +70,11 @@ public class OpenId2EmailAddrResolutionTest {
 		// may be made for the Yadis and Attribute Service connections
 		InputStream yadisPropertiesFile = 
 			OpenId2EmailAddrResolutionTest.class.getResourceAsStream(
-								"yadis-retrieval.properties");
+								YADIS_RETRIEVAL_PROPERTIES_FILE);
 
 		InputStream attributeServiceClientPropertiesFile = 
 			OpenId2EmailAddrResolutionTest.class.getResourceAsStream(
-								"attribute-service-client-ssl.properties");
+								ATTRIBUTE_SERVICE_CLIENT_SSL_PROPERTIES_FILE);
 		
 		OpenId2EmailAddrResolution openid2EmailAddr = new 
 			OpenId2EmailAddrResolution(attributeQueryIssuer,
