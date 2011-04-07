@@ -50,3 +50,6 @@ Version 1.2.2
 
 Version 1.2.3
 - Inserting support for compatibility with legacy system: transform (group,role) pairs into attribute (name, value) pairs.
+
+Version 1.2.4
+- Inserted policy that allowd free access to all URLs that contain 'esg_dataroot'

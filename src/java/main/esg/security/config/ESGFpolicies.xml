@@ -11,11 +11,14 @@
         <policy resource=".*\/test\/.*" attribute_type="Test Attribute" attribute_value="Admin" action="Write"/>
 
         <!-- URLs matching */nasa/* -->
-        <policy resource=".*\/nasa\/.*" attribute_type="NASA OBS" attribute_value="User" action="Read"/>
-        <policy resource=".*\/nasa\/.*" attribute_type="NASA OBS" attribute_value="Admin" action="Write"/>
-        
+        <policy resource=".*\/NASA-JPL\/.*" attribute_type="NASA OBS" attribute_value="User" action="Read"/>
+        <policy resource=".*\/NASA-JPL\/.*" attribute_type="NASA OBS" attribute_value="Admin" action="Write"/>
+
         <!-- Test resources are made freely available -->
         <policy resource=".*test.*" attribute_type="ANY" attribute_value="" action="Read"/>
+
+        <!-- Free -->
+        <policy resource=".*esg_dataroot.*" attribute_type="ANY" attribute_value="" action="Read"/>
         
 
 </policies>
