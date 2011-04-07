@@ -1,0 +1,28 @@
+#*****************************************************************#
+# Copyright (c) 2009  Larence Livermore National Security (LLNS)  #
+# All rights reserved.						  #
+#*****************************************************************#
+
+# This is a manifest, listing all the files to be posted to the
+# distribution server.
+
+[esgf-security]
+
+#Basic text files...
+../CHANGES
+../INSTALL
+../LICENSE
+../TODO
+../README
+
+#Installation script...
+./esg-security
+
+#Software Artifacts...
+../dist/@module@-@version_num@.tar.gz
+../dist/@module@-@version_num@.jar
+../dist/@module@-test-@version_num@.jar
+../dist/@module@.war
+
+#Python egg for database...
+../dist/esgf_security-@db_version_num@-py2.6.egg

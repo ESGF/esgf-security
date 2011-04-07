@@ -90,8 +90,11 @@ Builds the project via ant (obviously).
   <!-- **static defines** -->
   <property name="version_num" value="0.0.0"/>
   <filter token="version_num"  value="${version_num}"/>
+  <property name="db_version_num" value="0.0.0"/>
+  <filter token="db_version_num"  value="${db_version_num}"/>
   <property name="release_name" value="no_name"/>
   <filter token="release_name" value="${release_name}"/>
+  <filter token="module" value="${module}"/>
 
   <property name="log_dir" value="${basedir}/runlogs"/>
   <mkdir dir="${log_dir}" />
@@ -127,6 +130,7 @@ Builds the project via ant (obviously).
   	<property name="lib_endorsed_dir" value="${basedir}/lib/endorsed"/>
     <property name="build_dir"   	  value="${basedir}/build"/>
     <property name="dist_dir"   	  value="${basedir}/dist"/>
+    <property name="bin_dir"              value="${basedir}/bin"/>
     <property name="test_src_dir"  	  value="${basedir}/src/java/test"/>
     <property name="test_build_dir"       value="${basedir}/build/test"/>
     <property name="test_build_dir_inst"  value="${basedir}/build/test-instrumented" />
@@ -154,9 +158,13 @@ Builds the project via ant (obviously).
     <property name="test_coverage_file"   value="${basedir}/.cobertura.ser"/>
     <property name="ivy.lib.dir" value="${lib_fetched_dir}"/>
      
+    <property name="python_version"       value="2.6"/>
+    <property name="py_src_dir"	          value="${basedir}/src/python/esgf"/>
+
     <echo message="--------------------------------"/> 
     <echo message="module            = ${module} "/> 
     <echo message="version_num       = ${version_num} "/> 
+    <echo message="db_version_num    = ${db_version_num} "/> 
     <echo message="release_name      = ${release_name} "/> 
     <echo message="--------------------------------"/> 
     <echo message="src_dir           = ${src_dir}"/>
@@ -165,6 +173,7 @@ Builds the project via ant (obviously).
   	<echo message="lib_endorsed_dir  = ${lib_endorsed_dir}"/>
     <echo message="build_dir         = ${build_dir}"/>
     <echo message="dist_dir          = ${dist_dir}"/>
+    <echo message="bin_dir           = ${bin_dir}"/>
     <echo message="test_src_dir      = ${test_src_dir}"/>
     <echo message="test_build_dir    = ${test_build_dir}"/>
     <echo message="etc_dir           = ${etc_dir}"/>
@@ -182,6 +191,9 @@ Builds the project via ant (obviously).
     <echo message="test_reports_dir     = ${test_reports_dir}"/>
     <echo message="test_coverage_dir    = ${test_coverage_dir}"/>
     <echo message="lib_deps_reports_dir = ${doc_dir_generated}/dep-reports"/>
+    <echo message="--------------------------------"/> 
+    <echo message="python_version    = ${python_version}"/>
+    <echo message="py_src_dir        = ${py_src_dir}"/>
     <echo message="--------------------------------"/> 
     <tstamp/>
   </target> 
@@ -239,16 +251,6 @@ Builds the project via ant (obviously).
                  pubrevision="${version_num}" status="milestone" />
   </target>
   
-  <target name="publish" depends="deliver">
-    <ivy:publish resolver="esgf_repo_devel" 
-                 organisation="org.esgf"
-                 module="${module}"
-                 revision="${version_num}"
-                 overwrite="true" haltonmissing="false">
-      <artifacts pattern="dist/[artifact]-[revision].[ext]"/>
-    </ivy:publish>
-  </target>
-
   <target name="dep_report" depends="deps" description="(Generates a report of library dependencies)">
     <mkdir dir="${lib_deps_reports_dir}"/>
     <ivy:report todir="${lib_deps_reports_dir}"/>
@@ -307,8 +309,8 @@ Builds the project via ant (obviously).
     </javac>
 
     <copy todir="${build_dir}" filtering="${filter}" overwrite="true">
-      <fileset dir="${conf_dir}" includes="**/*.properties,**/*.template,**/*.xml,**/*.xsd"/>
-      <fileset dir="${src_dir}" includes="**/*.properties,**/*.template,**/*.xml,**/*.xsd"/>
+      <fileset dir="${conf_dir}" includes="**/*.properties,**/*.template,**/*.xml"/>
+      <fileset dir="${src_dir}" includes="**/*.properties,**/*.template,**/*.xml"/>
     </copy>
 
 
@@ -341,8 +343,8 @@ Builds the project via ant (obviously).
 	<attribute name="Version"      value="${version_num}"/>
 	<attribute name="Release-Name" value="${release_name}"/>
 	<attribute name="Main-Class"   value="${main_class}"/>
-	<section name="esg/">
-	  <attribute name="Sealed" value="false"/>
+	<section name="esg/node/security">
+	  <attribute name="Sealed" value="true"/>
 	</section>
       </manifest>
     </jar>
@@ -404,7 +406,7 @@ Builds the project via ant (obviously).
 	  </target>
 
 
-  <target name="make_dist" depends="make_all_jars, make_war"
+  <target name="make_dist" depends="make_all_jars, make_war, make_python"
 	  description="(Creates full software distribution)">
     <delete file="${dist_dir}/${module}-${version_num}.tar.gz"/> 
     <tar destfile="${dist_dir}/${module}-${version_num}.tar">
@@ -468,9 +470,10 @@ Builds the project via ant (obviously).
 
   
   <target name="clean_all"
-	  depends="clean,clean_dist,clean_jaxb,dep_clean_libs"
+	  depends="clean,clean_dist,clean_jaxb,dep_clean_libs,clean_python"
 	  description="(Cleans out generatable artifacts)">
-    <delete dir="${log_dir}"/>    
+    <delete dir="${log_dir}"/>
+    <delete file="${bin_dir}/post.manif"/>
   </target>
   
   <!--
@@ -515,7 +518,7 @@ Builds the project via ant (obviously).
 	   nowarn="on"/>
   	
     <copy todir="${test_build_dir}" filtering="${filter}" overwrite="true">
-      <fileset dir="${test_src_dir}" includes="**/*.properties,**/*.template,**/*.xml,**/*.ks,**/*.xsd"/>
+      <fileset dir="${test_src_dir}" includes="**/*.properties,**/*.template,**/*.xml,**/*.ks"/>
     </copy>
 
     <tstamp/>
@@ -696,7 +699,46 @@ Builds the project via ant (obviously).
     <echo message="Web Site ----------> http://esgf.org/${module}-site/index.html"/>
   </target>
 
-  <target name="post"  depends="init">
+
+  <target name="make_web_dir" depends="make, init" 
+	  description="(Assembles the WEB-INF directory to run the web application in place.)">
+    
+    <mkdir dir="${basedir}/WebContent" />
+    <mkdir dir="${basedir}/WebContent/WEB-INF" />
+  	<mkdir dir="${basedir}/WebContent/themes" />
+    <property name="web_deploy_dir" value="${basedir}/WebContent/WEB-INF"/>
+    
+    <!-- web configuration files -->
+    <copy file="${conf_dir}/${module}-web.xml" tofile="${web_deploy_dir}/web.xml"/>
+    <copy todir="${web_deploy_dir}">
+      <fileset dir="${conf_dir}" includes="**/*.xml, **/*.properties" excludes="**/${module}-web.xml"/>
+    </copy>
+    
+    <!-- web views -->
+  	<copy file="${web_dir}/index.jsp" tofile="${basedir}/WebContent/index.jsp"/>
+    <copy todir="${web_deploy_dir}/views">
+      <fileset dir="${web_dir}/WEB-INF/views" />
+    </copy>
+  	
+	<!-- images and css -->
+    <copy todir="${basedir}/WebContent/themes">
+      <fileset dir="${web_dir}/themes" />
+    </copy>
+    
+    <!-- web lib -->
+    <copy todir="${web_deploy_dir}/lib" flatten="true">
+      <fileset dir="${lib_dir}" includes="**/*.jar" excludes="**/junit*.jar,**/*sources.jar,**/*javadoc.jar"/>
+    </copy>
+    
+  </target>
+  
+  
+  <!--
+      ************************************************************
+      Artifact and Documentation distribution targets
+      ************************************************************
+    -->
+  <target name="post_docs"  depends="init" description="(posts generated documentatoin to web server)">
     <property name="orig.dir" value="${doc_dir_generated}"/>
     <property name="dest.server" value="esgf.org"/>
     <property name="dest.dir" value="www/${module}-site/"/>
@@ -711,45 +753,49 @@ Builds the project via ant (obviously).
     </exec>
   </target>
 
-  <target name="make_web_dir" depends="make, init" 
-	  description="(Assembles the WEB-INF directory to run the web application in place.)">
-    
-    <mkdir dir="${basedir}/WebContent" />
-    <mkdir dir="${basedir}/WebContent/WEB-INF" />
-    <property name="web_deploy_dir" value="${basedir}/WebContent/WEB-INF"/>
-    
-    <!-- web configuration files -->
-    <copy file="${conf_dir}/${module}-web.xml" tofile="${web_deploy_dir}/web.xml"/>
-    <copy todir="${web_deploy_dir}">
-      <fileset dir="${conf_dir}" includes="**/*.xml, **/*.properties" excludes="**/${module}-web.xml"/>
-    </copy>
-    
-    <!-- web views -->
-    <copy todir="${web_deploy_dir}/views">
-      <fileset dir="${web_dir}/WEB-INF/views" />
-    </copy>
-    
-    <!-- web lib -->
-    <copy todir="${web_deploy_dir}/lib" flatten="true">
-      <fileset dir="${lib_dir}" includes="**/*.jar" excludes="**/junit*.jar,**/*sources.jar,**/*javadoc.jar"/>
-    </copy>
-    
+  <target name="post" depends="init" description="(posts built artifacts to distribution server)">
+    <copy file="${bin_dir}/post.manif.tmpl" tofile="${bin_dir}/post.manif" filtering="true" overwrite="true"/>
+    <echo message="Posting Files To Distribution Server..."/>
+    <exec executable="post" dir="${basedir}/bin">
+      <arg value="--debug"/>
+    </exec>
   </target>
-  
-  
+
+  <target name="publish" depends="deliver" description="(publishes built artifacts to artifact repository)">
+    <ivy:publish resolver="esgf_repo_devel" 
+                 organisation="org.esgf"
+                 module="${module}"
+                 revision="${version_num}"
+                 overwrite="true" haltonmissing="false">
+      <artifacts pattern="dist/[artifact]-[revision].[ext]"/>
+    </ivy:publish>
+  </target>
+
   <!--
       ************************************************************
       Python Targets....(calls targets defined in ${basedir}/src/python/build.xml
       ************************************************************
     -->
-  <target name="make_python">
-    <ant dir="${basedir}/src/python" antfile="build.xml" target="gen"/>
+  <target name="make_python" depends="init">
+    <copy file="${py_src_dir}/setup.py.tmpl" tofile="${py_src_dir}/setup.py" filtering="true" overwrite="true"/>
+    <copy file="${py_src_dir}/scripts/esgf_security_initialize.tmpl" tofile="${py_src_dir}/scripts/esgf_security_initialize" filtering="true"/>
+
+    <echo message="Building python egg"/>
+    <exec executable="./etc/db/make_python" dir="${basedir}">
+      <arg value="--all"/>
+      <arg value="${module}"/>
+      <arg value="${db_version_num}"/>
+      <arg value="${python_version}"/>
+    </exec>
   </target>
-                
+  
   <target name="clean_python">
-    <ant dir="${basedir}/src/python" antfile="build.xml" target="clean"/>
+    <echo message="Cleaning python build artifacts"/>
+    <exec executable="./etc/db/make_python" dir="${basedir}">
+      <arg value="--clean"/>
+    </exec>
   </target>
-	
+  
     <target name="make_endorsed" depends="init, init-ivy"
 	        description="--> retrieves jars that must be placed in the application endorsed directory">
     	
