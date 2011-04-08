@@ -100,15 +100,16 @@ public class SecurityManager {
 	    ks.load(fis, password.toCharArray());
 	    fis.close();
 	    
-	    if (LOG.isDebugEnabled()) {
+	    if (LOG.isInfoEnabled()) {
 		    final Enumeration<String> aliases = ks.aliases();
 		    while (aliases.hasMoreElements()) {
-		    	LOG.debug("Keystore alias="+aliases.nextElement());
+		    	LOG.info("Keystore alias="+aliases.nextElement());
 		    }
 	    }
 	    
 	    // load requested public and private key
 	    final KeyStore.PrivateKeyEntry pkEntry = (KeyStore.PrivateKeyEntry)ks.getEntry(alias, new KeyStore.PasswordProtection(password.toCharArray()));
+	    if (LOG.isInfoEnabled()) LOG.info("Used alias="+alias+" password="+password+" to load keystore entry="+pkEntry.toString());
 	    final PrivateKey myPrivateKey = pkEntry.getPrivateKey();
 	    final PublicKey myPublicKey = pkEntry.getCertificate().getPublicKey();
 	    if (LOG.isDebugEnabled()) LOG.debug("Private key="+myPrivateKey.toString());
