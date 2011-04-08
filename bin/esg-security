@@ -139,8 +139,8 @@ setup_security() {
 
     local upgrade=${1:-0}
 
-    local default="N"
-    ((force_install)) && default="Y"
+    local default="Y"
+    ((force_install)) && default="N"
     local dosetup
     if [ -d ${security_app_home} ]; then 
         echo "Detected an existing security services installation..."
