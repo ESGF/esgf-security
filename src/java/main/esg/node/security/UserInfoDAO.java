@@ -376,7 +376,10 @@ public class UserInfoDAO {
             if(usernameMatcher.find()) {
                 String openidHost = props.getProperty("esgf.host",getFQDN());
                 String openidPort = props.getProperty("esgf.https.port","");
-                if(!openidPort.equals("")) { openidPort=":"+openidPort; }
+                //Do not use the port value if it is the default value for https i.e. 443
+                //BAD  = https://esgf-node1.llnl.gov:443/esgf-idp/openid/gavinbell
+                //GOOD = https://esgf-node1.llnl.gov/esgf-idp/openid/gavinbell
+                if(!openidPort.equals("") && !openidPort.equals("443")) { openidPort=":"+openidPort; }
                 
                 openid = "https://"+openidHost+openidPort+"/esgf-idp/openid/"+id;
                 username = id;
