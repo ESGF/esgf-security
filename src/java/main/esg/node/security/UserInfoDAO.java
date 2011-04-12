@@ -83,6 +83,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import esg.common.db.DatabaseResource;
+import esg.common.util.ESGFProperties;
 import esg.security.utils.encryption.MD5CryptPasswordEncoder;
 import esg.security.utils.encryption.PasswordEncoder;
 
@@ -193,7 +194,12 @@ public class UserInfoDAO {
     public UserInfoDAO(Properties props) {
         if (props == null) {
             log.warn("Input Properties parameter is: ["+props+"] - creating empty Properties obj");
-            props = new Properties();
+            try{
+                props = new ESGFProperties();
+            }catch(Exception ex) {
+                log.warn("Problem Creating ESGFProperties() - "+ex.getMessage());
+                log.error(ex);
+            }
         }
         
         
@@ -912,7 +918,7 @@ public class UserInfoDAO {
                     setStatusCode(1).
                     addPermission("wheel","super");
                 UserInfoDAO.this.addUserInfo(rootAdmin);
-                UserInfoDAO.this.setPassword(rootAdmin,UserInfoDAO.this.props.getProperty("security.admin.passwd","esgrocks"));
+                UserInfoDAO.this.setPassword(rootAdmin,UserInfoDAO.this.props.getProperty("security.admin.password","esgrocks"));
             }
             log.info("rootAdmin: "+rootAdmin);
         }
