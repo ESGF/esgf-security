@@ -98,7 +98,7 @@ init() {
     security_authz_service_port=${security_authz_service_post:-"443"}
     security_authz_service_endpoint=$(echo "https://${security_authz_service_host}$( if ((security_authz_service_port != 443)); then echo ":${security_authz_service_port}"; fi)/esgf-security/saml/soap/secure/authorizationService.htm")
 
-    esgf_security_version=${esgf_security_version:-"1.2.5"}
+    esgf_security_version=${esgf_security_version:-"1.2.6"}
     esgf_security_db_version=${esgf_security_db_version:-"0.1.4"}
     esgf_security_egg_file=esgf_security-${esgf_security_db_version}-py${python_version}.egg
     
