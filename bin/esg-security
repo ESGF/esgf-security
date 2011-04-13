@@ -98,7 +98,7 @@ init() {
     security_authz_service_port=${security_authz_service_post:-"443"}
     security_authz_service_endpoint=$(echo "https://${security_authz_service_host}$( if ((security_authz_service_port != 443)); then echo ":${security_authz_service_port}"; fi)/esgf-security/saml/soap/secure/authorizationService.htm")
 
-    esgf_security_version=${esgf_security_version:-"1.2.3"}
+    esgf_security_version=${esgf_security_version:-"1.2.6"}
     esgf_security_db_version=${esgf_security_db_version:-"0.1.4"}
     esgf_security_egg_file=esgf_security-${esgf_security_db_version}-py${python_version}.egg
     
@@ -139,8 +139,8 @@ setup_security() {
 
     local upgrade=${1:-0}
 
-    local default="N"
-    ((force_install)) && default="Y"
+    local default="Y"
+    ((force_install)) && default="N"
     local dosetup
     if [ -d ${security_app_home} ]; then 
         echo "Detected an existing security services installation..."
@@ -225,7 +225,7 @@ configure_postgress() {
     #Create the database...
     echo "Creating esg node database: [${node_db_name}]"
     echo "${postgress_install_dir}/bin/createdb ${node_db_name}"
-    ${postgress_install_dir}/bin/createdb ${node_db_name} >& /dev/null
+    PGPASSWORD=${PGPASSWORD:-${pg_sys_acct_passwd}} ${postgress_install_dir}/bin/createdb ${node_db_name} >& /dev/null
     (( $? > 1 )) && echo " ERROR: Could not create esg node database: ${node_db_name}" && return 0
     echo 
 

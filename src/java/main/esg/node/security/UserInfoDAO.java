@@ -83,6 +83,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import esg.common.db.DatabaseResource;
+import esg.common.util.ESGFProperties;
 import esg.security.utils.encryption.MD5CryptPasswordEncoder;
 import esg.security.utils.encryption.PasswordEncoder;
 
@@ -193,7 +194,12 @@ public class UserInfoDAO {
     public UserInfoDAO(Properties props) {
         if (props == null) {
             log.warn("Input Properties parameter is: ["+props+"] - creating empty Properties obj");
-            props = new Properties();
+            try{
+                props = new ESGFProperties();
+            }catch(Exception ex) {
+                log.warn("Problem Creating ESGFProperties() - "+ex.getMessage());
+                log.error(ex);
+            }
         }
         
         
@@ -376,7 +382,14 @@ public class UserInfoDAO {
             if(usernameMatcher.find()) {
                 String openidHost = props.getProperty("esgf.host",getFQDN());
                 String openidPort = props.getProperty("esgf.https.port","");
-                if(!openidPort.equals("")) { openidPort=":"+openidPort; }
+                //Do not use the port value if it is the default value for https i.e. 443
+                //BAD  = https://esgf-node1.llnl.gov:443/esgf-idp/openid/gavinbell
+                //GOOD = https://esgf-node1.llnl.gov/esgf-idp/openid/gavinbell
+                if(openidPort.equals("") || openidPort.equals("443")) {
+                    openidPort="";
+                }else{
+                    openidPort=":"+openidPort;
+                }
                 
                 openid = "https://"+openidHost+openidPort+"/esgf-idp/openid/"+id;
                 username = id;
@@ -503,7 +516,12 @@ public class UserInfoDAO {
                 if(userInfo.getUserName() == null) return false;
                 String openidHost = props.getProperty("esgf.host",getFQDN());
                 String openidPort = props.getProperty("esgf.https.port","");
-                if(!openidPort.equals("")) { openidPort=":"+openidPort; }
+                if(openidPort.equals("") || openidPort.equals("443")) {
+                    openidPort="";
+                }else{
+                    openidPort=":"+openidPort;
+                }
+
                 String openid = "https://"+openidHost+openidPort+"/esgf-idp/openid/"+userInfo.getUserName();
                 log.debug("Constructing default openid: "+openid);
                 userInfo.setOpenid(openid);
@@ -900,7 +918,7 @@ public class UserInfoDAO {
                     setStatusCode(1).
                     addPermission("wheel","super");
                 UserInfoDAO.this.addUserInfo(rootAdmin);
-                UserInfoDAO.this.setPassword(rootAdmin,UserInfoDAO.this.props.getProperty("security.admin.passwd","esgrocks"));
+                UserInfoDAO.this.setPassword(rootAdmin,UserInfoDAO.this.props.getProperty("security.admin.password","esgrocks"));
             }
             log.info("rootAdmin: "+rootAdmin);
         }
