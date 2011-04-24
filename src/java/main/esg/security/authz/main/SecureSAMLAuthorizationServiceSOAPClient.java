@@ -46,8 +46,9 @@ public class SecureSAMLAuthorizationServiceSOAPClient {
 	//private static final String SAML_REQUEST = "esg/security/authz/main/SAMLauthorizationQueryRequest_JPL.xml";
 	
 	// Query the Authorization Service on the ESG-PCMDI Gateway - must use a client-trustore that contains the PCMDI server certificate
-	private static final String ENDPOINT = "https://pcmdi3.llnl.gov/esgcet/saml/soap/secure/authorizationService.htm";
-	private static final String SAML_REQUEST = "esg/security/authz/main/SAMLauthorizationQueryRequest_PCMDI.xml";
+	//private static final String ENDPOINT = "https://pcmdi3.llnl.gov/esgcet/saml/soap/secure/authorizationService.htm";
+	private static final String ENDPOINT = "http://esg-gateway.jpl.nasa.gov/saml/soap/secure/authorizationService.htm";
+	private static final String SAML_REQUEST = "esg/security/authz/main/SAMLauthorizationQueryRequest_JPL.xml";
 
 	  
 	  public static void main(String[] args) throws Exception {

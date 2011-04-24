@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <soap11:Envelope xmlns:soap11="http://schemas.xmlsoap.org/soap/envelope/">
    <soap11:Body>
-	<samlp:AuthzDecisionQuery xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="7658c723-7aef-478c-badf-c6cee670761f" IssueInstant="2010-01-26T18:18:10.927Z" Resource="http://esg-datanode.jpl.nasa.gov/thredds/fileServer/mls/yearly/MLS-Aura_MonthlyBins_v02-2x_2005.nc" Version="2.0">
+	<samlp:AuthzDecisionQuery xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="7658c723-7aef-478c-badf-c6cee670761f" IssueInstant="2010-01-26T18:18:10.927Z" 
+	                          Resource="http://esg-datanode.jpl.nasa.gov/thredds/fileServer/esg_dataroot/obs4cmip5/observations/atmos/hus/mon/grid/NASA-JPL/AQUA/AIRS/r1i1p1/hus_AQUA_AIRS_L3_RetStd-v5_200209-201006.nc" Version="2.0">
 	   <saml:Subject xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">
 	      <saml:NameID>https://esg-gateway.jpl.nasa.gov/myopenid/rootAdmin</saml:NameID>
 	   </saml:Subject>
