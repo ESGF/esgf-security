@@ -1,4 +1,5 @@
-Version 1.3.0
+Previous Versions:
+
 - Changed the Attribute Service to issue attributes with configurable names (as opposed to the same fixed attribute name).
 - Changed the Attribute Service API to support both string-based simple attributes, and (group,role) complex attributes
 - Removed all code related to parse attribute strings into (group,role) pairs
@@ -11,19 +12,12 @@ Note that the above changes alter the API of the SAMLAttributes interface, and c
 any implementation of the factory interface must now generate attributes that have both a name and a value, either as simple strings
 or as (group,role) pairs.
 
-Version 1.2.0
 - Added BSD Open Source License
 - Changed log file name to avoid possible conflicts with other applications
 - Moved configuration files to module specific directory: esg/saml/config.
 - Upgraded dependencies to latest version of OpenSAML libraries (i.e. opensaml, openws and xmltooling jars)
-
-Version 1.2.1
 - Removed warnings due to obsolete Xerces and SAML libraries.
-
-Version 1.2.2
 - Implementation of optional white-listing for Attribute and Authorization Services
-
-Version 1.1.2.2
 - Changed versioning schema to include datanode schema at the beginning
 - Moved utils subpackage to esg.security.utils
 
@@ -52,4 +46,7 @@ Version 1.2.3
 - Inserting support for compatibility with legacy system: transform (group,role) pairs into attribute (name, value) pairs.
 
 Version 1.2.4
-- Inserted policy that allowd free access to all URLs that contain 'esg_dataroot'
+- Inserted policy that allowed free access to all URLs that contain 'esg_dataroot'
+
+Version 1.2.8
+- Changed level of some log statements.

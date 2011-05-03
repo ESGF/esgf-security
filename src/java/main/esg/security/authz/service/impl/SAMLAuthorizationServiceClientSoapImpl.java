@@ -83,7 +83,7 @@ public class SAMLAuthorizationServiceClientSoapImpl implements SAMLAuthorization
 		// serialize
 		final Element soapRequestElement = samlBuilder.marshall(soapRequestEnvelope);
 		final String xml = XMLHelper.prettyPrintXML((Node)soapRequestElement);
-		if (LOG.isDebugEnabled()) LOG.debug("SOAP request:\n"+xml);
+		if (LOG.isTraceEnabled()) LOG.trace("SOAP request:\n"+xml);
 		
 		return xml;
 
@@ -95,7 +95,7 @@ public class SAMLAuthorizationServiceClientSoapImpl implements SAMLAuthorization
 	public SAMLAuthorizations parseAuthorizationResponse(final String authorizationResponse) throws XMLParserException, UnmarshallingException {
 		
 		SAMLAuthorizations authorizations = new SAMLAuthorizationsImpl();
-		if (LOG.isDebugEnabled()) LOG.debug("Parsing authorization response=\n"+authorizationResponse);
+		if (LOG.isTraceEnabled()) LOG.trace("Parsing authorization response=\n"+authorizationResponse);
 		
 		// string > DOM
         final Element soapResponseElement = samlBuilder.parse(authorizationResponse);
