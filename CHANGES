@@ -50,3 +50,4 @@ Version 1.2.4
 
 Version 1.2.8
 - Changed level of some log statements.
+- Inserted debug statement when credentials cannot be loaded from keystore.

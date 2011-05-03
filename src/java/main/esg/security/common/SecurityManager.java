@@ -109,16 +109,20 @@ public class SecurityManager {
 	    
 	    // load requested public and private key
 	    final KeyStore.PrivateKeyEntry pkEntry = (KeyStore.PrivateKeyEntry)ks.getEntry(alias, new KeyStore.PasswordProtection(password.toCharArray()));
-	    if (LOG.isInfoEnabled()) LOG.info("Used alias="+alias+" password="+password+" to load keystore entry="+pkEntry.toString());
-	    final PrivateKey myPrivateKey = pkEntry.getPrivateKey();
-	    final PublicKey myPublicKey = pkEntry.getCertificate().getPublicKey();
-	    if (LOG.isDebugEnabled()) LOG.debug("Private key="+myPrivateKey.toString());
-	    if (LOG.isDebugEnabled()) LOG.debug("Public key="+myPublicKey.toString());
-	    
-	    final KeyPair keyPair = new KeyPair(myPublicKey, myPrivateKey);
-	    final BasicCredential myCredential = SecurityHelper.getSimpleCredential(keyPair.getPublic(), keyPair.getPrivate());
-	    myCredential.setEntityId( ((X509Certificate)pkEntry.getCertificate()).getSubjectDN().toString() );
-	    return myCredential;
+	    if (pkEntry==null) {
+	        throw new KeyStoreException("Cannot load entry with alias="+alias+" password="+password+" from keystore="+keystore.getAbsolutePath());
+	    } else {
+    	    if (LOG.isInfoEnabled()) LOG.info("Used alias="+alias+" password="+password+" to load keystore entry="+pkEntry.toString());
+    	    final PrivateKey myPrivateKey = pkEntry.getPrivateKey();
+    	    final PublicKey myPublicKey = pkEntry.getCertificate().getPublicKey();
+    	    if (LOG.isDebugEnabled()) LOG.debug("Private key="+myPrivateKey.toString());
+    	    if (LOG.isDebugEnabled()) LOG.debug("Public key="+myPublicKey.toString());
+    	    
+    	    final KeyPair keyPair = new KeyPair(myPublicKey, myPrivateKey);
+    	    final BasicCredential myCredential = SecurityHelper.getSimpleCredential(keyPair.getPublic(), keyPair.getPrivate());
+    	    myCredential.setEntityId( ((X509Certificate)pkEntry.getCertificate()).getSubjectDN().toString() );
+    	    return myCredential;
+	    }
 		
 	}
 
