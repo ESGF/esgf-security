@@ -181,8 +181,10 @@ public class UserInfoDAO {
     private ResultSetHandler<String> passwordQueryHandler = null;
 
     private static final String  adminName = "rootAdmin";
-    private static final Pattern openidUrlPattern = Pattern.compile("https://([^/ ]*)/.*[/]*/([^/ @*%#!()<>+=]*$)");
-    private static final Pattern usernamePattern = Pattern.compile("^[^/ @*%#!()<>+=]*$");
+    
+    //private static final Pattern openidUrlPattern = Pattern.compile("https://([^/ ]*)/.*[/]*/([^/ @*%#!()<>+=]*$)");
+    private static final Pattern openidUrlPattern = Pattern.compile("https://([^:/]*)(:(?:[0-9]*))?/([^ &@*%#!()<>+=]*/)*([^/ &@*%#!()<>+=]*$)");
+    private static final Pattern usernamePattern = Pattern.compile("^[^/ &@*%#!()<>+=]*$");
     
     private PasswordEncoder encoder = new MD5CryptPasswordEncoder();
     
@@ -374,33 +376,61 @@ public class UserInfoDAO {
         //set values accordingly...
         Matcher openidMatcher = openidUrlPattern.matcher(id);
         Matcher usernameMatcher = null;
+        String openidHost = null;
+        String openidPort = "";
+        String openidPath = null;
         if(openidMatcher.find()) {
             openid = id;
-            username = openidMatcher.group(2);
+            openidHost = openidMatcher.group(1);
+            openidPort = openidMatcher.group(2);
+            openidPath = openidMatcher.group(3);
+            username = openidMatcher.group(4);
+            
+            log.trace("submitted openid = "+id);
+            log.trace("openidHost = "+openidHost);
+            log.trace("openidPort = "+openidPort);
+            log.trace("openidPath = "+openidPath);
+            log.trace("username   = "+username);
+
+            if(openidPort.equals(":443")) {
+                openidPort="";
+                log.trace("scrubbed out default openidPort ["+openidPort+"]");
+            }
+
+            //reconstruct the url scrubbing out port if necessary...
+            openid = "https://"+openidHost+openidPort+"/"+openidPath+username;
+
         }else{
             usernameMatcher = usernamePattern.matcher(id);
             if(usernameMatcher.find()) {
-                String openidHost = props.getProperty("esgf.host",getFQDN());
-                String openidPort = props.getProperty("esgf.https.port","");
+                openidHost = props.getProperty("esgf.host",getFQDN());
+                openidPort = props.getProperty("esgf.https.port","");
+                username = id;
+                
+                log.trace("submitted id = "+id);
+                log.trace("openidHost = "+openidHost);
+                log.trace("openidPort = "+openidPort);
+                log.trace("username   = "+username);
+
                 //Do not use the port value if it is the default value for https i.e. 443
                 //BAD  = https://esgf-node1.llnl.gov:443/esgf-idp/openid/gavinbell
                 //GOOD = https://esgf-node1.llnl.gov/esgf-idp/openid/gavinbell
+                log.info("openid port = "+openidPort);
                 if(openidPort.equals("") || openidPort.equals("443")) {
                     openidPort="";
                 }else{
                     openidPort=":"+openidPort;
                 }
                 
-                openid = "https://"+openidHost+openidPort+"/esgf-idp/openid/"+id;
-                username = id;
+                openid = "https://"+openidHost+openidPort+"/esgf-idp/openid/"+username;
+
             }else {
                 log.info("Sorry money, your id is not well formed");
                 return null;
             }
         }
 
-        log.info("openid = "+openid);
-        log.info("username = "+username);
+        log.trace("(re)constructed openid = "+openid);
 
         try{
             log.trace("Issuing Query for info associated with id: ["+openid+"], from database");
@@ -647,7 +677,7 @@ public class UserInfoDAO {
         int numRowsAffected = -1;
         Matcher openidMatcher = openidUrlPattern.matcher(openid);
         if(openidMatcher.find()) {
-            if(adminName.equals(openidMatcher.group(2))) {
+            if(adminName.equals(openidMatcher.group(4))) {
                 log.warn("WARNING: Not permitted to delete "+adminName);
                 return false;
             }
