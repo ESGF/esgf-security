@@ -78,14 +78,24 @@ public class SAMLAttributeFactoryLocalXmlImpl implements SAMLAttributeFactory {
 		
 		for (final Object user : root.getChildren("user")) {
 			final Element _user = (Element)user;
+			// parse personal information
 			final String openid = _user.getAttributeValue("openid");
 			final SAMLAttributes atts = new SAMLAttributesImpl(openid, issuer);
 			atts.setFirstName(_user.getAttributeValue("first_name"));
 			atts.setLastName(_user.getAttributeValue("last_name"));
 			atts.setEmail(_user.getAttributeValue("email"));
+			// parse normal attributes
 			for (final Object attribute : _user.getChildren("attribute")) {
 				final Element _attribute = (Element)attribute;
 				atts.addAttribute(_attribute.getAttributeValue("attribute_type"), _attribute.getAttributeValue("attribute_value"));
+			}
+			// parse complex (group,role) attributes
+			for (final Object gr : _user.getChildren("grouprole")) {
+			    final Element grouprole = (Element)gr;
+			    final String type = grouprole.getAttributeValue("attribute_type");
+			    final String group = grouprole.getAttributeValue("group");
+			    final String role = grouprole.getAttributeValue("role");
+			    atts.addGroupAndRole(type, new GroupRoleImpl(group, role));
 			}
 			attributes.put(openid, atts);
 		}

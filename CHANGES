@@ -51,3 +51,6 @@ Version 1.2.4
 Version 1.2.8
 - Changed level of some log statements.
 - Inserted debug statement when credentials cannot be loaded from keystore.
+
+Version 1.2.9
+- Modified the SAMLAttributeFactoryLocalXmlImpl to parse (group,role) attributes out of the sample XML file
