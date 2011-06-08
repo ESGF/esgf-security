@@ -11,7 +11,7 @@
          <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" FriendlyName="FirstName" Name="urn:esg:first:name" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
          <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" FriendlyName="LastName" Name="urn:esg:last:name" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
          <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" FriendlyName="EmailAddress" Name="urn:esg:email:address" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
-         <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Name="CMIP5 Research" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
+         <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Name="CMIP5" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
          <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Name="NASA OBS" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
          <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Name="Test Attribute" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>
          <saml:Attribute xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" FriendlyName="GroupRole" Name="urn:esgf:test:grouprole" NameFormat="http://www.w3.org/2001/XMLSchema#string"/>

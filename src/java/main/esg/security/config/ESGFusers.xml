@@ -4,7 +4,7 @@
 
         <!-- esg-datanode.jpl.nasa.gov users -->
         <user openid="https://esg-datanode.jpl.nasa.gov/esgf-idp/openid/testUser" first_name="test" last_name="user" email="test@user">
-                <attribute attribute_type="CMIP5 Research" attribute_value="User"/>
+                <attribute attribute_type="CMIP5" attribute_value="User"/>
                 <attribute attribute_type="NASA OBS" attribute_value="User"/>
                 <attribute attribute_type="Test Attribute" attribute_value="User"/>
         </user>
@@ -14,7 +14,7 @@
         
         <!-- test-datanode.jpl.nasa.gov users -->
         <user openid="https://test-datanode.jpl.nasa.gov/esgf-idp/openid/testUser" first_name="test" last_name="user" email="test@user">
-                <attribute attribute_type="CMIP5 Research" attribute_value="User"/>
+                <attribute attribute_type="CMIP5" attribute_value="User"/>
                 <attribute attribute_type="NASA OBS" attribute_value="User"/>
                 <attribute attribute_type="Test Attribute" attribute_value="User"/>
         </user>
@@ -24,7 +24,7 @@
 
         <!-- localhost users -->
         <user openid="https://localhost:8443/esgf-idp/openid/testUser" first_name="test" last_name="user" email="test@user">
-                <attribute attribute_type="CMIP5 Research" attribute_value="User"/>
+                <attribute attribute_type="CMIP5" attribute_value="User"/>
                 <attribute attribute_type="NASA OBS" attribute_value="User"/>
                 <attribute attribute_type="Test Attribute" attribute_value="User"/>
                 <grouprole attribute_type="urn:esg:group:role" group="CMIP5 Research" role="default"/>
@@ -38,23 +38,23 @@
 
         <!-- esg-test1.llnl.gov users -->
         <user openid="https://esg-test1.llnl.gov/esgf-idp/openid/testUser" first_name="test" last_name="user" email="test@user">
-                <attribute attribute_type="CMIP5 Research" attribute_value="User"/>
+                <attribute attribute_type="CMIP5" attribute_value="User"/>
                 <attribute attribute_type="NASA OBS" attribute_value="User"/>
                 <attribute attribute_type="Test Attribute" attribute_value="User"/>
         </user>
         <user openid="https://esg-test1.llnl.gov/esgf-idp/openid/rootAdmin" first_name="root" last_name="admin" email="root@admin">
-                <attribute attribute_type="CMIP5 Research" attribute_value="Admin"/>
+                <attribute attribute_type="CMIP5" attribute_value="Admin"/>
         </user>
         
         <!-- esg-jpl users -->
         <user openid="https://esg-gateway.jpl.nasa.gov/myopenid/rootAdmin" first_name="test" last_name="user" email="test@user">
-                <attribute attribute_type="CMIP5 Research" attribute_value="User"/>
+                <attribute attribute_type="CMIP5" attribute_value="User"/>
                 <attribute attribute_type="NASA OBS" attribute_value="User"/>
                 <attribute attribute_type="Test Attribute" attribute_value="User"/>
         </user>
 
         <user openid="https://esg-gateway.jpl.nasa.gov/myopenid/cinquiniluca" first_name="Luca" last_name="Cinquini" email="test@user">
-                <attribute attribute_type="CMIP5 Research" attribute_value="User"/>
+                <attribute attribute_type="CMIP5" attribute_value="User"/>
                 <attribute attribute_type="NASA OBS" attribute_value="User"/>
                 <attribute attribute_type="Test Attribute" attribute_value="User"/>
         </user>
