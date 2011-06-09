@@ -37,6 +37,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.sql.DataSource;
+
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.logging.Log;
@@ -82,24 +84,13 @@ public class SAMLAttributeFactoryGatewayImpl implements SAMLAttributeFactory {
     private Connection conn = null;
     private ResultSetHandler<Map<String,Set<String>>> userGroupsResultSetHandler = null;
     private ResultSetHandler<Integer> idResultSetHandler = null;
-
-	public SAMLAttributeFactoryGatewayImpl(final String issuer, Properties props) throws Exception {
+    private DataSource dataSource;
+    
+	public SAMLAttributeFactoryGatewayImpl(final String issuer, DataSource dataSource) throws Exception {
 		this.issuer = issuer;
 		
-        //!TODO: Database connection sharing.
-        //       We assume this is the only connection to the Gateway database.
-        try {
-        	Class.forName(props.getProperty("gateway.db.driver", "org.postgresql.Driver")).newInstance();
-        	conn = DriverManager.getConnection(props.getProperty("gateway.db.url"),
-        			props.getProperty("gateway.db.user"),
-        			props.getProperty("gateway.db.password")
-        			);
-        }	
-        catch (Exception e) {
-        	log.error("Unable to connect to database");
-        	System.err.println(e);
-        	System.exit(0);
-        }
+		//!TODO: A bit clunky.  Could use better DB interface.
+		conn = dataSource.getConnection();
     
         this.props = props;
 

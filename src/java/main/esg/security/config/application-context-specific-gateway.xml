@@ -15,13 +15,18 @@
         </bean>
         <bean name="samlAttributeService" class="esg.security.attr.service.impl.SAMLAttributeServiceSoapImpl" />
 
-        <!-- Example implementation that looks up user attributes in local XML file -->
         <bean id="samlAttributeFactory" class="esg.security.attr.service.impl.SAMLAttributeFactoryGatewayImpl">
                 <constructor-arg index="0"><value>ESGF Attribute Service</value></constructor-arg>
-	            <!-- <constructor-arg index="1"><value>esg/security/config/gateway-db.properties</value></constructor-arg> -->
-	            <!-- Referencing application-context.xml.  Will this work? -->
-	            <constructor-arg index="1" ref="propertyConfigurer"/>
+	            <constructor-arg index="1" ref="gatewayDataSource"/>
         </bean>
+
+		<!-- Gateway datasource taking configuration values from application.properties -->
+		<bean id="gatewayDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+			<property name="driverClassName" value="org.postgresql.Driver" /> 
+			<property name="url" value="${gateway.db.url}" />
+			<property name="username" value="${gateway.db.user}" />
+			<property name="password" value="${gateway.db.password}" />
+		</bean>			
 
         <!-- Example white list -->
         <bean name="whiteList" class="esg.security.common.WhiteListCertificateProvider">
