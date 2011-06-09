@@ -106,6 +106,9 @@ public class SAMLAttributeFactoryGatewayImpl implements SAMLAttributeFactory {
 			attributeInfo = getAttributeInfoById(identifier);
 		}
 		catch (Exception e) {
+			log.debug("Failed AttributeInfo lookup for " + identifier);
+			//!TODO: this is for debugging only.  It isn't necessarily an error.
+			log.error("Failing exception is", e);
 			throw new SAMLUnknownPrincipalException("Unknown identifier: "+identifier);
 		}		
 
