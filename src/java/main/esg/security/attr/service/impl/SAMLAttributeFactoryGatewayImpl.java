@@ -1,20 +1,35 @@
 /*******************************************************************************
- * Copyright (c) 2011 Earth System Grid Federation
- * ALL RIGHTS RESERVED. 
- * U.S. Government sponsorship acknowledged.
- * 
- * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
- * 
- * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
- * 
- * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
- * 
- * Neither the name of the <ORGANIZATION> nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+BSD Licence
+Copyright (c) 2011, Science & Technology Facilities Council (STFC)
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following disclaimer
+      in the documentation and/or other materials provided with the
+      distribution.
+    * Neither the name of the Science & Technology Facilities Council
+      (STFC) nor the names of its contributors may be used to endorse or
+      promote products derived from this software without specific prior
+      written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
  ******************************************************************************/
 /**
    Description:
@@ -24,27 +39,23 @@
 package esg.security.attr.service.impl;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.sql.Types;
 
 
-import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import esg.node.security.UserInfo;
 import esg.security.attr.service.impl.SAMLAttributesImpl;
 import esg.security.attr.service.api.SAMLAttributeFactory;
 import esg.security.attr.service.api.SAMLAttributes;
@@ -69,10 +80,9 @@ public class SAMLAttributeFactoryGatewayImpl implements SAMLAttributeFactory {
 	"WHERE openid = ?";
     
     private static final String groupQuery = 
-	"SELECT g.name, role.name " +
-	"FROM security.user u, security.group g, role, status, membership m " +
-	"WHERE u.openid = ? " +
-	"  AND m.user_id=u.id AND m.group_id=g.id AND m.role_id=role.id AND m.status_id=status.id AND status.name='valid' ";
+	"SELECT g.name, r.name " +
+	"FROM security.group g, security.role r, security.status s, security.membership m " +
+	"WHERE m.user_id=? AND m.group_id=g.id AND m.role_id=r.id AND m.status_id=s.id AND s.name='valid' ";
     
     
     
@@ -80,21 +90,17 @@ public class SAMLAttributeFactoryGatewayImpl implements SAMLAttributeFactory {
 
     private static final Log log = LogFactory.getLog(SAMLAttributeFactoryGatewayImpl.class);
 
-    private Properties props = null;
     private Connection conn = null;
-    private ResultSetHandler<Map<String,Set<String>>> userGroupsResultSetHandler = null;
-    private ResultSetHandler<Integer> idResultSetHandler = null;
-    private DataSource dataSource;
     
 	public SAMLAttributeFactoryGatewayImpl(final String issuer, DataSource dataSource) throws Exception {
 		this.issuer = issuer;
 		
+		log.debug("Creating SAMLAttributeFactory for issuer " + issuer);
+		log.debug(dataSource.toString());
+		
 		//!TODO: A bit clunky.  Could use better DB interface.
 		conn = dataSource.getConnection();
     
-        this.props = props;
-
-        
 	}
 
 
@@ -105,11 +111,9 @@ public class SAMLAttributeFactoryGatewayImpl implements SAMLAttributeFactory {
 		try {
 			attributeInfo = getAttributeInfoById(identifier);
 		}
-		catch (Exception e) {
-			log.debug("Failed AttributeInfo lookup for " + identifier);
-			//!TODO: this is for debugging only.  It isn't necessarily an error.
-			log.error("Failing exception is", e);
-			throw new SAMLUnknownPrincipalException("Unknown identifier: "+identifier);
+		catch (SQLException e) {
+			log.error("SQL Exception is ", e);
+			throw new SAMLUnknownPrincipalException("SQL Exception during attribute lookup for " + identifier);
 		}		
 
 		attributes = new SAMLAttributesImpl(identifier, issuer);
@@ -128,42 +132,42 @@ public class SAMLAttributeFactoryGatewayImpl implements SAMLAttributeFactory {
 		return issuer;
 	}
 
-	private GatewayAttributeInfo getAttributeInfoById(String identifier) throws Exception {
+	
+	private GatewayAttributeInfo getAttributeInfoById(String identifier) throws SQLException, SAMLUnknownPrincipalException {
 		GatewayAttributeInfo attributeInfo = null;
+		String uuid = null;
+				
 		log.debug("Getting Gateway info for " + identifier);
 		
-		try {
-			PreparedStatement query1 = conn.prepareStatement(openidQuery);
-			query1.setString(1, identifier);
-			ResultSet resultSet = query1.executeQuery();
-			
-			// Sanity check
-			assert resultSet.getMetaData().getColumnCount() == 1;
-			resultSet.next();
-			
-			String uuid = resultSet.getString(1);			
-			attributeInfo = new GatewayAttributeInfo(
-							resultSet.getString(2), 
-							resultSet.getString(3), 
-							identifier, 
-							resultSet.getString(3)
-							);
+		//!TODO: better exception handling
+		PreparedStatement query1 = conn.prepareStatement(openidQuery);
+		query1.setString(1, identifier);
 
-			log.debug("Lookup found " + attributeInfo.toString());
-			
-			PreparedStatement query2 = conn.prepareStatement(groupQuery);
-			query2.setString(1, uuid);
-			resultSet = query2.executeQuery();
-			
-			while (resultSet.next()) {
-				log.debug("Group found: " + resultSet.getString(1) + " : " + resultSet.getString(2));
-				attributeInfo.addPermission(resultSet.getString(1), resultSet.getString(2));
-			}
-			
+		ResultSet resultSet = query1.executeQuery();
+		if (!resultSet.next()) {
+			throw new SAMLUnknownPrincipalException("Unknown identifier: "+identifier);
 		}
-		catch (SQLException e) {
-			throw new Exception("SQL query failed");
+			
+		uuid = resultSet.getString("id");			
+		attributeInfo = new GatewayAttributeInfo(
+				resultSet.getString("firstname"), 
+				resultSet.getString("lastname"), 
+				identifier, 
+				resultSet.getString("email")
+		);
+		
+		
+		log.debug("Lookup found " + attributeInfo.toString());
+			
+		PreparedStatement query2 = conn.prepareStatement(groupQuery);
+		query2.setObject(1, uuid, Types.OTHER);
+		resultSet = query2.executeQuery();
+			
+		while (resultSet.next()) {
+			log.debug("Group found: " + resultSet.getString(1) + " : " + resultSet.getString(2));
+			attributeInfo.addPermission(resultSet.getString(1), resultSet.getString(2));
 		}
+			
 		
 		return attributeInfo;
 	}
