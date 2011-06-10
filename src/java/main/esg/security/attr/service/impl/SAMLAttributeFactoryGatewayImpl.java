@@ -40,7 +40,6 @@ package esg.security.attr.service.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.sql.Types;
 
 
@@ -56,22 +55,16 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import esg.security.attr.service.impl.SAMLAttributesImpl;
 import esg.security.attr.service.api.SAMLAttributeFactory;
 import esg.security.attr.service.api.SAMLAttributes;
 import esg.security.common.SAMLUnknownPrincipalException;
 
 
-
-
 public class SAMLAttributeFactoryGatewayImpl implements SAMLAttributeFactory {
 
-    /**
-     * 
-     */
+	private final String ESG_GROUP_ROLE_URN = "urn:esg:group:role";
 
 	final private String issuer;
-    private SAMLAttributes attributes = null;
 
     //EG Query
     private static final String openidQuery = 
@@ -106,22 +99,15 @@ public class SAMLAttributeFactoryGatewayImpl implements SAMLAttributeFactory {
 
 	@Override
 	public SAMLAttributes newInstance(String identifier) throws SAMLUnknownPrincipalException {
-		GatewayAttributeInfo attributeInfo = null;
+		SAMLAttributes attributes= null;
 		
 		try {
-			attributeInfo = getAttributeInfoById(identifier);
+			attributes = getAttributesById(identifier);
 		}
 		catch (SQLException e) {
 			log.error("SQL Exception is ", e);
 			throw new SAMLUnknownPrincipalException("SQL Exception during attribute lookup for " + identifier);
 		}		
-
-		attributes = new SAMLAttributesImpl(identifier, issuer);
-		attributes.setFirstName(attributeInfo.getFirstName());
-		attributes.setLastName(attributeInfo.getLastName());
-		attributes.setOpenid(attributeInfo.getOpenid());
-		attributes.setEmail(attributeInfo.getEmail());
-		attributes.setAttributes(attributeInfo.getPermissions());
 		
 		return attributes;
 	
@@ -133,9 +119,9 @@ public class SAMLAttributeFactoryGatewayImpl implements SAMLAttributeFactory {
 	}
 
 	
-	private GatewayAttributeInfo getAttributeInfoById(String identifier) throws SQLException, SAMLUnknownPrincipalException {
-		GatewayAttributeInfo attributeInfo = null;
+	private SAMLAttributes getAttributesById(String identifier) throws SQLException, SAMLUnknownPrincipalException {
 		String uuid = null;
+	    SAMLAttributes attributes = null;
 				
 		log.debug("Getting Gateway info for " + identifier);
 		
@@ -148,28 +134,24 @@ public class SAMLAttributeFactoryGatewayImpl implements SAMLAttributeFactory {
 			throw new SAMLUnknownPrincipalException("Unknown identifier: "+identifier);
 		}
 			
-		uuid = resultSet.getString("id");			
-		attributeInfo = new GatewayAttributeInfo(
-				resultSet.getString("firstname"), 
-				resultSet.getString("lastname"), 
-				identifier, 
-				resultSet.getString("email")
-		);
-		
-		
-		log.debug("Lookup found " + attributeInfo.toString());
-			
+		uuid = resultSet.getString("id");
+		attributes = new SAMLAttributesImpl(identifier, issuer);
+		attributes.setFirstName(resultSet.getString("firstname"));
+		attributes.setLastName(resultSet.getString("lastname"));
+		attributes.setOpenid(identifier);
+		attributes.setEmail(resultSet.getString("email"));
+
 		PreparedStatement query2 = conn.prepareStatement(groupQuery);
 		query2.setObject(1, uuid, Types.OTHER);
 		resultSet = query2.executeQuery();
 			
 		while (resultSet.next()) {
 			log.debug("Group found: " + resultSet.getString(1) + " : " + resultSet.getString(2));
-			attributeInfo.addPermission(resultSet.getString(1), resultSet.getString(2));
+			attributes.addGroupAndRole(ESG_GROUP_ROLE_URN, new GroupRoleImpl(resultSet.getString(1), resultSet.getString(2)));
 		}
 			
 		
-		return attributeInfo;
+		return attributes;
 	}
 	
 }
