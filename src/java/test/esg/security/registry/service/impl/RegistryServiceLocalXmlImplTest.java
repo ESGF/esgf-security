@@ -35,6 +35,7 @@ public class RegistryServiceLocalXmlImplTest {
 	
 	private static String ESGF_ATS = "esg/security/registry/service/data/esgf_ats.xml";
 	private static String ESGF_IDP = "esg/security/registry/service/data/esgf_idp.xml";
+	private static String ESGF_AZS = "esg/security/registry/service/data/esgf_azs.xml";
 	
 	
 	@Test
@@ -42,10 +43,10 @@ public class RegistryServiceLocalXmlImplTest {
 	    
 	    final RegistryService service = new RegistryServiceLocalXmlImpl(ESGF_ATS);
 		
-		Assert.assertTrue(service.getAttributeServices("CMIP5 Research").contains( new URL("https://pcmdi3.llnl.gov/esgcet/saml/soap/secure/attributeService.htm")));
-	    Assert.assertTrue(service.getAttributeServices("CMIP5 Research").contains( new URL("https://pcmdi3.llnl.gov/esgcet/saml/soap/secure/attributeService2.htm")));
-		Assert.assertTrue(service.getAttributeServices("CMIP5 Commercial").contains( new URL("https://pcmdi3.llnl.gov/esgcet/saml/soap/secure/attributeService.htm")));
-		Assert.assertTrue(service.getAttributeServices("AIRS").contains( new URL("https://esg-gateway.jpl.nasa.gov/saml/soap/secure/attributeService.htm")));
+		Assert.assertTrue(service.getAttributeServices("CMIP5 Research").contains( new URL("https://esg-datanode.jpl.nasa.gov/esgf-security/saml/soap/secure/attributeService.htm")));
+	    Assert.assertTrue(service.getAttributeServices("CMIP5 Research").contains( new URL("https://esgf-node1.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm")));
+		Assert.assertTrue(service.getAttributeServices("NASA OBS").contains( new URL("https://esg-datanode.jpl.nasa.gov/esgf-security/saml/soap/secure/attributeService.htm")));
+		Assert.assertTrue(service.getAttributeServices("ORNL OBS").contains( new URL("https://esgf-node1.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm")));
 		
 	}
 	
@@ -58,11 +59,20 @@ public class RegistryServiceLocalXmlImplTest {
 	}
 	
     @Test
-    public void testgetIdentityProviders() throws Exception {
+    public void testGetIdentityProviders() throws Exception {
         
         final RegistryService service = new RegistryServiceLocalXmlImpl(ESGF_IDP);
         
-        Assert.assertTrue(service.getIdentityProviders().contains( new URL("https://pcmdi3.llnl.gov/esgcet/openid/provider.htm")) );
+        Assert.assertTrue(service.getIdentityProviders().contains( new URL("https://esgf-node1.llnl.gov/esgf-idp/idp/openidServer.htm")) );
+        
+    }
+    
+    @Test
+    public void testGetAuthorizationServices() throws Exception {
+        
+        final RegistryService service = new RegistryServiceLocalXmlImpl(ESGF_AZS);
+        
+        Assert.assertTrue(service.getAuthorizationServices().contains( new URL("https://esgf-node1.llnl.gov/esgf-security/saml/soap/secure/authorizationService.htm")) );
         
     }
 	

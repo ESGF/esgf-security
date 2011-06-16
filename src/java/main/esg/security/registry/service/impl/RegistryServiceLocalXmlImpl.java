@@ -48,7 +48,12 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
 	// local storage of attribute type to attribute services mapping (one-to-many)
 	private Map<String, List<URL>> attributeServices = new HashMap<String, List<URL>>();
 	
+	// local storage for identity provider endpoints
 	private List<URL> identityProviders = new ArrayList<URL>();
+	
+    // local storage for authorization service endpoints
+    private List<URL> authorizationServices = new ArrayList<URL>();
+	
 	
 	private final static Namespace NS = Namespace.getNamespace("http://www.esgf.org/whitelist");
 	
@@ -98,6 +103,22 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
 		
 	}
     
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<URL> getAuthorizationServices()  {
+        
+        // reload registry if needed
+        if (registryFile.lastModified()>registryFileLastModTime) {
+            update();        
+        } 
+        
+        // return white list
+        return Collections.unmodifiableList(authorizationServices);
+        
+    }
+    
     
     /**
      * {@inheritDoc}
@@ -127,15 +148,16 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
 		try {
 		    
 		    final Map<String, List<URL>> _attributeServices = new HashMap<String, List<URL>>();
-		    List<URL> _identityProviders = new ArrayList<URL>();
+		    final List<URL> _identityProviders = new ArrayList<URL>();
+		    final List<URL > _authorizationServices = new ArrayList<URL>();
 		    
     		final Document doc = Parser.toJDOM(registryFile.getAbsolutePath(), false);
     		final Element root = doc.getRootElement();
     		    		
-    		// parse Attribute Service section
+    		// parse Attribute Services section
     		if (root.getName().equals("ats_whitelist")) {
     		    
-        		for (final Object attr : root.getChildren("attribute")) {
+        		for (final Object attr : root.getChildren("attribute", NS)) {
         			final Element _attr = (Element)attr;
         			final String aType = _attr.getAttributeValue("type");
         			if (_attributeServices.get(aType) == null) {
@@ -144,13 +166,21 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
         			_attributeServices.get(aType).add(new URL(_attr.getAttributeValue("service")));
         		}
         		
-        	// parse Identity Provider section
+        	// parse Identity Providers section
     		} else if (root.getName().equals("idp_whitelist")) {
     		    
     		    for (final Object value : root.getChildren("value", NS)) {
     		        final Element element = (Element)value;
     		        _identityProviders.add( new URL(element.getText()) );
     		    }
+    		    
+    		// parse Authorization Services section
+    		} else if (root.getName().equals("azs_whitelist")) {
+    		    
+                for (final Object value : root.getChildren("value", NS)) {
+                    final Element element = (Element)value;
+                    _authorizationServices.add( new URL(element.getText()) );
+                }
     		    
     		}
     		
@@ -160,6 +190,9 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
             }
             synchronized (identityProviders) {
                 identityProviders = _identityProviders;             
+            }
+            synchronized (authorizationServices) {
+                authorizationServices = _authorizationServices;             
             }
             registryFileLastModTime = registryFile.lastModified();
             

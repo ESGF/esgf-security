@@ -43,6 +43,12 @@ public interface RegistryService {
 	List<URL> getIdentityProviders();
 	
 	/**
+     * Method to return an ordered list of authorization service endpoints.
+     * @return
+     */
+    List<URL> getAuthorizationServices();
+	
+	/**
 	 * Method to return the last update time, in milliseconds from the epoch.
 	 * @return
 	 */
