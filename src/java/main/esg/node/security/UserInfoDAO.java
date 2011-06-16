@@ -181,8 +181,10 @@ public class UserInfoDAO {
     private ResultSetHandler<String> passwordQueryHandler = null;
 
     private static final String  adminName = "rootAdmin";
-    private static final Pattern openidUrlPattern = Pattern.compile("https://([^/ ]*)/.*[/]*/([^/ @*%#!()<>+=]*$)");
-    private static final Pattern usernamePattern = Pattern.compile("^[^/ @*%#!()<>+=]*$");
+    
+    //private static final Pattern openidUrlPattern = Pattern.compile("https://([^/ ]*)/.*[/]*/([^/ @*%#!()<>+=]*$)");
+    private static final Pattern openidUrlPattern = Pattern.compile("https://([^:/]*)(:(?:[0-9]*))?/([^ &@*%#!()<>+=]*/)*([^/ &@*%#!()<>+=]*$)");
+    private static final Pattern usernamePattern = Pattern.compile("^[^/ &@*%#!()<>+=]*$");
     
     private PasswordEncoder encoder = new MD5CryptPasswordEncoder();
     
@@ -363,72 +365,108 @@ public class UserInfoDAO {
 
      */
     public synchronized UserInfo getUserById(String id) {
-        log.info("getUserById ( "+id+" )");
-        
         UserInfo userInfo = null;
-        int affectedRecords = 0;
-        String openid = null;
-        String username = null;
 
-        //Discern if they user put in a an openid url or just a username, 
-        //set values accordingly...
-        Matcher openidMatcher = openidUrlPattern.matcher(id);
-        Matcher usernameMatcher = null;
-        if(openidMatcher.find()) {
-            openid = id;
-            username = openidMatcher.group(2);
-        }else{
-            usernameMatcher = usernamePattern.matcher(id);
-            if(usernameMatcher.find()) {
-                String openidHost = props.getProperty("esgf.host",getFQDN());
-                String openidPort = props.getProperty("esgf.https.port","");
-                //Do not use the port value if it is the default value for https i.e. 443
-                //BAD  = https://esgf-node1.llnl.gov:443/esgf-idp/openid/gavinbell
-                //GOOD = https://esgf-node1.llnl.gov/esgf-idp/openid/gavinbell
-                if(openidPort.equals("") || openidPort.equals("443")) {
-                    openidPort="";
-                }else{
-                    openidPort=":"+openidPort;
-                }
-                
-                openid = "https://"+openidHost+openidPort+"/esgf-idp/openid/"+id;
-                username = id;
-            }else {
-                log.info("Sorry money, your id is not well formed");
-                return null;
-            }
-        }
-
-        log.info("openid = "+openid);
-        log.info("username = "+username);
+        log.info("getUserById ( "+id+" )");
 
         try{
-            log.trace("Issuing Query for info associated with id: ["+openid+"], from database");
-            if (openid==null) { return null; }
-            userInfo = queryRunner.query(idQuery,userInfoResultSetHandler,openid);
-
-            //IF does not already exist in our system, then create a
-            //skeleton instance suitable for adding to... (setting
-            //openid and username) You know this object is not in the
-            //system because it's id will be -1.
-            if(userInfo == null) {
-                userInfo = new UserInfo();
-                userInfo.setOpenid(openid);
-                userInfo.setUserName(username);
-            }else {
-                userInfo.setPermissions(queryRunner.query(getPermissionsQuery,userPermissionsResultSetHandler,openid));
+            int affectedRecords = 0;
+            String openid = null;
+            String username = null;
+            
+            //Discern if they user put in a an openid url or just a username, 
+            //set values accordingly...
+            Matcher openidMatcher = openidUrlPattern.matcher(id);
+            Matcher usernameMatcher = null;
+            String openidHost = null;
+            String openidPort = "";
+            String openidPath = null;
+            if(openidMatcher.find()) {
+                openid = id;
+                openidHost = openidMatcher.group(1);
+                openidPort = openidMatcher.group(2);
+                openidPath = openidMatcher.group(3);
+                username = openidMatcher.group(4);
+                
+                log.trace("submitted openid = "+id);
+                log.trace("openidHost = "+openidHost);
+                log.trace("openidPort = "+openidPort);
+                log.trace("openidPath = "+openidPath);
+                log.trace("username   = "+username);
+                
+                if(openidPort == null || openidPort.equals(":443")) {
+                    log.trace("scrubbing out default openidPort ["+openidPort+"]");
+                    openidPort="";
+                }
+                
+                //reconstruct the url scrubbing out port if necessary...
+                openid = "https://"+openidHost+openidPort+"/"+openidPath+username;
+                
+            }else{
+                usernameMatcher = usernamePattern.matcher(id);
+                if(usernameMatcher.find()) {
+                    openidHost = props.getProperty("esgf.host",getFQDN());
+                    openidPort = props.getProperty("esgf.https.port","");
+                    username = id;
+                    
+                    log.trace("submitted id = "+id);
+                    log.trace("openidHost = "+openidHost);
+                    log.trace("openidPort = "+openidPort);
+                    log.trace("username   = "+username);
+                    
+                    //Do not use the port value if it is the default value for https i.e. 443
+                    //BAD  = https://esgf-node1.llnl.gov:443/esgf-idp/openid/gavinbell
+                    //GOOD = https://esgf-node1.llnl.gov/esgf-idp/openid/gavinbell
+                    log.info("openid port = "+openidPort);
+                    if(openidPort.equals("") || openidPort.equals("443")) {
+                        openidPort="";
+                    }else{
+                        openidPort=":"+openidPort;
+                    }
+                    
+                    openid = "https://"+openidHost+openidPort+"/esgf-idp/openid/"+username;
+                    
+                }else {
+                    log.info("Sorry money, your id is not well formed");
+                    return null;
+                }
             }
             
-            //A bit of debugging and sanity checking...
-            log.trace(userInfo.toString());
+            log.trace("(re)constructed openid = "+openid);
             
-        }catch(SQLException ex) {
-            log.error(ex);      
-            throw new ESGFDataAccessException(ex);
+            try{
+                log.trace("Issuing Query for info associated with id: ["+openid+"], from database");
+                if (openid==null) { return null; }
+                userInfo = queryRunner.query(idQuery,userInfoResultSetHandler,openid);
+                
+                //IF does not already exist in our system, then create a
+                //skeleton instance suitable for adding to... (setting
+                //openid and username) You know this object is not in the
+                //system because it's id will be -1.
+                if(userInfo == null) {
+                    userInfo = new UserInfo();
+                    userInfo.setOpenid(openid);
+                    userInfo.setUserName(username);
+                }else {
+                    userInfo.setPermissions(queryRunner.query(getPermissionsQuery,userPermissionsResultSetHandler,openid));
+                }
+                
+                //A bit of debugging and sanity checking...
+                log.trace(userInfo.toString());
+                
+            }catch(SQLException ex) {
+                log.error(ex);      
+                throw new ESGFDataAccessException(ex);
+            }
+        }catch(Throwable t) {
+            //If shit hits the fan, bottom line... not letting anyone in.
+            //returning a negative answer for getting user information
+            log.error("t.getMessage()");
+            log.error(t);
         }
         return userInfo;
     }
-
+    
     /**
        Takes a <i>valid</i> UserInfo object input and replenishes it with data
        directly from the backing store (database).  This method is
@@ -647,7 +685,7 @@ public class UserInfoDAO {
         int numRowsAffected = -1;
         Matcher openidMatcher = openidUrlPattern.matcher(openid);
         if(openidMatcher.find()) {
-            if(adminName.equals(openidMatcher.group(2))) {
+            if(adminName.equals(openidMatcher.group(4))) {
                 log.warn("WARNING: Not permitted to delete "+adminName);
                 return false;
             }
