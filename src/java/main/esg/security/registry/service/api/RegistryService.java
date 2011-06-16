@@ -19,6 +19,7 @@
 package esg.security.registry.service.api;
 
 import java.net.URL;
+import java.util.List;
 
 import esg.security.attr.service.api.SAMLAttributeService;
 
@@ -29,10 +30,27 @@ import esg.security.attr.service.api.SAMLAttributeService;
 public interface RegistryService {
 	
 	/**
-	 * Method to retrieve the {@link SAMLAttributeService} URL that manages a given attribute type.
+	 * Method to retrieve an ordered list of {@link SAMLAttributeService} URLs that manage a given attribute type.
 	 * @param attribute
 	 * @return
 	 */
-	URL getAttributeService(String attributeType) throws UnknownPolicyAttributeTypeException;
+	List<URL> getAttributeServices(String attributeType) throws UnknownPolicyAttributeTypeException;
+	
+	/**
+	 * Method to return the white list of trusted identity providers.
+	 * @return
+	 */
+	List<URL> getIdentityProviders();
+	
+	/**
+	 * Method to return the last update time, in milliseconds from the epoch.
+	 * @return
+	 */
+	long getLastUpdateTime();
+	
+	/**
+	 * Method to reload the content of the registry.
+	 */
+	void update();
 
 }

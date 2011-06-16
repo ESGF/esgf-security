@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<registry>
+<ats_whitelist>
 
 	<attribute type="CMIP5 Research" service="https://pcmdi3.llnl.gov/esgcet/saml/soap/secure/attributeService.htm"/>
+	<attribute type="CMIP5 Research" service="https://pcmdi3.llnl.gov/esgcet/saml/soap/secure/attributeService2.htm"/>
+	
 	<attribute type="CMIP5 Commercial" service="https://pcmdi3.llnl.gov/esgcet/saml/soap/secure/attributeService.htm"/>
 	<attribute type="AIRS" service="https://esg-gateway.jpl.nasa.gov/saml/soap/secure/attributeService.htm"/>
 
-</registry>
+</ats_whitelist>

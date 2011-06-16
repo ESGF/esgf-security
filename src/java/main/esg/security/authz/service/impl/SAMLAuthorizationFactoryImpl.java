@@ -274,13 +274,15 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 				if (!policy.getType().equalsIgnoreCase(FREE_RESOURCE_ATTRIBUTE_TYPE)) {
 					try {
 						
-						// URL of AttributeService serving this attribute type
-						final URL attributeServiceUrl = registryService.getAttributeService(policy.getType());
-						log("Attribute type="+policy.getType()+" is managed by AttributeService at: "+attributeServiceUrl.toString());
-						if (attServiceMap.get(attributeServiceUrl)==null) {
-							attServiceMap.put(attributeServiceUrl, new HashSet<String>() );
+						// URLs of AttributeServices serving this attribute type
+						final List<URL> attributeServiceUrls = registryService.getAttributeServices(policy.getType());
+						for (final URL attributeServiceUrl : attributeServiceUrls) {
+						    log("Attribute type="+policy.getType()+" is managed by AttributeService at: "+attributeServiceUrl.toString());
+						    if (attServiceMap.get(attributeServiceUrl)==null) {
+						        attServiceMap.put(attributeServiceUrl, new HashSet<String>() );
+						    }
+						    attServiceMap.get(attributeServiceUrl).add( policy.getType() );
 						}
-						attServiceMap.get(attributeServiceUrl).add( policy.getType() );
 						
 					} catch(UnknownPolicyAttributeTypeException e) {
 						LOG.warn(e.getMessage());	

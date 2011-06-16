@@ -21,7 +21,6 @@ package esg.security.registry.service.impl;
 import java.net.URL;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import esg.security.registry.service.api.RegistryService;
@@ -34,28 +33,37 @@ import esg.security.registry.service.api.UnknownPolicyAttributeTypeException;
  */
 public class RegistryServiceLocalXmlImplTest {
 	
-	private static String XMLFILE = "esg/security/registry/service/data/ESGFregistry.xml";
-	
-	private RegistryService service;
-	
-	@Before
-	public void setup() throws Exception {
-		service = new RegistryServiceLocalXmlImpl(XMLFILE);
-	}
+	private static String ESGF_ATS = "esg/security/registry/service/data/esgf_ats.xml";
+	private static String ESGF_IDP = "esg/security/registry/service/data/esgf_idp.xml";
 	
 	
 	@Test
 	public void testGetAttributeService() throws Exception {
+	    
+	    final RegistryService service = new RegistryServiceLocalXmlImpl(ESGF_ATS);
 		
-		Assert.assertEquals(service.getAttributeService("CMIP5 Research"), new URL("https://pcmdi3.llnl.gov/esgcet/saml/soap/secure/attributeService.htm"));
-		Assert.assertEquals(service.getAttributeService("CMIP5 Commercial"), new URL("https://pcmdi3.llnl.gov/esgcet/saml/soap/secure/attributeService.htm"));
-		Assert.assertEquals(service.getAttributeService("AIRS"), new URL("https://esg-gateway.jpl.nasa.gov/saml/soap/secure/attributeService.htm"));
+		Assert.assertTrue(service.getAttributeServices("CMIP5 Research").contains( new URL("https://pcmdi3.llnl.gov/esgcet/saml/soap/secure/attributeService.htm")));
+	    Assert.assertTrue(service.getAttributeServices("CMIP5 Research").contains( new URL("https://pcmdi3.llnl.gov/esgcet/saml/soap/secure/attributeService2.htm")));
+		Assert.assertTrue(service.getAttributeServices("CMIP5 Commercial").contains( new URL("https://pcmdi3.llnl.gov/esgcet/saml/soap/secure/attributeService.htm")));
+		Assert.assertTrue(service.getAttributeServices("AIRS").contains( new URL("https://esg-gateway.jpl.nasa.gov/saml/soap/secure/attributeService.htm")));
 		
 	}
 	
 	@Test(expected=UnknownPolicyAttributeTypeException.class)
 	public void testGetAttributeServiceForUnkwonType() throws Exception {
-		service.getAttributeService("DoesNotExist");	
+	    
+	    final RegistryService service = new RegistryServiceLocalXmlImpl(ESGF_ATS);
+		service.getAttributeServices("DoesNotExist");	
+		
 	}
+	
+    @Test
+    public void testgetIdentityProviders() throws Exception {
+        
+        final RegistryService service = new RegistryServiceLocalXmlImpl(ESGF_IDP);
+        
+        Assert.assertTrue(service.getIdentityProviders().contains( new URL("https://pcmdi3.llnl.gov/esgcet/openid/provider.htm")) );
+        
+    }
 	
 }

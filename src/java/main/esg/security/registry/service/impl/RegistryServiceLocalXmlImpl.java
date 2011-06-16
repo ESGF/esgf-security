@@ -19,15 +19,18 @@
 package esg.security.registry.service.impl;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.JDOMException;
+import org.jdom.Namespace;
 import org.springframework.core.io.ClassPathResource;
 
 import esg.security.registry.service.api.RegistryService;
@@ -36,39 +39,156 @@ import esg.security.utils.xml.Parser;
 
 /**
  * Implementation of {@link RegistryService} backed up by a local XML configuration file.
+ * This implementation automatically reloads its data if the underlying file has been updated.
  * 
  * @author luca.cinquini
  */
 public class RegistryServiceLocalXmlImpl implements RegistryService {
 	
-	// local storage of attribute type to attribute service mapping
-	private Map<String, URL> attributeServices = new HashMap<String, URL>();
+	// local storage of attribute type to attribute services mapping (one-to-many)
+	private Map<String, List<URL>> attributeServices = new HashMap<String, List<URL>>();
 	
+	private List<URL> identityProviders = new ArrayList<URL>();
+	
+	private final static Namespace NS = Namespace.getNamespace("http://www.esgf.org/whitelist");
+	
+	// local XML file holding the registry data
+	private final File registryFile;
+	private long registryFileLastModTime = 0L; // Unix Epoch
+	
+	private final Log LOG = LogFactory.getLog(this.getClass());
+
+	/**
+	 * Constructor executes the first loading of the data into memory.
+	 * @param xmlFilePath
+	 * @throws Exception
+	 */
 	public RegistryServiceLocalXmlImpl(final String xmlFilePath) throws Exception {
 		
-		final File file = new ClassPathResource(xmlFilePath).getFile();
-		parseRegistry(file);
+	    registryFile = new ClassPathResource(xmlFilePath).getFile();
+		update();
+	
 	}
-
+		
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public URL getAttributeService(final String attributeType) throws UnknownPolicyAttributeTypeException {
+    public long getLastUpdateTime() {
+        return registryFileLastModTime;
+    }
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+	public List<URL> getAttributeServices(final String attributeType) throws UnknownPolicyAttributeTypeException {
+	    
+	    // reload registry if needed
+	    if (registryFile.lastModified()>registryFileLastModTime) {
+	        update();        
+	    } 
+	    
+	    // look up the attribute type 
 		if (attributeServices.containsKey(attributeType)) {
 			return attributeServices.get(attributeType);
 		} else {
 			throw new UnknownPolicyAttributeTypeException("Cannot resolve attribute type="+attributeType);
 		}
+		
 	}
+    
+    
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+    public List<URL> getIdentityProviders() {
+	    
+        // reload registry if needed
+        if (registryFile.lastModified()>registryFileLastModTime) {
+            update();        
+        }
+        
+        // return white list
+        return Collections.unmodifiableList(identityProviders);
+        
+    }
 
-	// method to parse the XML registry into the local map.
-	void parseRegistry(final File file) throws MalformedURLException, IOException, JDOMException {
-		
-		final Document doc = Parser.toJDOM(file.getAbsolutePath(), false);
-		final Element root = doc.getRootElement();
-		
-		for (final Object attr : root.getChildren("attribute")) {
-			final Element _attr = (Element)attr;
-			attributeServices.put(_attr.getAttributeValue("type"), new URL(_attr.getAttributeValue("service")));
+    /**
+	 * Method to parse the XML registry into the local map.
+	 * This method prints a warning but does not crash if the file cannot be parsed
+	 * (since presumably the older version of the registry can still be used).
+	 * 
+	 * @param file
+	 */
+	public void update() {
+	    
+		try {
+		    
+		    final Map<String, List<URL>> _attributeServices = new HashMap<String, List<URL>>();
+		    List<URL> _identityProviders = new ArrayList<URL>();
+		    
+    		final Document doc = Parser.toJDOM(registryFile.getAbsolutePath(), false);
+    		final Element root = doc.getRootElement();
+    		    		
+    		// parse Attribute Service section
+    		if (root.getName().equals("ats_whitelist")) {
+    		    
+        		for (final Object attr : root.getChildren("attribute")) {
+        			final Element _attr = (Element)attr;
+        			final String aType = _attr.getAttributeValue("type");
+        			if (_attributeServices.get(aType) == null) {
+        			    _attributeServices.put(aType, new ArrayList<URL>());
+        			}
+        			_attributeServices.get(aType).add(new URL(_attr.getAttributeValue("service")));
+        		}
+        		
+        	// parse Identity Provider section
+    		} else if (root.getName().equals("idp_whitelist")) {
+    		    
+    		    for (final Object value : root.getChildren("value", NS)) {
+    		        final Element element = (Element)value;
+    		        _identityProviders.add( new URL(element.getText()) );
+    		    }
+    		    
+    		}
+    		
+            // update data
+            synchronized (attributeServices) {
+                attributeServices = _attributeServices;
+            }
+            synchronized (identityProviders) {
+                identityProviders = _identityProviders;             
+            }
+            registryFileLastModTime = registryFile.lastModified();
+            
+            if (LOG.isInfoEnabled()) LOG.info("Loaded information from registry file="+registryFile.getAbsolutePath());
+    		
+		} catch(Exception e) {
+		    LOG.warn("Error parsing registry XML file: "+e.getMessage());
 		}
 		
+		// print content
+		this.print();
+		
 	}
+	
+	/**
+	 * Method to dump the registry content to standard output
+	 */
+	void print() {
+	    
+	    // attribute services
+	    for (final String aType : attributeServices.keySet()) {
+	        if (LOG.isDebugEnabled()) LOG.debug("Attribute type="+aType+" Service URL="+attributeServices.get(aType));
+	    }
+	    
+	    // identity providers
+	    for (final URL idp : identityProviders) {
+	        if (LOG.isDebugEnabled()) LOG.debug("Identity provider="+idp.toString());
+	    }
+	    
+	}
+	
 }
