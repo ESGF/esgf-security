@@ -97,8 +97,8 @@ public class UserInfoTest {
         log.info("UserInfoTest initializing");
         
         //userInfoDAO = new UserInfoDAO(new Properties());
-        final Properties props = new ESGFProperties();
-        userInfoDAO = new UserInfoCredentialedDAO("rootAdmin", props.getProperty("security.admin.password"), props);
+        final ESGFProperties props = new ESGFProperties();
+        userInfoDAO = new UserInfoCredentialedDAO("rootAdmin", props.getAdminPassword(), props);
         groupRoleDAO = new GroupRoleDAO(new Properties());
 
         assertNotNull(userInfoDAO);
