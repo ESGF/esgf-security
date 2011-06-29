@@ -81,6 +81,9 @@ private static Log log = LogFactory.getLog(ESGFuseradd.class);
 
     public ESGFuseradd() {
         super();
+
+        getOptions().addOption("n", "no-prompt", false, "do not ask for confirmation");
+
         Option firstname = 
             OptionBuilder.withArgName("firstname")
             .hasArg(true)
@@ -237,8 +240,20 @@ private static Log log = LogFactory.getLog(ESGFuseradd.class);
         //------------------
         //NOW DO SOME LOGIC
         //------------------
-
+        boolean noPrompt = false;
+        if(line.hasOption( "n" )) { noPrompt = true; }
         
+        env.getWriter().flush();
+        if(!noPrompt) {
+            try{
+                String answer = env.getReader().readLine("Is this information correct and ready to be submitted? [Y/n] > ");
+                if(!answer.equals("") && !answer.equalsIgnoreCase("y")) {
+                    return env;
+                }
+            }catch(java.io.IOException e) { System.err.println(e.getMessage()); }
+        }
+
+        env.getWriter().println("doing it");
 
         //------------------
         return env;
