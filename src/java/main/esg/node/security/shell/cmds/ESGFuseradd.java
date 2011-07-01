@@ -75,7 +75,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.*;
 
-public class ESGFuseradd extends ESGFCommand {
+public class ESGFuseradd extends ESGFSecurityCommand {
 
 private static Log log = LogFactory.getLog(ESGFuseradd.class);
 
@@ -158,10 +158,11 @@ private static Log log = LogFactory.getLog(ESGFuseradd.class);
     }
 
     public String getCommandName() { return "useradd"; }
-
+    
     public ESGFEnv doEval(CommandLine line, ESGFEnv env) {
         log.trace("inside the \"useradd\" command's doEval");
-        //TODO: Query for options and perform execution logic
+        
+        checkPermission(env);
 
         String firstname = null;
         if(line.hasOption( "fn" )) {
