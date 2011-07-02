@@ -145,6 +145,8 @@ private static Log log = LogFactory.getLog(ESGFpasswd.class);
         //NOW DO SOME LOGIC
         //------------------
         
+        String whoami = (String)env.getContext(SYS,"user.name");
+
         //------------------
         //Check access privs and setup resource object
         //------------------
