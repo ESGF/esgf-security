@@ -83,13 +83,12 @@ private static Log log = LogFactory.getLog(ESGFuserdel.class);
 
     public ESGFuserdel() { super(); }
 
+    public void init(ESGFEnv env) { checkPermission(env); }
     public String getCommandName() { return "userdel"; }
 
 
     public ESGFEnv doEval(CommandLine line, ESGFEnv env) {
         log.trace("inside the \"userdel\" command's doEval");
-
-        checkPermission(env);
 
         //Scrubbing... (need to go into cli code and toss in some regex's to clean this type of shit up)
         java.util.List<String> argsList = new java.util.ArrayList<String>();
@@ -137,6 +136,10 @@ private static Log log = LogFactory.getLog(ESGFuserdel.class);
         //------------------
         //NOW DO SOME LOGIC
         //------------------
+        
+        if(user.getUserName().equals("rootAdmin")) {
+            throw new esg.common.ESGRuntimeException("Sorry, this operationis not permitted for user ["+username+"]");
+        }
         
         if (userDAO.deleteUserInfo(user)) {
             env.getWriter().println("[DELETED]");

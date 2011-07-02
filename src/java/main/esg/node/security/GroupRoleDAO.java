@@ -283,7 +283,7 @@ public class GroupRoleDAO implements Serializable {
     }
     
     //TODO: What to really do here to make this happen
-    synchronized boolean deleteRole(String roleName) {
+    public synchronized boolean deleteRole(String roleName) {
         int numRowsAffected = -1;
         try{
             System.out.print("Deleting Role "+roleName);

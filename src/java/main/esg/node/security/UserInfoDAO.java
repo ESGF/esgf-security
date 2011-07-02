@@ -471,7 +471,7 @@ public class UserInfoDAO {
        Takes a <i>valid</i> UserInfo object input and replenishes it with data
        directly from the backing store (database).  This method is
        intended to be used in the case where there are manipulations
-       made directly to the database regarding information that be be
+       made directly to the database regarding information that may be
        present in the UserInfo object's state.  This method will sync
        the UserInfo object in question with the information from the
        backing store (database) - ostensibly rewriting the object such

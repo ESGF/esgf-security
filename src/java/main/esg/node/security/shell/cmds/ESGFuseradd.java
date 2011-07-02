@@ -84,6 +84,7 @@ private static Log log = LogFactory.getLog(ESGFuseradd.class);
 
     public ESGFuseradd() { super(); }
 
+    public void init(ESGFEnv env) { checkPermission(env); }
     public String getCommandName() { return "useradd"; }
 
     public void doInitOptions() {
@@ -168,8 +169,6 @@ private static Log log = LogFactory.getLog(ESGFuseradd.class);
     public ESGFEnv doEval(CommandLine line, ESGFEnv env) {
         log.trace("inside the \"useradd\" command's doEval");
         
-        checkPermission(env);
-
         //------------------
         //Collect args...
         //------------------

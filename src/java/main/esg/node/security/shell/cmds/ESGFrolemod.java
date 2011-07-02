@@ -66,6 +66,8 @@ package esg.node.security.shell.cmds;
    second half of the 'replication' process - for a single dataset.
 **/
 
+import esg.node.security.*;
+
 import esg.common.shell.*;
 import esg.common.shell.cmds.*;
 
@@ -75,94 +77,51 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.*;
 
-public class ESGFaddUserToGroup extends ESGFCommand {
 
-private static Log log = LogFactory.getLog(ESGFaddUserToGroup.class);
+//TODO: in this case where there are no flags figure out how to put in
+//my own usage message
 
-    public ESGFaddUserToGroup() {
-        super();
-        init();
-    }
+public class ESGFrolemod extends ESGFSecurityCommand {
 
-    private void init() {
-        Option user = 
-            OptionBuilder.withArgName("user")
-            .hasArg(true)
-            .withDescription("User to inspect")
-            .withLongOpt("user")
-            .create("u");
-        getOptions().addOption(user);
-        
-        Option all_group = new Option("ag", "all-groups", false, "addUserToGroup all groups on the system");
-        getOptions().addOption(all_group);
-        
-        Option group = 
-            OptionBuilder.withArgName("group")
-            .hasArg(true)
-            .withDescription("Group to inspect")
-            .withLongOpt("group")
-            .create("g");
-        getOptions().addOption(group);
-    }
-    
-    public String getCommandName() { return "addUserToGroup"; }
+private static Log log = LogFactory.getLog(ESGFrolemod.class);
+
+    public ESGFrolemod() { super(); }
+
+    public void init(ESGFEnv env) { checkPermission(env); }
+    public String getCommandName() { return "rolemod"; }
 
     public ESGFEnv doEval(CommandLine line, ESGFEnv env) {
-        log.trace("inside the \"addUserToGroup\" command's doEval");
-        //TODO: Query for options and perform execution logic
+        log.trace("inside the \"rolemod\" command's doEval");
 
-        String user = null;
-        if(line.hasOption( "u" )) {
-            user = line.getOptionValue( "u" );
-            env.getWriter().println("user: ["+user+"]");
+        //Scrubbing... (need to go into cli code and toss in some regex's to clean this type of shit up)
+        java.util.List<String> argsList = new java.util.ArrayList<String>();
+        String[] args = null;
+        for(String arg : line.getArgs()) {
+            if(!arg.isEmpty()) {
+                argsList.add(arg);
+            }
+        }
+        args = argsList.toArray(new String[]{});
+
+        String rolename = null;
+        String newname = null;
+        if(args.length == 2) {
+            rolename = args[0];
+            newname = args[1];
+            env.getWriter().println("role to modify is: ["+rolename+"] => ["+newname+"]");
+            env.getWriter().flush();
+        }else {
+            throw new esg.common.ESGRuntimeException("You must provide role name AND new name");
         }
 
-        //semantic sanity checking....
-        if(user == null) {
-            env.getWriter().println("user: ["+user+"]");            
-            return env;
-        }
+        //------------------
+        //NOW DO SOME LOGIC
+        //------------------
 
-        //target group info...
-
-        boolean all_groups = false;
-        if(line.hasOption( "all-groups" )) { all_groups = true; }
-        env.getWriter().println("all-groups: ["+all_groups+"]");
-
-
-        String group = null;
-        if(line.hasOption( "g" )) {
-            group = line.getOptionValue( "g" );
-            env.getWriter().println("group: ["+group+"]");
-        }
-
-        //semantic sanity checking....
-        //Cannot have them both set...
-        if(all_groups && (group != null)) {
-            env.getWriter().println("Semantic Group Problem");
-            return env;
-        }
+        GroupRoleDAO groupRoleDAO = new GroupRoleDAO(env.getEnv());
+        groupRoleDAO.renameRole(rolename, newname);
         
-        if(all_groups) {
-            //------------------
-            //NOW DO SOME LOGIC (all logic)
-            //------------------
-            
-            env.getWriter().println("doing all logic: ["+all_groups+"]");
-            
-            
-            //------------------
-        } else {
-            //------------------
-            //NOW DO SOME LOGIC (per user or group)
-            //------------------
-            
-            env.getWriter().println("doing some logic: ["+all_groups+"]");
-            
-            
-            //------------------
-        }
-        init();
+        //------------------
         return env;
     }
 }

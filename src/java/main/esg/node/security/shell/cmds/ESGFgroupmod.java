@@ -83,6 +83,7 @@ private static Log log = LogFactory.getLog(ESGFgroupmod.class);
 
     public ESGFgroupmod() { super(); }
 
+    public void init(ESGFEnv env) { checkPermission(env); }
     public String getCommandName() { return "groupmod"; }
 
     public void doInitOptions() {
@@ -116,8 +117,6 @@ private static Log log = LogFactory.getLog(ESGFgroupmod.class);
 
     public ESGFEnv doEval(CommandLine line, ESGFEnv env) {
         log.trace("inside the \"groupmod\" command's doEval");
-
-        checkPermission(env);
 
         //------------------
         //Collect args...

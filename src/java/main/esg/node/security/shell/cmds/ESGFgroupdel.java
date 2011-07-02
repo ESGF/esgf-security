@@ -81,16 +81,13 @@ public class ESGFgroupdel extends ESGFSecurityCommand {
 
 private static Log log = LogFactory.getLog(ESGFgroupdel.class);
 
-    public ESGFgroupdel() {
-        super();
-    }
+    public ESGFgroupdel() { super(); }
 
+    public void init(ESGFEnv env) { checkPermission(env); }
     public String getCommandName() { return "groupdel"; }
 
     public ESGFEnv doEval(CommandLine line, ESGFEnv env) {
         log.trace("inside the \"groupdel\" command's doEval");
-
-        checkPermission(env);
 
         //Scrubbing... (need to go into cli code and toss in some regex's to clean this type of shit up)
         java.util.List<String> argsList = new java.util.ArrayList<String>();

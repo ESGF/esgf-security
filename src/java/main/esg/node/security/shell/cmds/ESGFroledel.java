@@ -66,6 +66,8 @@ package esg.node.security.shell.cmds;
    second half of the 'replication' process - for a single dataset.
 **/
 
+import esg.node.security.*;
+
 import esg.common.shell.*;
 import esg.common.shell.cmds.*;
 
@@ -75,53 +77,51 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.*;
 
-public class ESGFrealize extends ESGFCommand {
+public class ESGFroledel extends ESGFSecurityCommand {
 
-private static Log log = LogFactory.getLog(ESGFrealize.class);
+private static Log log = LogFactory.getLog(ESGFroledel.class);
 
-    public ESGFrealize() {
-        super();
-        getOptions().addOption("a", "all", false, "realize all dataset files");
-        Option dataset   = OptionBuilder.withArgName("datasetdir")
-            .hasArg()
-            .withLongOpt("dataset")
-            .withDescription("lists the files of a particular dataset")
-            .create("ds");
-        getOptions().addOption(dataset);
-        Option regex   = OptionBuilder.withArgName("regex")
-            .hasArg()
-            .withDescription("Select only dataset files that match regex")
-            .create("regex");
-        getOptions().addOption(regex);
-    }
+    public ESGFroledel() { super(); }
 
-    public String getCommandName() { return "realize"; }
+    public void init(ESGFEnv env) { checkPermission(env); }
+    public String getCommandName() { return "roledel"; }
 
     public ESGFEnv doEval(CommandLine line, ESGFEnv env) {
-        log.trace("inside the \"realize\" command's doEval");
-        //TODO: Query for options and perform execution logic
+        log.trace("inside the \"roledel\" command's doEval");
 
-        if(line.hasOption("all")) {
-            env.getWriter().println("Realizing all datasets :-)");
-        }
-
-        String datasetdir = null;
-        if(line.hasOption( "ds" )) {
-            datasetdir = line.getOptionValue( "ds" );
-            env.getWriter().println("dataset option value is: "+datasetdir);
-        }
-
-        String regex = null;
-        if(line.hasOption( "regex" )) {
-            datasetdir = line.getOptionValue( "regex" );
-            env.getWriter().println("regex option value is: "+datasetdir);
-        }
-
-        int i=0;
+        //Scrubbing... (need to go into cli code and toss in some regex's to clean this type of shit up)
+        java.util.List<String> argsList = new java.util.ArrayList<String>();
+        String[] args = null;
         for(String arg : line.getArgs()) {
-            log.trace("arg("+(i++)+"): "+arg);
+            if(!arg.isEmpty()) {
+                argsList.add(arg);
+            }
         }
+        args = argsList.toArray(new String[]{});
+
+        String rolename = null;
+        if(args.length > 0) {
+            rolename = args[0];
+            env.getWriter().println("role to delete is: ["+rolename+"]");
+            env.getWriter().flush();
+        }else {
+            throw new esg.common.ESGRuntimeException("You must provide the role name to delete");
+        }
+
+        if(rolename == null) throw new esg.common.ESGRuntimeException("no role name specified");
+
+        //------------------
+        //NOW DO SOME LOGIC
+        //------------------
         
+        if(rolename.equals("admin")) {
+            throw new esg.common.ESGRuntimeException("Sorry, this operationis not permitted for role ["+rolename+"]");
+        }
+
+        GroupRoleDAO groupRoleDAO = new GroupRoleDAO(env.getEnv());
+        groupRoleDAO.deleteRole(rolename);
+        
+        //------------------
         return env;
     }
 }
