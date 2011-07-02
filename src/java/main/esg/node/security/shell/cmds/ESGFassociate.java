@@ -88,7 +88,7 @@ private static Log log = LogFactory.getLog(ESGFassociate.class);
     public String getCommandName() { return "associate"; }
 
     public void doInitOptions() {
-        getOptions().addOption("n", "no-prompt", false, "do not ask for confirmation");
+        getOptions().addOption("i", "prompt", false, "request confirmation before making associations");
 
         Option username = 
             OptionBuilder.withArgName("username")
@@ -127,15 +127,16 @@ private static Log log = LogFactory.getLog(ESGFassociate.class);
     
     public ESGFEnv doEval(CommandLine line, ESGFEnv env) {
         log.trace("inside the \"associate\" command's doEval");
+        boolean prompt = line.hasOption( "i" );
         
         boolean removeAllPermissions = line.hasOption( "remove-all" );
-        if(removeAllPermissions) {
+        if(removeAllPermissions && prompt) {
             env.getWriter().println("remove-all: ["+removeAllPermissions+"]");
             env.getWriter().flush();
         }
 
         boolean removePermission = line.hasOption( "remove" );
-        if(removePermission) {
+        if(removePermission && prompt) {
             env.getWriter().println("remove: ["+removePermission+"]");
             env.getWriter().flush();
         }
@@ -143,27 +144,33 @@ private static Log log = LogFactory.getLog(ESGFassociate.class);
         String username = null;
         if(line.hasOption( "u" )) {
             username = line.getOptionValue( "u" );
-            env.getWriter().println("username: ["+username+"]");
-            env.getWriter().flush();
+            if(prompt) {
+                env.getWriter().println("username: ["+username+"]");
+                env.getWriter().flush();
+            }
         }
 
         String groupname = null;
         if(line.hasOption( "g" )) {
             groupname = line.getOptionValue( "g" );
-            env.getWriter().println("groupname: ["+groupname+"]");
-            env.getWriter().flush();
+            if(prompt){
+                env.getWriter().println("groupname: ["+groupname+"]");
+                env.getWriter().flush();
+            }
         }
 
         String rolename = "default";
         if(line.hasOption( "r" )) {
             rolename = line.getOptionValue( "r" );
-            env.getWriter().println("rolename: ["+rolename+"]");
-            env.getWriter().flush();
+            if(prompt) {
+                env.getWriter().println("rolename: ["+rolename+"]");
+                env.getWriter().flush();
+            }
         }
 
         //paranoia check :-)
         if ((null == username) || (null == groupname) || (null == rolename)) {
-            throw new esg.common.ESGRuntimeException("All fields are required to have a value, see --help");
+            throw new esg.common.ESGRuntimeException("User (-u) and group (-g) fields are required [role's (-r) value defaults to \"default\"], see --help");
         }
         
         if( removePermission && !line.hasOption("r") ) {
@@ -174,11 +181,8 @@ private static Log log = LogFactory.getLog(ESGFassociate.class);
         //------------------
         //NOW DO SOME LOGIC
         //------------------
-        boolean noPrompt = false;
-        if(line.hasOption( "n" )) { noPrompt = true; }
-        
-        env.getWriter().flush();
-        if(!noPrompt || removePermission || removeAllPermissions) {
+
+        if(prompt || removePermission || removeAllPermissions) {
             try{
                 String answer = env.getReader().readLine("Is this information correct and ready to be submitted? [Y/n] > ");
                 if(!answer.equals("") && !answer.equalsIgnoreCase("y")) {
