@@ -59,6 +59,9 @@ package esg.node.security.shell.cmds;
 import esg.common.shell.*;
 import esg.common.shell.cmds.*;
 
+import esg.node.security.GroupRoleDAO;
+import esg.node.security.UserInfoCredentialedDAO;
+
 public abstract class ESGFSecurityCommand extends ESGFCommand {
 
     public boolean checkPermission(ESGFEnv env) {
@@ -71,6 +74,20 @@ public abstract class ESGFSecurityCommand extends ESGFCommand {
         }else{
             throw new ESGFCommandPermissionException("You do not have permission to execute this command");
         }
+    }
+
+    public UserInfoCredentialedDAO getUserDAO(ESGFEnv env) {
+        checkPermission(env);
+        UserInfoCredentialedDAO userDAO = new UserInfoCredentialedDAO((String)env.getContext(ESGFEnv.SYS,"user.name"),
+                                                                      env.getEnv().getAdminPassword(),
+                                                                      env.getEnv());
+        return userDAO;
+    }
+    
+    public GroupRoleDAO getGroupDAO(ESGFEnv env) {
+        checkPermission(env);
+        GroupRoleDAO groupRoleDAO = new GroupRoleDAO(env.getEnv());
+        return groupRoleDAO;
     }
     
 }

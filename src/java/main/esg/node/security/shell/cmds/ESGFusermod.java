@@ -66,8 +66,11 @@ package esg.node.security.shell.cmds;
    second half of the 'replication' process - for a single dataset.
 **/
 
+import esg.common.util.*;
 import esg.common.shell.*;
 import esg.common.shell.cmds.*;
+
+import esg.node.security.*;
 
 import org.apache.commons.cli.*;
 
@@ -75,12 +78,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.*;
 
-public class ESGFusermod extends ESGFCommand {
+public class ESGFusermod extends ESGFSecurityCommand {
 
 private static Log log = LogFactory.getLog(ESGFusermod.class);
 
-    public ESGFusermod() {
-        super();
+    public ESGFusermod() { super(); }
+
+    public String getCommandName() { return "usermod"; }
+    
+    public void doInitOptions() {
+        getOptions().addOption("n", "no-prompt", false, "do not ask for confirmation");
+        
         Option firstname = 
             OptionBuilder.withArgName("firstname")
             .hasArg(true)
@@ -153,12 +161,34 @@ private static Log log = LogFactory.getLog(ESGFusermod.class);
             .create("oid");
         getOptions().addOption(openid);
     }
-
-    public String getCommandName() { return "usermod"; }
-
+    
     public ESGFEnv doEval(CommandLine line, ESGFEnv env) {
         log.trace("inside the \"usermod\" command's doEval");
-        //TODO: Query for options and perform execution logic
+        
+        checkPermission(env);
+
+        //------------------
+        //Collect args...
+        //------------------
+
+        //Scrubbing... (need to go into cli code and toss in some regex's to clean this type of shit up)
+        java.util.List<String> argsList = new java.util.ArrayList<String>();
+        String[] args = null;
+        for(String arg : line.getArgs()) {
+            if(!arg.isEmpty()) {
+                argsList.add(arg);
+            }
+        }
+        args = argsList.toArray(new String[]{});
+
+        String username = null;
+        if(args.length > 0) {
+            username = args[0];
+            env.getWriter().println("user to create is: ["+username+"]");
+            env.getWriter().flush();
+        }else {
+            throw new esg.common.ESGRuntimeException("You must provide the username for this account");
+        }
 
         String firstname = null;
         if(line.hasOption( "fn" )) {
@@ -208,37 +238,71 @@ private static Log log = LogFactory.getLog(ESGFusermod.class);
             env.getWriter().println("country: ["+country+"]");
         }
 
-        String openid = null;
-        if(line.hasOption( "oid" )) {
-            openid = line.getOptionValue( "oid" );
-            env.getWriter().println("openid: ["+openid+"]");
-        }
-
-        int i=0;
-        for(String arg : line.getArgs()) {
-            log.info("arg("+(i++)+"): "+arg);
-        }
         
-        //Scrubbing... (need to go into cli code and toss in some regex's to clean this type of shit up)
-        java.util.List<String> argsList = new java.util.ArrayList<String>();
-        String[] args = null;
-        for(String arg : line.getArgs()) {
-            if(!arg.isEmpty()) {
-                argsList.add(arg);
+        //Don't burn cycles if don't need to...
+        if(log.isInfoEnabled()) {
+            int i=0;
+            for(String arg : line.getArgs()) {
+                log.info("arg("+(i++)+"): "+arg);
             }
         }
-        args = argsList.toArray(new String[]{});
 
-        String username = null;
-        if(args.length > 0) {
-            username = args[0];
-            env.getWriter().println("user to create is: ["+username+"]");
-        }
         //------------------
         //NOW DO SOME LOGIC
         //------------------
+        boolean noPrompt = false;
+        if(line.hasOption( "n" )) { noPrompt = true; }
+        
+        env.getWriter().flush();
+        if(!noPrompt) {
+            try{
+                String answer = env.getReader().readLine("Is this information correct and ready to be submitted? [Y/n] > ");
+                if(!answer.equals("") && !answer.equalsIgnoreCase("y")) {
+                    return env;
+                }
+            }catch(java.io.IOException e) { System.err.println(e.getMessage()); }
+        }
+
+        //------------------
+        //Check access privs and setup resource object
+        //------------------
+
+        UserInfoCredentialedDAO userDAO = null;
+        if (!(userDAO = getUserDAO(env)).checkCredentials()) {
+            userDAO = null;
+            throw new ESGFCommandPermissionException("Credentials are not sufficient, sorry...");
+        }
+        //------------------
 
         
+        UserInfo user = null;
+        if(username != null) user = userDAO.getUserById(username);
+
+        if(null == user) {
+            throw new esg.common.ESGRuntimeException("Sorry, your username ["+username+"] was not well formed");            
+        }
+        
+        if(user.isValid()) {
+            //Note: username and openid are not fields available for modification!!
+            if (null != firstname) user.setFirstName(firstname);
+            if (null != lastname) user.setLastName(lastname);
+            if (null != email) user.setEmail(email);
+            if (null != middlename) user.setMiddleName(middlename);
+            if (null != organization) user.setOrganization(organization);
+            if (null != city) user.setCity(city);
+            if (null != state) user.setState(state);
+            if (null != country) user.setCountry(country);
+            
+            //Adding to database
+            user = userDAO.commit(user);
+
+            env.getWriter().println(user);
+
+        }else {
+            throw new esg.common.ESGRuntimeException("User ["+username+"] is NOT present in the system! (to create run useradd)");
+        }
+
+        env.getWriter().flush();
 
         //------------------
         return env;

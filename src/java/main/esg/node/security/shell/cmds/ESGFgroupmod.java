@@ -66,6 +66,8 @@ package esg.node.security.shell.cmds;
    second half of the 'replication' process - for a single dataset.
 **/
 
+import esg.node.security.*;
+
 import esg.common.shell.*;
 import esg.common.shell.cmds.*;
 
@@ -75,17 +77,24 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.*;
 
-public class ESGFgroupmod extends ESGFCommand {
+public class ESGFgroupmod extends ESGFSecurityCommand {
 
 private static Log log = LogFactory.getLog(ESGFgroupmod.class);
 
-    public ESGFgroupmod() {
-        super();
-        getOptions().addOption("auto", "auto-approve", false, "Set auto approval for joining this group");
-        getOptions().addOption("no_auto", "no-auto-approve", false, "Set auto approval for joining this group");
+    public ESGFgroupmod() { super(); }
 
-        getOptions().addOption("vis", "visible", false, "Sets whether this group is visible to registry");
-        getOptions().addOption("no_vis", "not-visible", false, "Sets whether this group is visible to registry");
+    public String getCommandName() { return "groupmod"; }
+
+    public void doInitOptions() {
+        OptionGroup autoGroup = new OptionGroup();
+        autoGroup.addOption(new Option("auto", "auto-approve", false, "Set auto approval for joining this group"));
+        autoGroup.addOption(new Option("no_auto", "no-auto-approve", false, "Set auto approval for joining this group"));
+        getOptions().addOptionGroup(autoGroup);
+        
+        OptionGroup visGroup = new OptionGroup();
+        visGroup.addOption(new Option("vis", "visible", false, "Sets whether this group is visible to registry"));
+        visGroup.addOption(new Option("no_vis", "not-visible", false, "Sets whether this group is visible to registry"));
+        getOptions().addOptionGroup(visGroup);
 
         Option description = 
             OptionBuilder.withArgName("description")
@@ -95,34 +104,31 @@ private static Log log = LogFactory.getLog(ESGFgroupmod.class);
             .create("d");
         getOptions().addOption(description);
 
-    }
+        Option rename = 
+            OptionBuilder.withArgName("current-name new-name")
+            .hasArgs(2)
+            .withDescription("rename current groupname to new name")
+            .withLongOpt("rename")
+            .create("mv");
+        getOptions().addOption(rename);
 
-    public String getCommandName() { return "groupmod"; }
+    }
 
     public ESGFEnv doEval(CommandLine line, ESGFEnv env) {
         log.trace("inside the \"groupmod\" command's doEval");
-        //TODO: Query for options and perform execution logic
 
-        String description = null;
-        if(line.hasOption( "d" )) {
-            description = line.getOptionValue( "d" );
-            env.getWriter().println("description: ["+description+"]");
-        }
+        checkPermission(env);
+
+        //------------------
+        //Collect args...
+        //------------------
         
-        boolean autoapprove = true;
-        if(line.hasOption( "auto" )) { autoapprove = true; }
-        if(line.hasOption( "no_auto" )) { autoapprove = false; }
-        env.getWriter().println("auto approval: ["+autoapprove+"]");
-
-        boolean visible = true; //default
-        if(line.hasOption( "vis" )) { visible = true; }
-        if(line.hasOption( "no_vis" )) { visible = false; }
-        env.getWriter().println("visible: ["+visible+"]");
-
-        
-        int i=0;
-        for(String arg : line.getArgs()) {
-            log.info("arg("+(i++)+"): "+arg);
+        //Don't burn cycles if don't need to...
+        if(log.isInfoEnabled()) {
+            int i=0;
+            for(String arg : line.getArgs()) {
+                log.info("arg("+(i++)+"): "+arg);
+            }
         }
         
         //Scrubbing... (need to go into cli code and toss in some regex's to clean this type of shit up)
@@ -139,14 +145,44 @@ private static Log log = LogFactory.getLog(ESGFgroupmod.class);
         if(args.length > 0) {
             groupname = args[0];
             env.getWriter().println("group to create is: ["+groupname+"]");
+            env.getWriter().flush();
+        }else {
+            throw new esg.common.ESGRuntimeException("You must provide the group name to create");
         }
         
-        //if(groupname == null) throw new ESGFParseException("no group name specified");
+        //------------------
+
+        String description = null;
+        if(line.hasOption( "d" )) {
+            description = line.getOptionValue( "d" );
+            env.getWriter().println("description: ["+description+"]");
+        }
+        
+        boolean autoapprove = true;
+        if(line.hasOption( "auto" )) { autoapprove = true; }
+        if(line.hasOption( "no_auto" )) { autoapprove = false; }
+        env.getWriter().println("auto approval: ["+autoapprove+"]");
+
+        boolean visible = true; //default
+        if(line.hasOption( "vis" )) { visible = true; }
+        if(line.hasOption( "no_vis" )) { visible = false; }
+        env.getWriter().println("visible: ["+visible+"]");
+        
+        
+        if(groupname == null) throw new esg.common.ESGRuntimeException("no group name specified");
+
         //------------------
         //NOW DO SOME LOGIC
         //------------------
         
+        GroupRoleDAO groupRoleDAO = new GroupRoleDAO(env.getEnv());
+
+        //if not doing renaming but modifying existing fields
+
+        //if doing renaming...
+        //groupRoleDAO.renameGroup(origGroupname,newGroupname);
         
+        //TODO: first test that the group is already there... if it is then modify it... if not throw exception
 
         //------------------
         return env;

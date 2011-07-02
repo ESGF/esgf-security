@@ -66,6 +66,8 @@ package esg.node.security.shell.cmds;
    second half of the 'replication' process - for a single dataset.
 **/
 
+import esg.node.security.*;
+
 import esg.common.shell.*;
 import esg.common.shell.cmds.*;
 
@@ -75,7 +77,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.*;
 
-public class ESGFgroupdel extends ESGFCommand {
+public class ESGFgroupdel extends ESGFSecurityCommand {
 
 private static Log log = LogFactory.getLog(ESGFgroupdel.class);
 
@@ -87,7 +89,8 @@ private static Log log = LogFactory.getLog(ESGFgroupdel.class);
 
     public ESGFEnv doEval(CommandLine line, ESGFEnv env) {
         log.trace("inside the \"groupdel\" command's doEval");
-        //TODO: Query for options and perform execution logic
+
+        checkPermission(env);
 
         //Scrubbing... (need to go into cli code and toss in some regex's to clean this type of shit up)
         java.util.List<String> argsList = new java.util.ArrayList<String>();
@@ -100,18 +103,24 @@ private static Log log = LogFactory.getLog(ESGFgroupdel.class);
         args = argsList.toArray(new String[]{});
 
         String groupname = null;
-        if(groupname == null) {
-            if(args.length > 0) {
-                groupname = args[0];
-                env.getWriter().println("group to delete is: ["+groupname+"]");
-            }
+        if(args.length > 0) {
+            groupname = args[0];
+            env.getWriter().println("group to delete is: ["+groupname+"]");
+            env.getWriter().flush();
+        }else {
+            throw new esg.common.ESGRuntimeException("You must provide the group name to delete");
         }
+
+        if(groupname == null) throw new esg.common.ESGRuntimeException("no group name specified");
 
         //------------------
         //NOW DO SOME LOGIC
         //------------------
 
+        GroupRoleDAO groupRoleDAO = new GroupRoleDAO(env.getEnv());
+        groupRoleDAO.deleteGroup(groupname);
         
+        //TODO: if the group is there nuke it....
 
         //------------------
         return env;

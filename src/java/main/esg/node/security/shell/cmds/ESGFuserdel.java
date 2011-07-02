@@ -66,6 +66,8 @@ package esg.node.security.shell.cmds;
    second half of the 'replication' process - for a single dataset.
 **/
 
+import esg.node.security.*;
+
 import esg.common.shell.*;
 import esg.common.shell.cmds.*;
 
@@ -75,52 +77,20 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.*;
 
-public class ESGFuserdel extends ESGFCommand {
+public class ESGFuserdel extends ESGFSecurityCommand {
 
 private static Log log = LogFactory.getLog(ESGFuserdel.class);
 
-    public ESGFuserdel() {
-        super();
-        Option username = 
-            OptionBuilder.withArgName("username")
-            .hasArg(true)
-            .withDescription("username to delete")
-            .withLongOpt("username")
-            .create("u");
-        getOptions().addOption(username);
-
-        Option openid = 
-            OptionBuilder.withArgName("openid")
-            .hasArg(true)
-            .withDescription("OpenID of user")
-            .withLongOpt("openid")
-            .create("oid");
-        getOptions().addOption(openid);
-    }
+    public ESGFuserdel() { super(); }
 
     public String getCommandName() { return "userdel"; }
 
+
     public ESGFEnv doEval(CommandLine line, ESGFEnv env) {
         log.trace("inside the \"userdel\" command's doEval");
-        //TODO: Query for options and perform execution logic
 
-        String username = null;
-        if(line.hasOption( "u" )) {
-            username = line.getOptionValue( "u" );
-            env.getWriter().println("username: ["+username+"]");
-        }
+        checkPermission(env);
 
-        String openid = null;
-        if(line.hasOption( "oid" )) {
-            openid = line.getOptionValue( "oid" );
-            env.getWriter().println("openid: ["+openid+"]");
-        }
-
-        int i=0;
-        for(String arg : line.getArgs()) {
-            log.info("arg("+(i++)+"): "+arg);
-        }
-        
         //Scrubbing... (need to go into cli code and toss in some regex's to clean this type of shit up)
         java.util.List<String> argsList = new java.util.ArrayList<String>();
         String[] args = null;
@@ -131,19 +101,49 @@ private static Log log = LogFactory.getLog(ESGFuserdel.class);
         }
         args = argsList.toArray(new String[]{});
 
-        if(username == null) {
-            if(args.length > 0) {
-                username = args[0];
-                env.getWriter().println("user to delete is: ["+username+"]");
-            }
+        String username = null;
+        if(args.length > 0) {
+            username = args[0];
+            env.getWriter().println("User to delete is: ["+username+"]");
+            env.getWriter().flush();
+        }else {
+            throw new esg.common.ESGRuntimeException("You must provide the username or openid to delete");
+        }
+
+
+        //------------------
+        //Check access privs and setup resource object
+        //------------------
+
+        UserInfoCredentialedDAO userDAO = null;
+        if (!(userDAO = getUserDAO(env)).checkCredentials()) {
+            userDAO = null;
+            throw new ESGFCommandPermissionException("Credentials are not sufficient, sorry...");
+        }
+        //------------------
+
+        
+        UserInfo user = null;
+        if(username != null) user = userDAO.getUserById(username);
+
+        if(null == user) {
+            throw new esg.common.ESGRuntimeException("Sorry, your username ["+username+"] was not well formed");
+        }
+        
+        if(!user.isValid()) {
+            throw new esg.common.ESGRuntimeException("User ["+username+"] is NOT present in the system!");            
         }
 
         //------------------
         //NOW DO SOME LOGIC
         //------------------
-
         
-
+        if (userDAO.deleteUserInfo(user)) {
+            env.getWriter().println("[DELETED]");
+        }else {
+            env.getWriter().println("[FAILED]");
+        }
+        
         //------------------
         return env;
     }

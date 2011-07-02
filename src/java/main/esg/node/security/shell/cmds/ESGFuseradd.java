@@ -66,8 +66,11 @@ package esg.node.security.shell.cmds;
    second half of the 'replication' process - for a single dataset.
 **/
 
+import esg.common.util.*;
 import esg.common.shell.*;
 import esg.common.shell.cmds.*;
+
+import esg.node.security.*;
 
 import org.apache.commons.cli.*;
 
@@ -79,9 +82,11 @@ public class ESGFuseradd extends ESGFSecurityCommand {
 
 private static Log log = LogFactory.getLog(ESGFuseradd.class);
 
-    public ESGFuseradd() {
-        super();
+    public ESGFuseradd() { super(); }
 
+    public String getCommandName() { return "useradd"; }
+
+    public void doInitOptions() {
         getOptions().addOption("n", "no-prompt", false, "do not ask for confirmation");
 
         Option firstname = 
@@ -89,6 +94,7 @@ private static Log log = LogFactory.getLog(ESGFuseradd.class);
             .hasArg(true)
             .withDescription("First name of user")
             .withLongOpt("firstname")
+            .isRequired(true)
             .create("fn");
         getOptions().addOption(firstname);
 
@@ -105,6 +111,7 @@ private static Log log = LogFactory.getLog(ESGFuseradd.class);
             .hasArg(true)
             .withDescription("Last name of user")
             .withLongOpt("lastname")
+            .isRequired(true)
             .create("ln");
         getOptions().addOption(lastname);
 
@@ -113,6 +120,7 @@ private static Log log = LogFactory.getLog(ESGFuseradd.class);
             .hasArg(true)
             .withDescription("Email address of user")
             .withLongOpt("email")
+            .isRequired(true)
             .create("e");
         getOptions().addOption(email);
 
@@ -156,13 +164,34 @@ private static Log log = LogFactory.getLog(ESGFuseradd.class);
             .create("oid");
         getOptions().addOption(openid);
     }
-
-    public String getCommandName() { return "useradd"; }
     
     public ESGFEnv doEval(CommandLine line, ESGFEnv env) {
         log.trace("inside the \"useradd\" command's doEval");
         
         checkPermission(env);
+
+        //------------------
+        //Collect args...
+        //------------------
+
+        //Scrubbing... (need to go into cli code and toss in some regex's to clean this type of shit up)
+        java.util.List<String> argsList = new java.util.ArrayList<String>();
+        String[] args = null;
+        for(String arg : line.getArgs()) {
+            if(!arg.isEmpty()) {
+                argsList.add(arg);
+            }
+        }
+        args = argsList.toArray(new String[]{});
+
+        String username = null;
+        if(args.length > 0) {
+            username = args[0];
+            env.getWriter().println("user to create is: ["+username+"]");
+            env.getWriter().flush();
+        }else {
+            throw new esg.common.ESGRuntimeException("You must provide the username for this account");
+        }
 
         String firstname = null;
         if(line.hasOption( "fn" )) {
@@ -218,26 +247,14 @@ private static Log log = LogFactory.getLog(ESGFuseradd.class);
             env.getWriter().println("openid: ["+openid+"]");
         }
 
-        int i=0;
-        for(String arg : line.getArgs()) {
-            log.info("arg("+(i++)+"): "+arg);
-        }
-        
-        //Scrubbing... (need to go into cli code and toss in some regex's to clean this type of shit up)
-        java.util.List<String> argsList = new java.util.ArrayList<String>();
-        String[] args = null;
-        for(String arg : line.getArgs()) {
-            if(!arg.isEmpty()) {
-                argsList.add(arg);
+        //Don't burn cycles if don't need to...
+        if(log.isInfoEnabled()) {
+            int i=0;
+            for(String arg : line.getArgs()) {
+                log.info("arg("+(i++)+"): "+arg);
             }
         }
-        args = argsList.toArray(new String[]{});
-
-        String username = null;
-        if(args.length > 0) {
-            username = args[0];
-            env.getWriter().println("user to create is: ["+username+"]");
-        }
+        
         //------------------
         //NOW DO SOME LOGIC
         //------------------
@@ -254,7 +271,53 @@ private static Log log = LogFactory.getLog(ESGFuseradd.class);
             }catch(java.io.IOException e) { System.err.println(e.getMessage()); }
         }
 
-        env.getWriter().println("doing it");
+        //------------------
+        //Check access privs and setup resource object
+        //------------------
+
+        UserInfoCredentialedDAO userDAO = null;
+        if (!(userDAO = getUserDAO(env)).checkCredentials()) {
+            userDAO = null;
+            throw new ESGFCommandPermissionException("Credentials are not sufficient, sorry...");
+        }
+        //------------------
+
+        
+        UserInfo user = null;
+        if(username != null) user = userDAO.getUserById(username);
+
+        if(null == user) {
+            throw new esg.common.ESGRuntimeException("Sorry, your username ["+username+"] was not well formed");            
+        }
+        
+        if(user.isValid()) {
+            throw new esg.common.ESGRuntimeException("Apparently user ["+username+"] is already present in the system! (to modify run usermod)");
+        }else {
+            //Manditory fields...
+            user.setUserName(username);
+            user.setFirstName(firstname);
+            user.setLastName(lastname);
+            user.setEmail(email);
+            
+            //Optional fields...
+            if (null != middlename) user.setMiddleName(middlename);
+            if (null != organization) user.setOrganization(organization);
+            if (null != city) user.setCity(city);
+            if (null != state) user.setState(state);
+            if (null != country) user.setCountry(country);
+            if (null != openid) user.setOpenid(openid);
+            
+            //Adding to database
+            if(userDAO.addUserInfo(user)) log.info("[OK]"); else { log.info("[FAIL]"); }
+            env.getWriter().println(user);
+
+            //place holder for when doing group / role impl.
+            //if (null != ) user.addPermission("CMIP5_test","admin");
+            //if (null != ) user.addPermission("CMIP5_test","user_test");
+            //if (null != ) user.addPermission("ARM_test","user_test");
+        }
+
+        env.getWriter().flush();
 
         //------------------
         return env;
