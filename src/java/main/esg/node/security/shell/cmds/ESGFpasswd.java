@@ -68,25 +68,28 @@ package esg.node.security.shell.cmds;
 
 import esg.common.shell.*;
 import esg.common.shell.cmds.*;
-import esg.security.utils.encryption.PasswordEncoder;
+import esg.node.security.*;
 
 import org.apache.commons.cli.*;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.*;
 
-public class ESGFpasswd extends ESGFCommand {
+public class ESGFpasswd extends ESGFSecurityCommand {
 
 private static Log log = LogFactory.getLog(ESGFpasswd.class);
 
-    public ESGFpasswd() {
-        super();
+    public ESGFpasswd() { super();}
+
+    public void init(ESGFEnv env) { checkPermission(env); }
+    public String getCommandName() { return "passwd"; }
+
+    public void doInitOptions() {
         getOptions().addOption("i", "prompt", false, "request confirmation before performing action");
         getOptions().addOption("d", "disable", false, "disable this account");
         
         Option user = 
-        OptionBuilder.withArgName("user")
+            OptionBuilder.withArgName("user")
             .hasArg(true)
             .withDescription("User for which you wish to change password")
             .withLongOpt("user")
@@ -94,16 +97,15 @@ private static Log log = LogFactory.getLog(ESGFpasswd.class);
         getOptions().addOption(user);
         
     }
-
-    public String getCommandName() { return "passwd"; }
-
+    
     public ESGFEnv doEval(CommandLine line, ESGFEnv env) {
         log.trace("inside the \"passwd\" command's doEval");
         //TODO: Query for options and perform execution logic
-
+        
         boolean prompt = line.hasOption( "i" );
         boolean disable = line.hasOption( "d" );
-
+        
+        String whoami = (String)env.getContext(ESGFEnv.SYS,"user.name");
         String username = null;
         if(line.hasOption( "u" )) {
             username = line.getOptionValue( "u" );
@@ -131,6 +133,9 @@ private static Log log = LogFactory.getLog(ESGFpasswd.class);
         
         String origPassword = null;
         String newPassword = null;
+        if(args.length <= 0) {
+            throw new esg.common.ESGRuntimeException("Sorry, no arguements present, see --help");                        
+        }
         if(args.length == 1) {
             newPassword = args[0];
             if(prompt) env.getWriter().println("*new password: ["+((newPassword != null) ? "*********" : newPassword)+"]");
@@ -138,6 +143,7 @@ private static Log log = LogFactory.getLog(ESGFpasswd.class);
         if(args.length == 2) {
             origPassword = args[0];
             newPassword = args[1];
+            if(prompt) env.getWriter().println("orig password: ["+((origPassword != null) ? "*********" : newPassword)+"]");
             if(prompt) env.getWriter().println("new password: ["+((newPassword != null) ? "*********" : newPassword)+"]");
         }
         
@@ -145,49 +151,49 @@ private static Log log = LogFactory.getLog(ESGFpasswd.class);
         //NOW DO SOME LOGIC
         //------------------
         
-        String whoami = (String)env.getContext(ESGFEnv.SYS,"user.name");
-
         //------------------
         //Check access privs and setup resource object
         //------------------
 
-        //UserInfoCredentialedDAO userDAO = null;
-        //if (!(userDAO = getUserDAO(env)).checkCredentials()) {
-        //    userDAO = null;
-        //    throw new ESGFCommandPermissionException("Credentials are not sufficient, sorry...");
-        //}
-        ////------------------
-        //
-        //UserInfo user = null;
-        //if(username != null) user = userDAO.getUserById(username);
-        //
-        //if(null == user) {
-        //    throw new esg.common.ESGRuntimeException("Sorry, the username ["+username+"] was not well formed");            
-        //}
-        //
-        //if(user.isValid()) {
-        //
-        //    if((origPassword == null) && (newPassword != null)) {
-        //        if(userDAO.setPassword(user.getOpenid(),newPassword)) {
-        //            env.getWriter().println("password updated :-)");
-        //        }else {
-        //            throw new esg.common.ESGRuntimeException("Sorry, could not update your password");            
-        //        }
-        //    }
-        //
-        //    if(user.getUserName().equals("rootAdmin")) {
-        //        if(userDAO.setPassword(user.getOpenid(),origPassword,newPassword)) {
-        //            env.getWriter().println("password updated :-)");
-        //        }else {
-        //            throw new esg.common.ESGRuntimeException("Sorry, could not update your password");            
-        //        }
-        //
-        //        userDAO.changePassword(user.getOpenid(),origPassword,newPassword);
-        //    }
-        //    
-        //}else {
-        //    throw new esg.common.ESGRuntimeException("The user you specified ["+username+"] is invalid");
-        //}
+        UserInfoCredentialedDAO userDAO = null;
+        if (!(userDAO = getUserDAO(env)).checkCredentials()) {
+            userDAO = null;
+            throw new ESGFCommandPermissionException("Credentials are not sufficient, sorry...");
+        }
+        //------------------
+        
+        UserInfo user = null;
+        if(username != null) user = userDAO.getUserById(username);
+        
+        if(null == user) {
+            throw new esg.common.ESGRuntimeException("Sorry, the username ["+username+"] was not well formed");
+        }
+        
+        if(user.isValid()) {
+        
+            if((origPassword == null) && (newPassword != null) && 
+               (user.getUserName().equals(whoami)) ) {
+                if(userDAO.setPassword(user.getOpenid(),newPassword)) {
+                    env.getWriter().println("password updated :-)");
+                }else {
+                    throw new esg.common.ESGRuntimeException("Sorry, could not update your password");            
+                }
+            }
+        
+            if(user.getUserName().equals("rootAdmin")) {
+                if(userDAO.setPassword(user.getOpenid(),newPassword)) {
+                    env.getWriter().println("password updated for ["+user.getUserName()+"] :-)");
+                    env.getWriter().flush();
+                }else {
+                    throw new esg.common.ESGRuntimeException("Sorry, could not update password for ["+user.getUserName()+"]");            
+                }
+            }else {
+                userDAO.changePassword(user.getOpenid(),origPassword,newPassword);
+            }
+            
+        }else {
+            throw new esg.common.ESGRuntimeException("The user you specified ["+username+"] is invalid");
+        }
 
         env.getWriter().flush();
 

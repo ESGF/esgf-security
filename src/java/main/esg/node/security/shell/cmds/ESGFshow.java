@@ -79,22 +79,26 @@ public class ESGFshow extends ESGFCommand {
 
 private static Log log = LogFactory.getLog(ESGFshow.class);
 
-    public ESGFshow() {
-        super();
+    public ESGFshow() { super(); }
+
+    public String getCommandName() { return "show"; }
+
+    public void doInitOptions() {
+
         getOptions().addOption("d",  "details",    false, "show details");
         getOptions().addOption("au", "all-users",  false, "show all users on the system");
         getOptions().addOption("ag", "all-groups", false, "show all groups on the system");
         
         Option user = 
-        OptionBuilder.withArgName("user")
+            OptionBuilder.withArgName("user")
             .hasArg(true)
             .withDescription("User to inspect")
             .withLongOpt("user")
             .create("u");
         getOptions().addOption(user);
-
+        
         Option group = 
-        OptionBuilder.withArgName("group")
+            OptionBuilder.withArgName("group")
             .hasArg(true)
             .withDescription("Group to inspect")
             .withLongOpt("group")
@@ -102,9 +106,7 @@ private static Log log = LogFactory.getLog(ESGFshow.class);
         getOptions().addOption(group);
         
     }
-
-    public String getCommandName() { return "show"; }
-
+    
     public ESGFEnv doEval(CommandLine line, ESGFEnv env) {
         log.trace("inside the \"show\" command's doEval");
         //TODO: Query for options and perform execution logic
