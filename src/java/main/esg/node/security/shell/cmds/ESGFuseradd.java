@@ -307,7 +307,11 @@ private static Log log = LogFactory.getLog(ESGFuseradd.class);
             if (null != openid) user.setOpenid(openid);
             
             //Adding to database
-            if(userDAO.addUserInfo(user)) log.info("[OK]"); else { log.info("[FAIL]"); }
+            if(userDAO.addUserInfo(user)){
+                env.getWriter().println("[OK]");
+            }else {
+                env.getWriter().println("[FAILED]");
+            }
             env.getWriter().println(user);
 
             //place holder for when doing group / role impl.

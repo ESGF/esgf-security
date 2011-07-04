@@ -72,9 +72,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import java.sql.ResultSetMetaData;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbutils.QueryRunner;
@@ -167,6 +170,9 @@ public class UserInfoDAO {
 
     //-------------------
 
+    private static final String showUsersQuery =
+        "SELECT * from FROM esgf_security.user";
+
     
     private static final Log log = LogFactory.getLog(UserInfoDAO.class);
 
@@ -179,6 +185,7 @@ public class UserInfoDAO {
     private ResultSetHandler<Boolean> existsResultSetHandler = null;
     private ResultSetHandler<String> singleStringResultSetHandler = null;
     private ResultSetHandler<String> passwordQueryHandler = null;
+    private ResultSetHandler<List<String[]>> basicResultSetHandler = null;
 
     private static final String  adminName = "rootAdmin";
     
@@ -306,6 +313,42 @@ public class UserInfoDAO {
             }
         };
         
+        basicResultSetHandler = new ResultSetHandler<List<String[]>>() {
+            public List<String[]> handle(ResultSet rs) throws SQLException {
+                ArrayList<String[]> results = new ArrayList<String[]>();
+                String[] record = null;
+                assert (null!=results);
+
+                ResultSetMetaData meta = rs.getMetaData();
+                int cols = meta.getColumnCount();
+                log.trace("Number of fields: "+cols);
+
+                log.trace("adding column data...");
+                record = new String[cols];
+                for(int i=0;i<cols;i++) {
+                    try{
+                        record[i]=meta.getColumnLabel(i+1);
+                    }catch (SQLException e) {
+                        log.error(e);
+                    }
+                }
+                results.add(record);
+
+                for(int i=0;rs.next();i++) {
+                    log.trace("Looking at record "+(i+1));
+                    record = new String[cols];
+                    for (int j = 0; j < cols; j++) {
+                        record[j] = rs.getString(j + 1);
+                        log.trace("gathering result record column "+(j+1)+" -> "+record[j]);
+                    }
+                    log.trace("adding record ");
+                    results.add(record);
+                    record = null; //gc courtesy
+                }
+                return results;
+            }
+        };
+
         new InitAdmin();
     }
     
@@ -919,6 +962,31 @@ public class UserInfoDAO {
         return (numRowsAffected > 0);
     }
     
+
+    //-------------------------------------------------------
+    //Users "Show" Query
+    //-------------------------------------------------------
+
+    //TODO: (zoiks) implement me
+    //still need the query and then to call it.
+    public List<String[]> getUserEntries() {
+        try{
+            log.trace("Fetching raw user data from database table");
+            List<String[]> results = queryRunner.query(showUsersQuery, basicResultSetHandler);
+            log.trace("Query is: "+showUsersQuery);
+            assert (null != results);
+            if(results != null) { log.info("Retrieved "+(results.size()-1)+" records"); }
+            return results;
+        }catch(SQLException ex) {
+            log.error(ex);
+        }catch(Throwable t) {
+            log.error(t);
+        }
+        return new ArrayList<String[]>();
+    }
+
+
+    //------------------------------------
     public PasswordEncoder getEncoder() {
         return encoder;
     }

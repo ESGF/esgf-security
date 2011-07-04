@@ -167,11 +167,14 @@ private static Log log = LogFactory.getLog(ESGFgroupadd.class);
         //------------------
 
         GroupRoleDAO groupRoleDAO = new GroupRoleDAO(env.getEnv());
-        groupRoleDAO.addGroup(groupname);
+        if(groupRoleDAO.addGroup(groupname)) {
+            env.getWriter().println("[OK]");
+        }else{
+            env.getWriter().println("[FAILED]");
+        }
         
-        //TODO: first test if already there... if not then add it... else throw exception...
-
         //------------------
+        env.getWriter().flush();
         return env;
     }
 }

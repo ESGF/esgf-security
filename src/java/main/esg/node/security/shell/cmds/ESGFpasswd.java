@@ -87,6 +87,7 @@ private static Log log = LogFactory.getLog(ESGFpasswd.class);
     public void doInitOptions() {
         getOptions().addOption("i", "prompt", false, "request confirmation before performing action");
         getOptions().addOption("d", "disable", false, "disable this account");
+        getOptions().addOption("c", "check", false, "Allows users to check if thier password is valid");
         
         Option user = 
             OptionBuilder.withArgName("user")
@@ -95,7 +96,7 @@ private static Log log = LogFactory.getLog(ESGFpasswd.class);
             .withLongOpt("user")
             .create("u");
         getOptions().addOption(user);
-        
+
     }
     
     public ESGFEnv doEval(CommandLine line, ESGFEnv env) {
@@ -170,26 +171,53 @@ private static Log log = LogFactory.getLog(ESGFpasswd.class);
         }
         
         if(user.isValid()) {
-        
-            if((origPassword == null) && (newPassword != null) && 
-               (user.getUserName().equals(whoami)) ) {
+
+            //Here I just want to check if the password is valid which
+            //right now simply means it matches.  The code inside the
+            //DAO can be later modified to qualify what a positive
+            //check means semantically at some future date.
+
+            if(line.hasOption("c") && (username != null) && (origPassword == null) && (newPassword != null)) {
+                log.trace("checking password...");
+                if(userDAO.checkPassword(user.getOpenid(),newPassword)) {
+                    env.getWriter().println("password updated :-)");
+                }else {
+                    throw new esg.common.ESGRuntimeException("Sorry, could not update your password");
+                }
+            }
+
+            //The general rules are as follows...
+            //1) If I am rootAdmin then I can set any user's password
+            //2) If I am logged in as the same user I specified with --user then I can set my password
+            //3) If I can change the password of --user if I know their original password
+
+            //NOTE: Right now choice 2 won't get run because I am
+            //forcing this entire command to only be run as rootAdmin.
+            //I'll loosen this up a bit later, but with security it is
+            //best to be tight up front! :-)
+
+            if((origPassword == null) && (newPassword != null) && (whoami.equals("rootAdmin")) ) {
+                log.trace("setting password for ["+user.getUserName()+"] (by "+whoami+")");
                 if(userDAO.setPassword(user.getOpenid(),newPassword)) {
                     env.getWriter().println("password updated :-)");
                 }else {
-                    throw new esg.common.ESGRuntimeException("Sorry, could not update your password");            
+                    throw new esg.common.ESGRuntimeException("Sorry, could not update your password");
                 }
-            }
-        
-            if(user.getUserName().equals("rootAdmin")) {
+            }else if((origPassword == null) && (newPassword != null) && (user.getUserName().equals(whoami)) ) {
+                log.trace("*setting password for ["+user.getUserName()+"] (by "+whoami+")");
                 if(userDAO.setPassword(user.getOpenid(),newPassword)) {
-                    env.getWriter().println("password updated for ["+user.getUserName()+"] :-)");
-                    env.getWriter().flush();
+                    env.getWriter().println("password updated :-)");
                 }else {
-                    throw new esg.common.ESGRuntimeException("Sorry, could not update password for ["+user.getUserName()+"]");            
+                    throw new esg.common.ESGRuntimeException("Sorry, could not update your password");
                 }
-            }else {
-                userDAO.changePassword(user.getOpenid(),origPassword,newPassword);
+            }else if ((origPassword != null) && (newPassword != null)) {
+                log.trace("changing password for ["+user.getUserName()+"] (by "+whoami+")");
+                if(userDAO.changePassword(user.getOpenid(),origPassword,newPassword)) {
+                    env.getWriter().println("password changed for ["+user.getUserName()+"] :-)");
+                    env.getWriter().flush();
+                }
             }
+
             
         }else {
             throw new esg.common.ESGRuntimeException("The user you specified ["+username+"] is invalid");

@@ -66,6 +66,10 @@ package esg.node.security.shell.cmds;
    second half of the 'replication' process - for a single dataset.
 **/
 
+import java.util.List;
+
+import esg.node.security.*;
+
 import esg.common.shell.*;
 import esg.common.shell.cmds.*;
 
@@ -85,9 +89,13 @@ private static Log log = LogFactory.getLog(ESGFshow.class);
 
     public void doInitOptions() {
 
+        getOptions().addOption("v", "verbose", false, "show more verbose output");
         getOptions().addOption("d",  "details",    false, "show details");
+        getOptions().addOption("all",    false, "show all details");
+
         getOptions().addOption("au", "all-users",  false, "show all users on the system");
         getOptions().addOption("ag", "all-groups", false, "show all groups on the system");
+        getOptions().addOption("ar", "all-roles", false,  "show all roles on the system");
         
         Option user = 
             OptionBuilder.withArgName("user")
@@ -105,67 +113,139 @@ private static Log log = LogFactory.getLog(ESGFshow.class);
             .create("g");
         getOptions().addOption(group);
         
+        Option role =
+            OptionBuilder.withArgName("role")
+            .hasArg(true)
+            .withDescription("Group to inspect")
+            .withLongOpt("role")
+            .create("r");
+        getOptions().addOption(role);
+        
     }
     
     public ESGFEnv doEval(CommandLine line, ESGFEnv env) {
         log.trace("inside the \"show\" command's doEval");
         //TODO: Query for options and perform execution logic
 
-        boolean details = false;
-        if(line.hasOption( "details" )) { details = true; }
-        env.getWriter().println("details: ["+details+"]");
+        boolean all        = line.hasOption("all");
+        boolean verbose    = line.hasOption("verbose");
+        boolean details    = line.hasOption("details");
+        boolean all_users  = (line.hasOption("all-users") || all);
+        boolean all_groups = (line.hasOption("all-groups") || all);
+        boolean all_roles  = (line.hasOption("all-roles") || all);
 
-        boolean all_users = false;
-        if(line.hasOption( "all-users" )) { all_users = true; }
-        env.getWriter().println("all-users: ["+all_users+"]");
-
-        boolean all_groups = false;
-        if(line.hasOption( "all-groups" )) { all_groups = true; }
-        env.getWriter().println("all-groups: ["+all_groups+"]");
-
-        //------------------
-        //NOW DO SOME LOGIC (all logic)
-        //------------------
-        
-        
-
-        //------------------
-
+        if(verbose) {
+            env.getWriter().println("details: ["+details+"]");
+            env.getWriter().println("all: ["+all+"]");
+            env.getWriter().println("all-users: ["+all_users+"]");
+            env.getWriter().println("all-groups: ["+all_groups+"]");
+            env.getWriter().println("all-roles: ["+all_roles+"]");
+        }
 
         String user = null;
         if(line.hasOption( "u" )) {
             user = line.getOptionValue( "u" );
-            env.getWriter().println("user: ["+user+"]");
+            if(verbose) env.getWriter().println("user: ["+user+"]");
         }
 
         String group = null;
         if(line.hasOption( "g" )) {
             group = line.getOptionValue( "g" );
-            env.getWriter().println("group: ["+group+"]");
+            if(verbose) env.getWriter().println("group: ["+group+"]");
+        }
+
+        String role = null;
+        if(line.hasOption( "r" )) {
+            group = line.getOptionValue( "r" );
+            if(verbose) env.getWriter().println("role: ["+role+"]");
         }
         
-        int i=0;
-        for(String arg : line.getArgs()) {
-            log.info("arg("+(i++)+"): "+arg);
-        }
+        //------------------
+        //NOW DO SOME LOGIC (USER / GROUP)
+        //------------------
         
-        //Scrubbing... (need to go into cli code and toss in some regex's to clean this type of shit up)
-        java.util.List<String> argsList = new java.util.ArrayList<String>();
-        String[] args = null;
-        for(String arg : line.getArgs()) {
-            if(!arg.isEmpty()) {
-                argsList.add(arg);
+        //-----
+        //for the USER queries...
+        //-----
+        if(all_users || (user != null)) {
+            UserInfoDAO userDAO = new UserInfoDAO(env.getEnv());
+            if(all_users) {
+                List<String[]> results = userDAO.getUserEntries();
+
+                env.getWriter().println("Users:");
+
+                //Cycle through results...
+                for(String[] record : results) {
+                    StringBuilder sb = new StringBuilder();
+                    for(String column : record) {
+                        sb.append(column+"\t");
+                    }
+                    env.getWriter().println(sb.toString());
+                }
+
+            }else if((user != null)) {
+                env.getWriter().println("User: "+user);
+                UserInfo userInfo = userDAO.getUserById(user);
+                if(userInfo.isValid()) {
+                    env.getWriter().println(userInfo);
+                }else{
+                    env.getWriter().println("User: ["+user+"] is NOT present on this system");
+                }
             }
+
         }
-        args = argsList.toArray(new String[]{});
+
+        //-----
+        //for GROUP and ROLE queries...
+        //-----
+
+        GroupRoleDAO groupRoleDAO = null;
+        if(all_groups || (group != null)) {
+            groupRoleDAO = (groupRoleDAO == null) ? groupRoleDAO = new GroupRoleDAO(env.getEnv()) : groupRoleDAO;
+            List<String[]> results =  null;
+            if(all_groups) {
+                results = groupRoleDAO.getGroupEntries();
+                env.getWriter().println("Groups:");
+            }else if((group != null)) {
+                results = groupRoleDAO.getGroupEntry(group);
+                env.getWriter().println("Group: "+group);
+            }
+
+            //Cycle through results...
+            for(String[] record : results) {
+                StringBuilder sb = new StringBuilder();
+                for(String column : record) {
+                    sb.append(column+"\t");
+                }
+                env.getWriter().println(sb.toString());
+            }
+
+        }
+
+        if(all_roles || (role != null)) {
+            groupRoleDAO = (groupRoleDAO == null) ? groupRoleDAO = new GroupRoleDAO(env.getEnv()) : groupRoleDAO;
+            List<String[]> results =  null;
+            if(all_roles) {
+                results = groupRoleDAO.getRoleEntries();
+                env.getWriter().println("Roles:");
+            }else if((role != null)) {
+                results = groupRoleDAO.getRoleEntry(role);
+                env.getWriter().println("Role: "+role);
+            }
+
+            //Cycle through results...
+            for(String[] record : results) {
+                StringBuilder sb = new StringBuilder();
+                for(String column : record) {
+                    sb.append(column+"\t");
+                }
+                env.getWriter().println(sb.toString());
+            }
+
+        }
 
         //------------------
-        //NOW DO SOME LOGIC (per user or group)
-        //------------------
-        
-        
-
-        //------------------
+        env.getWriter().flush();
         return env;
     }
 }
