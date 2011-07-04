@@ -115,7 +115,7 @@ private static Log log = LogFactory.getLog(ESGFpasswd.class);
         
         int i=0;
         for(String arg : line.getArgs()) {
-            log.info("arg("+(i++)+"): "+arg);
+            log.trace("arg("+(i++)+"): "+arg);
         }
         
         //Scrubbing... (need to go into cli code and toss in some regex's to clean this type of shit up)
@@ -177,15 +177,6 @@ private static Log log = LogFactory.getLog(ESGFpasswd.class);
             //DAO can be later modified to qualify what a positive
             //check means semantically at some future date.
 
-            if(line.hasOption("c") && (username != null) && (origPassword == null) && (newPassword != null)) {
-                log.trace("checking password...");
-                if(userDAO.checkPassword(user.getOpenid(),newPassword)) {
-                    env.getWriter().println("password updated :-)");
-                }else {
-                    throw new esg.common.ESGRuntimeException("Sorry, could not update your password");
-                }
-            }
-
             //The general rules are as follows...
             //1) If I am rootAdmin then I can set any user's password
             //2) If I am logged in as the same user I specified with --user then I can set my password
@@ -196,7 +187,15 @@ private static Log log = LogFactory.getLog(ESGFpasswd.class);
             //I'll loosen this up a bit later, but with security it is
             //best to be tight up front! :-)
 
-            if((origPassword == null) && (newPassword != null) && (whoami.equals("rootAdmin")) ) {
+
+            if(line.hasOption("c") && (username != null) && (origPassword == null) && (newPassword != null)) {
+                log.trace("checking password...");
+                if(userDAO.checkPassword(user.getOpenid(),newPassword)) {
+                    env.getWriter().println("password verified :-)");
+                }else {
+                    throw new esg.common.ESGRuntimeException("Sorry, could not verify your password");
+                }
+            }else if((origPassword == null) && (newPassword != null) && (whoami.equals("rootAdmin")) ) {
                 log.trace("setting password for ["+user.getUserName()+"] (by "+whoami+")");
                 if(userDAO.setPassword(user.getOpenid(),newPassword)) {
                     env.getWriter().println("password updated :-)");
@@ -208,7 +207,7 @@ private static Log log = LogFactory.getLog(ESGFpasswd.class);
                 if(userDAO.setPassword(user.getOpenid(),newPassword)) {
                     env.getWriter().println("password updated :-)");
                 }else {
-                    throw new esg.common.ESGRuntimeException("Sorry, could not update your password");
+                    throw new esg.common.ESGRuntimeException("*Sorry, could not update your password");
                 }
             }else if ((origPassword != null) && (newPassword != null)) {
                 log.trace("changing password for ["+user.getUserName()+"] (by "+whoami+")");

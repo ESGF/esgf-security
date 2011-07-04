@@ -182,7 +182,7 @@ private static Log log = LogFactory.getLog(ESGFshow.class);
                     }
                     env.getWriter().println(sb.toString());
                 }
-
+                
             }else if((user != null)) {
                 env.getWriter().println("User: "+user);
                 UserInfo userInfo = userDAO.getUserById(user);
@@ -192,7 +192,7 @@ private static Log log = LogFactory.getLog(ESGFshow.class);
                     env.getWriter().println("User: ["+user+"] is NOT present on this system");
                 }
             }
-
+            env.getWriter().println();
         }
 
         //-----
@@ -219,7 +219,7 @@ private static Log log = LogFactory.getLog(ESGFshow.class);
                 }
                 env.getWriter().println(sb.toString());
             }
-
+            env.getWriter().println();
         }
 
         if(all_roles || (role != null)) {
@@ -241,9 +241,9 @@ private static Log log = LogFactory.getLog(ESGFshow.class);
                 }
                 env.getWriter().println(sb.toString());
             }
-
+            env.getWriter().println();
         }
-
+        
         //------------------
         env.getWriter().flush();
         return env;

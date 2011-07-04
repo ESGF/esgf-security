@@ -55,7 +55,7 @@ public class UserInfoCredentialedDAO {
     private UserInfoDAO userInfoDAO = null;
 
     public UserInfoCredentialedDAO(Credentials cred, Properties props) {
-        System.out.println("Instantiating DAO using "+cred+" privs");
+        log.trace("Instantiating DAO using "+cred+" privs");
         userInfoDAO = new UserInfoDAO(props);
         useCredentials(cred);
     }
@@ -69,7 +69,7 @@ public class UserInfoCredentialedDAO {
         //here to determine things like Which users can do what
         //actions etc...  for now... I'll make it "rootAdmin" only...
         UserInfo user = null;
-        log.info("Checking credentials: "+cred);
+        log.trace("Checking credentials: "+cred);
         if(cred != null) {
             //NOTE: we want to deprecate the use of the "ById" call
             //and use the "ByOpenid" call this way we do everything by
@@ -77,14 +77,14 @@ public class UserInfoCredentialedDAO {
             //general laziness right now, we will use the "ById"
             //version.
             user = userInfoDAO.getUserById(cred.getid());
-            if(!user.isValid()) { log.trace("User ["+cred.getid()+"] is NOT a valid user on this system"); return false; }
+            if(!user.isValid()) { log.info("User ["+cred.getid()+"] is NOT a valid user on this system"); return false; }
             if(!user.getUserName().equals("rootAdmin")) { log.trace("Sorry, Must be ROOT to use this DAO"); return false; }
         }
         if((user != null) && userInfoDAO.checkPassword(user.getOpenid(),cred.getPassword())) {
             this.cred = cred;
             return true;
         }else{
-            log.info("Password for "+cred+" NOT valid");
+            log.warn("Password for "+cred+" NOT valid");
         }
         return false;
     }

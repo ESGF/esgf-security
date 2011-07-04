@@ -171,7 +171,7 @@ public class UserInfoDAO {
     //-------------------
 
     private static final String showUsersQuery =
-        "SELECT username, firstname, lastname, openid from FROM esgf_security.user";
+        "SELECT username, firstname, lastname, openid FROM esgf_security.user";
 
     //-------------------
     
@@ -411,7 +411,7 @@ public class UserInfoDAO {
     public synchronized UserInfo getUserById(String id) {
         UserInfo userInfo = null;
 
-        log.info("getUserById ( "+id+" )");
+        log.trace("getUserById ( "+id+" )");
 
         try{
             int affectedRecords = 0;
@@ -461,7 +461,7 @@ public class UserInfoDAO {
                     //Do not use the port value if it is the default value for https i.e. 443
                     //BAD  = https://esgf-node1.llnl.gov:443/esgf-idp/openid/gavinbell
                     //GOOD = https://esgf-node1.llnl.gov/esgf-idp/openid/gavinbell
-                    log.info("openid port = "+openidPort);
+                    log.trace("openid port = "+openidPort);
                     if(openidPort.equals("") || openidPort.equals("443")) {
                         openidPort="";
                     }else{
@@ -471,7 +471,7 @@ public class UserInfoDAO {
                     openid = "https://"+openidHost+openidPort+"/esgf-idp/openid/"+username;
                     
                 }else {
-                    log.info("Sorry money, your id is not well formed");
+                    log.warn("Sorry money, your id is not well formed");
                     return null;
                 }
             }
@@ -526,7 +526,7 @@ public class UserInfoDAO {
      */
     public synchronized UserInfo refresh(UserInfo userInfo) {
         if((userInfo.getid() > 0) && userInfo.isValid()) {
-            log.info("Refreshing ["+userInfo.getUserName()+"]...");
+            log.trace("Refreshing ["+userInfo.getUserName()+"]...");
             log.trace(" Openid: ["+userInfo.getOpenid()+"]");
             userInfo.copy(getUserById(userInfo.getOpenid()));
         }
@@ -553,7 +553,7 @@ public class UserInfoDAO {
     */
     public synchronized UserInfo commit(UserInfo userInfo) {
         if((userInfo.getid() > 0) && userInfo.isValid() ) {
-            log.info("Committing ["+userInfo.getUserName()+"]...");
+            log.trace("Committing ["+userInfo.getUserName()+"]...");
             log.trace(" Openid: ["+userInfo.getOpenid()+"]");
             if(addUserInfo(userInfo)) {
                 userInfo.copy(getUserById(userInfo.getOpenid()));
@@ -976,7 +976,7 @@ public class UserInfoDAO {
             List<String[]> results = queryRunner.query(showUsersQuery, basicResultSetHandler);
             log.trace("Query is: "+showUsersQuery);
             assert (null != results);
-            if(results != null) { log.info("Retrieved "+(results.size()-1)+" records"); }
+            if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
             return results;
         }catch(SQLException ex) {
             log.error(ex);

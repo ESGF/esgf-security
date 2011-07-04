@@ -105,16 +105,16 @@ public class GroupRoleDAO implements Serializable {
 
     //-------------------
     private static final String showGroupQuery =
-        "SELECT * from FROM esgf_security.group WHERE name = ?";
+        "SELECT * FROM esgf_security.group WHERE name = ?";
 
     private static final String showGroupsQuery =
-        "SELECT * from FROM esgf_security.group";
+        "SELECT * FROM esgf_security.group";
 
     private static final String showRoleQuery =
-        "SELECT * from FROM esgf_security.role WHERE name = ?";
+        "SELECT * FROM esgf_security.role WHERE name = ?";
 
     private static final String showRolesQuery =
-        "SELECT * from FROM esgf_security.role";
+        "SELECT * FROM esgf_security.role";
 
     //-------------------
     
@@ -359,7 +359,7 @@ public class GroupRoleDAO implements Serializable {
             List<String[]> results = queryRunner.query(showGroupQuery, basicResultSetHandler, groupname);
             log.trace("Query is: "+showGroupQuery);
             assert (null != results);
-            if(results != null) { log.info("Retrieved "+(results.size()-1)+" records"); }
+            if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
             return results;
         }catch(SQLException ex) {
             log.error(ex);
@@ -375,7 +375,7 @@ public class GroupRoleDAO implements Serializable {
             List<String[]> results = queryRunner.query(showGroupsQuery, basicResultSetHandler);
             log.trace("Query is: "+showGroupsQuery);
             assert (null != results);
-            if(results != null) { log.info("Retrieved "+(results.size()-1)+" records"); }
+            if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
             return results;
         }catch(SQLException ex) {
             log.error(ex);
@@ -391,7 +391,7 @@ public class GroupRoleDAO implements Serializable {
             List<String[]> results = queryRunner.query(showGroupQuery, basicResultSetHandler);
             log.trace("Query is: "+showRoleQuery);
             assert (null != results);
-            if(results != null) { log.info("Retrieved "+(results.size()-1)+" records"); }
+            if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
             return results;
         }catch(SQLException ex) {
             log.error(ex);
@@ -407,7 +407,7 @@ public class GroupRoleDAO implements Serializable {
             List<String[]> results = queryRunner.query(showRolesQuery, basicResultSetHandler);
             log.trace("Query is: "+showRolesQuery);
             assert (null != results);
-            if(results != null) { log.info("Retrieved "+(results.size()-1)+" records"); }
+            if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
             return results;
         }catch(SQLException ex) {
             log.error(ex);
