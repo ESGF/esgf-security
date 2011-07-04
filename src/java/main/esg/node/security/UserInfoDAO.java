@@ -171,8 +171,9 @@ public class UserInfoDAO {
     //-------------------
 
     private static final String showUsersQuery =
-        "SELECT * from FROM esgf_security.user";
+        "SELECT username, firstname, lastname, openid from FROM esgf_security.user";
 
+    //-------------------
     
     private static final Log log = LogFactory.getLog(UserInfoDAO.class);
 
