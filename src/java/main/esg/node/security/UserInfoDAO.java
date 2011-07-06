@@ -505,7 +505,7 @@ public class UserInfoDAO {
         }catch(Throwable t) {
             //If shit hits the fan, bottom line... not letting anyone in.
             //returning a negative answer for getting user information
-            log.error("t.getMessage()");
+            log.error(t.getMessage());
             log.error(t);
         }
         return userInfo;

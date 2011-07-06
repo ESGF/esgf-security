@@ -141,6 +141,14 @@ private static Log log = LogFactory.getLog(ESGFuserdel.class);
             throw new esg.common.ESGRuntimeException("Sorry, this operationis not permitted for user ["+username+"]");
         }
         
+        env.getWriter().flush();
+        try{
+            String answer = env.getReader().readLine("Is this information correct and ready to be submitted? [Y/n] > ");
+            if(!answer.equals("") && !answer.equalsIgnoreCase("y")) {
+                return env;
+            }
+        }catch(java.io.IOException e) { System.err.println(e.getMessage()); }
+        
         if (userDAO.deleteUserInfo(user)) {
             env.getWriter().println("[DELETED]");
         }else {

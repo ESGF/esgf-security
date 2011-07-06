@@ -95,7 +95,6 @@ private static Log log = LogFactory.getLog(ESGFuseradd.class);
             .hasArg(true)
             .withDescription("First name of user")
             .withLongOpt("firstname")
-            .isRequired(true)
             .create("fn");
         getOptions().addOption(firstname);
 
@@ -112,7 +111,6 @@ private static Log log = LogFactory.getLog(ESGFuseradd.class);
             .hasArg(true)
             .withDescription("Last name of user")
             .withLongOpt("lastname")
-            .isRequired(true)
             .create("ln");
         getOptions().addOption(lastname);
 
@@ -121,7 +119,6 @@ private static Log log = LogFactory.getLog(ESGFuseradd.class);
             .hasArg(true)
             .withDescription("Email address of user")
             .withLongOpt("email")
-            .isRequired(true)
             .create("e");
         getOptions().addOption(email);
 
@@ -253,7 +250,20 @@ private static Log log = LogFactory.getLog(ESGFuseradd.class);
                 log.info("arg("+(i++)+"): "+arg);
             }
         }
-        
+
+        //Check for required fields...
+        //NOTE: this is a work around until I can figure out to exempt --help.
+        //You should be allowed to call --help regardless if 'required' fields are not present!
+        //because then how will know what the fields are, etc.  There may be some special handling
+        //that I am not doing propertly in the super class when assigning the help option (perhaps?). -gavin
+        if ((firstname == null) ||
+            (lastname == null) ||
+            (email == null) ) {
+            env.getWriter().println("Missing Required Options: -fn, -ln, -e.  Please see --help for more info");
+            env.getWriter().flush();
+            return env;
+        }
+
         //------------------
         //NOW DO SOME LOGIC
         //------------------
