@@ -1,20 +1,35 @@
 /*******************************************************************************
- * Copyright (c) 2011 Earth System Grid Federation
- * ALL RIGHTS RESERVED. 
- * U.S. Government sponsorship acknowledged.
+ * Copyright (c) 2011 Earth System Grid Federation ALL RIGHTS
+ * RESERVED.  U.S. Government sponsorship acknowledged.
  * 
- * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
  * 
- * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+ * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
  * 
- * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+ * Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the
+ * distribution.
  * 
- * Neither the name of the <ORGANIZATION> nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+ * Neither the name of the <ORGANIZATION> nor the names of its
+ * contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE
+ * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 /**
    Description:
@@ -30,9 +45,12 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Set;
 
+import java.sql.ResultSetMetaData;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbutils.QueryRunner;
@@ -86,7 +104,19 @@ public class GroupRoleDAO implements Serializable {
         "DELETE FROM esgf_security.role where name = ?";
 
     //-------------------
+    private static final String showGroupQuery =
+        "SELECT * FROM esgf_security.group WHERE name = ?";
 
+    private static final String showGroupsQuery =
+        "SELECT * FROM esgf_security.group";
+
+    private static final String showRoleQuery =
+        "SELECT * FROM esgf_security.role WHERE name = ?";
+
+    private static final String showRolesQuery =
+        "SELECT * FROM esgf_security.role";
+
+    //-------------------
     
     private static final Log log = LogFactory.getLog(GroupRoleDAO.class);
 
@@ -95,6 +125,7 @@ public class GroupRoleDAO implements Serializable {
     private QueryRunner queryRunner = null;
     private ResultSetHandler<Map<String,Set<String>>> userGroupsResultSetHandler = null;
     private ResultSetHandler<Integer> idResultSetHandler = null;
+    private ResultSetHandler<List<String[]>> basicResultSetHandler = null;
 
     //uses default values in the DatabaseResource to connect to database
     public GroupRoleDAO() {
@@ -163,6 +194,43 @@ public class GroupRoleDAO implements Serializable {
 
 
         };
+
+        basicResultSetHandler = new ResultSetHandler<List<String[]>>() {
+            public List<String[]> handle(ResultSet rs) throws SQLException {
+                ArrayList<String[]> results = new ArrayList<String[]>();
+                String[] record = null;
+                assert (null!=results);
+
+                ResultSetMetaData meta = rs.getMetaData();
+                int cols = meta.getColumnCount();
+                log.trace("Number of fields: "+cols);
+
+                log.trace("adding column data...");
+                record = new String[cols];
+                for(int i=0;i<cols;i++) {
+                    try{
+                        record[i]=meta.getColumnLabel(i+1);
+                    }catch (SQLException e) {
+                        log.error(e);
+                    }
+                }
+                results.add(record);
+
+                for(int i=0;rs.next();i++) {
+                    log.trace("Looking at record "+(i+1));
+                    record = new String[cols];
+                    for (int j = 0; j < cols; j++) {
+                        record[j] = rs.getString(j + 1);
+                        log.trace("gathering result record column "+(j+1)+" -> "+record[j]);
+                    }
+                    log.trace("adding record ");
+                    results.add(record);
+                    record = null; //gc courtesy
+                }
+                return results;
+            }
+        };
+
     }
     
     public void setProperties(Properties props) { this.props = props; }
@@ -268,7 +336,7 @@ public class GroupRoleDAO implements Serializable {
     }
     
     //TODO: What to really do here to make this happen
-    synchronized boolean deleteRole(String roleName) {
+    public synchronized boolean deleteRole(String roleName) {
         int numRowsAffected = -1;
         try{
             System.out.print("Deleting Role "+roleName);
@@ -281,6 +349,74 @@ public class GroupRoleDAO implements Serializable {
         return (numRowsAffected > 0);
     }
     
+    //-------------------------------------------------------
+    //Basic Selection "show" Queries
+    //-------------------------------------------------------
+
+    public List<String[]> getGroupEntry(String groupname) {
+        try{
+            log.trace("Fetching raw group data from database table");
+            List<String[]> results = queryRunner.query(showGroupQuery, basicResultSetHandler, groupname);
+            log.trace("Query is: "+showGroupQuery);
+            assert (null != results);
+            if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
+            return results;
+        }catch(SQLException ex) {
+            log.error(ex);
+        }catch(Throwable t) {
+            log.error(t);
+        }
+        return new ArrayList<String[]>();
+    }
+
+    public List<String[]> getGroupEntries() {
+        try{
+            log.trace("Fetching raw groups data from database table");
+            List<String[]> results = queryRunner.query(showGroupsQuery, basicResultSetHandler);
+            log.trace("Query is: "+showGroupsQuery);
+            assert (null != results);
+            if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
+            return results;
+        }catch(SQLException ex) {
+            log.error(ex);
+        }catch(Throwable t) {
+            log.error(t);
+        }
+        return new ArrayList<String[]>();
+    }
+
+    public List<String[]> getRoleEntry(String rolename) {
+        try{
+            log.trace("Fetching raw role data from database table");
+            List<String[]> results = queryRunner.query(showGroupQuery, basicResultSetHandler);
+            log.trace("Query is: "+showRoleQuery);
+            assert (null != results);
+            if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
+            return results;
+        }catch(SQLException ex) {
+            log.error(ex);
+        }catch(Throwable t) {
+            log.error(t);
+        }
+        return new ArrayList<String[]>();
+    }
+
+    public List<String[]> getRoleEntries() {
+        try{
+            log.trace("Fetching raw roles data from database table");
+            List<String[]> results = queryRunner.query(showRolesQuery, basicResultSetHandler);
+            log.trace("Query is: "+showRolesQuery);
+            assert (null != results);
+            if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
+            return results;
+        }catch(SQLException ex) {
+            log.error(ex);
+        }catch(Throwable t) {
+            log.error(t);
+        }
+        return new ArrayList<String[]>();
+    }
+
     //------------------------------------
     
     public String toString() {

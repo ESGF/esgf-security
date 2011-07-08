@@ -3,18 +3,34 @@
  * ALL RIGHTS RESERVED. 
  * U.S. Government sponsorship acknowledged.
  * 
- * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
  * 
- * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+ * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
  * 
- * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+ * Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the
+ * distribution.
  * 
- * Neither the name of the <ORGANIZATION> nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+ * Neither the name of the <ORGANIZATION> nor the names of its
+ * contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
- * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE
+ * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 package esg.node.security;
 
@@ -39,7 +55,7 @@ public class UserInfoCredentialedDAO {
     private UserInfoDAO userInfoDAO = null;
 
     public UserInfoCredentialedDAO(Credentials cred, Properties props) {
-        System.out.println("Instantiating DAO using "+cred+" privs");
+        log.trace("Instantiating DAO using "+cred+" privs");
         userInfoDAO = new UserInfoDAO(props);
         useCredentials(cred);
     }
@@ -53,7 +69,7 @@ public class UserInfoCredentialedDAO {
         //here to determine things like Which users can do what
         //actions etc...  for now... I'll make it "rootAdmin" only...
         UserInfo user = null;
-        log.info("Checking credentials: "+cred);
+        log.trace("Checking credentials: "+cred);
         if(cred != null) {
             //NOTE: we want to deprecate the use of the "ById" call
             //and use the "ByOpenid" call this way we do everything by
@@ -61,14 +77,14 @@ public class UserInfoCredentialedDAO {
             //general laziness right now, we will use the "ById"
             //version.
             user = userInfoDAO.getUserById(cred.getid());
-            if(!user.isValid()) { log.trace("User ["+cred.getid()+"] is NOT a valid user on this system"); return false; }
+            if(!user.isValid()) { log.info("User ["+cred.getid()+"] is NOT a valid user on this system"); return false; }
             if(!user.getUserName().equals("rootAdmin")) { log.trace("Sorry, Must be ROOT to use this DAO"); return false; }
         }
         if((user != null) && userInfoDAO.checkPassword(user.getOpenid(),cred.getPassword())) {
             this.cred = cred;
             return true;
         }else{
-            log.info("Password for "+cred+" NOT valid");
+            log.warn("Password for "+cred+" NOT valid");
         }
         return false;
     }
