@@ -1,11 +1,9 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-
-<registry>
-
-        <attribute type="CMIP5 Research" service="https://esg-test1.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm"/>
-        
-        <attribute type="Test Attribute" service="http://localhost:8080/esgf-security/saml/soap/secure/attributeService.htm"/>
-
-        <attribute type="NASA OBS" service="https://esg-datanode.jpl.nasa.gov/esgf-security/saml/soap/secure/attributeService.htm"/>
-
-</registry>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ats_whitelist xmlns="http://www.esgf.org/whitelist">
+    <attribute type="NASA OBS" service="https://esg-datanode.jpl.nasa.gov/esgf-security/saml/soap/secure/attributeService.htm"/>
+    <attribute type="ORNL OBS" service="https://esg-datanode.jpl.nasa.gov/esgf-security/saml/soap/secure/attributeService.htm"/>
+    <attribute type="CMIP5 Research" service="https://esg-datanode.jpl.nasa.gov/esgf-security/saml/soap/secure/attributeService.htm"/>
+    <attribute type="NASA OBS" service="https://esgf-node1.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm"/>
+    <attribute type="ORNL OBS" service="https://esgf-node1.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm"/>
+    <attribute type="CMIP5 Research" service="https://esgf-node1.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm"/>
+</ats_whitelist>
