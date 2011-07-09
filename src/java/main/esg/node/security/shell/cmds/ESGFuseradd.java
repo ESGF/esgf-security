@@ -95,6 +95,7 @@ private static Log log = LogFactory.getLog(ESGFuseradd.class);
             .hasArg(true)
             .withDescription("First name of user")
             .withLongOpt("firstname")
+            .isRequired(true)
             .create("fn");
         getOptions().addOption(firstname);
 
@@ -111,6 +112,7 @@ private static Log log = LogFactory.getLog(ESGFuseradd.class);
             .hasArg(true)
             .withDescription("Last name of user")
             .withLongOpt("lastname")
+            .isRequired(true)
             .create("ln");
         getOptions().addOption(lastname);
 
@@ -119,6 +121,7 @@ private static Log log = LogFactory.getLog(ESGFuseradd.class);
             .hasArg(true)
             .withDescription("Email address of user")
             .withLongOpt("email")
+            .isRequired(true)
             .create("e");
         getOptions().addOption(email);
 
