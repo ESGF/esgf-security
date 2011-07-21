@@ -1025,7 +1025,7 @@ public class UserInfoDAO {
                     setStatusCode(1).
                     addPermission("wheel","super");
                 UserInfoDAO.this.addUserInfo(rootAdmin);
-                UserInfoDAO.this.setPassword(rootAdmin,UserInfoDAO.this.props.getProperty("security.admin.password","esgrocks"));
+                UserInfoDAO.this.setPassword(rootAdmin,((ESGFProperties)UserInfoDAO.this.props).getAdminPassword());
             }
             log.info("rootAdmin: "+rootAdmin);
         }
