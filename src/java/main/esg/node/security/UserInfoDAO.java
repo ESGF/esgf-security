@@ -1037,7 +1037,7 @@ public class UserInfoDAO {
                     log.info("rootAdmin password has been reset accordingly");
                 }
             }
-            log.info("rootAdmin: "+rootAdmin);
+            log.trace("rootAdmin: "+rootAdmin);
         }
     }
 }
