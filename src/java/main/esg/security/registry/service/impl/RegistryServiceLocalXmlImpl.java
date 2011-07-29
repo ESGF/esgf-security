@@ -74,7 +74,13 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
 	 */
 	public RegistryServiceLocalXmlImpl(final String xmlFilePath) throws Exception {
 		
-	    registryFile = new ClassPathResource(xmlFilePath).getFile();
+	    // absolute path
+	    if (xmlFilePath.startsWith("/")) {
+	        registryFile = new File(xmlFilePath);
+	    // classpath relative path
+	    } else {
+	        registryFile = new ClassPathResource(xmlFilePath).getFile();
+	    }
 		update();
 	
 	}
