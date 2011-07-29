@@ -47,6 +47,12 @@ public interface RegistryService {
      * @return
      */
     List<URL> getAuthorizationServices();
+    
+    /**
+     * Method to return a list of LAS servers IP addresses.
+     * @return
+     */
+    List<String> getLasServers();
 	
 	/**
 	 * Method to return the last update time, in milliseconds from the epoch.

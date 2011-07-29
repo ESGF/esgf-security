@@ -58,3 +58,6 @@ Version 1.2.9
 Version 1.3.0
 - Included special factory and configuration file to drive the attribute service from the gateway database
 - Included functionality for reading registry files produced by ESGF registry
+
+Version 1.3.1
+- Included support for parsing list of LAS servers IP addresses from las_serevers.xml
