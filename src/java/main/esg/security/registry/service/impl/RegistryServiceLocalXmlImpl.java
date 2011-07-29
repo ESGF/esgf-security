@@ -53,9 +53,13 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
 	
     // local storage for authorization service endpoints
     private List<URL> authorizationServices = new ArrayList<URL>();
+    
+    // local storage for LAS servers IP addresses
+    private List<String> lasServers = new ArrayList<String>();
 	
 	
 	private final static Namespace NS = Namespace.getNamespace("http://www.esgf.org/whitelist");
+	private final static Namespace NS2 = Namespace.getNamespace("http://www.esgf.org/registry");
 	
 	// local XML file holding the registry data
 	private final File registryFile;
@@ -70,7 +74,13 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
 	 */
 	public RegistryServiceLocalXmlImpl(final String xmlFilePath) throws Exception {
 		
-	    registryFile = new ClassPathResource(xmlFilePath).getFile();
+	    // absolute path
+	    if (xmlFilePath.startsWith("/")) {
+	        registryFile = new File(xmlFilePath);
+	    // classpath relative path
+	    } else {
+	        registryFile = new ClassPathResource(xmlFilePath).getFile();
+	    }
 		update();
 	
 	}
@@ -135,6 +145,22 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
         return Collections.unmodifiableList(identityProviders);
         
     }
+	
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<String> getLasServers() {
+        
+        // reload registry if needed
+        if (registryFile.lastModified()>registryFileLastModTime) {
+            update();        
+        }
+        
+        // return white list
+        return Collections.unmodifiableList(lasServers);
+        
+    }
 
     /**
 	 * Method to parse the XML registry into the local map.
@@ -149,7 +175,8 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
 		    
 		    final Map<String, List<URL>> _attributeServices = new HashMap<String, List<URL>>();
 		    final List<URL> _identityProviders = new ArrayList<URL>();
-		    final List<URL > _authorizationServices = new ArrayList<URL>();
+		    final List<URL> _authorizationServices = new ArrayList<URL>();
+		    final List<String> _lasServers = new ArrayList<String>();
 		    
     		final Document doc = Parser.toJDOM(registryFile.getAbsolutePath(), false);
     		final Element root = doc.getRootElement();
@@ -182,9 +209,16 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
                     _authorizationServices.add( new URL(element.getText()) );
                 }
     		    
+            // parse LAS servers section
+    		} else if (root.getName().equals("las_servers")) {
+                for (final Object obj : root.getChildren("las_server", NS2)) {
+                    final Element element = (Element)obj;
+                    _lasServers.add( element.getAttributeValue("ip") );
+                }
+    		    
     		}
     		
-            // update data
+            // update local data storage
             synchronized (attributeServices) {
                 attributeServices = _attributeServices;
             }
@@ -193,6 +227,9 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
             }
             synchronized (authorizationServices) {
                 authorizationServices = _authorizationServices;             
+            }
+            synchronized (lasServers) {
+                lasServers = _lasServers;             
             }
             registryFileLastModTime = registryFile.lastModified();
             

@@ -36,6 +36,7 @@ public class RegistryServiceLocalXmlImplTest {
 	private static String ESGF_ATS = "esg/security/registry/service/data/esgf_ats.xml";
 	private static String ESGF_IDP = "esg/security/registry/service/data/esgf_idp.xml";
 	private static String ESGF_AZS = "esg/security/registry/service/data/esgf_azs.xml";
+	private static String LAS_SERVERS = "esg/security/registry/service/data/las_servers.xml";
 	
 	
 	@Test
@@ -73,6 +74,15 @@ public class RegistryServiceLocalXmlImplTest {
         final RegistryService service = new RegistryServiceLocalXmlImpl(ESGF_AZS);
         
         Assert.assertTrue(service.getAuthorizationServices().contains( new URL("https://esgf-node1.llnl.gov/esgf-security/saml/soap/secure/authorizationService.htm")) );
+        
+    }
+    
+    @Test
+    public void testGetLasServers() throws Exception {
+        
+        final RegistryService service = new RegistryServiceLocalXmlImpl(LAS_SERVERS);
+        
+        Assert.assertTrue(service.getLasServers().contains("137.78.210.36"));
         
     }
 	

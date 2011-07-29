@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<las_servers xmlns="http://www.esgf.org/registry">
+    <las_server name="ESG-NOAA-ESRL" url="http://dev-hydra.esrl.svc/las" ip="127.0.0.1"/>
+    <las_server name="ESG-JPL" url="http://esg-datanode.jpl.nasa.gov/las" ip="137.78.210.36" />
+    <las_server name="ESGF-NODE-1" url="http://esgf-node1.llnl.gov/las" ip="198.128.245.149" />
+    <las_server name="esg-node-3" url="http://esgf-node3.llnl.gov/las" ip="198.128.245.151" />
+    <las_server name="JPL_Test_Data_Node" url="http://test-datanode.jpl.nasa.gov/las" ip="137.78.210.101" />
+</las_servers>
