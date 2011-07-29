@@ -1012,7 +1012,8 @@ public class UserInfoDAO {
         InitAdmin() { 
             log.info("Initializing rootAdmin");
             UserInfo rootAdmin = getUserById("rootAdmin");
-            if (rootAdmin.isValid()) {
+            if (!rootAdmin.isValid()) {
+                log.info("Creating rootAdmin user for this node...");
                 rootAdmin.
                     setFirstName("Gert").
                     setMiddleName("B").
@@ -1025,9 +1026,18 @@ public class UserInfoDAO {
                     setStatusCode(1).
                     addPermission("wheel","super");
                 UserInfoDAO.this.addUserInfo(rootAdmin);
-                UserInfoDAO.this.setPassword(rootAdmin,((ESGFProperties)UserInfoDAO.this.props).getAdminPassword());
+            }else {
+                log.info("A valid rootAdmin user is already present on this node");
             }
-            log.info("rootAdmin: "+rootAdmin);
+            log.info("At this point the rootAdmin object should be valid ["+rootAdmin.isValid()+"]");
+            log.info("Let's doublecheck the password between what is in the system and in the database");
+            String adminPassword = ((ESGFProperties)UserInfoDAO.this.props).getAdminPassword();
+            if(UserInfoDAO.this.checkPassword(rootAdmin,adminPassword)) {
+                if(UserInfoDAO.this.setPassword(rootAdmin,adminPassword)) {
+                    log.info("rootAdmin password has been reset accordingly");
+                }
+            }
+            log.trace("rootAdmin: "+rootAdmin);
         }
     }
 }
