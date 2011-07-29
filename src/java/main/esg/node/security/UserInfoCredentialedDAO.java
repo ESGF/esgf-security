@@ -55,7 +55,7 @@ public class UserInfoCredentialedDAO {
     private UserInfoDAO userInfoDAO = null;
 
     public UserInfoCredentialedDAO(Credentials cred, Properties props) {
-        log.trace("Instantiating DAO using "+cred+" privs");
+        log.info("Instantiating DAO using "+cred+" privs");
         userInfoDAO = new UserInfoDAO(props);
         useCredentials(cred);
     }
@@ -79,12 +79,15 @@ public class UserInfoCredentialedDAO {
             user = userInfoDAO.getUserById(cred.getid());
             if(!user.isValid()) { log.info("User ["+cred.getid()+"] is NOT a valid user on this system"); return false; }
             if(!user.getUserName().equals("rootAdmin")) { log.trace("Sorry, Must be ROOT to use this DAO"); return false; }
-        }
-        if((user != null) && userInfoDAO.checkPassword(user.getOpenid(),cred.getPassword())) {
-            this.cred = cred;
-            return true;
-        }else{
-            log.warn("Password for "+cred+" NOT valid");
+
+            if((user != null) && userInfoDAO.checkPassword(user.getOpenid(),cred.getPassword())) {
+                this.cred = cred;
+                return true;
+            }else{
+                log.warn("Password for "+cred+" NOT valid");
+            }
+        }else {
+            log.warn("can't use ["+cred+"] credentials... ");
         }
         return false;
     }
