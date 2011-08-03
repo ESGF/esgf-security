@@ -171,7 +171,7 @@ public class UserInfoDAO {
     //-------------------
 
     private static final String showUsersQuery =
-        "SELECT * FROM esgf_security.user";
+        "SELECT username, firstname, lastname, openid FROM esgf_security.user";
 
     //-------------------
     
@@ -232,8 +232,6 @@ public class UserInfoDAO {
     }
     
     public void init() {
-    	System.out.println("Init");
-    	
         this.idResultSetHandler = new ResultSetHandler<Integer>() {
             public Integer handle(ResultSet rs) throws SQLException {
                 if(!rs.next()) { return -1; }
