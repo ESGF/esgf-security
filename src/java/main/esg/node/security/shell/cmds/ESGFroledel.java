@@ -110,14 +110,14 @@ private static Log log = LogFactory.getLog(ESGFroledel.class);
 
         if(rolename == null) throw new esg.common.ESGRuntimeException("no role name specified");
 
+        if(rolename.equals("super") || rolename.equals("admin")) {
+            throw new esg.common.ESGRuntimeException("Sorry, this operationis not permitted for group ["+rolename+"]");
+        }
+
         //------------------
         //NOW DO SOME LOGIC
         //------------------
         
-        if(rolename.equals("admin")) {
-            throw new esg.common.ESGRuntimeException("Sorry, this operationis not permitted for role ["+rolename+"]");
-        }
-
         GroupRoleDAO groupRoleDAO = new GroupRoleDAO(env.getEnv());
         groupRoleDAO.deleteRole(rolename);
         

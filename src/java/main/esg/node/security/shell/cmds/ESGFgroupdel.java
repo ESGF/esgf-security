@@ -110,6 +110,10 @@ private static Log log = LogFactory.getLog(ESGFgroupdel.class);
 
         if(groupname == null) throw new esg.common.ESGRuntimeException("no group name specified");
 
+        if(groupname.equals("wheel")) {
+            throw new esg.common.ESGRuntimeException("Sorry, this operationis not permitted for group ["+groupname+"]");
+        }
+
         //------------------
         //NOW DO SOME LOGIC
         //------------------
