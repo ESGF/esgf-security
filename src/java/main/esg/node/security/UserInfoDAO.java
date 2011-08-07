@@ -133,9 +133,9 @@ public class UserInfoDAO {
         "VALUES ( ?, (SELECT id FROM esgf_security.group WHERE name = ? ), (SELECT id FROM esgf_security.role WHERE name = ?))";
     private static final String delPermissionQuery = 
         "DELETE FROM esgf_security.permission "+
-        "WHERE user_id = ?, "+
-        "group_id = (SELECT id FROM esgf_security.group WHERE name = ?), "+
-        "role_id = (SELECT id FROM esgf_security.role WHERE name = ?)";
+        "WHERE user_id = ? "+
+        "AND group_id = (SELECT id FROM esgf_security.group WHERE name = ?) "+
+        "AND role_id = (SELECT id FROM esgf_security.role WHERE name = ?)";
     private static final String delAllUserPermissionsQuery =
         "DELETE FROM esgf_security.permission WHERE user_id = (SELECT id FROM esgf_security.user WHERE openid = ?)";
     private static final String existsPermissionQuery = 

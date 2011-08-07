@@ -116,7 +116,7 @@ private static Log log = LogFactory.getLog(ESGFassociate.class);
             .create("r");
         getOptions().addOption(rolename);
 
-        Option removeAll = new Option("removeall", false, "removes all group and roles associated with user");
+        Option removeAll = new Option("remove-all", false, "removes all group and roles associated with user");
         Option remove    = new Option("remove", false, "removes the specified group and role from specified user");
         OptionGroup removeGroup = new OptionGroup();
         removeGroup.addOption(removeAll);
