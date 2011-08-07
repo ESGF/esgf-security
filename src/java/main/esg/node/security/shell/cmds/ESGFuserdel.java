@@ -137,7 +137,7 @@ private static Log log = LogFactory.getLog(ESGFuserdel.class);
         //NOW DO SOME LOGIC
         //------------------
         
-        if(user.getUserName().equals("rootAdmin")) {
+        if(user.getUserName().equalsIgnoreCase("rootAdmin")) {
             throw new esg.common.ESGRuntimeException("Sorry, this operationis not permitted for user ["+username+"]");
         }
         

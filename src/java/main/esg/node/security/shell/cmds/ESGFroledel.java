@@ -110,7 +110,7 @@ private static Log log = LogFactory.getLog(ESGFroledel.class);
 
         if(rolename == null) throw new esg.common.ESGRuntimeException("no role name specified");
 
-        if(rolename.equals("super") || rolename.equals("admin")) {
+        if(rolename.equalsIgnoreCase("super") || rolename.equalsIgnoreCase("admin")) {
             throw new esg.common.ESGRuntimeException("Sorry, this operationis not permitted for group ["+rolename+"]");
         }
 
