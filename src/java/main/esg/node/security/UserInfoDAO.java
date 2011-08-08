@@ -136,6 +136,14 @@ public class UserInfoDAO {
         "WHERE user_id = ? "+
         "AND group_id = (SELECT id FROM esgf_security.group WHERE name = ?) "+
         "AND role_id = (SELECT id FROM esgf_security.role WHERE name = ?)";
+    private static final String delGroupFromUserPermissionQuery = 
+        "DELETE FROM esgf_security.permission "+
+        "WHERE user_id = ? "+
+        "AND group_id = (SELECT id FROM esgf_security.group WHERE name = ?)";
+    private static final String delRoleFromUserPermissionQuery = 
+        "DELETE FROM esgf_security.permission "+
+        "WHERE user_id = ? "+
+        "AND role_id = (SELECT id FROM esgf_security.role WHERE name = ?)";
     private static final String delAllUserPermissionsQuery =
         "DELETE FROM esgf_security.permission WHERE user_id = (SELECT id FROM esgf_security.user WHERE openid = ?)";
     private static final String existsPermissionQuery = 
@@ -925,7 +933,7 @@ public class UserInfoDAO {
         return (numRowsAffected > 0);
     }
 
-    synchronized boolean deletePermission(UserInfo userInfo, String groupName, String roleName) {
+    boolean deletePermission(UserInfo userInfo, String groupName, String roleName) {
         if(!userInfo.isValid()) { 
             //TODO: Throw an exception here
             log.error("Cannot deletePermission on an invalid user");
@@ -944,6 +952,50 @@ public class UserInfoDAO {
             throw new ESGFDataAccessException(ex);
         }
         return (numRowsAffected > 0);
+    }
+
+    boolean deleteGroupFromUserPermissions(UserInfo userInfo, String groupName) {
+        if(!userInfo.isValid()) { 
+            //TODO: Throw an exception here
+            log.error("Cannot deleteGroupFromUser on an invalid user");
+            return false; 
+        }
+        return this.deleteGroupFromUserPermissions(userInfo.getid(),groupName);
+    }
+
+    synchronized boolean deleteGroupFromUserPermissions(int userid, String groupName) {
+        int numRowsAffected = -1;
+        try{
+            log.trace("Deleting Group from User Permissions ("+userid+", "+groupName+") ");
+            numRowsAffected = queryRunner.update(delGroupFromUserPermissionQuery, userid, groupName);
+            if (numRowsAffected >0) log.trace("[OK]"); else log.trace("[FAIL]");
+        }catch(SQLException ex) {
+            log.error(ex);
+            throw new ESGFDataAccessException(ex);
+        }
+        return (numRowsAffected > 0);        
+    }
+
+    boolean deleteRoleFromUserPermissions(UserInfo userInfo, String roleName) {
+        if(!userInfo.isValid()) { 
+            //TODO: Throw an exception here
+            log.error("Cannot deleteRoleFromUser on an invalid user");
+            return false; 
+        }
+        return this.deleteRoleFromUserPermissions(userInfo.getid(),roleName);
+    }
+    
+    synchronized boolean deleteRoleFromUserPermissions(int userid, String roleName) {
+        int numRowsAffected = -1;
+        try{
+            log.trace("Deleting Role from User Permissions ("+userid+", "+roleName+") ");
+            numRowsAffected = queryRunner.update(delRoleFromUserPermissionQuery, userid, roleName);
+            if (numRowsAffected >0) log.trace("[OK]"); else log.trace("[FAIL]");
+        }catch(SQLException ex) {
+            log.error(ex);
+            throw new ESGFDataAccessException(ex);
+        }
+        return (numRowsAffected > 0);        
     }
 
     boolean deleteAllUserPermissions(UserInfo userInfo) {

@@ -291,6 +291,20 @@ public class UserInfoCredentialedDAO {
         return userInfoDAO.deletePermission(userid,groupName,roleName);
     }
     
+    public boolean deleteGroupFromUserPermissions(UserInfo userInfo, String groupName) {
+        if(!checkCredentials()) {
+            throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
+        }
+        return userInfoDAO.deleteGroupFromUserPermissions(userInfo,groupName);
+    }
+
+    public boolean deleteRoleFromUserPermissions(UserInfo userInfo, String roleName) {
+        if(!checkCredentials()) {
+            throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
+        }
+        return userInfoDAO.deleteRoleFromUserPermissions(userInfo,roleName);
+    }
+
     public boolean deleteAllUserPermissions(UserInfo userInfo) {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");

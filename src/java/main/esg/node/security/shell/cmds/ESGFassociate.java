@@ -88,14 +88,14 @@ private static Log log = LogFactory.getLog(ESGFassociate.class);
     public String getCommandName() { return "associate"; }
 
     public void doInitOptions() {
-        getOptions().addOption("i", "prompt", false, "request confirmation before making associations");
+        getOptions().addOption("n", "no_prompt", false, "suppress request confirmation before making associations");
 
         Option username = 
             OptionBuilder.withArgName("username")
             .hasArg(true)
             .withDescription("user name you wish to associate")
             .withLongOpt("username")
-            //.isRequired(true)
+            .isRequired(true)
             .create("u");
         getOptions().addOption(username);
 
@@ -104,7 +104,7 @@ private static Log log = LogFactory.getLog(ESGFassociate.class);
             .hasArg(true)
             .withDescription("group name you wish to associate")
             .withLongOpt("groupname")
-            //.isRequired(true)
+            .isRequired(false)
             .create("g");
         getOptions().addOption(groupname);
 
@@ -113,38 +113,33 @@ private static Log log = LogFactory.getLog(ESGFassociate.class);
             .hasArg(true)
             .withDescription("role name you wish to associate")
             .withLongOpt("rolename")
+            .isRequired(false)
             .create("r");
         getOptions().addOption(rolename);
 
-        Option removeAll = new Option("remove-all", false, "removes all group and roles associated with user");
+        Option add = new Option("add", false, "creates a permission entry from the given (user,group,role) tuple");
         Option remove    = new Option("remove", false, "removes the specified group and role from specified user");
-        OptionGroup removeGroup = new OptionGroup();
-        removeGroup.addOption(removeAll);
-        removeGroup.addOption(remove);
-        getOptions().addOptionGroup(removeGroup);
-
+        Option removeGroupFromUser  = new Option("remove_group_from_user", false, "removes the specified group from specified user");
+        Option removeRoleFromUser   = new Option("remove_role_from_user",  false, "removes the specified role from specified user");
+        Option removeAll = new Option("remove_all", false, "removes all group and roles associated with user");
+        
+        OptionGroup directiveOptionGroup = new OptionGroup();
+        directiveOptionGroup.addOption(add);
+        directiveOptionGroup.addOption(remove);
+        directiveOptionGroup.addOption(removeGroupFromUser);
+        directiveOptionGroup.addOption(removeRoleFromUser);
+        directiveOptionGroup.addOption(removeAll);
+        getOptions().addOptionGroup(directiveOptionGroup);
     }
     
     public ESGFEnv doEval(CommandLine line, ESGFEnv env) {
         log.trace("inside the \"associate\" command's doEval");
-        boolean prompt = line.hasOption( "i" );
-        
-        boolean removeAllPermissions = line.hasOption( "remove-all" );
-        if(removeAllPermissions && prompt) {
-            env.getWriter().println("remove-all: ["+removeAllPermissions+"]");
-            env.getWriter().flush();
-        }
-
-        boolean removePermission = line.hasOption( "remove" );
-        if(removePermission && prompt) {
-            env.getWriter().println("remove: ["+removePermission+"]");
-            env.getWriter().flush();
-        }
+        boolean noPrompt = line.hasOption( "n" );
 
         String username = null;
         if(line.hasOption( "u" )) {
             username = line.getOptionValue( "u" );
-            if(prompt) {
+            if(!noPrompt) {
                 env.getWriter().println("username: ["+username+"]");
                 env.getWriter().flush();
             }
@@ -153,28 +148,54 @@ private static Log log = LogFactory.getLog(ESGFassociate.class);
         String groupname = null;
         if(line.hasOption( "g" )) {
             groupname = line.getOptionValue( "g" );
-            if(prompt){
+            if(!noPrompt){
                 env.getWriter().println("groupname: ["+groupname+"]");
                 env.getWriter().flush();
             }
         }
 
-        String rolename = "default";
+        String rolename = null;
         if(line.hasOption( "r" )) {
             rolename = line.getOptionValue( "r" );
-            if(prompt) {
+            if(!noPrompt) {
                 env.getWriter().println("rolename: ["+rolename+"]");
                 env.getWriter().flush();
             }
         }
 
-        //paranoia check :-)
-        if ((null == username) || (null == groupname) || (null == rolename)) {
-            throw new esg.common.ESGRuntimeException("User (-u) and group (-g) fields are required [role's (-r) value defaults to \"default\"], see --help");
+        boolean addPermission = false;
+        addPermission = line.hasOption( "add" );
+        if(addPermission && !noPrompt) {
+            env.getWriter().println("add: ["+addPermission+"]");
+            env.getWriter().flush();
         }
-        
-        if( removePermission && !line.hasOption("r") ) {
-            throw new esg.common.ESGRuntimeException("Role (-r) must be explicitly specified when removing association");
+
+        boolean removePermission = false;
+        removePermission = line.hasOption( "remove" );
+        if(removePermission && !noPrompt) {
+            env.getWriter().println("remove: ["+removePermission+"]");
+            env.getWriter().flush();
+        }
+
+        boolean removeGroupFromUserPermissions = false;
+        removeGroupFromUserPermissions = line.hasOption( "remove_group_from_user" );
+        if(removeGroupFromUserPermissions && !noPrompt) {
+            env.getWriter().println("remove: ["+removeGroupFromUserPermissions+"]");
+            env.getWriter().flush();
+        }
+
+        boolean removeRoleFromUserPermissions = false;
+        removeRoleFromUserPermissions = line.hasOption( "remove_role_from_user" );
+        if(removeRoleFromUserPermissions && !noPrompt) {
+            env.getWriter().println("remove: ["+removeRoleFromUserPermissions+"]");
+            env.getWriter().flush();
+        }
+
+        boolean removeAllPermissions = false;
+        removeAllPermissions = line.hasOption( "remove_all" );
+        if(removeAllPermissions && !noPrompt) {
+            env.getWriter().println("remove-all: ["+removeAllPermissions+"]");
+            env.getWriter().flush();
         }
         
         
@@ -182,7 +203,7 @@ private static Log log = LogFactory.getLog(ESGFassociate.class);
         //NOW DO SOME LOGIC
         //------------------
 
-        if(prompt || removePermission || removeAllPermissions) {
+        if(!noPrompt) {
             try{
                 String answer = env.getReader().readLine("Is this information correct and ready to be submitted? [Y/n] > ");
                 if(!answer.equals("") && !answer.equalsIgnoreCase("y")) {
@@ -210,9 +231,29 @@ private static Log log = LogFactory.getLog(ESGFassociate.class);
         }
         
         if(user.isValid()) {
-         
-            if(removePermission) {
+            if(addPermission) {
+                //Adding permission / attribute tuple to database
+                if((username == null ) || (groupname == null ) || (rolename == null)) {
+                    if(username==null) env.getWriter().println("username required");
+                    if(groupname==null) env.getWriter().println("groupname required");
+                    if(rolename==null) env.getWriter().println("rolename required");
+                    throw new esg.common.ESGRuntimeException("Sorry, cannot issue operation: check args (see --help)");
+                }
+                if(userDAO.addPermission(user,groupname,rolename)) {
+                    log.info("[OK]");
+                    user = userDAO.refresh(user);
+                    env.getWriter().println(user);
+                }else{ 
+                    log.info("[FAIL]"); 
+                }
+            } else if(removePermission) {
                 //Deleting specified groupo and role from user
+                if((username == null ) || (groupname == null ) || (rolename == null)) {
+                    if(username==null) env.getWriter().println("username required");
+                    if(groupname==null) env.getWriter().println("groupname required");
+                    if(rolename==null) env.getWriter().println("rolename required");
+                    throw new esg.common.ESGRuntimeException("Sorry, cannot issue operation: check args (see --help)");
+                }
                 if(user.getUserName().equals("rootAdmin") && rolename.equals("admin")) {
                     throw new esg.common.ESGRuntimeException("Sorry, cannot remove the role ["+rolename+"] from ["+username+"]");
                 }
@@ -223,8 +264,46 @@ private static Log log = LogFactory.getLog(ESGFassociate.class);
                 }else{
                     log.info("[FAIL]");                     
                 }
+            } else if(removeGroupFromUserPermissions) {
+                //Deleting specified groupo and role from user
+                if((username == null ) || (groupname == null )) {
+                    if(username==null) env.getWriter().println("username required");
+                    if(groupname==null) env.getWriter().println("groupname required");
+                    throw new esg.common.ESGRuntimeException("Sorry, cannot issue operation: check args (see --help)");
+                }
+                if(user.getUserName().equals("rootAdmin") && groupname.equals("wheel")) {
+                    throw new esg.common.ESGRuntimeException("Sorry, cannot remove the role ["+rolename+"] from ["+username+"]");
+                }
+                if(userDAO.deleteGroupFromUserPermissions(user,groupname)) {
+                    log.info("[OK]");
+                    user = userDAO.refresh(user);
+                    env.getWriter().println(user);
+                }else{
+                    log.info("[FAIL]");                     
+                }
+            } else if(removeRoleFromUserPermissions) {
+                //Deleting specified groupo and role from user
+                if((username == null ) || (rolename == null) ) {
+                    if(username==null) env.getWriter().println("username required");
+                    if(rolename==null) env.getWriter().println("rolename required");
+                    throw new esg.common.ESGRuntimeException("Sorry, cannot issue operation: check args (see --help)");
+                }
+                if(user.getUserName().equals("rootAdmin") && rolename.equals("admin")) {
+                    throw new esg.common.ESGRuntimeException("Sorry, cannot remove the role ["+rolename+"] from ["+username+"]");
+                }
+                if(userDAO.deleteRoleFromUserPermissions(user,rolename)) {
+                    log.info("[OK]");
+                    user = userDAO.refresh(user);
+                    env.getWriter().println(user);
+                }else{
+                    log.info("[FAIL]");
+                }
             }else if(removeAllPermissions) {
                 //Deleting ALL permissions for a user
+                if(username == null ) {
+                    if(username==null) env.getWriter().println("username required");
+                    throw new esg.common.ESGRuntimeException("Sorry, cannot issue operation: check args (see --help)");
+                }
                 if(user.getUserName().equals("rootAdmin")) {
                     throw new esg.common.ESGRuntimeException("Sorry, this operationis not permitted for user ["+username+"]");
                 }
@@ -233,25 +312,21 @@ private static Log log = LogFactory.getLog(ESGFassociate.class);
                     user = userDAO.refresh(user);
                     env.getWriter().println(user);
                 }else{
-                    log.info("[FAIL]"); 
+                    log.info("[FAIL]");
                 }
-            }else{
-                //Adding permission / attribute tuple to database
-                if(userDAO.addPermission(user,groupname,rolename)) {
-                    log.info("[OK]");
-                    user = userDAO.refresh(user);
-                    env.getWriter().println(user);
-                }else{ 
-                    log.info("[FAIL]"); 
-                }
+            }else {
+                env.getWriter().println("Must supply a directive for this command.  See --help");
             }
-            removePermission=false;
-            removeAllPermissions=false;
-            
         }else {
             throw new esg.common.ESGRuntimeException("The user you specified ["+username+"] is invalid");
         }
-
+        
+        addPermission = false;
+        removePermission = false;
+        removeGroupFromUserPermissions = false;
+        removeRoleFromUserPermissions = false;
+        removeAllPermissions = false;
+        
         env.getWriter().flush();
 
         //------------------
