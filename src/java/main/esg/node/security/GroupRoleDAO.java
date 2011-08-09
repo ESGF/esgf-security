@@ -118,6 +118,13 @@ public class GroupRoleDAO implements Serializable {
 
     //-------------------
     
+    private static final String showUsersInGroupQuery =
+        "SELECT username, firstname, lastname, openid FROM esgf_security.user WHERE id IN (SELECT p.user_id FROM esgf_security.permission as p WHERE p.group_id = (SELECT id FROM esgf_security.group WHERE name = ? ))";
+
+    private static final String showUsersInRoleQuery =
+        "SELECT username, firstname, lastname, openid FROM esgf_security.user WHERE id IN (SELECT p.user_id FROM esgf_security.permission as p WHERE p.role_id = (SELECT id FROM esgf_security.role WHERE name = ? ))";
+
+
     private static final Log log = LogFactory.getLog(GroupRoleDAO.class);
 
     private Properties props = null;
@@ -385,6 +392,22 @@ public class GroupRoleDAO implements Serializable {
         return new ArrayList<String[]>();
     }
 
+    public List<String[]> getUsersInGroup(String groupname) {
+        try{
+            log.trace("Fetching users for the given group "+groupname);
+            List<String[]> results = queryRunner.query(showUsersInGroupQuery, basicResultSetHandler, groupname);
+            log.trace("Query is: "+showUsersInGroupQuery);
+            assert (null != results);
+            if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
+            return results;
+        }catch(SQLException ex) {
+            log.error(ex);
+        }catch(Throwable t) {
+            log.error(t);
+        }
+        return new ArrayList<String[]>();
+    }
+
     public List<String[]> getRoleEntry(String rolename) {
         try{
             log.trace("Fetching raw role data from database table");
@@ -406,6 +429,22 @@ public class GroupRoleDAO implements Serializable {
             log.trace("Fetching raw roles data from database table");
             List<String[]> results = queryRunner.query(showRolesQuery, basicResultSetHandler);
             log.trace("Query is: "+showRolesQuery);
+            assert (null != results);
+            if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
+            return results;
+        }catch(SQLException ex) {
+            log.error(ex);
+        }catch(Throwable t) {
+            log.error(t);
+        }
+        return new ArrayList<String[]>();
+    }
+
+    public List<String[]> getUsersInRole(String rolename) {
+        try{
+            log.trace("Fetching users for the given role "+rolename);
+            List<String[]> results = queryRunner.query(showUsersInRoleQuery, basicResultSetHandler, rolename);
+            log.trace("Query is: "+showUsersInRoleQuery);
             assert (null != results);
             if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
             return results;

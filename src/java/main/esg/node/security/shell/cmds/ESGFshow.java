@@ -96,7 +96,7 @@ private static Log log = LogFactory.getLog(ESGFshow.class);
         getOptions().addOption("au", "all-users",  false, "show all users on the system");
         getOptions().addOption("ag", "all-groups", false, "show all groups on the system");
         getOptions().addOption("ar", "all-roles", false,  "show all roles on the system");
-        
+
         Option user = 
             OptionBuilder.withArgName("user")
             .hasArg(true)
@@ -120,6 +120,26 @@ private static Log log = LogFactory.getLog(ESGFshow.class);
             .withLongOpt("role")
             .create("r");
         getOptions().addOption(role);
+
+        //---------
+
+        Option usersInGroup = 
+            OptionBuilder.withArgName("group")
+            .hasArg(true)
+            .withDescription("shows all the users in the given group")
+            .withLongOpt("users_in_group")
+            .create("uig");
+        getOptions().addOption(usersInGroup);
+        
+        Option usersInRole = 
+            OptionBuilder.withArgName("role")
+            .hasArg(true)
+            .withDescription("shows all the users in the given role")
+            .withLongOpt("users_in_role")
+            .create("uir");
+        getOptions().addOption(usersInRole);
+
+        //---------
         
     }
     
@@ -243,7 +263,51 @@ private static Log log = LogFactory.getLog(ESGFshow.class);
             }
             env.getWriter().println();
         }
-        
+
+        //-----------------
+
+        String groupInQuestion = null;
+        if(line.hasOption( "uig" )) {
+            groupInQuestion = line.getOptionValue( "uig" );
+            if(verbose) env.getWriter().println("group: ["+groupInQuestion+"]");
+
+            groupRoleDAO = (groupRoleDAO == null) ? groupRoleDAO = new GroupRoleDAO(env.getEnv()) : groupRoleDAO;
+            List<String[]> results =  null;
+            results = groupRoleDAO.getUsersInGroup(groupInQuestion);
+            env.getWriter().println("Group: "+groupInQuestion);
+
+            //Cycle through results...
+            for(String[] record : results) {
+                StringBuilder sb = new StringBuilder();
+                for(String column : record) {
+                    sb.append(column+"\t");
+                }
+                env.getWriter().println(sb.toString());
+            }
+            env.getWriter().println();
+        }
+
+        String roleInQuestion = null;
+        if(line.hasOption( "uir" )) {
+            roleInQuestion = line.getOptionValue( "uir" );
+            if(verbose) env.getWriter().println("Role: ["+roleInQuestion+"]");
+
+            groupRoleDAO = (groupRoleDAO == null) ? groupRoleDAO = new GroupRoleDAO(env.getEnv()) : groupRoleDAO;
+            List<String[]> results =  null;
+            results = groupRoleDAO.getUsersInRole(roleInQuestion);
+            env.getWriter().println("Role: "+roleInQuestion);
+
+            //Cycle through results...
+            for(String[] record : results) {
+                StringBuilder sb = new StringBuilder();
+                for(String column : record) {
+                    sb.append(column+"\t");
+                }
+                env.getWriter().println(sb.toString());
+            }
+            env.getWriter().println();
+        }
+
         //------------------
         env.getWriter().flush();
         return env;
