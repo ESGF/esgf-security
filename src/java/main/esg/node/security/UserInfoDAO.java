@@ -1080,14 +1080,14 @@ public class UserInfoDAO {
                 UserInfoDAO.this.addUserInfo(rootAdmin);
                 log.trace("rootAdmin: "+rootAdmin);
             }else {
-                log.info("A valid rootAdmin user is already present on this node");
+                log.debug("A valid rootAdmin user is already present on this node");
             }
             log.trace("At this point the rootAdmin object should be valid ["+rootAdmin.isValid()+"]");
             log.trace("Let's doublecheck the password between what is in the system and in the database");
             String adminPassword = ((ESGFProperties)UserInfoDAO.this.props).getAdminPassword();
             if(!UserInfoDAO.this.checkPassword(rootAdmin,adminPassword)) {
                 if(UserInfoDAO.this.setPassword(rootAdmin,adminPassword)) {
-                    log.info("rootAdmin password has been reset accordingly");
+                    log.debug("rootAdmin password has been reset accordingly");
                 }
             }
         }

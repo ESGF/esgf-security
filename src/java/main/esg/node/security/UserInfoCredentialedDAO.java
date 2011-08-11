@@ -55,7 +55,7 @@ public class UserInfoCredentialedDAO {
     private UserInfoDAO userInfoDAO = null;
 
     public UserInfoCredentialedDAO(Credentials cred, Properties props) {
-        log.info("Instantiating DAO using "+cred+" privs");
+        log.trace("Instantiating DAO using "+cred+" privs");
         userInfoDAO = new UserInfoDAO(props);
         useCredentials(cred);
     }
