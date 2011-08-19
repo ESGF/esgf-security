@@ -39,6 +39,7 @@ generated/
 /WebContent
 /.cobertura.ser
 /build.local.xml
+.emacs.desktop*
 
 ################################
 #Generated from templated files
