@@ -89,18 +89,24 @@ public class DnWhitelistX509TrustMgr implements X509TrustManager {
      * Load default trust manager and trust store if set
      * 
      * @param trustStoreFilePath trust store file path
-     * @param trustStorePassphrase pass-phrase for this trust store - use null if
-     * none set
-     * @param trustStoreFilePath trust store file path
-     * @param trustStorePassphrase pass-phrase for this trust store - use null if
-     * none set
+     * @param trustStorePassphrase pass-phrase for this trust store - use null if none set
      */
     public DnWhitelistX509TrustMgr(String trustStoreFilePath,
-    		String trustStorePassphrase) throws DnWhitelistX509TrustMgrInitException {
+                                   String trustStorePassphrase) throws DnWhitelistX509TrustMgrInitException {
     	certificateDnWhiteList = null;
     	loadTrustStore(trustStoreFilePath, trustStorePassphrase);
     }
     
+
+    public synchronized DnWhitelistX509TrustMgr setWhitelist(Set<String> dns) {
+        this.certificateDnWhiteList = new HashSet<X500Principal>();
+        for(String dn : dns) {
+            if(dn == null) continue;
+            this.certificateDnWhiteList.add(new X500Principal(dn));
+        }
+        return this;
+    }
+
     /**
      * Initialise trust store and default trust manager which is wrapped by this
      * class
@@ -110,8 +116,7 @@ public class DnWhitelistX509TrustMgr implements X509TrustManager {
      * @throws DnWhitelistX509TrustMgrInitException 
      */
     public void loadTrustStore(String trustStoreFilePath, 
-    		String trustStorePassphrase) 
-    		throws DnWhitelistX509TrustMgrInitException {
+                               String trustStorePassphrase) throws DnWhitelistX509TrustMgrInitException {
         TrustManagerFactory tmf = null;
 		try {
 			tmf = TrustManagerFactory.getInstance(BASE_TRUST_MGR_ID);
@@ -197,8 +202,7 @@ public class DnWhitelistX509TrustMgr implements X509TrustManager {
      * @throws DnWhitelistX509TrustMgrInitException invalid keystore or error
      * getting default trust manager
      */
-    public DnWhitelistX509TrustMgr(InputStream propertiesFile) 
-    	throws DnWhitelistX509TrustMgrInitException {
+    public DnWhitelistX509TrustMgr(InputStream propertiesFile) throws DnWhitelistX509TrustMgrInitException {
     	loadProperties(propertiesFile);
     }
 
@@ -259,6 +263,12 @@ public class DnWhitelistX509TrustMgr implements X509TrustManager {
 		String trustStorePassphrase = applicationProps.getProperty(
 				TRUSTSTORE_PASSPHRASE_PROP_NAME, null);
 		
+                loadWhitelistFromProperties(applicationProps);
+                loadTrustStore(trustStoreFilePath, trustStorePassphrase);
+    }
+
+    //old stuff way too hard coded -gavin
+    public synchronized void loadWhitelistFromProperties(Properties applicationProps) {
 		/* 
 		 * DN values are stored in the property file as e.g.
 		 *
@@ -277,8 +287,6 @@ public class DnWhitelistX509TrustMgr implements X509TrustManager {
 			
 			this.certificateDnWhiteList.add(new X500Principal(dnValue));
 		}
-		
-    	loadTrustStore(trustStoreFilePath, trustStorePassphrase);
     }
     
     /**
@@ -293,12 +301,11 @@ public class DnWhitelistX509TrustMgr implements X509TrustManager {
      * getting default trust manager
      */
     public DnWhitelistX509TrustMgr(String trustStoreFilePath,
-    		String trustStorePassphrase,
-    		X500Principal[] certificateDnWhiteList) throws 
-    	DnWhitelistX509TrustMgrInitException {
+                                   String trustStorePassphrase,
+                                   X500Principal[] certificateDnWhiteList) throws DnWhitelistX509TrustMgrInitException {
     	
     	this(trustStoreFilePath, trustStorePassphrase);
-		
+        
     	if (certificateDnWhiteList != null)
     		for (X500Principal dn : certificateDnWhiteList)
     			this.certificateDnWhiteList.add(dn);			
@@ -311,12 +318,10 @@ public class DnWhitelistX509TrustMgr implements X509TrustManager {
      * checking
      */
     @Override
-    public void checkClientTrusted(X509Certificate[] chain, String authType)
-                throws CertificateException {
+    public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
         pkixTrustManager.checkClientTrusted(chain, authType);
-        
-		// If chain is OK following previous check, then execute whitelisting of 
-        // DN
+
+        // If chain is OK following previous check, then execute whitelisting of DN
         checkPeerCertDN(chain);
     }
 
@@ -327,16 +332,14 @@ public class DnWhitelistX509TrustMgr implements X509TrustManager {
      * checking
      */
     @Override
-    public void checkServerTrusted(X509Certificate[] chain, String authType)
-                throws CertificateException {
+    public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
     	
     	// Default trust manager may throw a certificate exception
         pkixTrustManager.checkServerTrusted(chain, authType);
-
-		// If chain is OK following previous check, then execute whitelisting of 
-        // DN
-		checkPeerCertDN(chain);
-	}
+        
+        // If chain is OK following previous check, then execute whitelisting of DN
+        checkPeerCertDN(chain);
+    }
 
     /**
      * Check peer certificate DN against whitelist - use in checkServerTrusted
@@ -346,32 +349,32 @@ public class DnWhitelistX509TrustMgr implements X509TrustManager {
      * @param peerCertDN
      * @throws CertificateException 
      */
-	protected void checkPeerCertDN(X509Certificate[] chain) 
-		throws CertificateException {
-		if (certificateDnWhiteList == null || certificateDnWhiteList.isEmpty())
-			return;
-		
-		X500Principal peerCertDN = null;
-		int basicConstraints = -1;
-		
-		for (X509Certificate cert : chain) {
-			// Check for CA certificate first - ignore if this is the case
-			basicConstraints = cert.getBasicConstraints();
-			if (basicConstraints > -1)
-				continue;
+    protected void checkPeerCertDN(X509Certificate[] chain) throws CertificateException {
+        if (certificateDnWhiteList == null || certificateDnWhiteList.isEmpty())
+            return;
+        
+        X500Principal peerCertDN = null;
+        int basicConstraints = -1;
+	
+        for (X509Certificate cert : chain) {
+            // Check for CA certificate first - ignore if this is the case
+            basicConstraints = cert.getBasicConstraints();
+            if (basicConstraints > -1)
+                continue;
 
-			peerCertDN = cert.getSubjectX500Principal();
+            peerCertDN = cert.getSubjectX500Principal();
 			
-			// Nb. direct X500Principal type equality test may fail as it's 
-			// based on the canonical names of the two principals
-			for (X500Principal dn : certificateDnWhiteList)
-				if (peerCertDN.getName().equals(dn.getName()))
-					return;
-		}
-		throw new CertificateException("No match for peer certificate \"" + 
-				peerCertDN + "\" against Certificate DN whitelist");
-	}
-
+            // Nb. direct X500Principal type equality test may fail as it's 
+            // based on the canonical names of the two principals
+            for (X500Principal dn : certificateDnWhiteList) {
+                if (peerCertDN.getName().equals(dn.getName()))
+                    return;
+            }
+        }
+        throw new CertificateException("No match for peer certificate \"" + 
+                                       peerCertDN + "\" against Certificate DN whitelist");
+    }
+    
     /**
      * Merely pass this through.
      */

@@ -105,7 +105,7 @@ public class HttpsClient {
 		loadKeyStore(keyStoreIStream, keyStorePassphrase);
 		this.x509TrustMgr = x509TrustMgr;
 	}
-	
+
 	protected Properties loadProperties(InputStream propertiesFile) 
 		throws HttpsClientInitException {
 		
@@ -152,9 +152,31 @@ public class HttpsClient {
 		}		
 	}
 	
-	protected void loadKeyStore(InputStream keyStoreIStream, 
-			String keyStorePassphrase) 
-		throws HttpsClientInitException {
+    //------------------------------------------------------------------------------
+    //Stream-free version method calls
+    //------------------------------------------------------------------------------
+
+    //Added this method so that this object can be constructed with direct parameter values
+    public HttpsClient(String keyStoreFilePath, 
+                       String keyStorePassphrase, 
+                       DnWhitelistX509TrustMgr x509TrustMgr) throws HttpsClientInitException {
+        loadKeyStore(keyStoreFilePath, keyStorePassphrase);
+        this.x509TrustMgr = x509TrustMgr;
+    }
+	
+    //Added this method so that this object can be constructed with direct parameter values
+    public void loadKeyStore(String keyStoreFilePath, String keyStorePassphrase) throws HttpsClientInitException {
+        InputStream keyStoreIStream = null;
+        try {
+            keyStoreIStream = new FileInputStream(keyStoreFilePath);
+            
+        } catch (FileNotFoundException e) {
+            throw new HttpsClientInitException("Error reading "+
+                                               "\"" + keyStoreFilePath + "\" keystore", e);
+        }
+        loadKeyStore(keyStoreIStream, keyStorePassphrase);
+    }
+	protected void loadKeyStore(InputStream keyStoreIStream, String keyStorePassphrase) throws HttpsClientInitException {
 		
 		// Load client cert/key for SSL client authentication required for 
 		// attribute service query

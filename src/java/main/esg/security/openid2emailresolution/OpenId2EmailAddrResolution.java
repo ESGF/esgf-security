@@ -86,6 +86,10 @@ import esg.security.yadis.YadisRetrieval;
 import esg.security.yadis.exceptions.XrdsParseException;
 import esg.security.yadis.exceptions.YadisRetrievalException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.impl.*;
+
 
 /**
  * Class resolves OpenIDs to e-mail addresses making use of the Yadis protocol
@@ -96,6 +100,8 @@ import esg.security.yadis.exceptions.YadisRetrievalException;
  *
  */
 public class OpenId2EmailAddrResolution implements esg.common.Resolver {
+
+    private static final Log log = LogFactory.getLog(OpenId2EmailAddrResolution.class);
         
     private String attributeQueryIssuer;
     private String attributeServiceType;
@@ -103,9 +109,7 @@ public class OpenId2EmailAddrResolution implements esg.common.Resolver {
     private HttpsClient httpsClient;
     public static final String DEF_ATTRIBUTE_SERVICE_XRD_SERVICE_TYPE = 
         "urn:esg:security:attribute-service";
-    
-    public OpenId2EmailAddrResolution() { }
-        
+            
     /**
      * Yadis and Attribute Service properties files set SSL settings for 
      * queries to these respective services
@@ -127,34 +131,6 @@ public class OpenId2EmailAddrResolution implements esg.common.Resolver {
                   yadisPropertiesFile,
                   attributeServiceClientPropertiesFile);
         
-    }
-
-    public OpenId2EmailAddrResolution(String attributeQueryIssuer,
-                                      String yadisPropertiesFile, 
-                                      String attributeServiceClientPropertiesFile) 
-        throws DnWhitelistX509TrustMgrInitException {
-        init (attributeQueryIssuer,
-              null, 
-              yadisPropertiesFile, 
-              attributeServiceClientPropertiesFile);
-    }
-    
-    //To statisfy Resolver interface
-    public void init(Properties props) {
-        this.init(props.getProperty("attribute.query.issuer"),
-                  props.getProperty("attribute.service.type"),
-                  props.getProperty("yadis.properties.file"),
-                  props.getProperty("attribute.service.client.properties.file"));
-    }
-
-    public void init(String attributeQueryIssuer,
-                     String attributeServiceType,
-                     String yaddisProeprtiesFilename,
-                     String attributeServiceClientPropertiesFilename) {
-
-        //TODO turn the two last string args into the right types for passing to "proper" init function signature
-        
-        this.init(/*fill me in*/);
     }
 
     public void init(String attributeQueryIssuer,
@@ -188,9 +164,87 @@ public class OpenId2EmailAddrResolution implements esg.common.Resolver {
                 
         this.attributeQueryIssuer = attributeQueryIssuer;
     }
+
+    //------------------------------------------------------------------------------
+    //Stream-free version method calls
+    //------------------------------------------------------------------------------
+
+    public OpenId2EmailAddrResolution() { }
+
+    public OpenId2EmailAddrResolution(String attributeQueryIssuer,
+                                      String attributeServiceType,
+                                      String trustStoreFilePath,
+                                      String trustStorePassphrase,
+                                      String keyStoreFilePath,
+                                      String keyStorePassphrase) throws DnWhitelistX509TrustMgrInitException {
+
+        init(attributeQueryIssuer,
+             attributeServiceType,
+             trustStoreFilePath,
+             trustStorePassphrase,
+             keyStoreFilePath,
+             keyStorePassphrase);
         
+    }
+    
+    //To statisfy Resolver interface, where all resolvers are initialized with a properties object.
+    //Helper functionality: Here we convert the properties into their
+    //constituent values and pass them to the "real" init implementation
+    public void init(Properties props) throws DnWhitelistX509TrustMgrInitException {
+        this.init(props.getProperty("security.attribute.query.issuer"),
+                  props.getProperty("security.attribute.service.type"),
+                  props.getProperty("security.truststore.file"),
+                  props.getProperty("security.truststore.password"),
+                  props.getProperty("security.keystore.file"),
+                  props.getProperty("security.keystore.password"));
+    }
+    
+    //Added this method so that this object can be initialized with direct parameter values
+    public OpenId2EmailAddrResolution init(String attributeQueryIssuer,
+                                           String attributeServiceType,
+                                           String trustStoreFilePath,
+                                           String trustStorePassphrase,
+                                           String keyStoreFilePath,
+                                           String keyStorePassphrase) throws DnWhitelistX509TrustMgrInitException {
+        
+        try {
+            yadisX509TrustMgr = new DnWhitelistX509TrustMgr(trustStoreFilePath,trustStorePassphrase);
+                        
+        } catch (DnWhitelistX509TrustMgrInitException e) {
+            throw new DnWhitelistX509TrustMgrInitException("*Creating trust " +
+                                                           "manager for Yadis query", e);
+        }
+                
+        try {
+            //Note: The question here is can I share the trust manager instance for both yadis lookup
+            //and attribute service lookup.  I don't see why not, but that is the change that I made 
+            //here that departs from the what was here before.
+            httpsClient = new HttpsClient(keyStoreFilePath, keyStorePassphrase, yadisX509TrustMgr);
+                        
+        } catch (HttpsClientInitException e) {
+            throw new DnWhitelistX509TrustMgrInitException("Creating HTTPS " +
+                                                           "client for Attribute Service query", e);
+        }
+
+        if (this.attributeServiceType == null)
+            this.attributeServiceType = DEF_ATTRIBUTE_SERVICE_XRD_SERVICE_TYPE;
+        else
+            this.attributeServiceType = attributeServiceType;
+                
+        this.attributeQueryIssuer = attributeQueryIssuer;
+        return this;
+    }
+
+    
     //To satisfy the Resolver interface
-    public String resolve(String input) { return (resolve(new URL(input))).toString(); }
+    public String resolve(String input) { 
+        try {
+            return (resolve(new URL(input))).toString(); 
+        }catch(Throwable t) {
+            log.error(t);
+            return null;
+        }
+    }
         
     /**
      * 
