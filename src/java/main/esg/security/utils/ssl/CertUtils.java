@@ -37,7 +37,11 @@ import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.core.io.ClassPathResource;
+
+import esg.security.utils.xml.XmlChecker;
 
 
 /**
@@ -46,7 +50,8 @@ import org.springframework.core.io.ClassPathResource;
 public class CertUtils {
 	
 	
-	final static ClassLoader classloader = CertUtils.class.getClassLoader();
+	final private static ClassLoader classloader = CertUtils.class.getClassLoader();
+	final private static Log LOG = LogFactory.getLog(CertUtils.class);
 	
 	/**
 	 * Method to set a keystore to the desired file in the classpath.
@@ -127,6 +132,7 @@ public class CertUtils {
 		try {
 		    sslConnection.connect();
 		} catch (SSLHandshakeException e) {
+		    LOG.warn(e.getMessage());
 		    sslConnection.disconnect();
             throw new SSLPeerUnverifiedException("Target is not trusted");
         }
