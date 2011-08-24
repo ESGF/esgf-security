@@ -220,21 +220,21 @@ public class OpenId2EmailAddrResolution implements esg.common.Resolver {
                                            String trustStorePassphrase,
                                            String keyStoreFilePath,
                                            String keyStorePassphrase) throws DnWhitelistX509TrustMgrInitException {
-        
+
         try {
             yadisX509TrustMgr = new DnWhitelistX509TrustMgr(trustStoreFilePath,trustStorePassphrase);
-                        
+
         } catch (DnWhitelistX509TrustMgrInitException e) {
             throw new DnWhitelistX509TrustMgrInitException("*Creating trust " +
                                                            "manager for Yadis query", e);
         }
-                
+
         try {
             //Note: The question here is can I share the trust manager instance for both yadis lookup
             //and attribute service lookup.  I don't see why not, but that is the change that I made 
             //here that departs from the what was here before.
             httpsClient = new HttpsClient(keyStoreFilePath, keyStorePassphrase, yadisX509TrustMgr);
-                        
+
         } catch (HttpsClientInitException e) {
             throw new DnWhitelistX509TrustMgrInitException("Creating HTTPS " +
                                                            "client for Attribute Service query", e);
@@ -244,7 +244,7 @@ public class OpenId2EmailAddrResolution implements esg.common.Resolver {
             this.attributeServiceType = DEF_ATTRIBUTE_SERVICE_XRD_SERVICE_TYPE;
         else
             this.attributeServiceType = attributeServiceType;
-                
+
         this.attributeQueryIssuer = attributeQueryIssuer;
         return this;
     }
@@ -253,7 +253,7 @@ public class OpenId2EmailAddrResolution implements esg.common.Resolver {
         yadisX509TrustMgr.setWhitelist(dnSet);
     }
 
-    
+
     //To satisfy the Resolver interface
     public String resolve(String input) { 
         try {
@@ -263,7 +263,7 @@ public class OpenId2EmailAddrResolution implements esg.common.Resolver {
             return null;
         }
     }
-        
+
     /**
      * 
      * @param openidURL
@@ -278,7 +278,7 @@ public class OpenId2EmailAddrResolution implements esg.common.Resolver {
         XrdsParseException, 
         YadisRetrievalException, 
         AttributeServiceQueryException {
-                
+
         YadisRetrieval yadisRetriever = new YadisRetrieval(yadisX509TrustMgr);
         List<XrdsServiceElem> serviceElems = null;
         Set<String> targetTypes = new HashSet<String>() {
@@ -286,13 +286,13 @@ public class OpenId2EmailAddrResolution implements esg.common.Resolver {
                 add(attributeServiceType);
             }
         };
-                
+
         serviceElems = yadisRetriever.retrieveAndParse(openidURL, targetTypes);
-                
+
         if (serviceElems == null || serviceElems.isEmpty())
             throw new NoMatchingXrdsServiceException("No matching XRDS " + 
                                                      "service element returned for OpenID URI: " + openidURL);
-                
+
         // Get Attribute Service URI from service element with the highest 
         // priority
         Collections.sort(serviceElems);
@@ -300,19 +300,19 @@ public class OpenId2EmailAddrResolution implements esg.common.Resolver {
         URL attributeServiceEndpoint = null;
         try {
             attributeServiceEndpoint = new URL(priorityAttributeServiceElem.getUri());
-                
+
         } catch (MalformedURLException e) {
             throw new AttributeServiceQueryException("Attribute Service " +
                                                      "URI " + attributeServiceEndpoint + " is invalid", e);
         }
-                         
+
         // Call Attribute Service querying for e-mail address
         InternetAddress emailAddr = queryAttributeService(
                                                           attributeServiceEndpoint,
                                                           openidURL);
         return emailAddr;
     }
-        
+
     /**
      * Call Attribute Service to retrieve user's e-mail address
      * 
@@ -328,35 +328,35 @@ public class OpenId2EmailAddrResolution implements esg.common.Resolver {
     {           
         SAMLAttributeServiceClient attributeServiceClient = 
             new SAMLAttributeServiceClientSoapImpl(attributeQueryIssuer);
-                
+
         // Create query
         AttributeBuilder attributeBuilder = new AttributeBuilder();
         Attribute emailAttribute = attributeBuilder.buildObject();
         emailAttribute.setName(SAMLParameters.EMAIL_ADDRESS);
         emailAttribute.setFriendlyName(SAMLParameters.EMAIL_ADDRESS_FRIENDLY);
         emailAttribute.setNameFormat("http://www.w3.org/2001/XMLSchema#string");
-                
+
         List<Attribute> attributes = new ArrayList<Attribute>();
         attributes.add(emailAttribute);
-                
+
         AttributeQuery attributeQuery = null;
         attributeQuery = attributeServiceClient.buildAttributeQuery(
                                                                     openidURL.toString(), 
                                                                     attributes);
-                
+
         String query = null;
         try {
             query = attributeServiceClient.buildAttributeRequest(attributeQuery);
-                        
+
         } catch (MarshallingException e) {
             throw new AttributeServiceQueryException("Marshalling attribute " +
                                                      "query to " + attributeServiceEndpoint + " for OpenID", e);                        
         }
-                
+
         String response = null;
         try {
             response = httpsClient.retrieve(attributeServiceEndpoint, query, null);
-                        
+
         } catch (HttpsClientRetrievalException e) {
             throw new AttributeServiceQueryException("Error dispatching " +
                                                      "attribute query", e);
@@ -364,32 +364,32 @@ public class OpenId2EmailAddrResolution implements esg.common.Resolver {
             throw new AttributeServiceQueryException("I/O error dispatching " +
                                                      "attribute query", e);
         }
-                
+
         SAMLAttributesImpl samlAttrs = null;
         try {
             samlAttrs = (SAMLAttributesImpl) 
                 attributeServiceClient.parseAttributeResponse(attributeQuery,
                                                               response);
-                        
+
         } catch (XMLParserException e) {
             throw new AttributeServiceQueryException(
                                                      "Parsing attribute query response", e);
         } catch (UnmarshallingException e) {
             throw new AttributeServiceQueryException(
                                                      "Unmarshalling attribute query response", e);
-                        
+
         } catch (SAMLAttributeServiceClientResponseException e) {
             throw new AttributeServiceQueryException(
                                                      "Error with attribute query response", e);
         }
-                
+
         String sEmail = samlAttrs.getEmail();
         if (sEmail == null) {
             throw new AttributeServiceQueryException(
                                                      "Error retrieving e-mail address for user " + openidURL +
                                                      " from Attribute Service " + attributeServiceEndpoint);
         }
-                
+
         InternetAddress email;
         try {
             email = new InternetAddress(sEmail);
