@@ -309,7 +309,8 @@ Builds the project via ant (obviously).
 	   classpathref="main_classpath"
 	   debug="on"
 	   verbose="off"
-	   nowarn="on">
+	   nowarn="on"
+           includeantruntime="false">
       <compilerarg value="-Xlint"/>
     </javac>
 
