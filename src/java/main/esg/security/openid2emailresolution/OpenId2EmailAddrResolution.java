@@ -235,6 +235,10 @@ public class OpenId2EmailAddrResolution implements esg.common.Resolver {
         return this;
     }
 
+    public void setWhitelist(Set<String> dnSet) {
+        yadisX509TrustMgr.setWhitelist(dnSet);
+    }
+
     
     //To satisfy the Resolver interface
     public String resolve(String input) { 

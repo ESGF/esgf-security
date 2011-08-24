@@ -96,6 +96,13 @@ public class DnWhitelistX509TrustMgr implements X509TrustManager {
     	certificateDnWhiteList = null;
     	loadTrustStore(trustStoreFilePath, trustStorePassphrase);
     }
+
+    public DnWhitelistX509TrustMgr(String trustStoreFilePath,
+                                   String trustStorePassphrase,
+                                   Set<String> whitelistDNs) throws DnWhitelistX509TrustMgrInitException {
+        this.setWhitelist(whitelistDNs);
+    	this.loadTrustStore(trustStoreFilePath, trustStorePassphrase);
+    }
     
 
     public synchronized DnWhitelistX509TrustMgr setWhitelist(Set<String> dns) {
