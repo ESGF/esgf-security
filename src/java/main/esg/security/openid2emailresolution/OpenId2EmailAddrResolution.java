@@ -226,7 +226,7 @@ public class OpenId2EmailAddrResolution implements esg.common.Resolver {
                                                            "client for Attribute Service query", e);
         }
 
-        if (this.attributeServiceType == null)
+        if (this.attributeServiceType == null || this.attributeServiceType.equals(""))
             this.attributeServiceType = DEF_ATTRIBUTE_SERVICE_XRD_SERVICE_TYPE;
         else
             this.attributeServiceType = attributeServiceType;
