@@ -110,6 +110,10 @@ public class OpenId2EmailAddrResolution implements esg.common.Resolver {
     public static final String DEF_ATTRIBUTE_SERVICE_XRD_SERVICE_TYPE = 
         "urn:esg:security:attribute-service";
             
+    //------------------------------------------------------------------------------
+    //Stream lovin' method calls
+    //------------------------------------------------------------------------------
+
     /**
      * Yadis and Attribute Service properties files set SSL settings for 
      * queries to these respective services
@@ -133,6 +137,16 @@ public class OpenId2EmailAddrResolution implements esg.common.Resolver {
         
     }
 
+    public OpenId2EmailAddrResolution(String attributeQueryIssuer,
+                                      InputStream yadisPropertiesFile, 
+                                      InputStream attributeServiceClientPropertiesFile) 
+        throws DnWhitelistX509TrustMgrInitException {
+        init (attributeQueryIssuer,
+              null, 
+              yadisPropertiesFile, 
+              attributeServiceClientPropertiesFile);
+    }
+    
     public void init(String attributeQueryIssuer,
                      String attributeServiceType,
                      InputStream yadisPropertiesFile, 
@@ -157,7 +171,7 @@ public class OpenId2EmailAddrResolution implements esg.common.Resolver {
                                                            "client for Attribute Service query", e);
         }
 
-        if (this.attributeServiceType == null)
+        if (this.attributeServiceType == null || this.attributeServiceType.equals(""))
             this.attributeServiceType = DEF_ATTRIBUTE_SERVICE_XRD_SERVICE_TYPE;
         else
             this.attributeServiceType = attributeServiceType;
@@ -166,7 +180,7 @@ public class OpenId2EmailAddrResolution implements esg.common.Resolver {
     }
 
     //------------------------------------------------------------------------------
-    //Stream-free version method calls
+    //Stream-free versions of above method calls
     //------------------------------------------------------------------------------
 
     public OpenId2EmailAddrResolution() { }
