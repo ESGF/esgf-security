@@ -17,6 +17,12 @@ import eske.utils.xml.Serializer;
 /**
  * Utility class for XML serialization/deserialization of policy attributes.
  * 
+ * Example XML document:
+ * <esgf:policies xmlns:esgf="http://www.esgf.org/">    
+ *      <esgf:policy type="Test Attribute" value="User" />
+ *      <esgf:policy type="ANY" value="" />
+ * </esgf:policies>
+ * 
  * @author Luca Cinquini
  *
  */

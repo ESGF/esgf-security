@@ -24,7 +24,7 @@ import esg.security.policy.service.api.PolicyService;
  *
  */
 @Controller
-@RequestMapping("/policyService.htm")
+@RequestMapping("/secure/policyService.htm")
 public class PolicyServiceController {
     
     private PolicyService policyService;
