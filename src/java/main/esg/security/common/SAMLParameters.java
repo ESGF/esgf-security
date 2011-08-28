@@ -43,4 +43,7 @@ public interface SAMLParameters {
     
     public final static int ASSERTION_LIFETIME_IN_SECONDS = 86400;
     
+    public final static String HTTP_PARAMETER_RESOURCE = "resource";
+    public final static String HTTP_PARAMETER_ACTION = "action";
+    
 }

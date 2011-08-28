@@ -54,6 +54,9 @@
   	<bean id="registryService" class="esg.security.registry.service.impl.RegistryServiceLocalXmlImpl">
   		<constructor-arg index="0"><value>esg/security/config/ESGFregistry.xml</value></constructor-arg>
   	</bean>
+  	<bean id="policyServiceController" class="esg.security.policy.web.PolicyServiceController">
+  		<constructor-arg index="0" ref="policyService"/>
+  	</bean>
   	
   	<!-- Example white list -->
   	<bean name="whiteList" class="esg.security.common.WhiteListCertificateProvider">
