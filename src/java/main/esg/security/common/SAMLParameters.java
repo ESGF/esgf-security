@@ -46,4 +46,6 @@ public interface SAMLParameters {
     public final static String HTTP_PARAMETER_RESOURCE = "resource";
     public final static String HTTP_PARAMETER_ACTION = "action";
     
+    public final static String FREE_RESOURCE_ATTRIBUTE_TYPE = "ANY";
+    
 }

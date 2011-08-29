@@ -39,6 +39,7 @@ import esg.security.attr.service.impl.SAMLAttributesImpl;
 import esg.security.authz.service.api.SAMLAuthorization;
 import esg.security.authz.service.api.SAMLAuthorizationFactory;
 import esg.security.authz.service.api.SAMLAuthorizations;
+import esg.security.common.SAMLParameters;
 import esg.security.common.SAMLUnknownPrincipalException;
 import esg.security.common.SOAPServiceClient;
 import esg.security.policy.service.api.PolicyAttribute;
@@ -62,8 +63,6 @@ import esg.xml.EsgWhitelist.TrustedServices.Gateway.AttributeService;
  *
  */
 public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
-	
-	public final static String FREE_RESOURCE_ATTRIBUTE_TYPE = "ANY";
 	
 	/**
 	 * The identity issuing the authorization assertions.
@@ -173,7 +172,7 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 		
 		for (final PolicyAttribute policy : policies) {
 			// found attribute that entitles free access
-			if (policy.getType().equalsIgnoreCase(FREE_RESOURCE_ATTRIBUTE_TYPE)) return true;
+			if (policy.getType().equalsIgnoreCase(SAMLParameters.FREE_RESOURCE_ATTRIBUTE_TYPE)) return true;
 		}
 		
 		// no free access by default
@@ -271,7 +270,7 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 			for (final PolicyAttribute policy : policyMap.get(action)) {				
 				log("Action="+action+ " on Resource="+resource+" requires attribute type="+policy.getType()+" value="+policy.getValue());
 				
-				if (!policy.getType().equalsIgnoreCase(FREE_RESOURCE_ATTRIBUTE_TYPE)) {
+				if (!policy.getType().equalsIgnoreCase(SAMLParameters.FREE_RESOURCE_ATTRIBUTE_TYPE)) {
 					try {
 						
 						// URLs of AttributeServices serving this attribute type

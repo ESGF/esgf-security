@@ -1,6 +1,10 @@
 package esg.security.policy.web;
 
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -16,9 +20,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import esg.security.common.SAMLParameters;
 import esg.security.policy.service.api.PolicyAttribute;
 import esg.security.policy.service.api.PolicyService;
+import esg.security.registry.service.api.RegistryService;
+import esg.security.registry.service.api.UnknownPolicyAttributeTypeException;
 
 /**
- * HTTP controller that front-ends a PolicyService.
+ * HTTP controller that front-ends the PolicyService.
+ * This controller also includes information from the RegistryService
+ * to enable registration workflows.
  * 
  * @author Luca Cinquini
  *
@@ -28,10 +36,13 @@ import esg.security.policy.service.api.PolicyService;
 public class PolicyServiceController {
     
     private PolicyService policyService;
+    private RegistryService registryService;
+    
     private final Log LOG = LogFactory.getLog(this.getClass());
     
-    public PolicyServiceController(final PolicyService policyService) {
+    public PolicyServiceController(final PolicyService policyService, final RegistryService registryService) {
         this.policyService = policyService;
+        this.registryService = registryService;
     }
     
     /**
@@ -53,8 +64,22 @@ public class PolicyServiceController {
         // invoke policy service
         final List<PolicyAttribute> policyAttributes = policyService.getRequiredAttributes(resource, action);
         
+        // invoke registry service to determine registration endpoints
+        final Map<PolicyAttribute, List<URL>> policyAttributeMap = new LinkedHashMap<PolicyAttribute,List<URL>>();
+        for (final PolicyAttribute pa : policyAttributes) {
+            try {
+                final List<URL> paEndpoints = registryService.getRegistrationServices(pa.getType());
+                policyAttributeMap.put(pa, paEndpoints);
+            } catch(UnknownPolicyAttributeTypeException e) {
+                // no registration URL available
+                policyAttributeMap.put(pa, new ArrayList<URL>());
+                LOG.warn(e);
+            }
+            
+        }
+        
         // encode result as XML
-        final String xml = PolicySerializer.serialize(policyAttributes);
+        final String xml = PolicySerializer.serialize(policyAttributeMap);
         if (LOG.isTraceEnabled()) LOG.trace(xml);
         
         // write XML to HTTP response

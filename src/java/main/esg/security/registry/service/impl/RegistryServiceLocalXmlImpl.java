@@ -19,6 +19,7 @@
 package esg.security.registry.service.impl;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -112,6 +113,25 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
 		}
 		
 	}
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<URL> getRegistrationServices(final String attributeType) throws UnknownPolicyAttributeTypeException {
+
+        // FIXME: current implementation based on changing the attribute services urls
+        List<URL> services = this.getAttributeServices(attributeType);
+        for (URL url : services) {
+            try {
+                url = new URL( url.toString().replaceAll("/esgf-security/", "/esgf-idp/") );
+            } catch(MalformedURLException e) {
+                LOG.warn("Cannot build RegistrationService URL", e);
+            }
+        }
+        return services;
+        
+    }
     
     /**
      * {@inheritDoc}

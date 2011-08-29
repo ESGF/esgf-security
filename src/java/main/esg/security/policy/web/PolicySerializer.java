@@ -1,8 +1,11 @@
 package esg.security.policy.web;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -17,10 +20,20 @@ import eske.utils.xml.Serializer;
 /**
  * Utility class for XML serialization/deserialization of policy attributes.
  * 
- * Example XML document:
- * <esgf:policies xmlns:esgf="http://www.esgf.org/">    
- *      <esgf:policy type="Test Attribute" value="User" />
- *      <esgf:policy type="ANY" value="" />
+ * Example XML documents:
+ * 
+ * <esgf:policies xmlns:esgf="http://www.esgf.org/">
+ *    <esgf:policy type="Test Attribute" value="User">
+ *       <esgf:registrationUrl>https://localhost:8443/esgf-security/saml/soap/secure/attributeService.htm</esgf:registrationUrl>
+ *    </esgf:policy>
+ *    <esgf:policy type="ANY" value="" />
+ * </esgf:policies>
+ * 
+ * <esgf:policies xmlns:esgf="http://www.esgf.org/">
+ *    <esgf:policy type="CMIP5 Research" value="User">
+ *       <esgf:registrationUrl>https://esg-datanode.jpl.nasa.gov/esgf-security/saml/soap/secure/attributeService.htm</esgf:registrationUrl>
+ *       <esgf:registrationUrl>https://esgf-node1.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm</esgf:registrationUrl>
+ *    </esgf:policy>
  * </esgf:policies>
  * 
  * @author Luca Cinquini
@@ -37,15 +50,24 @@ public class PolicySerializer {
      * @return
      * @throws JDOMException
      */
-    public final static String serialize(List<PolicyAttribute> attributes) throws JDOMException {
+    public final static String serialize(Map<PolicyAttribute, List<URL>> policyAttributeMap) throws JDOMException {
         
         final Element rootEl = new Element("policies", NAMESPACE_ESGF);
         
-        for (final PolicyAttribute pa : attributes) {
+        for (final PolicyAttribute pa : policyAttributeMap.keySet()) {
+           
             final Element paEl = new Element("policy", NAMESPACE_ESGF);
             paEl.setAttribute("type", pa.getType());
             paEl.setAttribute("value", pa.getValue());
             rootEl.addContent(paEl);
+            
+            // insert endpoints
+            for (final URL url : policyAttributeMap.get(pa)) {
+                final Element urlEl = new Element("registrationUrl", NAMESPACE_ESGF);
+                urlEl.setText(url.toString());
+                paEl.addContent(urlEl);
+            }
+            
         }
         
         return Serializer.JDOMtoString(rootEl);
@@ -53,24 +75,31 @@ public class PolicySerializer {
     }
     
     /**
-     * Method to extract the list of policy attributes from an XML document.
+     * Method to extract the list of policy attributes from an XML document,
+     * and the corresponding registratio URLs.
      * @param xml
      * @return
      * @throws IOException
      * @throws JDOMException
      */
-    public final static List<PolicyAttribute> deserialize(String xml) throws IOException, JDOMException {
+    public final static Map<PolicyAttribute, List<URL>> deserialize(String xml) throws IOException, JDOMException {
                 
-        final List<PolicyAttribute> attributes = new ArrayList<PolicyAttribute>();
+        final Map<PolicyAttribute, List<URL>> policyAttributeMap = new LinkedHashMap<PolicyAttribute, List<URL>>();
         
         final Document doc = Parser.StringToJDOM(xml, false);
         final Element root = doc.getRootElement();
         for (Object obj : root.getChildren("policy", NAMESPACE_ESGF) ) {
             Element att = (Element)obj;
-            attributes.add(new PolicyAttributeImpl(att.getAttributeValue("type"), att.getAttributeValue("value")));
+            final PolicyAttribute pa = new PolicyAttributeImpl(att.getAttributeValue("type"), att.getAttributeValue("value"));
+            List<URL> endpoints = new ArrayList<URL>();
+            for (final Object cobj : att.getChildren("registrationUrl", NAMESPACE_ESGF)) {
+                Element urlEl = (Element)cobj;
+                endpoints.add( new URL(urlEl.getText()) );
+            } 
+            policyAttributeMap.put(pa, endpoints);
         }
         
-        return attributes;
+        return policyAttributeMap;
         
     }
 

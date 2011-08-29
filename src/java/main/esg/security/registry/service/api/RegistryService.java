@@ -37,6 +37,14 @@ public interface RegistryService {
 	List<URL> getAttributeServices(String attributeType) throws UnknownPolicyAttributeTypeException;
 	
 	/**
+	 * Method to retrieve and ordered list of RegistrationService URLs for a given attribute type.
+	 * @param attributeType
+	 * @return
+	 * @throws UnknownPolicyAttributeTypeException
+	 */
+	List<URL> getRegistrationServices(String attributeType) throws UnknownPolicyAttributeTypeException;
+	
+	/**
 	 * Method to return the white list of trusted identity providers.
 	 * @return
 	 */

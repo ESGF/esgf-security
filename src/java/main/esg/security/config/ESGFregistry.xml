@@ -6,4 +6,5 @@
     <attribute type="NASA OBS" service="https://esgf-node1.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm"/>
     <attribute type="ORNL OBS" service="https://esgf-node1.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm"/>
     <attribute type="CMIP5 Research" service="https://esgf-node1.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm"/>
+    <attribute type="Test Attribute" service="https://localhost:8443/esgf-security/saml/soap/secure/attributeService.htm"/>
 </ats_whitelist>
