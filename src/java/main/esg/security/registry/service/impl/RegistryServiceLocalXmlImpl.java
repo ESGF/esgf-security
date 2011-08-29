@@ -124,7 +124,7 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
         List<URL> services = this.getAttributeServices(attributeType);
         for (URL url : services) {
             try {
-                url = new URL( url.toString().replaceAll("/esgf-security/", "/esgf-idp/") );
+                url = new URL( url.toString().replaceAll("\\/esgf-security\\/", "/esgf-idp/") );
             } catch(MalformedURLException e) {
                 LOG.warn("Cannot build RegistrationService URL", e);
             }
