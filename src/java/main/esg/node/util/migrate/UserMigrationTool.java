@@ -61,6 +61,9 @@ import org.apache.commons.dbcp.PoolingDataSource;
 import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.DriverManagerConnectionFactory;
 
+import esg.node.security.*;
+import esg.common.util.ESGFProperties;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.*;
@@ -81,77 +84,104 @@ public class UserMigrationTool {
     private UserInfo userInfo = null;
     private UserInfoCredentialedDAO userDAO = null;
     private GroupRoleDAO groupRoleDAO = null;
+
+    private GenericObjectPool connectionPool = null;
+
     
     public UserMigrationTool() { }
     
+    //ToDo: should throw exception here
     public UserMigrationTool init(Properties props) {
-        setupTargetResources();
-        setupSourceResources(props);
+        if(setupTargetResources()) setupSourceResources(props);
         return this;
     }
 
     //-------------------------------------------------------
     //Remote "Gateway" resouce setup...
     //-------------------------------------------------------
-    private void setupSourceResources(Properties props) {
+    public UserMigrationTool setupSourceResources(Properties props) {
         
         log.trace("Setting up source data source ");
         if(props == null) { log.error("Property object is ["+props+"]: Cannot setup up data source"); return this; }
-        //Ex: jdbc:postgresql://pcmdi3.llnl.gov:5432/esgcet
-        String protocol = props.getProperty("db.protocol","jdbc:postgresql:");
-        String host = props.getProperty("db.host","localhost");
-        String port = props.getProperty("db.port","5432");
-        String database = props.getProperty("db.database","esgcet");
         String user = props.getProperty("db.user","dbsuper");
         String password = props.getProperty("db.password");
+
+        //Ex: jdbc:postgresql://pcmdi3.llnl.gov:5432/esgcet
+        String database = props.getProperty("db.database","esgcet");
+        String host = props.getProperty("db.host","localhost");
+        String port = props.getProperty("db.port","5432");
+        String protocol = props.getProperty("db.protocol","jdbc:postgresql:");
+
+        return this.setupSourceResources(protocol,host,port,database,user,password);
+                
+    }
+    
+    public UserMigrationTool setupSourceResources(String protocol, 
+                                                  String host,
+                                                  String port,
+                                                  String database,
+                                                  String user,
+                                                  String password) {
+
+        System.out.println("Setting up source resources...");
         
         String connectURI = protocol+"//"+host+":"+port+"/"+database; //zoiks
-        log.debug("Connection URI = "+connectURI);
+        log.debug("Source Connection URI  = "+connectURI);
+        log.debug("Source Connection User = "+user);
+        log.debug("Source Connection Password = "+(null == password ? password : "********"));
         connectionPool = new GenericObjectPool(null);
         ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(connectURI,user,password);
         PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory,connectionPool,null,null,false,true);
         sourceDataSource = new PoolingDataSource(connectionPool);
-        
+        return this;
     }
 
     //-------------------------------------------------------
     //Target (local) resource setup...
     //-------------------------------------------------------
-    private boolean setupTargetResources() {
-        return this.setupTargetResources(null,null);
-    }
-    private boolean setupTargetResource(UserDAO userDAO, GroupRoleDAO groupRoleDAO) {
-        ESGFProperties env = new ESGFProperties();
-        if(userDAO == null) {
-            this.userDAO = new UserInfoCredentialedDAO("rootAdmin",
-                                                       env.getAdminPassword(),
-                                                       env);
-        }else {
-            this.userDAO = userDAO;
-        }
-        
-        if(groupRoleDAO == null) {
-            groupRoleDAO = new GroupRoleDAO(env.getEnv());
-        }else {
-            this.groupRoleDAO = groupRoleDAO;
-        }
+    private boolean setupTargetResources() { return this.setupTargetResources(null,null); }
 
+    private boolean setupTargetResources(UserInfoCredentialedDAO userDAO, GroupRoleDAO groupRoleDAO) {
+
+        System.out.println("Setting up target (local) resources...");
+
+        try{
+            ESGFProperties env = new ESGFProperties();
+            if(userDAO == null) {
+                this.userDAO = new UserInfoCredentialedDAO("rootAdmin",
+                                                           env.getAdminPassword(),
+                                                           env);
+            }else {
+                this.userDAO = userDAO;
+            }
+            
+            if(groupRoleDAO == null) {
+                groupRoleDAO = new GroupRoleDAO(env);
+            }else {
+                this.groupRoleDAO = groupRoleDAO;
+            }
+        }catch(java.io.IOException e) { e.printStackTrace(); }
+        
         return ((null != userDAO) && (null != groupRoleDAO));
     }
-
+    
     public void shutdownSourceResources() {
-        log.info("Shutting Down Source Database Resource! ("+driverName+")");
+        log.info("Shutting Down Source Database Resource...");
         try{
             connectionPool.close();
         }catch(Exception ex) {
             log.error("Problem with closing connection Pool!",ex);
         }
-        sourceDataSource = null;        
+        sourceDataSource = null;
     }
     
+
+    //-------------------------------------------------------
     //Pump the data from source --to-> target
+    //-------------------------------------------------------
+
     public int migrate() {
-        
+        return 0;
     }
 
     //-------------------------------------------------------
@@ -160,9 +190,15 @@ public class UserMigrationTool {
     public static void main(String[] args) {
         //Enter the connection URI information
         //setup source connection
-        UserMigrationTool umt = new UserMigrationTool();
-        umt.init(Properties dbProperties);
-        umt.migrate();
+        Properties props = new Properties();
+        if(args.length >= 1) props.setProperty("db.user",args[0]);
+        if(args.length >= 2) props.setProperty("db.password",args[1]);
+        if(args.length >= 3) props.setProperty("db.database",args[2]);
+        if(args.length >= 4) props.setProperty("db.host",args[3]);
+        if(args.length >= 5) props.setProperty("db.port",args[4]);
+        if(args.length >= 6) props.setProperty("db.protocol",args[5]);
+
+        (new UserMigrationTool()).init(props).migrate();
     }
     
 }
