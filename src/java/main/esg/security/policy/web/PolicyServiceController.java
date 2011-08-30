@@ -32,7 +32,7 @@ import esg.security.registry.service.api.UnknownPolicyAttributeTypeException;
  *
  */
 @Controller
-@RequestMapping("/policyService.htm")
+@RequestMapping("/secure/policyService.htm")
 public class PolicyServiceController {
     
     private PolicyService policyService;

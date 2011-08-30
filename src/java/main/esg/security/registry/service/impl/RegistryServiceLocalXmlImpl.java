@@ -19,7 +19,6 @@
 package esg.security.registry.service.impl;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,6 +47,9 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
 	
 	// local storage of attribute type to attribute services mapping (one-to-many)
 	private Map<String, List<URL>> attributeServices = new HashMap<String, List<URL>>();
+	
+	// local storage of attribute type to registration services mapping (one-to-many)
+	private Map<String, List<URL>> registrationServices = new HashMap<String, List<URL>>();
 	
 	// local storage for identity provider endpoints
 	private List<URL> identityProviders = new ArrayList<URL>();
@@ -119,17 +121,18 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
      */
     @Override
     public List<URL> getRegistrationServices(final String attributeType) throws UnknownPolicyAttributeTypeException {
-
-        // FIXME: current implementation based on changing the attribute services urls
-        List<URL> services = this.getAttributeServices(attributeType);
-        for (URL url : services) {
-            try {
-                url = new URL( url.toString().replaceAll("\\/esgf-security\\/", "/esgf-idp/") );
-            } catch(MalformedURLException e) {
-                LOG.warn("Cannot build RegistrationService URL", e);
-            }
+        
+        // reload registry if needed
+        if (registryFile.lastModified()>registryFileLastModTime) {
+            update();        
+        } 
+        
+        // look up the attribute type 
+        if (registrationServices.containsKey(attributeType)) {
+            return registrationServices.get(attributeType);
+        } else {
+            throw new UnknownPolicyAttributeTypeException("Cannot resolve attribute type="+attributeType);
         }
-        return services;
         
     }
     
@@ -194,6 +197,7 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
 		try {
 		    
 		    final Map<String, List<URL>> _attributeServices = new HashMap<String, List<URL>>();
+		    final Map<String, List<URL>> _registrationServices = new HashMap<String, List<URL>>();
 		    final List<URL> _identityProviders = new ArrayList<URL>();
 		    final List<URL> _authorizationServices = new ArrayList<URL>();
 		    final List<String> _lasServers = new ArrayList<String>();
@@ -210,7 +214,11 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
         			if (_attributeServices.get(aType) == null) {
         			    _attributeServices.put(aType, new ArrayList<URL>());
         			}
+        			if (_registrationServices.get(aType) == null) {
+        			    _registrationServices.put(aType, new ArrayList<URL>());
+                    }
         			_attributeServices.get(aType).add(new URL(_attr.getAttributeValue("service")));
+        			_registrationServices.get(aType).add(new URL(_attr.getAttributeValue("registration")));
         		}
         		
         	// parse Identity Providers section
@@ -242,6 +250,9 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
             synchronized (attributeServices) {
                 attributeServices = _attributeServices;
             }
+            synchronized (registrationServices) {
+                registrationServices = _registrationServices;
+            }
             synchronized (identityProviders) {
                 identityProviders = _identityProviders;             
             }
@@ -263,7 +274,7 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
 		this.print();
 		
 	}
-	
+		
 	/**
 	 * Method to dump the registry content to standard output
 	 */
