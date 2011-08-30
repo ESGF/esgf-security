@@ -49,8 +49,6 @@
 ***************************************************************************/
 package esg.idp.util.migrate;
 
-import esg.common.db.DatabaseResource;
-
 import java.util.Properties;
 import javax.sql.DataSource;
 
@@ -60,6 +58,9 @@ import org.apache.commons.dbcp.ConnectionFactory;
 import org.apache.commons.dbcp.PoolingDataSource;
 import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.DriverManagerConnectionFactory;
+
+import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.ResultSetHandler;
 
 import esg.node.security.*;
 import esg.common.util.ESGFProperties;
@@ -73,20 +74,29 @@ import org.apache.commons.logging.impl.*;
    A tool for migrating user accounts from the "gateway" to the "idp" node
 
 */
-public class UserMigrationTool {
+public final class UserMigrationTool {
 
     private static Log log = LogFactory.getLog(UserMigrationTool.class);
     
+    //For source database access...
     private PoolingDataSource sourceDataSource = null;
+    private GenericObjectPool connectionPool = null;
+    private QueryRunner queryRunner = null;
 
-    //for source database access...
-    private DatabaseResource sourceDbResource = null;
+
+    //For target (local) database access...
     private UserInfo userInfo = null;
     private UserInfoCredentialedDAO userDAO = null;
     private GroupRoleDAO groupRoleDAO = null;
 
-    private GenericObjectPool connectionPool = null;
-
+    //-------------------------------------------------------
+    //Remote "Gateway" queries
+    //-------------------------------------------------------
+    private static final String sourceUserInfo = "";
+    private static final String sourceGroupInfo = "";
+    private static final String sourceRoleInfo = "";
+    private static final String sourcePermissionInfo = "";
+    //-------------------------------------------------------
     
     public UserMigrationTool() { }
     
@@ -129,10 +139,11 @@ public class UserMigrationTool {
         log.debug("Source Connection URI  = "+connectURI);
         log.debug("Source Connection User = "+user);
         log.debug("Source Connection Password = "+(null == password ? password : "********"));
-        connectionPool = new GenericObjectPool(null);
+        this.connectionPool = new GenericObjectPool(null);
         ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(connectURI,user,password);
         PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory,connectionPool,null,null,false,true);
-        sourceDataSource = new PoolingDataSource(connectionPool);
+        this.sourceDataSource = new PoolingDataSource(connectionPool);
+        this.queryRunner = new QueryRunner(sourceDataSource);
         return this;
     }
 
@@ -181,6 +192,22 @@ public class UserMigrationTool {
     //-------------------------------------------------------
 
     public int migrate() {
+        return 0;
+    }
+    
+    public int migrateUsers() {
+        return 0;
+    }
+
+    public int migrateGroups() {
+        return 0;
+    }
+    
+    public int migrateRoles() {
+        return 0;
+    }
+
+    public int migratePermissions() {
         return 0;
     }
 
