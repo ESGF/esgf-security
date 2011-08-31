@@ -59,6 +59,12 @@
   		<constructor-arg index="1" ref="registryService"/>
   	</bean>
   	
+  	<!-- Registration Service -->
+  	<bean id="registrationService" class="esg.security.registration.service.impl.RegistrationServiceImpl" />
+  	<bean id="registrationServiceController" class="esg.security.registration.web.RegistrationServiceController">
+  		<constructor-arg index="0" ref="registrationService"/>
+  	</bean>
+  	
   	<!-- Example white list -->
   	<bean name="whiteList" class="esg.security.common.WhiteListCertificateProvider">
   		<constructor-arg index="0">

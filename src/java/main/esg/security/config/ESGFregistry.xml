@@ -3,18 +3,18 @@
     <attribute type="NASA OBS" 
     		   service="https://esg-datanode.jpl.nasa.gov/esgf-security/saml/soap/secure/attributeService.htm"
                description="NASA Observations" 
-               registration="https://esg-datanode.jpl.nasa.gov/registrationService.htm" />
+               registration="https://esg-datanode.jpl.nasa.gov/esgf-security/secure/registrationService.htm" />
     <attribute type="ORNL OBS"
     		   description="ORNL Observations"
                service="https://bones.ccs.ornl.gov/esgf-security/saml/soap/secure/attributeService.htm"
-               registration="https://bones.ccs.ornl.gov/esgf-web-fe/registrationService.htm" />
+               registration="https://bones.ccs.ornl.gov/esgf-security/secure/registrationService.htm" />
     <attribute type="CMIP5 Research" 
                description="Users of CMIP5 datasets for non-commercial purpose only"
                service="https://esgf-node1.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm"
-               registration="https://esgf-node1.llnl.gov/esgf-web-fe/registrationService.htm" 
+               registration="https://esgf-node1.llnl.gov/esgf-security/secure/registrationService.htm" 
                license="http://jpl-esg.jpl.nasa.gov/climate/ipccResearchLicense.xml"/>
     <attribute type="Test Attribute" 
     		   description="Group of test users"
                service="https://localhost:8443/esgf-security/saml/soap/secure/attributeService.htm"
-               registration="https://localhost:8443/esgf-web-fe/registrationService.htm" />
+               registration="https://localhost:8443/esgf-security/secure/registrationService.htm" />
 </ats_whitelist>

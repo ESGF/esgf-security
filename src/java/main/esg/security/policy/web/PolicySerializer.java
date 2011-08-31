@@ -12,6 +12,7 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;
 
+import esg.security.common.SAMLParameters;
 import esg.security.policy.service.api.PolicyAttribute;
 import esg.security.policy.service.impl.PolicyAttributeImpl;
 import esg.security.utils.xml.Parser;
@@ -40,10 +41,7 @@ import eske.utils.xml.Serializer;
  *
  */
 public class PolicySerializer {
-    
-    // XML namespace
-    public final static Namespace NAMESPACE_ESGF = Namespace.getNamespace("esgf","http://www.esgf.org/");  
-    
+        
     /**
      * Method to serialize a list of policy attributes to XML.
      * @param attributes
@@ -52,18 +50,18 @@ public class PolicySerializer {
      */
     public final static String serialize(Map<PolicyAttribute, List<URL>> policyAttributeMap) throws JDOMException {
         
-        final Element rootEl = new Element("policies", NAMESPACE_ESGF);
+        final Element rootEl = new Element("policies", SAMLParameters.NAMESPACE_ESGF);
         
         for (final PolicyAttribute pa : policyAttributeMap.keySet()) {
            
-            final Element paEl = new Element("policy", NAMESPACE_ESGF);
+            final Element paEl = new Element("policy", SAMLParameters.NAMESPACE_ESGF);
             paEl.setAttribute("type", pa.getType());
             paEl.setAttribute("value", pa.getValue());
             rootEl.addContent(paEl);
             
             // insert endpoints
             for (final URL url : policyAttributeMap.get(pa)) {
-                final Element urlEl = new Element("registrationUrl", NAMESPACE_ESGF);
+                final Element urlEl = new Element("registrationUrl", SAMLParameters.NAMESPACE_ESGF);
                 urlEl.setText(url.toString());
                 paEl.addContent(urlEl);
             }
@@ -88,11 +86,11 @@ public class PolicySerializer {
         
         final Document doc = Parser.StringToJDOM(xml, false);
         final Element root = doc.getRootElement();
-        for (Object obj : root.getChildren("policy", NAMESPACE_ESGF) ) {
+        for (Object obj : root.getChildren("policy", SAMLParameters.NAMESPACE_ESGF) ) {
             Element att = (Element)obj;
             final PolicyAttribute pa = new PolicyAttributeImpl(att.getAttributeValue("type"), att.getAttributeValue("value"));
             List<URL> endpoints = new ArrayList<URL>();
-            for (final Object cobj : att.getChildren("registrationUrl", NAMESPACE_ESGF)) {
+            for (final Object cobj : att.getChildren("registrationUrl", SAMLParameters.NAMESPACE_ESGF)) {
                 Element urlEl = (Element)cobj;
                 endpoints.add( new URL(urlEl.getText()) );
             } 

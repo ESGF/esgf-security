@@ -411,7 +411,7 @@ public class GroupRoleDAO implements Serializable {
     public List<String[]> getRoleEntry(String rolename) {
         try{
             log.trace("Fetching raw role data from database table");
-            List<String[]> results = queryRunner.query(showGroupQuery, basicResultSetHandler);
+            List<String[]> results = queryRunner.query(showRoleQuery, basicResultSetHandler, rolename);
             log.trace("Query is: "+showRoleQuery);
             assert (null != results);
             if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
