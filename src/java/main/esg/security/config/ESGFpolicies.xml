@@ -6,19 +6,24 @@
         <policy resource=".*\/cmip5\/.*" attribute_type="CMIP5 Research" attribute_value="User" action="Read"/>
         <policy resource=".*\/cmip5\/.*" attribute_type="CMIP5 Research" attribute_value="Admin" action="Write"/>
        
-        <!-- URLs matching */test/* -->
+        <!-- URLs matching */test/* 
         <policy resource=".*\/test\/.*" attribute_type="Test Attribute" attribute_value="User" action="Read"/>
         <policy resource=".*\/test\/.*" attribute_type="Test Attribute" attribute_value="Admin" action="Write"/>
+        -->
 
-        <!-- URLs matching */nasa/* -->
+        <!-- URLs matching */NASA-JPL/* -->
         <policy resource=".*\/NASA-JPL\/.*" attribute_type="NASA OBS" attribute_value="User" action="Read"/>
         <policy resource=".*\/NASA-JPL\/.*" attribute_type="NASA OBS" attribute_value="Admin" action="Write"/>
+        
+        <!-- URLs matching */arm/* -->
+        <policy resource=".*\/arm\/.*" attribute_type="ORNL OBS" attribute_value="User" action="Read"/>
+        <policy resource=".*\/arm\/.*" attribute_type="ORNL OBS" attribute_value="Admin" action="Write"/>
 
-        <!-- Test resources are made freely available -->
-        <policy resource=".*test.*" attribute_type="ANY" attribute_value="" action="Read"/>
+        <!-- Test resources are made freely available
+        <policy resource=".*test.*" attribute_type="ANY" attribute_value="" action="Read"/> -->
 
-        <!-- Free -->
-        <policy resource=".*esg_dataroot.*" attribute_type="ANY" attribute_value="" action="Read"/>
+        <!-- Free 
+        <policy resource=".*esg_dataroot.*" attribute_type="ANY" attribute_value="" action="Read"/> -->
         
 
 </policies>

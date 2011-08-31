@@ -39,7 +39,7 @@ public class RegistrationServiceController {
         final String group = request.getParameter(SAMLParameters.HTTP_PARAMETER_GROUP);
         final String role = request.getParameter(SAMLParameters.HTTP_PARAMETER_ROLE);
         
-        if (LOG.isTraceEnabled()) LOG.trace("Registering user: "+user+" in group: "+group+" with role: "+role);
+        if (LOG.isInfoEnabled()) LOG.info("Registering user: "+user+" in group: "+group+" with role: "+role);
         
         String xml = "";
         try {
