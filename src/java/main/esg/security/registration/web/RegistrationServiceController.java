@@ -34,31 +34,36 @@ public class RegistrationServiceController {
     @RequestMapping(method = { RequestMethod.POST } )
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, JDOMException {
         
-        // retrieve request parameters
-        final String user = request.getParameter(SAMLParameters.HTTP_PARAMETER_USER);
-        final String group = request.getParameter(SAMLParameters.HTTP_PARAMETER_GROUP);
-        final String role = request.getParameter(SAMLParameters.HTTP_PARAMETER_ROLE);
+        // retrieve XML request parameter
+        final String requestXml = request.getParameter(SAMLParameters.HTTP_PARAMETER_XML);
+        
+        // parse XML
+        final String[] reqqpars = RegistrationRequestUtils.deserialize(requestXml);
+        
+        final String user = reqqpars[0];
+        final String group = reqqpars[1];
+        final String role = reqqpars[2];
         
         if (LOG.isInfoEnabled()) LOG.info("Registering user: "+user+" in group: "+group+" with role: "+role);
         
-        String xml = "";
+        String responseXml = "";
         try {
             
             // invoke back-end service
             registrationService.register(user, group, role);
             
             // encode success response in XML
-            xml = RegistrationResponseUtils.serialize(SAMLParameters.RegistrationOutcome.SUCCESS, 
+            responseXml = RegistrationResponseUtils.serialize(SAMLParameters.RegistrationOutcome.SUCCESS, 
                                                       "User: "+user+" was registered in group: "+group+" with role: "+role);            
             
         } catch(Exception e) {
             
             // encode error response in XML
-            xml = RegistrationResponseUtils.serialize(SAMLParameters.RegistrationOutcome.ERROR, e.getMessage());
+            responseXml = RegistrationResponseUtils.serialize(SAMLParameters.RegistrationOutcome.ERROR, e.getMessage());
         }
         
         response.setContentType("text/xml");
-        response.getWriter().write( xml );
+        response.getWriter().write( responseXml );
         
     }
 
