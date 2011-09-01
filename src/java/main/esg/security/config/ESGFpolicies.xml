@@ -5,6 +5,10 @@
         <!-- URLs matching */cmip5/* -->
         <policy resource=".*\/cmip5\/.*" attribute_type="CMIP5 Research" attribute_value="User" action="Read"/>
         <policy resource=".*\/cmip5\/.*" attribute_type="CMIP5 Research" attribute_value="Admin" action="Write"/>
+        
+        <!-- URLs matching */obs4MIPs/* -->
+        <policy resource=".*\/obs4MIPs\/.*" attribute_type="CMIP5 Research" attribute_value="User" action="Read"/>
+        <policy resource=".*\/obs4MIPs\/.*" attribute_type="CMIP5 Research" attribute_value="Admin" action="Write"/>
        
         <!-- URLs matching */test/* 
         <policy resource=".*\/test\/.*" attribute_type="Test Attribute" attribute_value="User" action="Read"/>
