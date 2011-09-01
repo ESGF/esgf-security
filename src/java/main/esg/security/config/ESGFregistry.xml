@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ats_whitelist xmlns="http://www.esgf.org/whitelist">
-	<!-- FIXME -->
     <attribute type="NASA OBS" 
-    		   attributeService="https://test-datanode.jpl.nasa.gov/esgf-security/saml/soap/secure/attributeService.htm"
+    		   attributeService="https://esg-datanode.jpl.nasa.gov/esgf-security/saml/soap/secure/attributeService.htm"
                description="NASA Observations" 
-               registrationService="https://test-datanode.jpl.nasa.gov/esgf-security/secure/registrationService.htm" />
+               registrationService="https://esg-datanode.jpl.nasa.gov/esgf-security/secure/registrationService.htm" />
     <attribute type="ORNL OBS"
     		   description="ORNL Observations"
                attributeService="https://bones.ccs.ornl.gov/esgf-security/saml/soap/secure/attributeService.htm"
