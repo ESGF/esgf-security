@@ -184,10 +184,13 @@ public class UserInfoCredentialedDAO {
     }
     
     public boolean setPassword(String openid, String newPassword) {
+        return this.setPassword(openid,newPassword,false);
+    }
+    public boolean setPassword(String openid, String newPassword, boolean literal) {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
-        return userInfoDAO.setPassword(openid,newPassword);
+        return userInfoDAO.setPassword(openid,newPassword,literal);
     }
     
     //Given a password, check to see if that password matches what is
@@ -207,7 +210,7 @@ public class UserInfoCredentialedDAO {
     public boolean changePassword(String openid, String queryPassword, String newPassword) {
         return userInfoDAO.changePassword(openid,queryPassword,newPassword);
     }
-    
+
     //-------------------------------------------------------
     //Account Status Manipulations
     //-------------------------------------------------------
@@ -276,6 +279,12 @@ public class UserInfoCredentialedDAO {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return userInfoDAO.addPermission(userid,groupName,roleName);
+    }
+    public boolean addPermission(String openid, String groupName, String roleName) {
+        if(!checkCredentials()) {
+            throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
+        }
+        return userInfoDAO.addPermission(openid,groupName,roleName);
     }
     
     public boolean deletePermission(UserInfo userInfo, String groupName, String roleName) {

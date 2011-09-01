@@ -90,7 +90,7 @@ public final class UserMigrationTool {
     private UserInfo userInfo = null;
     private UserInfoCredentialedDAO userDAO = null;
     private GroupRoleDAO groupRoleDAO = null;
-
+    
     //-------------------------------------------------------
     //Remote "Gateway" queries
     //-------------------------------------------------------
@@ -98,7 +98,6 @@ public final class UserMigrationTool {
     private static final String sourceGroupInfoQuery = "";
     private static final String sourceRoleInfoQuery = "";
     private static final String sourcePermissionInfoQuery = "";
-    private static final String setPasswordLiteralQuery = "";
     //-------------------------------------------------------
     
     public UserMigrationTool() { }
@@ -204,20 +203,22 @@ public final class UserMigrationTool {
     
     public int migrateRoles() {
         int ret = 0;
-
         ResultSetHandler<Integer> rolesResultSetHandler = new ResultSetHandler<Integer>() {
             public Integer handle(ResultSet rs) throws SQLException{
                 int i=0;
                 while(rs.next()) {
-                    UserMigrationTool.this.groupRoleDAO.addRole(rs.getString(1),rs.getString(2));
-                    i++;
+                    if(UserMigrationTool.this.groupRoleDAO.addRole(rs.getString(1),rs.getString(2))) {
+                        i++;
+                        log.info("Migrated role #"+i+": "+rs.getString(1));
+                    }
                 }
                 return i;
             }
         };
         
         try {
-            ret = queryRunner.update(sourceRoleInfoQuery, rolesResultSetHandler);
+            ret = queryRunner.query(sourceRoleInfoQuery, rolesResultSetHandler);
+            log.info("Migrated ["+ret+"] role records");
         }catch(SQLException e) {
             e.printStackTrace();
         }
@@ -227,20 +228,22 @@ public final class UserMigrationTool {
     
     public int migrateGroups() {
         int ret = 0;
-        
         ResultSetHandler<Integer> groupsResultSetHandler = new ResultSetHandler<Integer>() {
             public Integer handle(ResultSet rs) throws SQLException{
                 int i=0;
                 while(rs.next()) {
-                    UserMigrationTool.this.groupRoleDAO.addGroup(rs.getString(1),rs.getString(2));
-                    i++;
+                    if(UserMigrationTool.this.groupRoleDAO.addGroup(rs.getString(1),rs.getString(2))) {
+                        i++;
+                        log.info("Migrated group #"+i+": "+rs.getString(1));
+                    }
                 }
                 return i;
             }
         };
         
         try {
-            ret = queryRunner.update(sourceGroupInfoQuery, groupsResultSetHandler);
+            ret = queryRunner.query(sourceGroupInfoQuery, groupsResultSetHandler);
+            log.info("Migrated ["+ret+"] group records");
         }catch(SQLException e) {
             e.printStackTrace();
         }
@@ -267,21 +270,22 @@ public final class UserMigrationTool {
                         setState(rs.getString(11)).
                         setCountry(rs.getString(12));
                     //NOTE: verification token not applicable
-                    //Password literal must be set separately... (see setPasswordLiteral below) field #14
+                    //Status code msut be set separately... (below) field #13
+                    //Password literal must be set separately... (see setPassword - with true boolean, below) field #14
                     
-                    
-                    
-                    userDAO.addUser(userInfo);
-                    //password,      statusCode
-                    UserMigrationTool.this.setPasswordLiteralForUser(userInfo.getOpenid(),rs.getString(14),rs.getInt(13));
+                    UserMigrationTool.this.userDAO.addUser(userInfo);
+                    UserMigrationTool.this.userDAO.setStatusCode(userInfo.getOpenid(),rs.getInt(13)); //statusCode
+                    UserMigrationTool.this.userDAO.setPassword(userInfo.getOpenid(),rs.getString(14),true); //password (literal)
                     i++;
+                    log.info("Migrated User #"+i+": "+userInfo.getUserName()+" --> "+userInfo.getOpenid());
                 }
                 return i;
             }
         };
         
         try {
-            ret = queryRunner.update(sourceUserInfoQuery, usersResultSetHandler);
+            ret = queryRunner.query(sourceUserInfoQuery, usersResultSetHandler);
+            log.info("Migrated ["+ret+"] user records");
         }catch(SQLException e) {
             e.printStackTrace();
         }
@@ -289,14 +293,28 @@ public final class UserMigrationTool {
         
     }
     
-    private boolean setPasswordLiteralForUser(String openid, String passwordLiteral, int statusCode) {
-        //zoiks: fill me in
-        return true;
-    }
-    
-    
     public int migratePermissions() {
-        return 0;
+        int ret = 0;
+        ResultSetHandler<Integer> permissionsResultSetHandler = new ResultSetHandler<Integer>() {
+            public Integer handle(ResultSet rs) throws SQLException{
+                int i=0;
+                while(rs.next()) {
+                    if(UserMigrationTool.this.userDAO.addPermission(rs.getString(1),rs.getString(2),rs.getString(3))) {
+                        i++;
+                        log.info("Migrated Permission #"+i+": ["+rs.getString(1)+"] ["+rs.getString(2)+"] ["+rs.getString(3)+"]"); 
+                    }
+                }
+                return i;
+            }
+        };
+        
+        try{
+            ret = queryRunner.query(sourcePermissionInfoQuery, permissionsResultSetHandler);
+            log.info("Migrated ["+ret+"] permission records");
+        }catch(SQLException e) {
+            e.printStackTrace();
+        }
+        return ret;
     }
 
     //-------------------------------------------------------
@@ -306,8 +324,10 @@ public final class UserMigrationTool {
         //Enter the connection URI information
         //setup source connection
         Properties props = new Properties();
+        //manditory
         if(args.length >= 1) props.setProperty("db.user",args[0]);
         if(args.length >= 2) props.setProperty("db.password",args[1]);
+        //have defaults
         if(args.length >= 3) props.setProperty("db.database",args[2]);
         if(args.length >= 4) props.setProperty("db.host",args[3]);
         if(args.length >= 5) props.setProperty("db.port",args[4]);
