@@ -50,6 +50,8 @@
 package esg.idp.util.migrate;
 
 import java.util.Properties;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import org.apache.commons.pool.ObjectPool;
@@ -92,10 +94,11 @@ public final class UserMigrationTool {
     //-------------------------------------------------------
     //Remote "Gateway" queries
     //-------------------------------------------------------
-    private static final String sourceUserInfo = "";
-    private static final String sourceGroupInfo = "";
-    private static final String sourceRoleInfo = "";
-    private static final String sourcePermissionInfo = "";
+    private static final String sourceUserInfoQuery = "";
+    private static final String sourceGroupInfoQuery = "";
+    private static final String sourceRoleInfoQuery = "";
+    private static final String sourcePermissionInfoQuery = "";
+    private static final String setPasswordLiteralQuery = "";
     //-------------------------------------------------------
     
     public UserMigrationTool() { }
@@ -192,21 +195,106 @@ public final class UserMigrationTool {
     //-------------------------------------------------------
 
     public int migrate() {
-        return 0;
-    }
-    
-    public int migrateUsers() {
-        return 0;
-    }
-
-    public int migrateGroups() {
+        migrateRoles();
+        migrateGroups();
+        migrateUsers();
+        migratePermissions();
         return 0;
     }
     
     public int migrateRoles() {
-        return 0;
+        int ret = 0;
+
+        ResultSetHandler<Integer> rolesResultSetHandler = new ResultSetHandler<Integer>() {
+            public Integer handle(ResultSet rs) throws SQLException{
+                int i=0;
+                while(rs.next()) {
+                    UserMigrationTool.this.groupRoleDAO.addRole(rs.getString(1),rs.getString(2));
+                    i++;
+                }
+                return i;
+            }
+        };
+        
+        try {
+            ret = queryRunner.update(sourceRoleInfoQuery, rolesResultSetHandler);
+        }catch(SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return ret;
+    }
+    
+    public int migrateGroups() {
+        int ret = 0;
+        
+        ResultSetHandler<Integer> groupsResultSetHandler = new ResultSetHandler<Integer>() {
+            public Integer handle(ResultSet rs) throws SQLException{
+                int i=0;
+                while(rs.next()) {
+                    UserMigrationTool.this.groupRoleDAO.addGroup(rs.getString(1),rs.getString(2));
+                    i++;
+                }
+                return i;
+            }
+        };
+        
+        try {
+            ret = queryRunner.update(sourceGroupInfoQuery, groupsResultSetHandler);
+        }catch(SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return ret;
     }
 
+    public int migrateUsers() {
+        int ret  = 0;
+        ResultSetHandler<Integer> usersResultSetHandler = new ResultSetHandler<Integer>() {
+            public Integer handle(ResultSet rs) throws SQLException{
+                int i=0;
+                while(rs.next()) {
+                    UserInfo userInfo = UserMigrationTool.this.userDAO.getUserById(rs.getString(1));
+                    userInfo.setFirstName(rs.getString(2)).
+                        setMiddleName(rs.getString(3)).
+                        setLastName(rs.getString(4)).
+                        setEmail(rs.getString(5)).
+                        setUserName(rs.getString(6)).
+                        setDn(rs.getString(7)).
+                        setOrganization(rs.getString(8)).
+                        setOrgType(rs.getString(9)).
+                        setCity(rs.getString(10)).
+                        setState(rs.getString(11)).
+                        setCountry(rs.getString(12));
+                    //NOTE: verification token not applicable
+                    //Password literal must be set separately... (see setPasswordLiteral below) field #14
+                    
+                    
+                    
+                    userDAO.addUser(userInfo);
+                    //password,      statusCode
+                    UserMigrationTool.this.setPasswordLiteralForUser(userInfo.getOpenid(),rs.getString(14),rs.getInt(13));
+                    i++;
+                }
+                return i;
+            }
+        };
+        
+        try {
+            ret = queryRunner.update(sourceUserInfoQuery, usersResultSetHandler);
+        }catch(SQLException e) {
+            e.printStackTrace();
+        }
+        return ret;
+        
+    }
+    
+    private boolean setPasswordLiteralForUser(String openid, String passwordLiteral, int statusCode) {
+        //zoiks: fill me in
+        return true;
+    }
+    
+    
     public int migratePermissions() {
         return 0;
     }
