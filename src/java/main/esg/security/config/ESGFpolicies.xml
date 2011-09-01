@@ -2,31 +2,36 @@
 
 <policies>
 
-        <!-- URLs matching */cmip5/* -->
+        <!-- CMIP5 Research access control -->
         <policy resource=".*\/cmip5\/.*" attribute_type="CMIP5 Research" attribute_value="User" action="Read"/>
         <policy resource=".*\/cmip5\/.*" attribute_type="CMIP5 Research" attribute_value="Admin" action="Write"/>
-        
-        <!-- URLs matching */obs4MIPs/* -->
+
         <policy resource=".*\/obs4MIPs\/.*" attribute_type="CMIP5 Research" attribute_value="User" action="Read"/>
         <policy resource=".*\/obs4MIPs\/.*" attribute_type="CMIP5 Research" attribute_value="Admin" action="Write"/>
        
+        <!-- NASA-JPL access control -->
+        <policy resource=".*\/NASA-JPL\/.*" attribute_type="NASA OBS" attribute_value="User" action="Read"/>
+        <policy resource=".*\/NASA-JPL\/.*" attribute_type="NASA OBS" attribute_value="Admin" action="Write"/>
+        
+        <!-- ORNL access control -->
+        <policy resource=".*\/arm\/.*" attribute_type="ARM" attribute_value="User" action="Read"/>
+        <policy resource=".*\/arm\/.*" attribute_type="ARM" attribute_value="Admin" action="Write"/>
+        <policy resource=".*\/ameriflux\/.*" attribute_type="NACP Ameriflux" attribute_value="User" action="Read"/>
+        <policy resource=".*\/ameriflux\/.*" attribute_type="NACP Ameriflux" attribute_value="Admin" action="Write"/>
+        <policy resource=".*\/clm\/.*" attribute_type="CLM Data" attribute_value="User" action="Read"/>
+        <policy resource=".*\/clm\/.*" attribute_type="CLM Data" attribute_value="Admin" action="Write"/>
+        <policy resource=".*\/c-lamp\/.*" attribute_type="CLAMP" attribute_value="User" action="Read"/>
+        <policy resource=".*\/c-lamp\/.*" attribute_type="CLAMP" attribute_value="Admin" action="Write"/>
+
         <!-- URLs matching */test/* 
         <policy resource=".*\/test\/.*" attribute_type="Test Attribute" attribute_value="User" action="Read"/>
         <policy resource=".*\/test\/.*" attribute_type="Test Attribute" attribute_value="Admin" action="Write"/>
         -->
 
-        <!-- URLs matching */NASA-JPL/* -->
-        <policy resource=".*\/NASA-JPL\/.*" attribute_type="NASA OBS" attribute_value="User" action="Read"/>
-        <policy resource=".*\/NASA-JPL\/.*" attribute_type="NASA OBS" attribute_value="Admin" action="Write"/>
-        
-        <!-- URLs matching */arm/* -->
-        <policy resource=".*\/arm\/.*" attribute_type="ORNL OBS" attribute_value="User" action="Read"/>
-        <policy resource=".*\/arm\/.*" attribute_type="ORNL OBS" attribute_value="Admin" action="Write"/>
-
         <!-- Test resources are made freely available
         <policy resource=".*test.*" attribute_type="ANY" attribute_value="" action="Read"/> -->
 
-        <!-- Free 
+        <!-- Everything is Free 
         <policy resource=".*esg_dataroot.*" attribute_type="ANY" attribute_value="" action="Read"/> -->
         
 
