@@ -217,8 +217,8 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
         			if (_registrationServices.get(aType) == null) {
         			    _registrationServices.put(aType, new ArrayList<URL>());
                     }
-        			_attributeServices.get(aType).add(new URL(_attr.getAttributeValue("service")));
-        			_registrationServices.get(aType).add(new URL(_attr.getAttributeValue("registration")));
+        			_attributeServices.get(aType).add(new URL(_attr.getAttributeValue("attributeService")));
+        			_registrationServices.get(aType).add(new URL(_attr.getAttributeValue("registrationService")));
         		}
         		
         	// parse Identity Providers section

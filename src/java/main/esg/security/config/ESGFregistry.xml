@@ -2,20 +2,20 @@
 <ats_whitelist xmlns="http://www.esgf.org/whitelist">
 	<!-- FIXME -->
     <attribute type="NASA OBS" 
-    		   service="https://test-datanode.jpl.nasa.gov/esgf-security/saml/soap/secure/attributeService.htm"
+    		   attributeService="https://test-datanode.jpl.nasa.gov/esgf-security/saml/soap/secure/attributeService.htm"
                description="NASA Observations" 
-               registration="https://test-datanode.jpl.nasa.gov/esgf-security/secure/registrationService.htm" />
+               registrationService="https://test-datanode.jpl.nasa.gov/esgf-security/secure/registrationService.htm" />
     <attribute type="ORNL OBS"
     		   description="ORNL Observations"
-               service="https://bones.ccs.ornl.gov/esgf-security/saml/soap/secure/attributeService.htm"
-               registration="https://bones.ccs.ornl.gov/esgf-security/secure/registrationService.htm" />
+               attributeService="https://bones.ccs.ornl.gov/esgf-security/saml/soap/secure/attributeService.htm"
+               registrationService="https://bones.ccs.ornl.gov/esgf-security/secure/registrationService.htm" />
     <attribute type="CMIP5 Research" 
                description="Users of CMIP5 datasets for non-commercial purpose only"
-               service="https://esgf-node1.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm"
-               registration="https://esgf-node1.llnl.gov/esgf-security/secure/registrationService.htm" 
+               attributeService="https://esgf-node1.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm"
+               registrationService="https://esgf-node1.llnl.gov/esgf-security/secure/registrationService.htm" 
                license="http://jpl-esg.jpl.nasa.gov/climate/ipccResearchLicense.xml"/>
     <attribute type="Test Attribute" 
     		   description="Group of test users"
-               service="https://localhost:8443/esgf-security/saml/soap/secure/attributeService.htm"
-               registration="https://localhost:8443/esgf-security/secure/registrationService.htm" />
+               attributeService="https://localhost:8443/esgf-security/saml/soap/secure/attributeService.htm"
+               registrationService="https://localhost:8443/esgf-security/secure/registrationService.htm" />
 </ats_whitelist>
