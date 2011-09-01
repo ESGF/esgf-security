@@ -29,10 +29,15 @@ public class RegistrationResponseUtils {
     public static String serialize(SAMLParameters.RegistrationOutcome outcome, String message) throws JDOMException {
         
         final Element rootEl = new Element("registrationResponse", SAMLParameters.NAMESPACE_ESGF);
+        
         final Element resultEl = new Element("result",SAMLParameters.NAMESPACE_ESGF);
-        resultEl.setAttribute("value", outcome.toString());
-        resultEl.setText(message);       
+        resultEl.setText(outcome.toString());
         rootEl.addContent(resultEl);
+        
+        final Element messageEl = new Element("message",SAMLParameters.NAMESPACE_ESGF);
+        messageEl.setText(message);       
+        rootEl.addContent(messageEl);
+        
         return Serializer.JDOMtoString(rootEl);
         
     }
@@ -48,7 +53,7 @@ public class RegistrationResponseUtils {
         final Document doc = Parser.StringToJDOM(xml, false);
         final Element root = doc.getRootElement();
         Element result = (Element)root.getChild("result", SAMLParameters.NAMESPACE_ESGF);
-        return result.getAttributeValue("value");
+        return result.getTextNormalize();
         
     }
 

@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import esg.security.common.SAMLParameters;
 import esg.security.registration.service.api.RegistrationService;
-import esg.security.registration.service.impl.RegistrationServiceImpl;
 
 /**
  * Controller that front-ends a {@link RegistrationService}.
+ * 
  * @author Luca Cinquini
  *
  */
@@ -31,6 +31,13 @@ public class RegistrationServiceController {
         this.registrationService = registrationService;
     }
     
+    /**
+     * Method that processes POST requests. GET requests are NOT supported.
+     * @param request
+     * @param response
+     * @throws IOException
+     * @throws JDOMException
+     */
     @RequestMapping(method = { RequestMethod.POST } )
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, JDOMException {
         
@@ -53,18 +60,20 @@ public class RegistrationServiceController {
             registrationService.register(user, group, role);
             
             // encode success response in XML
-            responseXml = RegistrationResponseUtils.serialize(SAMLParameters.RegistrationOutcome.SUCCESS, 
-                                                      "User: "+user+" was registered in group: "+group+" with role: "+role);            
+            responseXml = RegistrationResponseUtils.serialize(
+                    SAMLParameters.RegistrationOutcome.SUCCESS, 
+                    "User: "+user+" was registered in group: "+group+" with role: "+role);  
+            
+            response.setContentType("text/xml");
+            response.getWriter().write( responseXml );
             
         } catch(Exception e) {
             
-            // encode error response in XML
-            responseXml = RegistrationResponseUtils.serialize(SAMLParameters.RegistrationOutcome.ERROR, e.getMessage());
+            // send HTTP 500 response code
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            
         }
-        
-        response.setContentType("text/xml");
-        response.getWriter().write( responseXml );
-        
+                
     }
 
 }

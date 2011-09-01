@@ -36,6 +36,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     }
     
+    /**
+     * {@inheritDoc}
+     */
     public void register(String openid, String group, String role) throws Exception {
         
         // check group exists in database
@@ -44,43 +47,30 @@ public class RegistrationServiceImpl implements RegistrationService {
         
         // check role exists in database
         entries = groupRoleDAO.getRoleEntry(role);
-        System.out.println(entries.size());
         if (entries.size()<=1) throw new Exception("Role not found in database: "+role);
         
         // retrieve user, or create new one with empty fields
         final UserInfo userInfo = userInfoDAO.getUserById(openid);
         if (userInfo.isValid()) {
             if (LOG.isTraceEnabled()) LOG.info("User "+openid+" found in database");
-        }else{
+        } else {
             if (LOG.isTraceEnabled()) LOG.info("Creating user="+openid+" in database");
             String username = openid.substring(openid.lastIndexOf("/")+1);
             userInfo.setOpenid(openid)
-                    .setFirstName("x")
-                    .setLastName("x")
-                    .setUserName(username) // FIXME: username must not be unique
-                    .setEmail("x");
+                    .setFirstName("")
+                    .setLastName("")
+                    .setUserName(username) // FIXME: username may not be unique
+                    .setEmail("");
             if (userInfoDAO.addUserInfo(userInfo)) {
                 if (LOG.isTraceEnabled()) LOG.trace("User="+openid+" created in database");
             } else {
-                if (LOG.isTraceEnabled()) LOG.info("User creation failed");
+                throw new Exception("User creation failed");
             }
         }
         
         // insert (user, group, role) tuple (if not existing already)
         boolean created = userInfoDAO.addPermission(userInfo, group, role);
         if (LOG.isTraceEnabled()) LOG.trace("Permission created="+created);
-
-        
-    }
-    
-    public static void main(String[] args) throws Exception {
-        
-        RegistrationService self = new RegistrationServiceImpl();
-        
-        String group = "CMIP5 Research";
-        String role = "User";
-        String user = "https://esg-datanode.jpl.nasa.gov/esgf-idp/openid/testUser";
-        self.register(user, group, role);
         
     }
 

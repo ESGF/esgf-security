@@ -53,7 +53,7 @@ public interface SAMLParameters {
     public final static String FREE_RESOURCE_ATTRIBUTE_TYPE = "ANY";
     
     public enum RegistrationOutcome {
-        SUCCESS, PENDING, DENIED, ERROR
+        SUCCESS, PENDING, DENIED
     }
     
     public final static Namespace NAMESPACE_ESGF = Namespace.getNamespace("esgf","http://www.esgf.org/");  
