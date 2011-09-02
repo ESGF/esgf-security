@@ -131,9 +131,12 @@ public class UserInfoDAO {
     private static final String addPermissionQuery = 
         "INSERT INTO esgf_security.permission (user_id, group_id, role_id) "+
         "VALUES ( ?, (SELECT id FROM esgf_security.group WHERE name = ? ), (SELECT id FROM esgf_security.role WHERE name = ?))";
-    private static final String addPermissionQueryByOpenid = 
+    private static final String addPermissionQueryByUsername = 
         "INSERT INTO esgf_security.permission (user_id, group_id, role_id) "+
-        "VALUES ( (SELECT id FROM esgf_security.group WHERE openid = ? ), (SELECT id FROM esgf_security.group WHERE name = ? ), (SELECT id FROM esgf_security.role WHERE name = ?))";
+        "VALUES ( "+
+        "(SELECT id FROM esgf_security.user WHERE username = ? ), "+
+        "(SELECT id FROM esgf_security.group WHERE name = ? ), "+
+        "(SELECT id FROM esgf_security.role WHERE name = ?))";
     private static final String delPermissionQuery = 
         "DELETE FROM esgf_security.permission "+
         "WHERE user_id = ? "+
@@ -154,9 +157,9 @@ public class UserInfoDAO {
         "WHERE user_id = ? "+
         "AND group_id = (SELECT id FROM esgf_security.group WHERE name = ? ) "+
         "AND role_id = (SELECT id FROM esgf_security.role WHERE name = ? )";
-    private static final String existsPermissionQueryByOpenid = 
+    private static final String existsPermissionQueryByUsername = 
         "SELECT COUNT(*) FROM esgf_security.permission "+
-        "WHERE user_id = (SELECT id FROM esgf_security.user WHERE openid = ? ) "+
+        "WHERE user_id = (SELECT id FROM esgf_security.user WHERE username = ? ) "+
         "AND group_id = (SELECT id FROM esgf_security.group WHERE name = ? ) "+
         "AND role_id = (SELECT id FROM esgf_security.role WHERE name = ? )";
 
@@ -945,17 +948,17 @@ public class UserInfoDAO {
         }
         return (numRowsAffected > 0);
     }
-    public boolean addPermission(String openid, String groupName, String roleName) {
+    public boolean addPermission(String userName, String groupName, String roleName) {
         int numRowsAffected = -1;
         try{
 
-            log.trace("Adding Permission ("+openid+", "+groupName+", "+roleName+") ");
-            if(!queryRunner.query(existsPermissionQueryByOpenid, existsResultSetHandler, openid, groupName, roleName)) {
-                numRowsAffected = queryRunner.update(addPermissionQueryByOpenid, openid, groupName, roleName);
+            log.trace("Adding Permission ("+userName+", "+groupName+", "+roleName+") ");
+            if(!queryRunner.query(existsPermissionQueryByUsername, existsResultSetHandler, userName, groupName, roleName)) {
+                numRowsAffected = queryRunner.update(addPermissionQueryByUsername, userName, groupName, roleName);
                 if (numRowsAffected > 0) {
                     log.trace("[ADDED]"); 
                 }else {
-                    log.warn("Was not able to add permission ("+openid+",["+groupName+"],["+roleName+"]) to database, already EXISTS?? Possible intra database concurrency issue!!!");
+                    log.warn("Was not able to add permission (["+userName+"],["+groupName+"],["+roleName+"]) to database, already EXISTS?? Possible intra database concurrency issue!!!");
                 }
             }else {
                 log.trace("[PERMISSION ALREADY EXISTS]");

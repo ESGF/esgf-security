@@ -280,11 +280,11 @@ public class UserInfoCredentialedDAO {
         }
         return userInfoDAO.addPermission(userid,groupName,roleName);
     }
-    public boolean addPermission(String openid, String groupName, String roleName) {
+    public boolean addPermission(String userName, String groupName, String roleName) {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
-        return userInfoDAO.addPermission(openid,groupName,roleName);
+        return userInfoDAO.addPermission(userName,groupName,roleName);
     }
     
     public boolean deletePermission(UserInfo userInfo, String groupName, String roleName) {

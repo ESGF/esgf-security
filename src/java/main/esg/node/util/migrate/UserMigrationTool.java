@@ -299,6 +299,7 @@ public final class UserMigrationTool {
             public Integer handle(ResultSet rs) throws SQLException{
                 int i=0;
                 while(rs.next()) {
+                    //                                                [username]     [groupname]    [rolename]
                     if(UserMigrationTool.this.userDAO.addPermission(rs.getString(1),rs.getString(2),rs.getString(3))) {
                         i++;
                         log.info("Migrated Permission #"+i+": ["+rs.getString(1)+"] ["+rs.getString(2)+"] ["+rs.getString(3)+"]"); 
