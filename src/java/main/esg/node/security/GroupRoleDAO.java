@@ -82,8 +82,8 @@ public class GroupRoleDAO implements Serializable {
     //private static final String getNextGroupPrimaryKeyValQuery = 
     //    "SELECT NEXTVAL('esgf_security.group_id_seq')";
     private static final String addGroupQuery = 
-        "INSERT INTO esgf_security.group (name, description) "+
-        "VALUES ( ?, ? )";
+        "INSERT INTO esgf_security.group (name, description, visible, automatic_approval) "+
+        "VALUES ( ?, ?, ?, ? )";
     private static final String delGroupQuery =
         "DELETE FROM esgf_security.group where name = ?";
 
@@ -252,6 +252,9 @@ public class GroupRoleDAO implements Serializable {
         return addGroup(groupName,"");
     }
     public synchronized boolean addGroup(String groupName, String groupDesc) {
+        return addGroup(groupName,groupDesc,true,true);
+    }
+    public synchronized boolean addGroup(String groupName, String groupDesc, boolean visible, boolean autoApproval) {
         int groupid = -1;
         int numRowsAffected = -1;
         
@@ -264,7 +267,7 @@ public class GroupRoleDAO implements Serializable {
             
             //If this group does not exist in the database then add (INSERT) a new one
             //groupid = queryRunner.query(getNextGroupPrimaryKeyValQuery, idResultSetHandler);
-            numRowsAffected = queryRunner.update(addGroupQuery,groupName,groupDesc);
+            numRowsAffected = queryRunner.update(addGroupQuery,groupName,groupDesc,visible,autoApproval);
         }catch(SQLException ex) {
             log.error(ex);
         }

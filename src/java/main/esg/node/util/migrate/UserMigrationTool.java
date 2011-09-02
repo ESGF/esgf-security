@@ -94,10 +94,10 @@ public final class UserMigrationTool {
     //-------------------------------------------------------
     //Remote "Gateway" queries
     //-------------------------------------------------------
-    private static final String sourceUserInfoQuery = "";
-    private static final String sourceGroupInfoQuery = "";
-    private static final String sourceRoleInfoQuery = "";
-    private static final String sourcePermissionInfoQuery = "";
+    private static final String sourceUserInfoQuery = "select firstname, lastname, email, username, password, dn, organization, city, state, country from security.user where username!=''";
+    private static final String sourceGroupInfoQuery = "select g.name as name, g.description as description, g.visible as visible, g.automatic_approval as automatic_approval from security.group as g, security.user as u, security.membership as m, security.role as r where u.username='rootAdmin' and u.id=m.user_id and m.group_id=g.id and m.role_id=r.id and r.name='admin'";
+    private static final String sourceRoleInfoQuery = "select name, description from security.role";
+    private static final String sourcePermissionInfoQuery = "select u.username as uname, g.name as gname, r.name as rname from security.user as u, security.group as g, security.role as r, security.membership as m, security.status as st where u.username not in ('', 'rootAdmin') and m.user_id=u.id and m.group_id=g.id and m.role_id=r.id and m.status_id=st.id and st.name='valid'";
     //-------------------------------------------------------
     
     public UserMigrationTool() { }
@@ -119,9 +119,9 @@ public final class UserMigrationTool {
         String password = props.getProperty("db.password");
 
         //Ex: jdbc:postgresql://pcmdi3.llnl.gov:5432/esgcet
-        String database = props.getProperty("db.database","esgcet");
+        String database = props.getProperty("db.database","gateway-esg");
         String host = props.getProperty("db.host","localhost");
-        String port = props.getProperty("db.port","5432");
+        String port = props.getProperty("db.port","5432"); //or perhaps 8080
         String protocol = props.getProperty("db.protocol","jdbc:postgresql:");
 
         return this.setupSourceResources(protocol,host,port,database,user,password);
@@ -207,6 +207,7 @@ public final class UserMigrationTool {
             public Integer handle(ResultSet rs) throws SQLException{
                 int i=0;
                 while(rs.next()) {
+                    //                                              [name]         [description] 
                     if(UserMigrationTool.this.groupRoleDAO.addRole(rs.getString(1),rs.getString(2))) {
                         i++;
                         log.info("Migrated role #"+i+": "+rs.getString(1));
@@ -232,7 +233,8 @@ public final class UserMigrationTool {
             public Integer handle(ResultSet rs) throws SQLException{
                 int i=0;
                 while(rs.next()) {
-                    if(UserMigrationTool.this.groupRoleDAO.addGroup(rs.getString(1),rs.getString(2))) {
+                    //                                               [name]         [description]    [visible]         [automatic_approval]
+                    if(UserMigrationTool.this.groupRoleDAO.addGroup(rs.getString(1),rs.getString(2), rs.getBoolean(3), rs.getBoolean(4))) {
                         i++;
                         log.info("Migrated group #"+i+": "+rs.getString(1));
                     }
@@ -258,24 +260,24 @@ public final class UserMigrationTool {
                 int i=0;
                 while(rs.next()) {
                     UserInfo userInfo = UserMigrationTool.this.userDAO.getUserById(rs.getString(1));
-                    userInfo.setFirstName(rs.getString(2)).
-                        setMiddleName(rs.getString(3)).
-                        setLastName(rs.getString(4)).
-                        setEmail(rs.getString(5)).
-                        setUserName(rs.getString(6)).
-                        setDn(rs.getString(7)).
-                        setOrganization(rs.getString(8)).
-                        setOrgType(rs.getString(9)).
-                        setCity(rs.getString(10)).
-                        setState(rs.getString(11)).
-                        setCountry(rs.getString(12));
+                    userInfo.setFirstName(rs.getString("firstname")).
+                        //setMiddleName(rs.getString("middlename")).
+                        setLastName(rs.getString("lastname")).
+                        setEmail(rs.getString("email")).
+                        setUserName(rs.getString("username")).
+                        setDn(rs.getString("dn")).
+                        setOrganization(rs.getString("organization")).
+                        //setOrgType(rs.getString("organization_type")).
+                        setCity(rs.getString("city")).
+                        setState(rs.getString("state")).
+                        setCountry(rs.getString("country"));
                     //NOTE: verification token not applicable
                     //Status code msut be set separately... (below) field #13
                     //Password literal must be set separately... (see setPassword - with true boolean, below) field #14
                     
                     UserMigrationTool.this.userDAO.addUser(userInfo);
-                    UserMigrationTool.this.userDAO.setStatusCode(userInfo.getOpenid(),rs.getInt(13)); //statusCode
-                    UserMigrationTool.this.userDAO.setPassword(userInfo.getOpenid(),rs.getString(14),true); //password (literal)
+                    //UserMigrationTool.this.userDAO.setStatusCode(userInfo.getOpenid(),rs.getInt(13)); //statusCode
+                    UserMigrationTool.this.userDAO.setPassword(userInfo.getOpenid(),rs.getString("password"),true); //password (literal)
                     i++;
                     log.info("Migrated User #"+i+": "+userInfo.getUserName()+" --> "+userInfo.getOpenid());
                 }
@@ -299,7 +301,7 @@ public final class UserMigrationTool {
             public Integer handle(ResultSet rs) throws SQLException{
                 int i=0;
                 while(rs.next()) {
-                    //                                                [username]     [groupname]    [rolename]
+                    //                                                [uname]        [gname]        [rname]
                     if(UserMigrationTool.this.userDAO.addPermission(rs.getString(1),rs.getString(2),rs.getString(3))) {
                         i++;
                         log.info("Migrated Permission #"+i+": ["+rs.getString(1)+"] ["+rs.getString(2)+"] ["+rs.getString(3)+"]"); 
