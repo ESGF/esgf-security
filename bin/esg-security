@@ -104,6 +104,10 @@ init() {
     security_authz_service_host=${security_authz_service_host:-${esgf_host:-$(hostname --fqdn)}}
     security_authz_service_port=${security_authz_service_post:-"443"}
     security_authz_service_endpoint=$(echo "https://${security_authz_service_host}$( if ((security_authz_service_port != 443)); then echo ":${security_authz_service_port}"; fi)/esgf-security/saml/soap/secure/authorizationService.htm")
+    
+    security_registration_service_host=${security_registration_service_host:-${esgf_host:-$(hostname --fqdn)}}
+    security_registration_service_port=${security_registration_service_post:-"443"}
+    security_registration_service_endpoint=$(echo "https://${security_registration_service_host}$( if ((security_registration_service_port != 443)); then echo ":${security_registration_service_port}"; fi)/esgf-security/secure/registrationService.htm")
 
     esgf_security_version=${esgf_security_version:-"1.2.8"}
     esgf_security_db_version=${esgf_security_db_version:-"0.1.4"}
@@ -211,6 +215,7 @@ write_security_install_log() {
     write_as_property security_app_home
     write_as_property security_authz_service_endpoint
     write_as_property security_attribute_service_endpoint
+    write_as_property security_registration_service_endpoint
     return 0
 }
 
