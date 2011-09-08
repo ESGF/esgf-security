@@ -65,3 +65,6 @@ Version 1.3.1
 Version 1.4.0
 - Exposed PolicyService to HTTP requests via PolicyServiceController
 - Introduced Registration Service for access control groups membership
+
+Version 1.4.1
+- Configuration changes to ESGFregistry.xml and ESGGpolicies.xml
