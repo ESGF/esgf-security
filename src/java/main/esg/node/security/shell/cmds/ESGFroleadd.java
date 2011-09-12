@@ -102,7 +102,7 @@ private static Log log = LogFactory.getLog(ESGFroleadd.class);
         String rolename = null;
         if(args.length > 0) {
             rolename = args[0];
-            env.getWriter().println("role to delete is: ["+rolename+"]");
+            env.getWriter().println("role to add is: ["+rolename+"]");
             env.getWriter().flush();
         }else {
             throw new esg.common.ESGRuntimeException("You must provide the role name to add");
