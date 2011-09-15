@@ -28,8 +28,8 @@
         <policy resource=".*\/test\/.*" attribute_type="Test Attribute" attribute_value="Admin" action="Write"/>
         -->
 
-        <!-- Test resources are made freely available
-        <policy resource=".*test.*" attribute_type="ANY" attribute_value="" action="Read"/> -->
+        <!-- Test resources are made freely available -->
+        <policy resource=".*test.*" attribute_type="ANY" attribute_value="" action="Read"/>
 
         <!-- Everything is Free 
         <policy resource=".*esg_dataroot.*" attribute_type="ANY" attribute_value="" action="Read"/> -->
