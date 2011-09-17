@@ -209,8 +209,10 @@ ALTER TABLE ONLY "user"
 -- Name: user_username_key; Type: CONSTRAINT; Schema: esgf_security; Owner: -; Tablespace: 
 --
 
-ALTER TABLE ONLY "user"
-    ADD CONSTRAINT user_username_key UNIQUE (username);
+-- ALTER TABLE ONLY "user"
+--     ADD CONSTRAINT user_username_key UNIQUE (username);
+ ALTER TABLE ONLY "user"
+     ADD CONSTRAINT user_openid_key UNIQUE (openid);
 
 
 --
