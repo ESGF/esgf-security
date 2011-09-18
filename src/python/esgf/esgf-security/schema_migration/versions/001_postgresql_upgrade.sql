@@ -29,8 +29,8 @@ CREATE TABLE "group" (
     id integer NOT NULL,
     name character varying(100) NOT NULL,
     description text NOT NULL,
-    visible boolean,
-    automatic_approval boolean
+    visible boolean DEFAULT TRUE,
+    automatic_approval boolean DEFAULT TRUE
 );
 
 
@@ -42,7 +42,7 @@ CREATE TABLE permission (
     user_id integer NOT NULL,
     group_id integer NOT NULL,
     role_id integer NOT NULL,
-    requested boolean DEFAULT FALSE
+    approved boolean DEFAULT FALSE
 );
 
 
