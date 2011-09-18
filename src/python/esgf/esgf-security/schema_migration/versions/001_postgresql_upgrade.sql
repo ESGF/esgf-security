@@ -41,7 +41,8 @@ CREATE TABLE "group" (
 CREATE TABLE permission (
     user_id integer NOT NULL,
     group_id integer NOT NULL,
-    role_id integer NOT NULL
+    role_id integer NOT NULL,
+    requested boolean DEFAULT FALSE
 );
 
 
