@@ -1069,7 +1069,7 @@ public class UserInfoDAO {
                 rootAdmin.
                     setFirstName("Russell").
                     setMiddleName("Ason").
-                    setLastName("Mcgirt").
+                    setLastName("McGirt").
                     setEmail(UserInfoDAO.this.props.getProperty("security.admin.email","rootAdmin@some-esg-node.org")).
                     setOrganization(UserInfoDAO.this.props.getProperty("security.admin.org","ESGF.org")).
                     setCity(UserInfoDAO.this.props.getProperty("security.admin.city","Brooklyn")).
