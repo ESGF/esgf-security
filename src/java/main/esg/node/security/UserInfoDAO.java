@@ -1067,9 +1067,9 @@ public class UserInfoDAO {
             if (!rootAdmin.isValid()) {
                 log.info("Creating rootAdmin user for this node...");
                 rootAdmin.
-                    setFirstName("Gert").
-                    setMiddleName("B").
-                    setLastName("Frobe").
+                    setFirstName("Russell").
+                    setMiddleName("Ason").
+                    setLastName("Mcgirt").
                     setEmail(UserInfoDAO.this.props.getProperty("security.admin.email","rootAdmin@some-esg-node.org")).
                     setOrganization(UserInfoDAO.this.props.getProperty("security.admin.org","ESGF.org")).
                     setCity(UserInfoDAO.this.props.getProperty("security.admin.city","Brooklyn")).
