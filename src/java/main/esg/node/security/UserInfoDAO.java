@@ -134,11 +134,11 @@ public class UserInfoDAO {
         "group id = (SELECT id FROM esgf_security.group WHERE name = ? ) AND "+
         "role_id = (SELECT id FROM esgf_security.role WHERE name = ?)";
     private static final String addPermissionQuery = 
-        "INSERT INTO esgf_security.permission (user_id, group_id, role_id, group_id) "+
+        "INSERT INTO esgf_security.permission (user_id, group_id, role_id, approved) "+
         "VALUES ( ?, "+
         "(SELECT id FROM esgf_security.group WHERE name = ? ), "+
         "(SELECT id FROM esgf_security.role WHERE name = ?), "+
-        "(SELECT automatic_approval FROM group where id = (SELECT id FROM esgf_security.group WHERE name = ? )))";
+        "(SELECT automatic_approval FROM esgf_security.group where id = (SELECT id FROM esgf_security.group WHERE name = ? )))";
     private static final String delPermissionQuery = 
         "DELETE FROM esgf_security.permission "+
         "WHERE user_id = ? "+
