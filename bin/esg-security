@@ -295,6 +295,10 @@ clean_security_webapp_subsystem() {
                 rm -rf ${security_app_home}
                 [ $? != 0 ] && echo "ERROR: Unable to remove ${tomcat_install_dir}/webapps/${security_app_context_root}" && return 1
                 perl -n -i -e'print unless m!webapp:esgf-security!' ${install_manifest}
+                remove_property security_app_home
+                remove_property security_authz_service_endpoint
+                remove_property security_attribute_service_endpoint
+                remove_property security_registration_service_endpoint
             fi
         fi
     fi 
