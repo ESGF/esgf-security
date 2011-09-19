@@ -277,7 +277,12 @@ public class UserInfoCredentialedDAO {
         }
         return userInfoDAO.addPermission(userid,groupName,roleName);
     }
-    
+    public boolean setPermission(int userid, String groupName, String roleName, boolean approved) {
+        if(!checkCredentials()) {
+            throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
+        }
+        return userInfoDAO.setPermission(userid,groupName,roleName,approved);
+    }
     public boolean deletePermission(UserInfo userInfo, String groupName, String roleName) {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");

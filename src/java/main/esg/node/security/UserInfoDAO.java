@@ -128,9 +128,17 @@ public class UserInfoDAO {
         "SELECT g.name, r.name from esgf_security.group as g, esgf_security.role as r, esgf_security.permission as p, esgf_security.user as u "+
         "WHERE p.user_id = u.id and u.openid = ? and p.group_id = g.id and p.role_id = r.id "+
         "ORDER BY g.name";
+    private static final String setPermissionQuery =
+        "UPDATE esgf_security.permission set approved = ? "+
+        "WHERE user_id = ? AND "+
+        "group id = (SELECT id FROM esgf_security.group WHERE name = ? ) AND "+
+        "role_id = (SELECT id FROM esgf_security.role WHERE name = ?)";
     private static final String addPermissionQuery = 
-        "INSERT INTO esgf_security.permission (user_id, group_id, role_id) "+
-        "VALUES ( ?, (SELECT id FROM esgf_security.group WHERE name = ? ), (SELECT id FROM esgf_security.role WHERE name = ?))";
+        "INSERT INTO esgf_security.permission (user_id, group_id, role_id, approved) "+
+        "VALUES ( ?, "+
+        "(SELECT id FROM esgf_security.group WHERE name = ? ), "+
+        "(SELECT id FROM esgf_security.role WHERE name = ?), "+
+        "(SELECT automatic_approval FROM esgf_security.group where id = (SELECT id FROM esgf_security.group WHERE name = ? )))";
     private static final String delPermissionQuery = 
         "DELETE FROM esgf_security.permission "+
         "WHERE user_id = ? "+
@@ -910,13 +918,14 @@ public class UserInfoDAO {
         }
         return this.addPermission(userInfo.getid(),groupName,roleName);
     }
+
     synchronized boolean addPermission(int userid, String groupName, String roleName) {
         int numRowsAffected = -1;
         try{
 
             log.trace("Adding Permission ("+userid+", "+groupName+", "+roleName+") ");
             if(!queryRunner.query(existsPermissionQuery, existsResultSetHandler, userid, groupName, roleName)) {
-                numRowsAffected = queryRunner.update(addPermissionQuery, userid, groupName, roleName);
+                numRowsAffected = queryRunner.update(addPermissionQuery, userid, groupName, roleName, groupName);
                 if (numRowsAffected > 0) {
                     log.trace("[ADDED]"); 
                 }else {
@@ -926,6 +935,27 @@ public class UserInfoDAO {
                 log.trace("[PERMISSION ALREADY EXISTS]");
             }
             
+        }catch(SQLException ex) {
+            log.error(ex);
+            throw new ESGFDataAccessException(ex);
+        }
+        return (numRowsAffected > 0);
+    }
+
+    synchronized boolean setPermission(int userid, String groupName, String roleName, boolean approved) {
+        int numRowsAffected = -1;
+        try{
+            log.trace("Setting Permission ("+userid+", "+groupName+", "+roleName+") --> "+approved);
+            if(queryRunner.query(existsPermissionQuery, existsResultSetHandler, userid, groupName, roleName)) {
+                numRowsAffected = queryRunner.update(setPermissionQuery, approved, userid, groupName, roleName);
+                if (numRowsAffected > 0) {
+                    log.trace("[UPDATED APPROVED STATUS TO: "+approved+"]");
+                }else {
+                    log.warn("Was not able to grant permission ("+userid+",["+groupName+"],["+roleName+"]) to approved = "+approved);
+                }
+            }else {
+                log.trace("[Could not find permission: PERMISSION MUST ALREADY EXIST]");
+            }
         }catch(SQLException ex) {
             log.error(ex);
             throw new ESGFDataAccessException(ex);
@@ -1067,9 +1097,9 @@ public class UserInfoDAO {
             if (!rootAdmin.isValid()) {
                 log.info("Creating rootAdmin user for this node...");
                 rootAdmin.
-                    setFirstName("Gert").
-                    setMiddleName("B").
-                    setLastName("Frobe").
+                    setFirstName("Russell").
+                    setMiddleName("Ason").
+                    setLastName("McGirt").
                     setEmail(UserInfoDAO.this.props.getProperty("security.admin.email","rootAdmin@some-esg-node.org")).
                     setOrganization(UserInfoDAO.this.props.getProperty("security.admin.org","ESGF.org")).
                     setCity(UserInfoDAO.this.props.getProperty("security.admin.city","Brooklyn")).

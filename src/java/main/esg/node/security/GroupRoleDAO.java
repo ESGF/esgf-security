@@ -75,6 +75,10 @@ public class GroupRoleDAO implements Serializable {
     private static final String hasGroupNameQuery =
         "SELECT * from esgf_security.group "+
         "WHERE name = ?";
+    private static final String setAutoApproveGroupQuery =
+        "UPDATE esgf_security.group "+
+        "SET auto_approve = ? "+
+        "WHERE id = ?";
     private static final String updateGroupQuery = 
         "UPDATE esgf_security.group "+
         "SET name=? "+
@@ -82,8 +86,8 @@ public class GroupRoleDAO implements Serializable {
     //private static final String getNextGroupPrimaryKeyValQuery = 
     //    "SELECT NEXTVAL('esgf_security.group_id_seq')";
     private static final String addGroupQuery = 
-        "INSERT INTO esgf_security.group (name, description) "+
-        "VALUES ( ?, ? )";
+        "INSERT INTO esgf_security.group (name, description, visible, automatic_approval) "+
+        "VALUES ( ?, ?, ?, ?)";
     private static final String delGroupQuery =
         "DELETE FROM esgf_security.group where name = ?";
 
@@ -249,9 +253,12 @@ public class GroupRoleDAO implements Serializable {
     }
     
     public boolean addGroup(String groupName) {
-        return addGroup(groupName,"");
+        return addGroup(groupName,"",true,true);
     }
     public synchronized boolean addGroup(String groupName, String groupDesc) {
+        return addGroup(groupName,groupDesc,true,true);
+    }
+    public synchronized boolean addGroup(String groupName, String groupDesc, boolean groupVisible, boolean groupAutoApprove) {
         int groupid = -1;
         int numRowsAffected = -1;
         
@@ -264,7 +271,26 @@ public class GroupRoleDAO implements Serializable {
             
             //If this group does not exist in the database then add (INSERT) a new one
             //groupid = queryRunner.query(getNextGroupPrimaryKeyValQuery, idResultSetHandler);
-            numRowsAffected = queryRunner.update(addGroupQuery,groupName,groupDesc);
+            numRowsAffected = queryRunner.update(addGroupQuery,groupName,groupDesc,groupVisible,groupAutoApprove);
+        }catch(SQLException ex) {
+            log.error(ex);
+        }
+        return (numRowsAffected > 0);
+    }
+    public synchronized boolean setAutoApprove(String groupName, boolean autoApprove) {
+        int groupid = -1;
+        int numRowsAffected = -1;
+
+        try{
+            //Check to see if there is an entry by this name already....
+            groupid = queryRunner.query(hasGroupNameQuery,idResultSetHandler,groupName);
+
+            //If there *is*... then continue on to modifying the value
+            if(groupid < 1) { return false; }
+
+            //If this group does not exist in the database then add (INSERT) a new one
+            //groupid = queryRunner.query(getNextGroupPrimaryKeyValQuery, idResultSetHandler);
+            numRowsAffected = queryRunner.update(setAutoApproveGroupQuery,autoApprove,groupid);
         }catch(SQLException ex) {
             log.error(ex);
         }
