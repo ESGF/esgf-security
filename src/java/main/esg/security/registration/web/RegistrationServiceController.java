@@ -38,11 +38,12 @@ public class RegistrationServiceController {
      * @throws IOException
      * @throws JDOMException
      */
-    @RequestMapping(method = { RequestMethod.POST } )
+    @RequestMapping(method = { RequestMethod.POST, RequestMethod.GET } )
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, JDOMException {
         
         // retrieve XML request parameter
         final String requestXml = request.getParameter(SAMLParameters.HTTP_PARAMETER_XML);
+        if (LOG.isInfoEnabled()) LOG.info("Request XML="+requestXml);
         
         // parse XML
         final String[] reqqpars = RegistrationRequestUtils.deserialize(requestXml);
