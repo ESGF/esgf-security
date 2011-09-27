@@ -22,8 +22,8 @@
                registrationService="https://esg-vm-demo02.ccs.ornl.gov/esgf-security/secure/registrationService.htm" />
     <attribute type="CMIP5 Research" 
                description="Users of CMIP5 datasets for non-commercial purpose only"
-               attributeService="https://esgf-node3.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm"
-               registrationService="https://esgf-node3.llnl.gov/esgf-security/secure/registrationService.htm" 
+               attributeService="https://pcmdi9.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm"
+               registrationService="https://pcmdi9.llnl.gov/esgf-security/secure/registrationService.htm" 
                license="http://jpl-esg.jpl.nasa.gov/climate/ipccResearchLicense.xml"/>
     <attribute type="Test Attribute" 
     		   description="Group of test users"

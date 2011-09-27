@@ -68,3 +68,6 @@ Version 1.4.0
 
 Version 1.4.1
 - Configuration changes to ESGFregistry.xml and ESGGpolicies.xml
+
+Version 1.4.2
+- Changed PCMDI endpoint from esg-node3 to pcmdi9
