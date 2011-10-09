@@ -71,3 +71,6 @@ Version 1.4.1
 
 Version 1.4.2
 - Changed PCMDI endpoint from esg-node3 to pcmdi9
+
+Version 1.4.3
+- Changed roles used in ESGFpolicies.xml to be "user", "publisher" (lower case)
