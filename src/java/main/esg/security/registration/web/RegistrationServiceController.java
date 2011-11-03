@@ -38,7 +38,7 @@ public class RegistrationServiceController {
      * @throws IOException
      * @throws JDOMException
      */
-    @RequestMapping(method = { RequestMethod.POST, RequestMethod.GET } )
+    @RequestMapping(method = { RequestMethod.POST } )
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, JDOMException {
         
         // retrieve XML request parameter
