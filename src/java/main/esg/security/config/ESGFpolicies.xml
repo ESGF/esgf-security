@@ -22,6 +22,9 @@
         <policy resource=".*\/clm\/.*" attribute_type="CLM Data" attribute_value="publisher" action="Write"/>
         <policy resource=".*\/c-lamp\/.*" attribute_type="CLAMP" attribute_value="user" action="Read"/>
         <policy resource=".*\/c-lamp\/.*" attribute_type="CLAMP" attribute_value="publisher" action="Write"/>
+        
+        <!-- PNL access control for CSSEF project -->
+        <policy resource=".*cssef_data.*" attribute_type="CSSEF_PNNL" attribute_value="default" action="Read"/> 
 
         <!-- URLs matching */test/* 
         <policy resource=".*\/test\/.*" attribute_type="Test Attribute" attribute_value="user" action="Read"/>

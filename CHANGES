@@ -74,3 +74,6 @@ Version 1.4.2
 
 Version 1.4.3
 - Changed roles used in ESGFpolicies.xml to be "user", "publisher" (lower case)
+
+Version 1.4.4
+- Inserted PNNL policy statements
