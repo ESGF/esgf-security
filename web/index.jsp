@@ -142,7 +142,7 @@ You can use the form below to register a user in the <b>Test Group</b> only with
 			</tr>
 			<tr>
 				<td align="right"><b>Role</b></td>
-				<td align="left">User<input type="hidden" name="role" value="User"/></td>
+				<td align="left">User<input type="hidden" name="role" value="user"/></td>
 			</tr>
 			<tr>
 				<td align="right" colspan="2"> <input type="submit" value="Submit"  /></td>
