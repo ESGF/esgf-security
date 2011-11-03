@@ -34,7 +34,7 @@
               attributeService="https://esg1-gw.pnl.gov/esgf-security/saml/soap/secure/attributeService.htm"
               description="CSSEF PNNL" 
               registrationService="https://esg1-gw.pnl.gov/esgf-security/secure/registrationService.htm" />
-    <attribute type="Test Attribute" 
+    <attribute type="Test Group" 
     		   description="Group of test users"
                attributeService="https://localhost:8443/esgf-security/saml/soap/secure/attributeService.htm"
                registrationService="https://localhost:8443/esgf-security/secure/registrationService.htm" />

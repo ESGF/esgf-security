@@ -2,7 +2,6 @@ package esg.security.registration.service.impl;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -13,6 +12,7 @@ import esg.common.util.ESGFProperties;
 import esg.node.security.GroupRoleDAO;
 import esg.node.security.UserInfo;
 import esg.node.security.UserInfoCredentialedDAO;
+import esg.security.common.SAMLParameters.RegistrationOutcome;
 import esg.security.registration.service.api.RegistrationService;
 
 /**
@@ -39,15 +39,13 @@ public class RegistrationServiceImpl implements RegistrationService {
     /**
      * {@inheritDoc}
      */
-    public void register(String openid, String group, String role) throws Exception {
-        
+    public RegistrationOutcome register(String openid, String group, String role) throws Exception {
+                
         // check group exists in database
-        List<String[]> entries = groupRoleDAO.getGroupEntry(group);
-        if (entries.size()<=1) throw new Exception("Group not found in database: "+group);
-        
+        if (!groupRoleDAO.isGroupValid(group)) throw new Exception("Group not found in database: "+group);
+         
         // check role exists in database
-        entries = groupRoleDAO.getRoleEntry(role);
-        if (entries.size()<=1) throw new Exception("Role not found in database: "+role);
+        if (!groupRoleDAO.isRoleValid(role)) throw new Exception("Role not found in database: "+role);
         
         // retrieve user, or create new one with empty fields
         final UserInfo userInfo = userInfoDAO.getUserById(openid);
@@ -69,8 +67,24 @@ public class RegistrationServiceImpl implements RegistrationService {
         }
         
         // insert (user, group, role) tuple (if not existing already)
+        RegistrationOutcome outcome = RegistrationOutcome.UNKNOWN;
         boolean created = userInfoDAO.addPermission(userInfo, group, role);
-        if (LOG.isTraceEnabled()) LOG.trace("Permission created="+created);
+        if (created) {             
+            if (groupRoleDAO.isAutomaticApproval(group)) {
+                outcome = RegistrationOutcome.SUCCESS;
+            } else {
+                outcome = RegistrationOutcome.PENDING;
+            }
+        } else {
+            if (userInfoDAO.isPermissionApproved(openid, group, role)) {
+                outcome = RegistrationOutcome.EXISTING;
+            } else {
+                outcome = RegistrationOutcome.PENDING;
+            }
+        }
+        
+        if (LOG.isTraceEnabled()) LOG.trace("Permission created="+created+" outcome="+outcome);
+        return outcome;
         
     }
 

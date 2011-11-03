@@ -1,5 +1,7 @@
 package esg.security.registration.service.api;
 
+import esg.security.common.SAMLParameters.RegistrationOutcome;
+
 /**
  * API for registering users into groups, with given roles.
  * 
@@ -16,7 +18,8 @@ public interface RegistrationService {
      * @param user
      * @param group
      * @param role
+     * @return status code indicating result of registration operation
      */
-    void register(String user, String group, String role) throws Exception;
+    RegistrationOutcome register(String user, String group, String role) throws Exception;
 
 }

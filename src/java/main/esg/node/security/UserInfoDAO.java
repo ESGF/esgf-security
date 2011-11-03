@@ -66,18 +66,18 @@ package esg.node.security;
 import static esg.common.Utils.getFQDN;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import java.sql.ResultSetMetaData;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbutils.QueryRunner;
@@ -159,6 +159,11 @@ public class UserInfoDAO {
         "WHERE user_id = ? "+
         "AND group_id = (SELECT id FROM esgf_security.group WHERE name = ? ) "+
         "AND role_id = (SELECT id FROM esgf_security.role WHERE name = ? )";
+    private static final String isPermissionApprovedQuery = 
+        "SELECT approved FROM esgf_security.permission "+
+        "WHERE user_id = (SELECT id FROM esgf_security.user WHERE openid = ? )"+
+        "AND group_id = (SELECT id FROM esgf_security.group WHERE name = ? ) "+
+        "AND role_id = (SELECT id FROM esgf_security.role WHERE name = ? )";
 
     //Status Queries
     private static final String setStatusCodeQuery = 
@@ -203,6 +208,7 @@ public class UserInfoDAO {
     private ResultSetHandler<String> singleStringResultSetHandler = null;
     private ResultSetHandler<String> passwordQueryHandler = null;
     private ResultSetHandler<List<String[]>> basicResultSetHandler = null;
+    private ResultSetHandler<Boolean> booleanResultSetHandler = null;
 
     private static final String  adminName = "rootAdmin";
     
@@ -248,10 +254,18 @@ public class UserInfoDAO {
     }
     
     public void init() {
+        
         this.idResultSetHandler = new ResultSetHandler<Integer>() {
             public Integer handle(ResultSet rs) throws SQLException {
                 if(!rs.next()) { return -1; }
                 return rs.getInt(1);
+            }
+        };
+        
+        this.booleanResultSetHandler = new ResultSetHandler<Boolean>() {
+            public Boolean handle(ResultSet rs) throws SQLException {
+                if (!rs.next()) { return false; }
+                return rs.getBoolean(1);
             }
         };
         
@@ -940,6 +954,17 @@ public class UserInfoDAO {
             throw new ESGFDataAccessException(ex);
         }
         return (numRowsAffected > 0);
+    }
+    
+    public boolean isPermissionApproved(String userOpenid, String groupName, String roleName) {
+        
+        try {           
+            return queryRunner.query(isPermissionApprovedQuery, booleanResultSetHandler, userOpenid, groupName, roleName);         
+        } catch(SQLException ex) {
+            log.error(ex);
+        }        
+        return false;
+        
     }
 
     synchronized boolean setPermission(int userid, String groupName, String roleName, boolean approved) {

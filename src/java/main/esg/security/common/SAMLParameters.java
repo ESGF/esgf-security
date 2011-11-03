@@ -48,12 +48,16 @@ public interface SAMLParameters {
     public final static String HTTP_PARAMETER_RESOURCE = "resource";
     public final static String HTTP_PARAMETER_ACTION = "action";
     public final static String HTTP_PARAMETER_XML = "xml";
+    
+    public final static String HTTP_PARAMETER_USER = "user";
+    public final static String HTTP_PARAMETER_GROUP = "group";
+    public final static String HTTP_PARAMETER_ROLE = "role";
         
     
     public final static String FREE_RESOURCE_ATTRIBUTE_TYPE = "ANY";
     
     public enum RegistrationOutcome {
-        SUCCESS, PENDING, DENIED
+        UNKNOWN, SUCCESS, PENDING, DENIED, EXISTING
     }
     
     public final static Namespace NAMESPACE_ESGF = Namespace.getNamespace("esgf","http://www.esgf.org/");  
