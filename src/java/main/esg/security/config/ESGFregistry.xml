@@ -24,7 +24,12 @@
                description="Users of CMIP5 datasets for non-commercial purpose only"
                attributeService="https://pcmdi9.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm"
                registrationService="https://pcmdi9.llnl.gov/esgf-security/secure/registrationService.htm" 
-               license="http://jpl-esg.jpl.nasa.gov/climate/ipccResearchLicense.xml"/>
+               license="licenses/ipccResearchLicense.xml"/>
+    <attribute type="CMIP5 Commercial" 
+               description="Users of CMIP5 datasets for commercial purposes"
+               attributeService="https://pcmdi9.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm"
+               registrationService="https://pcmdi9.llnl.gov/esgf-security/secure/registrationService.htm" 
+               license="licenses/ipccCommercialLicense.xml"/>
     <attribute type="CSSEF_PNNL" 
               attributeService="https://esg1-gw.pnl.gov/esgf-security/saml/soap/secure/attributeService.htm"
               description="CSSEF PNNL" 
