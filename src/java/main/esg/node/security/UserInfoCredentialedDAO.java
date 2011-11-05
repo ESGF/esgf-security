@@ -330,6 +330,23 @@ public class UserInfoCredentialedDAO {
     }
     
     //-------------------------------------------------------
+    //User Movement between Groups/Roles Query en mass
+    //-------------------------------------------------------
+
+    public boolean moveAllUsersInGroupTo(String sourceGroupName, String targetGroupName) {
+        if(!checkCredentials()) {
+            throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
+        }
+        return userInfoDAO.moveAllUsersInGroupTo(sourceGroupName, targetGroupName);
+    }
+    public boolean moveAllUsersWithRoleTo(String sourceRoleName, String targetRoleName) {
+        if(!checkCredentials()) {
+            throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
+        }
+        return userInfoDAO.moveAllUsersWithRoleTo(sourceRoleName, targetRoleName);
+    }
+
+    //-------------------------------------------------------
 
     public PasswordEncoder getEncoder() {
         return userInfoDAO.getEncoder();

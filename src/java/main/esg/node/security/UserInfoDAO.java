@@ -165,6 +165,16 @@ public class UserInfoDAO {
         "AND group_id = (SELECT id FROM esgf_security.group WHERE name = ? ) "+
         "AND role_id = (SELECT id FROM esgf_security.role WHERE name = ? )";
 
+    //User Group / Role movement...
+    private static final String moveAllUsersInGroupQuery =
+        "UPDATE esgf_security.permission "+
+        "SET role_id=(SELECT id FROM esgf_security.group WHERE name = ?) "+
+        "where role_id=(SELECT id FROM esgf_security.group WHERE name = ?)";
+    private static final String moveAllUsersWithRoleQuery = 
+        "UPDATE esgf_security.permission "+
+        "SET role_id=(SELECT id FROM esgf_security.role WHERE name = ?) "+
+        "where role_id=(SELECT id FROM esgf_security.role WHERE name = ?)";
+
     //Status Queries
     private static final String setStatusCodeQuery = 
         "UPDATE esgf_security.user SET status_code = ? "+
@@ -1070,6 +1080,38 @@ public class UserInfoDAO {
         return (numRowsAffected > 0);
     }
     
+    //-------------------------------------------------------
+    //User Movement between Groups/Roles Query en mass
+    //-------------------------------------------------------
+
+    public synchronized boolean moveAllUsersInGroupTo(String sourceGroupName, String targetGroupName) {
+        int numRowsAffected = -1;
+        try{
+            log.trace("\"Moving\" All Users in Group ["+sourceGroupName+"] to Group ["+targetGroupName+"] ");
+            numRowsAffected = queryRunner.update(moveAllUsersInGroupQuery, targetGroupName, sourceGroupName);
+            if (numRowsAffected > 0) log.trace("[OK]"); else log.trace("[FAIL]");
+            log.trace(numRowsAffected+" permission entries updated");
+        }catch(SQLException ex) {
+            log.error(ex);
+            throw new ESGFDataAccessException(ex);
+        }
+        return (numRowsAffected > 0);
+    }
+
+    public synchronized boolean moveAllUsersWithRoleTo(String sourceRoleName, String targetRoleName) {
+        int numRowsAffected = -1;
+        try{
+            log.trace("\"Moving\" All Users With Role ["+sourceRoleName+"] to Role ["+targetRoleName+"] ");
+            numRowsAffected = queryRunner.update(moveAllUsersWithRoleQuery, targetRoleName, sourceRoleName);
+            if (numRowsAffected > 0) log.trace("[OK]"); else log.trace("[FAIL]");
+            log.trace(numRowsAffected+" permission entries updated");
+        }catch(SQLException ex) {
+            log.error(ex);
+            throw new ESGFDataAccessException(ex);
+        }
+        return (numRowsAffected > 0);
+    }
+
 
     //-------------------------------------------------------
     //Users "Show" Query
