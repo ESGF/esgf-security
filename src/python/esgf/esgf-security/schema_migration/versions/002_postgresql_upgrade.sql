@@ -9,18 +9,18 @@ SET search_path = esgf_security, pg_catalog;
 -- Upgrade to increase standard_name size
 --
 
-ALTER TABLE user
-  ADD COLUMN notification_code integer DEFAULT 0;
+ALTER TABLE esgf_security.user ADD COLUMN notification_code integer DEFAULT 0;
 
 
 --
 -- Name: notification_types; Type: TABLE; Schema: esgf_security; Owner: -; Tablespace: 
 --
 
-CREATE TABLE notification_types (
+CREATE TABLE esgf_security.notification_types (
     code integer NOT NULL,
     name character varying(100) NOT NULL,
     description text NOT NULL
+);
 
 --
 -- Initialize notification types

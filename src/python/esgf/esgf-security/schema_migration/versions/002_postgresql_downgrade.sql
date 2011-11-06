@@ -5,7 +5,7 @@
 
 SET search_path = esgf_security, pg_catalog;
 
-ALTER TABLE user 
+ALTER TABLE esgf_security.user 
 DROP COLUMN notification_code RESTRICT;
 
 --
