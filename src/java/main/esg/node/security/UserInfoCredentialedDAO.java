@@ -189,10 +189,13 @@ public class UserInfoCredentialedDAO {
     }
     
     public boolean setPassword(String openid, String newPassword) {
+        return this.setPassword(openid,newPassword,false);
+    }
+    public boolean setPassword(String openid, String newPassword, boolean literal) {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
-        return userInfoDAO.setPassword(openid,newPassword);
+        return userInfoDAO.setPassword(openid,newPassword,literal);
     }
     
     //Given a password, check to see if that password matches what is
@@ -212,7 +215,7 @@ public class UserInfoCredentialedDAO {
     public boolean changePassword(String openid, String queryPassword, String newPassword) {
         return userInfoDAO.changePassword(openid,queryPassword,newPassword);
     }
-    
+
     //-------------------------------------------------------
     //Account Status Manipulations
     //-------------------------------------------------------
@@ -282,12 +285,19 @@ public class UserInfoCredentialedDAO {
         }
         return userInfoDAO.addPermission(userid,groupName,roleName);
     }
+    public boolean addPermission(String userName, String groupName, String roleName) {
+        if(!checkCredentials()) {
+            throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
+        }
+        return userInfoDAO.addPermission(userName,groupName,roleName);
+    }
     public boolean setPermission(int userid, String groupName, String roleName, boolean approved) {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return userInfoDAO.setPermission(userid,groupName,roleName,approved);
     }
+    
     public boolean deletePermission(UserInfo userInfo, String groupName, String roleName) {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");

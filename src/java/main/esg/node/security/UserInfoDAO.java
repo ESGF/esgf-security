@@ -139,6 +139,12 @@ public class UserInfoDAO {
         "(SELECT id FROM esgf_security.group WHERE name = ? ), "+
         "(SELECT id FROM esgf_security.role WHERE name = ?), "+
         "(SELECT automatic_approval FROM esgf_security.group where id = (SELECT id FROM esgf_security.group WHERE name = ? )))";
+    private static final String addPermissionQueryByUsername = 
+        "INSERT INTO esgf_security.permission (user_id, group_id, role_id) "+
+        "VALUES ( "+
+        "(SELECT id FROM esgf_security.user WHERE username = ? ), "+
+        "(SELECT id FROM esgf_security.group WHERE name = ? ), "+
+        "(SELECT id FROM esgf_security.role WHERE name = ?))";
     private static final String delPermissionQuery = 
         "DELETE FROM esgf_security.permission "+
         "WHERE user_id = ? "+
@@ -174,7 +180,11 @@ public class UserInfoDAO {
         "UPDATE esgf_security.permission "+
         "SET role_id=(SELECT id FROM esgf_security.role WHERE name = ?) "+
         "where role_id=(SELECT id FROM esgf_security.role WHERE name = ?)";
-
+    private static final String existsPermissionQueryByUsername = 
+        "SELECT COUNT(*) FROM esgf_security.permission "+
+        "WHERE user_id = (SELECT id FROM esgf_security.user WHERE username = ? ) "+
+        "AND group_id = (SELECT id FROM esgf_security.group WHERE name = ? ) "+
+        "AND role_id = (SELECT id FROM esgf_security.role WHERE name = ? )";
     //Status Queries
     private static final String setStatusCodeQuery = 
         "UPDATE esgf_security.user SET status_code = ? "+
@@ -805,16 +815,21 @@ public class UserInfoDAO {
     }
     
     synchronized boolean setPassword(String openid, String newPassword) {
+        return setPassword(openid,newPassword,false);
+    }
+
+    public synchronized boolean setPassword(String openid, String newPassword, boolean literal) {
         if((newPassword == null) || (newPassword.equals(""))) return false; //should throw and esgf exception here with meaningful message
         int numRowsAffected = -1;
         try{
-            numRowsAffected = queryRunner.update(setPasswordQuery, encoder.encrypt(newPassword), openid);
+            numRowsAffected = queryRunner.update(setPasswordQuery, (literal ? newPassword : encoder.encrypt(newPassword)), openid);
         }catch(SQLException ex) {
             log.error(ex);
             throw new ESGFDataAccessException(ex);
         }
         return (numRowsAffected > 0);
     }
+
     
     //Given a password, check to see if that password matches what is
     //in the database for this user (openid)
@@ -857,7 +872,7 @@ public class UserInfoDAO {
         }
         return isSuccessful;
     }
-
+    
     //-------------------------------------------------------
     //Account Status Manipulations
     //-------------------------------------------------------
@@ -965,7 +980,28 @@ public class UserInfoDAO {
         }
         return (numRowsAffected > 0);
     }
-    
+    public boolean addPermission(String userName, String groupName, String roleName) {
+        int numRowsAffected = -1;
+        try{
+
+            log.trace("Adding Permission ("+userName+", "+groupName+", "+roleName+") ");
+            if(!queryRunner.query(existsPermissionQueryByUsername, existsResultSetHandler, userName, groupName, roleName)) {
+                numRowsAffected = queryRunner.update(addPermissionQueryByUsername, userName, groupName, roleName);
+                if (numRowsAffected > 0) {
+                    log.trace("[ADDED]"); 
+                }else {
+                    log.warn("Was not able to add permission (["+userName+"],["+groupName+"],["+roleName+"]) to database, already EXISTS?? Possible intra database concurrency issue!!!");
+                }
+            }else {
+                log.trace("[PERMISSION ALREADY EXISTS]");
+            }
+        }catch(SQLException ex) {
+            log.error(ex);
+            throw new ESGFDataAccessException(ex);
+        }
+        return (numRowsAffected > 0);
+    }
+
     public boolean isPermissionApproved(String userOpenid, String groupName, String roleName) {
         
         try {           
@@ -976,7 +1012,7 @@ public class UserInfoDAO {
         return false;
         
     }
-
+    
     synchronized boolean setPermission(int userid, String groupName, String roleName, boolean approved) {
         int numRowsAffected = -1;
         try{
@@ -997,7 +1033,7 @@ public class UserInfoDAO {
         }
         return (numRowsAffected > 0);
     }
-
+    
     boolean deletePermission(UserInfo userInfo, String groupName, String roleName) {
         if(!userInfo.isValid()) { 
             //TODO: Throw an exception here
