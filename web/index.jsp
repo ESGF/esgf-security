@@ -87,6 +87,69 @@ You can use the form below to send a properly formatted query to the Authorizati
 	</form>
 </div>
 
+<hr/>
+<h2>ESFG Policy Service</h2>
+<p/>
+The Policy Service is used to determine the Policy Attributes required to execute an action on a given resource.
+<p/>
+<b>Policy Service relative URL</b>: <a href='<c:url value="/secure/policyService.htm" />'>/secure/policyService.htm</a>
+<br/>
+NOTE: clicking on the above link will verify whether the service is up, but will cause an HTTP/500 error because the service must be invoked with the proper HTTP parameters.
+<br/>
+You can use the form below to send a properly formatted query to the Policy Service.
+<p/>
+<div class="box">
+	<form name="testPolicyServiceForm" method="post" action='<c:url value="/secure/policyService.htm"/>'>
+		<table align="center">
+			<caption>Policy Service Test Form</caption>
+			<tr>
+				<td align="right"><b>Resource</b></td>
+				<td align="left"><input type="text" name="resource" value="/test/myfile" size="100"/></td>
+			</tr>
+			<tr>
+				<td align="right"><b>Action</b></td>
+				<td align="left"><input type="text" name="action" value="Read" size="100"/></td>
+			</tr>
+			<tr>
+				<td align="right" colspan="2"> <input type="submit" value="Submit"  /></td>
+			</tr>
+		</table>
+	</form>
+</div>
+
+<hr/>
+<h2>ESFG Registration Service</h2>
+<p/>
+The Registration Service is used to register a user in a group with a specific role.
+<p/>
+<b>Policy Service relative URL</b>: <a href='<c:url value="/secure/registrationService.htm" />'>/secure/registrationService.htm.htm</a>
+<br/>
+NOTE: clicking on the above link will verify whether the service is up, but will cause an HTTP/500 error because the service must be invoked with the proper HTTP parameters.
+<br/>
+You can use the form below to register a user in the <b>Test Group</b> only with <b>User</b> role. Any other registration attempt will result in an error.
+<p/>
+<div class="box">
+	<form name="testRegistrationServiceForm" method="get" action='<c:url value="/secure/registrationService.htm"/>'>
+		<table align="center">
+			<caption>Registration Service Test Form</caption>
+			<tr>
+				<td align="right"><b>User</b></td>
+				<td align="left"><input type="text" name="user" value="https://localhost:8443/esgf-idp/openid/testUser" size="100"/></td>
+			</tr>
+			<tr>
+				<td align="right"><b>Group</b></td>
+				<td align="left">Test Group<input type="hidden" name="group" value="Test Group"/></td>
+			</tr>
+			<tr>
+				<td align="right"><b>Role</b></td>
+				<td align="left">User<input type="hidden" name="role" value="user"/></td>
+			</tr>
+			<tr>
+				<td align="right" colspan="2"> <input type="submit" value="Submit"  /></td>
+			</tr>		
+		</table>		
+	</form>
+</div>
 </tiles:putAttribute>
 
 </tiles:insertDefinition>

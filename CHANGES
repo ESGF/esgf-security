@@ -61,3 +61,20 @@ Version 1.3.0
 
 Version 1.3.1
 - Included support for parsing list of LAS servers IP addresses from las_serevers.xml
+
+Version 1.4.0
+- Exposed PolicyService to HTTP requests via PolicyServiceController
+- Introduced Registration Service for access control groups membership
+
+Version 1.4.1
+- Configuration changes to ESGFregistry.xml and ESGGpolicies.xml
+
+Version 1.4.2
+- Changed PCMDI endpoint from esg-node3 to pcmdi9
+
+Version 1.4.3
+- Changed roles used in ESGFpolicies.xml to be "user", "publisher" (lower case)
+
+Version 1.4.4
+- Inserted PNNL policy statements
+- Inserted support for registering with a group that does NOT have automatic approval (user registration is pending).

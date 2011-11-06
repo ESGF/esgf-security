@@ -41,16 +41,16 @@ package esg.node.security;
 
 import java.io.Serializable;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import java.sql.ResultSetMetaData;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbutils.QueryRunner;
@@ -75,6 +75,10 @@ public class GroupRoleDAO implements Serializable {
     private static final String hasGroupNameQuery =
         "SELECT * from esgf_security.group "+
         "WHERE name = ?";
+    private static final String setAutoApproveGroupQuery =
+        "UPDATE esgf_security.group "+
+        "SET auto_approve = ? "+
+        "WHERE id = ?";
     private static final String updateGroupQuery = 
         "UPDATE esgf_security.group "+
         "SET name=? "+
@@ -82,8 +86,8 @@ public class GroupRoleDAO implements Serializable {
     //private static final String getNextGroupPrimaryKeyValQuery = 
     //    "SELECT NEXTVAL('esgf_security.group_id_seq')";
     private static final String addGroupQuery = 
-        "INSERT INTO esgf_security.group (name, description) "+
-        "VALUES ( ?, ? )";
+        "INSERT INTO esgf_security.group (name, description, visible, automatic_approval) "+
+        "VALUES ( ?, ?, ?, ?)";
     private static final String delGroupQuery =
         "DELETE FROM esgf_security.group where name = ?";
 
@@ -106,6 +110,9 @@ public class GroupRoleDAO implements Serializable {
     //-------------------
     private static final String showGroupQuery =
         "SELECT * FROM esgf_security.group WHERE name = ?";
+    
+    private static final String isAutomaticApprovalQuery =
+        "SELECT automatic_approval FROM esgf_security.group WHERE name = ?";
 
     private static final String showGroupsQuery =
         "SELECT * FROM esgf_security.group";
@@ -133,6 +140,7 @@ public class GroupRoleDAO implements Serializable {
     private ResultSetHandler<Map<String,Set<String>>> userGroupsResultSetHandler = null;
     private ResultSetHandler<Integer> idResultSetHandler = null;
     private ResultSetHandler<List<String[]>> basicResultSetHandler = null;
+    private ResultSetHandler<Boolean> booleanResultSetHandler = null;
 
     //uses default values in the DatabaseResource to connect to database
     public GroupRoleDAO() {
@@ -164,12 +172,20 @@ public class GroupRoleDAO implements Serializable {
     }
 
     public void init() {
+        
         this.idResultSetHandler = new ResultSetHandler<Integer>() {
 		    public Integer handle(ResultSet rs) throws SQLException {
                 if(!rs.next()) { return -1; }
                 return rs.getInt(1);
 		    }
 		};
+		
+        this.booleanResultSetHandler = new ResultSetHandler<Boolean>() {
+            public Boolean handle(ResultSet rs) throws SQLException {
+                if (!rs.next()) { return false; }
+                return rs.getBoolean(1);
+            }
+        };
         
         userGroupsResultSetHandler = new ResultSetHandler<Map<String,Set<String>>>() {
             Map<String,Set<String>> groups = null;    
@@ -249,9 +265,12 @@ public class GroupRoleDAO implements Serializable {
     }
     
     public boolean addGroup(String groupName) {
-        return addGroup(groupName,"");
+        return addGroup(groupName,"",true,true);
     }
     public synchronized boolean addGroup(String groupName, String groupDesc) {
+        return addGroup(groupName,groupDesc,true,true);
+    }
+    public synchronized boolean addGroup(String groupName, String groupDesc, boolean groupVisible, boolean groupAutoApprove) {
         int groupid = -1;
         int numRowsAffected = -1;
         
@@ -264,7 +283,51 @@ public class GroupRoleDAO implements Serializable {
             
             //If this group does not exist in the database then add (INSERT) a new one
             //groupid = queryRunner.query(getNextGroupPrimaryKeyValQuery, idResultSetHandler);
-            numRowsAffected = queryRunner.update(addGroupQuery,groupName,groupDesc);
+            numRowsAffected = queryRunner.update(addGroupQuery,groupName,groupDesc,groupVisible,groupAutoApprove);
+        }catch(SQLException ex) {
+            log.error(ex);
+        }
+        return (numRowsAffected > 0);
+    }
+    
+    public boolean isGroupValid(String groupName) {
+
+        try {           
+            int groupid = queryRunner.query(hasGroupNameQuery,idResultSetHandler,groupName);
+            if (groupid > 0) { return true; }            
+        } catch(SQLException ex) {
+            log.error(ex);
+        }        
+        return false;
+     
+    }
+    
+    public boolean isRoleValid(String roleName) {
+
+        try {           
+            int roleid = queryRunner.query(hasRoleNameQuery,idResultSetHandler, roleName);
+            if (roleid > 0) { return true; }            
+        } catch(SQLException ex) {
+            log.error(ex);
+        }        
+        return false;
+     
+    }
+    
+    public synchronized boolean setAutoApprove(String groupName, boolean autoApprove) {
+        int groupid = -1;
+        int numRowsAffected = -1;
+
+        try{
+            //Check to see if there is an entry by this name already....
+            groupid = queryRunner.query(hasGroupNameQuery,idResultSetHandler,groupName);
+
+            //If there *is*... then continue on to modifying the value
+            if(groupid < 1) { return false; }
+
+            //If this group does not exist in the database then add (INSERT) a new one
+            //groupid = queryRunner.query(getNextGroupPrimaryKeyValQuery, idResultSetHandler);
+            numRowsAffected = queryRunner.update(setAutoApproveGroupQuery,autoApprove,groupid);
         }catch(SQLException ex) {
             log.error(ex);
         }
@@ -375,6 +438,19 @@ public class GroupRoleDAO implements Serializable {
         }
         return new ArrayList<String[]>();
     }
+    
+    public boolean isAutomaticApproval(String groupname) {
+        boolean result = false;
+        try{
+            log.trace("Query is: "+isAutomaticApprovalQuery);
+            result = queryRunner.query(isAutomaticApprovalQuery, booleanResultSetHandler, groupname);
+        }catch(SQLException ex) {
+            log.error(ex);
+        }catch(Throwable t) {
+            log.error(t);
+        }
+        return result;
+    }
 
     public List<String[]> getGroupEntries() {
         try{
@@ -411,7 +487,7 @@ public class GroupRoleDAO implements Serializable {
     public List<String[]> getRoleEntry(String rolename) {
         try{
             log.trace("Fetching raw role data from database table");
-            List<String[]> results = queryRunner.query(showGroupQuery, basicResultSetHandler);
+            List<String[]> results = queryRunner.query(showRoleQuery, basicResultSetHandler, rolename);
             log.trace("Query is: "+showRoleQuery);
             assert (null != results);
             if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }

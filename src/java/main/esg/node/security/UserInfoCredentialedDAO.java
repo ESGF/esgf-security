@@ -35,10 +35,11 @@
 package esg.node.security;
 
 import java.util.Properties;
-import esg.security.utils.encryption.PasswordEncoder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import esg.security.utils.encryption.PasswordEncoder;
 
 /**
    Description:
@@ -119,6 +120,10 @@ public class UserInfoCredentialedDAO {
     }
     public UserInfo getUserById(String id) {
         return userInfoDAO.getUserById(id);
+    }
+    
+    public boolean isPermissionApproved(String userOpenid, String groupName, String roleName) {
+        return userInfoDAO.isPermissionApproved(userOpenid, groupName, roleName);
     }
     
     public UserInfo refresh(UserInfo userInfo) {
@@ -277,7 +282,12 @@ public class UserInfoCredentialedDAO {
         }
         return userInfoDAO.addPermission(userid,groupName,roleName);
     }
-    
+    public boolean setPermission(int userid, String groupName, String roleName, boolean approved) {
+        if(!checkCredentials()) {
+            throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
+        }
+        return userInfoDAO.setPermission(userid,groupName,roleName,approved);
+    }
     public boolean deletePermission(UserInfo userInfo, String groupName, String roleName) {
         if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");

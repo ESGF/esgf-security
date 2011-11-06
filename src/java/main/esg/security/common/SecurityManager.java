@@ -110,9 +110,9 @@ public class SecurityManager {
 	    // load requested public and private key
 	    final KeyStore.PrivateKeyEntry pkEntry = (KeyStore.PrivateKeyEntry)ks.getEntry(alias, new KeyStore.PasswordProtection(password.toCharArray()));
 	    if (pkEntry==null) {
-	        throw new KeyStoreException("Cannot load entry with alias="+alias+" password="+password+" from keystore="+keystore.getAbsolutePath());
+	        throw new KeyStoreException("Cannot load entry with alias="+alias+" password="+(password == null ? "[NULL]" : "[*******]")+" from keystore="+keystore.getAbsolutePath());
 	    } else {
-    	    if (LOG.isInfoEnabled()) LOG.info("Used alias="+alias+" password="+password+" to load keystore entry="+pkEntry.toString());
+                if (LOG.isDebugEnabled()) LOG.info("Used alias="+alias+" password="+(password == null ? "[NULL]" : "[*******]")+" to load keystore entry="+pkEntry.toString());
     	    final PrivateKey myPrivateKey = pkEntry.getPrivateKey();
     	    final PublicKey myPublicKey = pkEntry.getCertificate().getPublicKey();
     	    if (LOG.isDebugEnabled()) LOG.debug("Private key="+myPrivateKey.toString());
