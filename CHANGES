@@ -78,3 +78,6 @@ Version 1.4.3
 Version 1.4.4
 - Inserted PNNL policy statements
 - Inserted support for registering with a group that does NOT have automatic approval (user registration is pending).
+
+Version 1.4.6
+- Inserting polocies for AVISO and REMSS
