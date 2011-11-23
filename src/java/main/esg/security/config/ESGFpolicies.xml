@@ -30,6 +30,15 @@
         
         <!-- PNL access control for CSSEF project -->
         <policy resource=".*cssef_data.*" attribute_type="CSSEF_PNNL" attribute_value="default" action="Read"/> 
+        
+        <!-- NOAA datasets -->
+        <policy resource=".*oc_gis_downscaling.*" attribute_type="ANY" attribute_value="" action="Read"/>
+        <policy resource=".*oc_gis_downscaling.*" attribute_type="NOAA ESRL" attribute_value="publisher" action="Write"/>
+        <policy resource=".*maurer.*" attribute_type="ANY" attribute_value="" action="Read"/>
+        <policy resource=".*maurer.*" attribute_type="NOAA ESRL" attribute_value="publisher" action="Write"/>
+        <policy resource=".*dycore_2008.*" attribute_type="ANY" attribute_value="" action="Read"/>
+        <policy resource=".*dycore_2008.*" attribute_type="NOAA ESRL" attribute_value="publisher" action="Write"/>
+        
 
         <!-- URLs matching */test/* 
         <policy resource=".*\/test\/.*" attribute_type="Test Attribute" attribute_value="user" action="Read"/>
