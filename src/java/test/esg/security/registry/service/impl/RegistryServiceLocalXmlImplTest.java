@@ -40,15 +40,22 @@ public class RegistryServiceLocalXmlImplTest {
 	
 	
 	@Test
-	public void testGetAttributeService() throws Exception {
+	public void testGetAttributeAndRegistrationServices() throws Exception {
 	    
 	    final RegistryService service = new RegistryServiceLocalXmlImpl(ESGF_ATS);
 		
-		Assert.assertTrue(service.getAttributeServices("CMIP5 Research").contains( new URL("https://esg-datanode.jpl.nasa.gov/esgf-security/saml/soap/secure/attributeService.htm")));
-	    Assert.assertTrue(service.getAttributeServices("CMIP5 Research").contains( new URL("https://esgf-node1.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm")));
-		Assert.assertTrue(service.getAttributeServices("NASA OBS").contains( new URL("https://esg-datanode.jpl.nasa.gov/esgf-security/saml/soap/secure/attributeService.htm")));
-		Assert.assertTrue(service.getAttributeServices("ORNL OBS").contains( new URL("https://esgf-node1.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm")));
-		
+	    // double endpoints
+		Assert.assertTrue(service.getAttributeServices("CMIP5 Research").contains( new URL("https://pcmdi9.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm")));
+        Assert.assertTrue(service.getAttributeServices("CMIP5 Research").contains( new URL("https://pcmdi3.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm")));
+        Assert.assertTrue(service.getRegistrationServices("CMIP5 Research").contains( new URL("https://pcmdi9.llnl.gov/esgf-security/secure/registrationService.htm")));
+        Assert.assertTrue(service.getRegistrationServices("CMIP5 Research").contains( new URL("https://pcmdi3.llnl.gov/esgf-security/secure/registrationService.htm")));
+        
+        Assert.assertTrue(service.getAttributeServices("NASA OBS").contains( new URL("https://esg-datanode.jpl.nasa.gov/esgf-security/saml/soap/secure/attributeService.htm")));
+        Assert.assertTrue(service.getRegistrationServices("NASA OBS").contains( new URL("https://esg-datanode.jpl.nasa.gov/esgf-security/secure/registrationService.htm")));
+
+        // no registration service
+        Assert.assertTrue(service.getAttributeServices("wheel").contains( new URL("https://localhost/esgf-security/saml/soap/secure/attributeService.htm")));
+
 	}
 	
 	@Test(expected=UnknownPolicyAttributeTypeException.class)
@@ -58,6 +65,14 @@ public class RegistryServiceLocalXmlImplTest {
 		service.getAttributeServices("DoesNotExist");	
 		
 	}
+	
+    @Test(expected=UnknownPolicyAttributeTypeException.class)
+    public void testGetRegistrationServiceForUnsubscribableType() throws Exception {
+        
+        final RegistryService service = new RegistryServiceLocalXmlImpl(ESGF_ATS);
+        service.getRegistrationServices("wheel");   
+        
+    }
 	
     @Test
     public void testGetIdentityProviders() throws Exception {

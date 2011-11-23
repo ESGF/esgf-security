@@ -1,9 +1,27 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ats_whitelist xmlns="http://www.esgf.org/whitelist">
-    <attribute type="NASA OBS" service="https://esg-datanode.jpl.nasa.gov/esgf-security/saml/soap/secure/attributeService.htm"/>
-    <attribute type="ORNL OBS" service="https://esg-datanode.jpl.nasa.gov/esgf-security/saml/soap/secure/attributeService.htm"/>
-    <attribute type="CMIP5 Research" service="https://esg-datanode.jpl.nasa.gov/esgf-security/saml/soap/secure/attributeService.htm"/>
-    <attribute type="NASA OBS" service="https://esgf-node1.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm"/>
-    <attribute type="ORNL OBS" service="https://esgf-node1.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm"/>
-    <attribute type="CMIP5 Research" service="https://esgf-node1.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm"/>
+
+ <attribute type="NASA OBS" 
+    		   attributeService="https://esg-datanode.jpl.nasa.gov/esgf-security/saml/soap/secure/attributeService.htm"
+               description="NASA Observations" 
+               registrationService="https://esg-datanode.jpl.nasa.gov/esgf-security/secure/registrationService.htm" />
+    <attribute type="ARM"
+    		   description="Atmospheric Radiation Measurements"
+               attributeService="https://esg-vm-demo02.ccs.ornl.gov/esgf-security/saml/soap/secure/attributeService.htm"
+               registrationService="https://esg-vm-demo02.ccs.ornl.gov/esgf-security/secure/registrationService.htm" />
+    <!-- Note: two alternate endpoints for CMIP5 Research attribute -->
+    <attribute type="CMIP5 Research" 
+               description="Users of CMIP5 datasets for non-commercial purpose only"
+               attributeService="https://pcmdi9.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm"
+               registrationService="https://pcmdi9.llnl.gov/esgf-security/secure/registrationService.htm" 
+               license="licenses/ipccResearchLicense.xml"/>
+    <attribute type="CMIP5 Research" 
+               description="Users of CMIP5 datasets for non-commercial purpose only"
+               attributeService="https://pcmdi3.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm"
+               registrationService="https://pcmdi3.llnl.gov/esgf-security/secure/registrationService.htm" 
+               license="licenses/ipccResearchLicense.xml"/>    
+    <attribute type="wheel"
+               attributeService="https://localhost/esgf-security/saml/soap/secure/attributeService.htm"
+               description="Local Administrators" />
+               
 </ats_whitelist>

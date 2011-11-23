@@ -32,6 +32,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.StringUtils;
 
 import esg.security.registry.service.api.RegistryService;
 import esg.security.registry.service.api.UnknownPolicyAttributeTypeException;
@@ -207,18 +208,27 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
     		    		
     		// parse Attribute Services section
     		if (root.getName().equals("ats_whitelist")) {
-    		    
+    		        		    
         		for (final Object attr : root.getChildren("attribute", NS)) {
         			final Element _attr = (Element)attr;
         			final String aType = _attr.getAttributeValue("type");
-        			if (_attributeServices.get(aType) == null) {
-        			    _attributeServices.put(aType, new ArrayList<URL>());
+        			
+        			// attribute service
+        			if (StringUtils.hasText(_attr.getAttributeValue("attributeService"))) {
+                        if (_attributeServices.get(aType) == null) {
+                            _attributeServices.put(aType, new ArrayList<URL>());
+                        }
+        			    _attributeServices.get(aType).add(new URL(_attr.getAttributeValue("attributeService")));
         			}
-        			if (_registrationServices.get(aType) == null) {
-        			    _registrationServices.put(aType, new ArrayList<URL>());
-                    }
-        			_attributeServices.get(aType).add(new URL(_attr.getAttributeValue("attributeService")));
-        			_registrationServices.get(aType).add(new URL(_attr.getAttributeValue("registrationService")));
+        			
+        			// registration service
+        			if (StringUtils.hasText(_attr.getAttributeValue("registrationService"))) {
+                        if (_registrationServices.get(aType) == null) {
+                            _registrationServices.put(aType, new ArrayList<URL>());
+                        }
+        			    _registrationServices.get(aType).add(new URL(_attr.getAttributeValue("registrationService")));
+        			}
+        			
         		}
         		
         	// parse Identity Providers section
