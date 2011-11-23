@@ -42,4 +42,10 @@
     		   description="Group of test users"
                attributeService="https://localhost:8443/esgf-security/saml/soap/secure/attributeService.htm"
                registrationService="https://localhost:8443/esgf-security/secure/registrationService.htm" />
+               
+    <!-- local attribute service serving local administrators group -->
+    <attribute type="wheel"
+               attributeService="https://localhost/esgf-security/saml/soap/secure/attributeService.htm"
+               description="Local Administrators" />
+   
 </ats_whitelist>

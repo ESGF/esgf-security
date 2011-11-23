@@ -39,7 +39,9 @@
         <policy resource=".*dycore_2008.*" attribute_type="ANY" attribute_value="" action="Read"/>
         <policy resource=".*dycore_2008.*" attribute_type="NOAA ESRL" attribute_value="publisher" action="Write"/>
         
-
+        <!-- Admin-restricted applications -->
+        <policy resource=".*esgf-dashboard.*" attribute_type="wheel" attribute_value="super" action="Read"/>
+        
         <!-- URLs matching */test/* 
         <policy resource=".*\/test\/.*" attribute_type="Test Attribute" attribute_value="user" action="Read"/>
         <policy resource=".*\/test\/.*" attribute_type="Test Attribute" attribute_value="publisher" action="Write"/>
