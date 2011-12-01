@@ -47,7 +47,7 @@
 *   SUCH DAMAGE.                                                           *
 *                                                                          *
 ***************************************************************************/
-package esg.idp.util.migrate;
+package esg.node.util.migrate;
 
 import java.util.Properties;
 import java.sql.ResultSet;
