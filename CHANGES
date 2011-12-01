@@ -81,3 +81,6 @@ Version 1.4.4
 
 Version 1.4.6
 - Inserting polocies for AVISO and REMSS
+
+Version 1.4.7
+- Inserting support for authorization versus local "wheel" group
