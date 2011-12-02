@@ -84,3 +84,6 @@ Version 1.4.6
 
 Version 1.4.7
 - Inserting support for authorization versus local "wheel" group
+
+Version 1.4.9
+- Upgrding the registry facility to allow for one or more XML endpoint files
