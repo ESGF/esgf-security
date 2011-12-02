@@ -302,7 +302,7 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
 	    
 	    long lastModified = 0;
 	    for (final File file : registryFiles) {
-	        if (file.lastModified()>lastModified) {
+	        if (file.exists() && file.lastModified()>lastModified) {
 	            lastModified = file.lastModified();
 	        }
 	    }
