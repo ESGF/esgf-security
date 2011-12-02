@@ -184,8 +184,9 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
 
     /**
 	 * Method to parse the XML registry files into the local map of services.
-	 * This method prints a warning but does not crash if any of the files cannot be parsed
-	 * (since presumably the older version of the registry can still be used).
+	 * 
+	 * This method prints a warning but does not stop or crashes if any of the files cannot be parsed,
+	 * using the service endpoints from all the other files.
 	 * 
 	 * @param file
 	 */
@@ -193,17 +194,17 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
 	    
 	    // update only if files have changed
 	    if (this.getLastModified()>registryFilesLastModTime) {
-	    
-    		try {
-    		    
-    		    final Map<String, List<URL>> _attributeServices = new HashMap<String, List<URL>>();
-    		    final Map<String, List<URL>> _registrationServices = new HashMap<String, List<URL>>();
-    		    final List<URL> _identityProviders = new ArrayList<URL>();
-    		    final List<URL> _authorizationServices = new ArrayList<URL>();
-    		    final List<String> _lasServers = new ArrayList<String>();
-    		    
-    		    // loop over registry files
-    		    for (final File registryFile : registryFiles) {   		        
+	        		    
+		    final Map<String, List<URL>> _attributeServices = new HashMap<String, List<URL>>();
+		    final Map<String, List<URL>> _registrationServices = new HashMap<String, List<URL>>();
+		    final List<URL> _identityProviders = new ArrayList<URL>();
+		    final List<URL> _authorizationServices = new ArrayList<URL>();
+		    final List<String> _lasServers = new ArrayList<String>();
+		    
+		    // loop over registry files
+		    for (final File registryFile : registryFiles) {   
+    		        
+		        try {
     		
             		final Document doc = Parser.toJDOM(registryFile.getAbsolutePath(), false);
             		final Element root = doc.getRootElement();
@@ -261,31 +262,31 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
                     if (registryFile.lastModified() > registryFilesLastModTime) {
                         registryFilesLastModTime = registryFile.lastModified();
                     }
-                    if (LOG.isInfoEnabled()) LOG.info("Loaded information from registry file="+registryFile.getAbsolutePath());
-    		
-    		    }
-        		
-                // update local data storage
-                synchronized (attributeServices) {
-                    attributeServices = _attributeServices;
-                }
-                synchronized (registrationServices) {
-                    registrationServices = _registrationServices;
-                }
-                synchronized (identityProviders) {
-                    identityProviders = _identityProviders;             
-                }
-                synchronized (authorizationServices) {
-                    authorizationServices = _authorizationServices;             
-                }
-                synchronized (lasServers) {
-                    lasServers = _lasServers;             
-                }
-                        		
-    		} catch(Exception e) {
-    		    LOG.warn("Error parsing registry XML file: "+e.getMessage());
-    		}
-    		
+                    if (LOG.isInfoEnabled()) LOG.info("Loaded information from registry file="+registryFile.getAbsolutePath());    
+		        
+	          } catch(Exception e) {
+	                LOG.warn("Error parsing registry XML file: "+e.getMessage());
+	          }
+	          
+		    }
+       		
+            // update local data storage
+            synchronized (attributeServices) {
+                attributeServices = _attributeServices;
+            }
+            synchronized (registrationServices) {
+                registrationServices = _registrationServices;
+            }
+            synchronized (identityProviders) {
+                identityProviders = _identityProviders;             
+            }
+            synchronized (authorizationServices) {
+                authorizationServices = _authorizationServices;             
+            }
+            synchronized (lasServers) {
+                lasServers = _lasServers;             
+            }
+                        		    		
     		// print content
     		this.print();
 		
