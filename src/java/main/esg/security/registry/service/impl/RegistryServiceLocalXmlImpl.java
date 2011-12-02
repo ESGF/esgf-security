@@ -39,8 +39,8 @@ import esg.security.registry.service.api.UnknownPolicyAttributeTypeException;
 import esg.security.utils.xml.Parser;
 
 /**
- * Implementation of {@link RegistryService} backed up by a local XML configuration file.
- * This implementation automatically reloads its data if the underlying file has been updated.
+ * Implementation of {@link RegistryService} backed up by one or more local XML configuration files.
+ * This implementation automatically reloads its data if any of the underlying files have been updated.
  * 
  * @author luca.cinquini
  */
@@ -65,9 +65,11 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
 	private final static Namespace NS = Namespace.getNamespace("http://www.esgf.org/whitelist");
 	private final static Namespace NS2 = Namespace.getNamespace("http://www.esgf.org/registry");
 	
-	// local XML file holding the registry data
-	private final File registryFile;
-	private long registryFileLastModTime = 0L; // Unix Epoch
+	// local XML files holding the registry data
+	private final List<File> registryFiles = new ArrayList<File>();
+
+	// latest modification time of all registry files
+	long registryFilesLastModTime = 0L; // Unix Epoch
 	
 	private final Log LOG = LogFactory.getLog(this.getClass());
 
@@ -76,14 +78,18 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
 	 * @param xmlFilePath
 	 * @throws Exception
 	 */
-	public RegistryServiceLocalXmlImpl(final String xmlFilePath) throws Exception {
+	public RegistryServiceLocalXmlImpl(final String xmlFilePaths) throws Exception {
 		
-	    // absolute path
-	    if (xmlFilePath.startsWith("/")) {
-	        registryFile = new File(xmlFilePath);
-	    // classpath relative path
-	    } else {
-	        registryFile = new ClassPathResource(xmlFilePath).getFile();
+	    // loop over all configured local XML files
+	    for (final String xmlFilePath : xmlFilePaths.split("\\s*,\\s*")) {
+	        if (LOG.isInfoEnabled()) LOG.info("Parsing XML file:"+xmlFilePath);
+    	    // absolute path
+    	    if (xmlFilePath.startsWith("/")) {
+    	        registryFiles.add( new File(xmlFilePath) );
+    	    // classpath relative path
+    	    } else {
+    	        registryFiles.add( new ClassPathResource(xmlFilePath).getFile() );
+    	    }
 	    }
 		update();
 	
@@ -94,7 +100,7 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
 	 */
 	@Override
     public long getLastUpdateTime() {
-        return registryFileLastModTime;
+        return registryFilesLastModTime;
     }
 
 	/**
@@ -104,9 +110,7 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
 	public List<URL> getAttributeServices(final String attributeType) throws UnknownPolicyAttributeTypeException {
 	    
 	    // reload registry if needed
-	    if (registryFile.lastModified()>registryFileLastModTime) {
-	        update();        
-	    } 
+	    update();        
 	    
 	    // look up the attribute type 
 		if (attributeServices.containsKey(attributeType)) {
@@ -124,9 +128,7 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
     public List<URL> getRegistrationServices(final String attributeType) throws UnknownPolicyAttributeTypeException {
         
         // reload registry if needed
-        if (registryFile.lastModified()>registryFileLastModTime) {
-            update();        
-        } 
+        update();        
         
         // look up the attribute type 
         if (registrationServices.containsKey(attributeType)) {
@@ -144,9 +146,7 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
     public List<URL> getAuthorizationServices()  {
         
         // reload registry if needed
-        if (registryFile.lastModified()>registryFileLastModTime) {
-            update();        
-        } 
+        update();        
         
         // return white list
         return Collections.unmodifiableList(authorizationServices);
@@ -161,9 +161,7 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
     public List<URL> getIdentityProviders() {
 	    
         // reload registry if needed
-        if (registryFile.lastModified()>registryFileLastModTime) {
-            update();        
-        }
+        update();        
         
         // return white list
         return Collections.unmodifiableList(identityProviders);
@@ -177,9 +175,7 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
     public List<String> getLasServers() {
         
         // reload registry if needed
-        if (registryFile.lastModified()>registryFileLastModTime) {
-            update();        
-        }
+        update();        
         
         // return white list
         return Collections.unmodifiableList(lasServers);
@@ -187,102 +183,130 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
     }
 
     /**
-	 * Method to parse the XML registry into the local map.
-	 * This method prints a warning but does not crash if the file cannot be parsed
+	 * Method to parse the XML registry files into the local map of services.
+	 * This method prints a warning but does not crash if any of the files cannot be parsed
 	 * (since presumably the older version of the registry can still be used).
 	 * 
 	 * @param file
 	 */
 	public void update() {
 	    
-		try {
-		    
-		    final Map<String, List<URL>> _attributeServices = new HashMap<String, List<URL>>();
-		    final Map<String, List<URL>> _registrationServices = new HashMap<String, List<URL>>();
-		    final List<URL> _identityProviders = new ArrayList<URL>();
-		    final List<URL> _authorizationServices = new ArrayList<URL>();
-		    final List<String> _lasServers = new ArrayList<String>();
-		    
-    		final Document doc = Parser.toJDOM(registryFile.getAbsolutePath(), false);
-    		final Element root = doc.getRootElement();
-    		    		
-    		// parse Attribute Services section
-    		if (root.getName().equals("ats_whitelist")) {
-    		        		    
-        		for (final Object attr : root.getChildren("attribute", NS)) {
-        			final Element _attr = (Element)attr;
-        			final String aType = _attr.getAttributeValue("type");
-        			
-        			// attribute service
-        			if (StringUtils.hasText(_attr.getAttributeValue("attributeService"))) {
-                        if (_attributeServices.get(aType) == null) {
-                            _attributeServices.put(aType, new ArrayList<URL>());
-                        }
-        			    _attributeServices.get(aType).add(new URL(_attr.getAttributeValue("attributeService")));
-        			}
-        			
-        			// registration service
-        			if (StringUtils.hasText(_attr.getAttributeValue("registrationService"))) {
-                        if (_registrationServices.get(aType) == null) {
-                            _registrationServices.put(aType, new ArrayList<URL>());
-                        }
-        			    _registrationServices.get(aType).add(new URL(_attr.getAttributeValue("registrationService")));
-        			}
-        			
-        		}
-        		
-        	// parse Identity Providers section
-    		} else if (root.getName().equals("idp_whitelist")) {
+	    // update only if files have changed
+	    if (this.getLastModified()>registryFilesLastModTime) {
+	    
+    		try {
     		    
-    		    for (final Object value : root.getChildren("value", NS)) {
-    		        final Element element = (Element)value;
-    		        _identityProviders.add( new URL(element.getText()) );
+    		    final Map<String, List<URL>> _attributeServices = new HashMap<String, List<URL>>();
+    		    final Map<String, List<URL>> _registrationServices = new HashMap<String, List<URL>>();
+    		    final List<URL> _identityProviders = new ArrayList<URL>();
+    		    final List<URL> _authorizationServices = new ArrayList<URL>();
+    		    final List<String> _lasServers = new ArrayList<String>();
+    		    
+    		    // loop over registry files
+    		    for (final File registryFile : registryFiles) {   		        
+    		
+            		final Document doc = Parser.toJDOM(registryFile.getAbsolutePath(), false);
+            		final Element root = doc.getRootElement();
+            		    		
+            		// parse Attribute Services section
+            		if (root.getName().equals("ats_whitelist")) {
+            		        		    
+                		for (final Object attr : root.getChildren("attribute", NS)) {
+                			final Element _attr = (Element)attr;
+                			final String aType = _attr.getAttributeValue("type");
+                			
+                			// attribute service
+                			if (StringUtils.hasText(_attr.getAttributeValue("attributeService"))) {
+                                if (_attributeServices.get(aType) == null) {
+                                    _attributeServices.put(aType, new ArrayList<URL>());
+                                }
+                			    _attributeServices.get(aType).add(new URL(_attr.getAttributeValue("attributeService")));
+                			}
+                			
+                			// registration service
+                			if (StringUtils.hasText(_attr.getAttributeValue("registrationService"))) {
+                                if (_registrationServices.get(aType) == null) {
+                                    _registrationServices.put(aType, new ArrayList<URL>());
+                                }
+                			    _registrationServices.get(aType).add(new URL(_attr.getAttributeValue("registrationService")));
+                			}
+                			
+                		}
+                		
+                	// parse Identity Providers section
+            		} else if (root.getName().equals("idp_whitelist")) {
+            		    
+            		    for (final Object value : root.getChildren("value", NS)) {
+            		        final Element element = (Element)value;
+            		        _identityProviders.add( new URL(element.getText()) );
+            		    }
+            		    
+            		// parse Authorization Services section
+            		} else if (root.getName().equals("azs_whitelist")) {
+            		    
+                        for (final Object value : root.getChildren("value", NS)) {
+                            final Element element = (Element)value;
+                            _authorizationServices.add( new URL(element.getText()) );
+                        }
+            		    
+                    // parse LAS servers section
+            		} else if (root.getName().equals("las_servers")) {
+                        for (final Object obj : root.getChildren("las_server", NS2)) {
+                            final Element element = (Element)obj;
+                            _lasServers.add( element.getAttributeValue("ip") );
+                        }
+            		    
+            		}
+            		
+                    if (registryFile.lastModified() > registryFilesLastModTime) {
+                        registryFilesLastModTime = registryFile.lastModified();
+                    }
+                    if (LOG.isInfoEnabled()) LOG.info("Loaded information from registry file="+registryFile.getAbsolutePath());
+    		
     		    }
-    		    
-    		// parse Authorization Services section
-    		} else if (root.getName().equals("azs_whitelist")) {
-    		    
-                for (final Object value : root.getChildren("value", NS)) {
-                    final Element element = (Element)value;
-                    _authorizationServices.add( new URL(element.getText()) );
+        		
+                // update local data storage
+                synchronized (attributeServices) {
+                    attributeServices = _attributeServices;
                 }
-    		    
-            // parse LAS servers section
-    		} else if (root.getName().equals("las_servers")) {
-                for (final Object obj : root.getChildren("las_server", NS2)) {
-                    final Element element = (Element)obj;
-                    _lasServers.add( element.getAttributeValue("ip") );
+                synchronized (registrationServices) {
+                    registrationServices = _registrationServices;
                 }
-    		    
+                synchronized (identityProviders) {
+                    identityProviders = _identityProviders;             
+                }
+                synchronized (authorizationServices) {
+                    authorizationServices = _authorizationServices;             
+                }
+                synchronized (lasServers) {
+                    lasServers = _lasServers;             
+                }
+                        		
+    		} catch(Exception e) {
+    		    LOG.warn("Error parsing registry XML file: "+e.getMessage());
     		}
     		
-            // update local data storage
-            synchronized (attributeServices) {
-                attributeServices = _attributeServices;
-            }
-            synchronized (registrationServices) {
-                registrationServices = _registrationServices;
-            }
-            synchronized (identityProviders) {
-                identityProviders = _identityProviders;             
-            }
-            synchronized (authorizationServices) {
-                authorizationServices = _authorizationServices;             
-            }
-            synchronized (lasServers) {
-                lasServers = _lasServers;             
-            }
-            registryFileLastModTime = registryFile.lastModified();
-            
-            if (LOG.isInfoEnabled()) LOG.info("Loaded information from registry file="+registryFile.getAbsolutePath());
-    		
-		} catch(Exception e) {
-		    LOG.warn("Error parsing registry XML file: "+e.getMessage());
-		}
+    		// print content
+    		this.print();
 		
-		// print content
-		this.print();
+	    }
 		
+	}
+	
+	/**
+	 * Method to return the last update time of all registry files
+	 * @return
+	 */
+	private long getLastModified() {
+	    
+	    long lastModified = 0;
+	    for (final File file : registryFiles) {
+	        if (file.lastModified()>lastModified) {
+	            lastModified = file.lastModified();
+	        }
+	    }
+	    return lastModified;
+	    
 	}
 		
 	/**
