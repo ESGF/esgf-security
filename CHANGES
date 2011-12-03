@@ -90,3 +90,6 @@ Version 1.4.9
 
 Version 1.5.0
 - Registry facility supports retrieval of shard endpoints for Solr search
+
+Version 1.5.1
+- Preserving order of the shards.

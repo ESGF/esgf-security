@@ -281,6 +281,7 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
                         for (final Object obj : root.getChildren("value", NS2)) {
                             final Element element = (Element)obj;
                             _shards.add( element.getText() );
+                            LOG.info("Added shard: "+  element.getText());
                         }
                         
                     }
