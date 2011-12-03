@@ -23,8 +23,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -60,8 +62,10 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
     
     // local storage for LAS servers IP addresses
     private List<String> lasServers = new ArrayList<String>();
-	
-	
+    
+    // local storage for Solr shards
+    private Set<String> shards = new HashSet<String>();
+
 	private final static Namespace NS = Namespace.getNamespace("http://www.esgf.org/whitelist");
 	private final static Namespace NS2 = Namespace.getNamespace("http://www.esgf.org/registry");
 	
@@ -181,6 +185,20 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
         return Collections.unmodifiableList(lasServers);
         
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<String> getShards() {
+        
+        // reload registry if needed
+        update();        
+        
+        // return white list
+        return Collections.unmodifiableSet(shards);
+        
+    }
 
     /**
 	 * Method to parse the XML registry files into the local map of services.
@@ -257,7 +275,14 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
                             _lasServers.add( element.getAttributeValue("ip") );
                         }
             		    
-            		}
+                    // parse Solr shards section
+                    } else if (root.getName().equals("shards")) {
+                        for (final Object obj : root.getChildren("value", NS2)) {
+                            final Element element = (Element)obj;
+                            shards.add( element.getText() );
+                        }
+                        
+                    }
             		
                     if (registryFile.lastModified() > registryFilesLastModTime) {
                         registryFilesLastModTime = registryFile.lastModified();

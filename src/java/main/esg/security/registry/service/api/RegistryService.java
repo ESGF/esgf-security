@@ -20,6 +20,7 @@ package esg.security.registry.service.api;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Set;
 
 import esg.security.attr.service.api.SAMLAttributeService;
 
@@ -61,6 +62,12 @@ public interface RegistryService {
      * @return
      */
     List<String> getLasServers();
+    
+    /**
+     * Method to return a set of Solr shards for distributed search.
+     * @return
+     */
+    Set<String> getShards();
 	
 	/**
 	 * Method to return the last update time, in milliseconds from the epoch.

@@ -37,6 +37,7 @@ public class RegistryServiceLocalXmlImplTest {
 	private static String ESGF_IDP = "esg/security/registry/service/data/esgf_idp.xml";
 	private static String ESGF_AZS = "esg/security/registry/service/data/esgf_azs.xml";
 	private static String LAS_SERVERS = "esg/security/registry/service/data/las_servers.xml";
+	private static String ESGF_SHARDS = "esg/security/registry/service/data/esgf_shards.xml";
 	
 	
 	@Test
@@ -80,6 +81,15 @@ public class RegistryServiceLocalXmlImplTest {
         final RegistryService service = new RegistryServiceLocalXmlImpl(ESGF_IDP);
         
         Assert.assertTrue(service.getIdentityProviders().contains( new URL("https://esgf-node1.llnl.gov/esgf-idp/idp/openidServer.htm")) );
+        
+    }
+    
+    @Test
+    public void testGetShards() throws Exception {
+        
+        final RegistryService service = new RegistryServiceLocalXmlImpl(ESGF_SHARDS);
+        
+        Assert.assertTrue(service.getShards().contains( "esg-datanode.jpl.nasa.gov:8983/solr") );
         
     }
     

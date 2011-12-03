@@ -86,4 +86,7 @@ Version 1.4.7
 - Inserting support for authorization versus local "wheel" group
 
 Version 1.4.9
-- Upgrding the registry facility to allow for one or more XML endpoint files
+- Upgrading the registry facility to allow for one or more XML endpoint files
+
+Version 1.5.0
+- Regitry facility supports retrieval of shard endpoints for Solr search
