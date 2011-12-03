@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -63,8 +64,9 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
     // local storage for LAS servers IP addresses
     private List<String> lasServers = new ArrayList<String>();
     
-    // local storage for Solr shards
-    private Set<String> shards = new HashSet<String>();
+    // local storage for Solr 
+    // NOTE: preserve shards order!
+    private Set<String> shards = new LinkedHashSet<String>();
 
 	private final static Namespace NS = Namespace.getNamespace("http://www.esgf.org/whitelist");
 	private final static Namespace NS2 = Namespace.getNamespace("http://www.esgf.org/registry");
@@ -218,7 +220,7 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
 		    final List<URL> _identityProviders = new ArrayList<URL>();
 		    final List<URL> _authorizationServices = new ArrayList<URL>();
 		    final List<String> _lasServers = new ArrayList<String>();
-		    final Set<String> _shards = new HashSet<String>();
+		    final Set<String> _shards = new LinkedHashSet<String>();
 		    
 		    // loop over registry files
 		    for (final File registryFile : registryFiles) {   
