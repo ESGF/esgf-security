@@ -23,11 +23,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -66,7 +64,7 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
     
     // local storage for Solr 
     // NOTE: preserve shards order!
-    private Set<String> shards = new LinkedHashSet<String>();
+    private LinkedHashSet<String> shards = new LinkedHashSet<String>();
 
 	private final static Namespace NS = Namespace.getNamespace("http://www.esgf.org/whitelist");
 	private final static Namespace NS2 = Namespace.getNamespace("http://www.esgf.org/registry");
@@ -192,13 +190,13 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
      * {@inheritDoc}
      */
     @Override
-    public Set<String> getShards() {
+    public LinkedHashSet<String> getShards() {
         
         // reload registry if needed
         update();        
         
         // return white list
-        return Collections.unmodifiableSet(shards);
+        return shards;
         
     }
 
@@ -220,7 +218,7 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
 		    final List<URL> _identityProviders = new ArrayList<URL>();
 		    final List<URL> _authorizationServices = new ArrayList<URL>();
 		    final List<String> _lasServers = new ArrayList<String>();
-		    final Set<String> _shards = new LinkedHashSet<String>();
+		    final LinkedHashSet<String> _shards = new LinkedHashSet<String>();
 		    
 		    // loop over registry files
 		    for (final File registryFile : registryFiles) {   

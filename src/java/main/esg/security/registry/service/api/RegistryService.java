@@ -19,8 +19,8 @@
 package esg.security.registry.service.api;
 
 import java.net.URL;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import esg.security.attr.service.api.SAMLAttributeService;
 
@@ -64,10 +64,10 @@ public interface RegistryService {
     List<String> getLasServers();
     
     /**
-     * Method to return a set of Solr shards for distributed search.
+     * Method to return an ordered set of Solr shards for distributed search.
      * @return
      */
-    Set<String> getShards();
+    LinkedHashSet<String> getShards();
 	
 	/**
 	 * Method to return the last update time, in milliseconds from the epoch.
