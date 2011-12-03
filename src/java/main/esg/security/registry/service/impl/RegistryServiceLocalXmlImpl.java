@@ -218,6 +218,7 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
 		    final List<URL> _identityProviders = new ArrayList<URL>();
 		    final List<URL> _authorizationServices = new ArrayList<URL>();
 		    final List<String> _lasServers = new ArrayList<String>();
+		    final Set<String> _shards = new HashSet<String>();
 		    
 		    // loop over registry files
 		    for (final File registryFile : registryFiles) {   
@@ -279,7 +280,7 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
                     } else if (root.getName().equals("shards")) {
                         for (final Object obj : root.getChildren("value", NS2)) {
                             final Element element = (Element)obj;
-                            shards.add( element.getText() );
+                            _shards.add( element.getText() );
                         }
                         
                     }
@@ -311,7 +312,9 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
             synchronized (lasServers) {
                 lasServers = _lasServers;             
             }
-                        		    		
+            synchronized (shards) {
+                shards = _shards;             
+            }                        		    		
     		// print content
     		this.print();
 		
