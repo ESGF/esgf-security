@@ -12,6 +12,8 @@
         <!-- NASA-JPL access control -->
         <policy resource=".*NASA-JPL.*" attribute_type="NASA OBS" attribute_value="user" action="Read"/>
         <policy resource=".*NASA-JPL.*" attribute_type="NASA OBS" attribute_value="publisher" action="Write"/>
+        <policy resource=".*NASA-GSFC.*" attribute_type="NASA OBS" attribute_value="user" action="Read"/>
+        <policy resource=".*NASA-GSFC.*" attribute_type="NASA OBS" attribute_value="publisher" action="Write"/>
         <policy resource=".*AVISO.*" attribute_type="NASA OBS" attribute_value="user" action="Read"/>
         <policy resource=".*AVISO.*" attribute_type="NASA OBS" attribute_value="publisher" action="Write"/>
         <policy resource=".*REMSS.*" attribute_type="NASA OBS" attribute_value="user" action="Read"/>
