@@ -278,7 +278,7 @@ public class RegistryServiceLocalXmlImpl implements RegistryService {
             		    
                     // parse Solr shards section
                     } else if (root.getName().equals("shards")) {
-                        for (final Object obj : root.getChildren("value", NS2)) {
+                        for (final Object obj : root.getChildren("value", NS)) {
                             final Element element = (Element)obj;
                             _shards.add( element.getText() );
                             LOG.info("Added shard: "+  element.getText());

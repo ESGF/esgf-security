@@ -93,3 +93,6 @@ Version 1.5.0
 
 Version 1.5.1
 - Preserving order of the shards.
+
+Version 1.5.2
+- Changed the namespace of the shards file.
