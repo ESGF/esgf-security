@@ -64,7 +64,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.Properties;
-import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.logging.Log;
@@ -85,7 +86,9 @@ public class PolicyGleaner {
     private static final String policyFile = "esgf_policies.xml";
     private String policyPath = null;
     private Properties props = null;
+    private String stringOutput = "<oops>";
 
+    private Set<PolicyWrapper> policySet = null;
     private Policies myPolicy = null;
     private boolean dirty = false;
 
@@ -104,6 +107,8 @@ public class PolicyGleaner {
         }
         // /usr/local/tomcat/webapps/esgf-security/WEB-INF/classes/esg/security/config/
         policyPath = props.getProperty("security.app.home",".")+File.separator+"WEB-INF"+File.separator+"classes"+File.separator+"esg"+File.separator+"security"+File.separator+"config"+File.separator;
+
+        policySet = new HashSet<PolicyWrapper>();
     }
 
 
@@ -117,7 +122,10 @@ public class PolicyGleaner {
             Unmarshaller u = jc.createUnmarshaller();
             JAXBElement<Policies> root = u.unmarshal(new StreamSource(new File(filename)),Policies.class);
             myPolicy = root.getValue();
-            dirty=false;
+            int count = 0;
+            for(Policy policy : myPolicy.getPolicy()) { policySet.add(new PolicyWrapper(policy)); count++; } //dedup
+            log.trace("Unmarshalled ["+myPolicy.getPolicy().size()+"] policies - Inspected ["+count+"] polices - resulted in ["+policySet.size()+"] policies");
+            dirty=true;
         }catch(Exception e) {
             throw new ESGFPolicyException("Unable to properly load local policy from ["+filename+"]", e);
         }
@@ -151,13 +159,133 @@ public class PolicyGleaner {
     //Policy manipulation methods
     //--------------------------
 
+    public PolicyGleaner addPolicy(String resource, String groupName, String roleName, String action) {
+        dirty=true;
+        Policy p = new Policy();
+        p.setResource(resource);
+        p.setAttributeType(groupName);
+        p.setAttributeValue(roleName);
+        p.setAction(action);
+        policySet.add(new PolicyWrapper(p));
+        return this;
+    }
 
+    public PolicyGleaner removePolicy(String resource, String groupName, String roleName, String action) {
+        dirty=true;
+        Policy p = new Policy();
+        p.setResource(resource);
+        p.setAttributeType(groupName);
+        p.setAttributeValue(roleName);
+        p.setAction(action);
+        policySet.remove(new PolicyWrapper(p));
+        return this;
+    }
+
+    public PolicyGleaner removeAllForGroup(String groupName) {
+        dirty=true;
+        log.trace("Removing all policies with group = "+groupName);
+        Set<PolicyWrapper> delSet = new HashSet<PolicyWrapper>();
+        for(PolicyWrapper policyWrapper : policySet) {
+            if(policyWrapper.getPolicy().getAttributeType().equals(groupName)) {
+                delSet.add(policyWrapper);
+                log.trace("Removing policy: "+policyWrapper);
+            }
+        }
+        if(policySet.removeAll(delSet)) { log.trace("ok"); } else { log.trace("nope"); }
+        return this;
+    }
+
+    public PolicyGleaner remoteAllForRole(String roleName) {
+        dirty=true;
+        log.trace("Removing all policies with role = "+roleName);
+        Set<PolicyWrapper> delSet = new HashSet<PolicyWrapper>();
+        for(PolicyWrapper policyWrapper : policySet) {
+            if(policyWrapper.getPolicy().getAttributeValue().equals(roleName)) {
+                delSet.add(policyWrapper);
+                log.trace("Removing policy: "+policyWrapper);
+            }
+        }
+        if(policySet.removeAll(delSet)) { log.trace("ok"); } else { log.trace("nope"); }
+        return this;
+    }
+
+    public PolicyGleaner removeAllForAction(String action) {
+        dirty=true;
+        log.trace("Removing all policies with action = "+action);
+        Set<PolicyWrapper> delSet = new HashSet<PolicyWrapper>();
+        for(PolicyWrapper policyWrapper : policySet) {
+            if(policyWrapper.getPolicy().getAction().equals(action)) {
+                delSet.add(policyWrapper);
+                log.trace("Removing policy: "+policyWrapper);
+            }
+        }
+        if(policySet.removeAll(delSet)) { log.trace("ok"); } else { log.trace("nope"); }
+        return this;
+    }
+
+    public PolicyGleaner commit() {
+        dirty=true;
+        myPolicy.getPolicy().clear();
+        for(PolicyWrapper policyWrapper : policySet) {
+            log.trace("preparing to commit: \n"+policyWrapper);
+            myPolicy.getPolicy().add(policyWrapper.getPolicy());
+        }
+        log.trace("commit done");
+        return this;
+    }
+    
+    public int size() { return policySet.size(); }
+    public PolicyGleaner clear() { policySet.clear(); myPolicy.getPolicy().clear(); return this; }
+
+    public String toString() { return this.toString(false); }
+    public String toString(boolean force) {
+        if(dirty || force) {
+            StringBuffer sb = new StringBuffer("Policies: ");
+            for(PolicyWrapper policyWrapper : policySet) {
+                sb.append(policyWrapper.toString());
+            }
+            stringOutput = sb.toString();
+        }
+        dirty=false;
+        return stringOutput;
+    }
+    
+    class PolicyWrapper {
+        Policy policy = null;
+        final String outputString;
+        PolicyWrapper(Policy policy) {
+            this.policy = policy;
+            StringBuffer sb = new StringBuffer("policy: ");
+            sb.append("["+policy.getResource()+"] [");
+            sb.append("g["+policy.getAttributeType()+"] [");
+            sb.append("r["+policy.getAttributeValue()+"] [");
+            sb.append("a["+policy.getAction()+"]");
+            outputString = sb.toString();
+        }
+
+        Policy getPolicy() { return policy; }
+        
+        public boolean equals(Object o) {
+            if(!(o instanceof PolicyWrapper)) return false;
+            return outputString.equals(o.toString());
+        }
+        public int hashCode() {
+            return outputString.hashCode();
+        }
+        public String toString() {
+            return outputString;
+        }
+    }
 
     //--------------------------
     //Main: For quick testing...
     //--------------------------
     public static void main(String[] args) {
         PolicyGleaner pGleaner = null;
+
+        //pGleaner.add(".*test.*", "superGroup", "boss", "Write");
+        //pGleaner.commit().savePolicyAs("test_policy.out");
+
         if(args.length > 0) {
             if(args[0].equals("load")) {
                 System.out.println(args[0]+"ing...");
