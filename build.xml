@@ -293,20 +293,22 @@ Builds the project via ant (obviously).
       ************************************************************
     -->
 
-  <target name="gen_jaxb" depends="deps" 
-	  description="(Generates Java Objects from XML schema)">
-    <mkdir dir="${jaxb_gen_src_dir}"/>
-    <xjc package="${jaxb_gen_package}"
-	 destdir="${src_dir}"
-	 removeOldOutput="yes"
-	 readonly="yes">
+  <target name="gen_jaxb" depends="deps,gen_jaxb_security"
+          description="(Generates Java Objects from XML schema(s))"/>
+
+  <target name="gen_jaxb_security" depends="deps">
+    <mkdir dir="${jaxb_gen_src_dir}/security"/>
+    <xjc package="${jaxb_gen_package}.security"
+         destdir="${src_dir}"
+         removeOldOutput="yes"
+         readonly="yes">
       <classpath refid="main_classpath"/>
-      <schema dir="${jaxb_xsd_dir}" includes="*.xsd"/>
-      <produces dir="${jaxb_gen_src_dir}" includes="*.java" />
+      <schema dir="${jaxb_xsd_dir}/security" includes="*.xsd"/>
+      <produces dir="${jaxb_gen_src_dir}/security" includes="*.java" />
     </xjc>
   </target>
 
-  <target name="make" depends="deps" 
+  <target name="make" depends="gen_jaxb" 
 	  description="(Java compiles all the main source code)">
     <echo message="Java compiling ${module}..."/> 
     
