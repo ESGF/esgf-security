@@ -90,7 +90,7 @@ public class PolicyGleaner {
 
     private Set<PolicyWrapper> policySet = null;
     private Policies myPolicy = null;
-    private boolean dirty = false;
+    private boolean dirty = true;
 
 
     public PolicyGleaner() { this(null); }
@@ -149,7 +149,6 @@ public class PolicyGleaner {
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             m.marshal(policy, new FileOutputStream(policyFileLocation));
             success = true;
-            dirty=false;
         }catch(Exception e) {
             log.error(e);
         }
@@ -240,8 +239,10 @@ public class PolicyGleaner {
 
     public String toString() { return this.toString(false); }
     public String toString(boolean force) {
+        log.info("dirty = "+dirty);
+        log.info("force = "+force);
         if(dirty || force) {
-            StringBuffer sb = new StringBuffer("Policies: ");
+            StringBuffer sb = new StringBuffer("Policies:\n");
             for(PolicyWrapper policyWrapper : policySet) {
                 sb.append(policyWrapper.toString());
             }
@@ -260,7 +261,7 @@ public class PolicyGleaner {
             sb.append("["+policy.getResource()+"] ");
             sb.append("g["+policy.getAttributeType()+"] ");
             sb.append("r["+policy.getAttributeValue()+"] ");
-            sb.append("a["+policy.getAction()+"]");
+            sb.append("a["+policy.getAction()+"]\n");
             outputString = sb.toString();
         }
 
@@ -283,10 +284,12 @@ public class PolicyGleaner {
     //--------------------------
     public static void main(String[] args) {
         PolicyGleaner pGleaner = null;
-        pGleaner = new PolicyGleaner();
+        pGleaner = new PolicyGleaner(new Properties());
+        pGleaner.loadMyPolicy("../esgf_policies.xml");
         pGleaner.addPolicy(".*test.*",  "superGroup", "boss", "Write");
         pGleaner.addPolicy(".*cmip5.*", "otherGroup", "user", "Read");
-        pGleaner.commit().savePolicyAs("test_policy.out");
+        pGleaner.commit().savePolicyAs("../test_policy.out");
+        System.out.println(pGleaner);
 
         //if(args.length > 0) {
         //    if(args[0].equals("load")) {

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<policies xmlns="http://www.esgf.org/security">
+    <policy resource=".*obs4MIPs.*" attribute_type="CMIP5 Research" attribute_value="publisher" action="Write"/>
+    <policy resource=".*NASA-JPL.*" attribute_type="NASA OBS" attribute_value="publisher" action="Write"/>
+    <policy resource=".*\/clm\/.*" attribute_type="CLM Data" attribute_value="publisher" action="Write"/>
+    <policy resource=".*\/ameriflux\/.*" attribute_type="NACP Ameriflux" attribute_value="publisher" action="Write"/>
+    <policy resource=".*REMSS.*" attribute_type="NASA OBS" attribute_value="publisher" action="Write"/>
+    <policy resource=".*REMSS.*" attribute_type="NASA OBS" attribute_value="user" action="Read"/>
+    <policy resource=".*NASA-JPL.*" attribute_type="NASA OBS" attribute_value="user" action="Read"/>
+    <policy resource=".*oc_gis_downscaling.*" attribute_type="NOAA ESRL" attribute_value="publisher" action="Write"/>
+    <policy resource=".*NASA-GSFC.*" attribute_type="NASA OBS" attribute_value="publisher" action="Write"/>
+    <policy resource=".*\/clm\/.*" attribute_type="CLM Data" attribute_value="user" action="Read"/>
+    <policy resource=".*cmip5.*" attribute_type="CMIP5 Research" attribute_value="publisher" action="Write"/>
+    <policy resource=".*\/c-lamp\/.*" attribute_type="CLAMP" attribute_value="publisher" action="Write"/>
+    <policy resource=".*test.*" attribute_type="Test_Group" attribute_value="publisher" action="Write"/>
+    <policy resource=".*oc_gis_downscaling.*" attribute_type="ANY" attribute_value="" action="Read"/>
+    <policy resource=".*cssef_data.*" attribute_type="CSSEF_PNNL" attribute_value="default" action="Read"/>
+    <policy resource=".*maurer.*" attribute_type="ANY" attribute_value="" action="Read"/>
+    <policy resource=".*dycore_2008.*" attribute_type="ANY" attribute_value="" action="Read"/>
+    <policy resource=".*\/arm\/.*" attribute_type="ARM" attribute_value="publisher" action="Write"/>
+    <policy resource=".*NASA-GSFC.*" attribute_type="NASA OBS" attribute_value="user" action="Read"/>
+    <policy resource=".*test.*" attribute_type="ANY" attribute_value="" action="Read"/>
+    <policy resource=".*obs4MIPs.*" attribute_type="CMIP5 Research" attribute_value="user" action="Read"/>
+    <policy resource=".*cmip5.*" attribute_type="CMIP5 Research" attribute_value="user" action="Read"/>
+    <policy resource=".*AVISO.*" attribute_type="NASA OBS" attribute_value="publisher" action="Write"/>
+    <policy resource=".*\/arm\/.*" attribute_type="ARM" attribute_value="user" action="Read"/>
+    <policy resource=".*AVISO.*" attribute_type="NASA OBS" attribute_value="user" action="Read"/>
+    <policy resource=".*maurer.*" attribute_type="NOAA ESRL" attribute_value="publisher" action="Write"/>
+    <policy resource=".*\/c-lamp\/.*" attribute_type="CLAMP" attribute_value="user" action="Read"/>
+    <policy resource=".*\/ameriflux\/.*" attribute_type="NACP Ameriflux" attribute_value="user" action="Read"/>
+    <policy resource=".*test.*" attribute_type="wheel" attribute_value="super" action="Write"/>
+    <policy resource=".*dycore_2008.*" attribute_type="NOAA ESRL" attribute_value="publisher" action="Write"/>
+    <policy resource=".*esgf-dashboard.*" attribute_type="wheel" attribute_value="super" action="Read"/>
+</policies>

@@ -3,10 +3,10 @@
             xmlns:tns="http://www.esgf.org/security">
   
   <xsd:attributeGroup name="EsgfPolicyAttributes">
-    <xsd:attribute name="resource" type="xsd:string" use="required"/>
-    <xsd:attribute name="attribute_type"  type="xsd:string" use="required"/>
-    <xsd:attribute name="attribute_value"  type="xsd:string"/>
     <xsd:attribute name="action"  type="xsd:string" use="required"/>
+    <xsd:attribute name="attribute_value"  type="xsd:string"/>
+    <xsd:attribute name="attribute_type"  type="xsd:string" use="required"/>
+    <xsd:attribute name="resource" type="xsd:string" use="required"/>
   </xsd:attributeGroup>
   
   <xsd:element name="policy">
