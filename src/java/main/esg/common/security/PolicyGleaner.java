@@ -109,6 +109,7 @@ public class PolicyGleaner {
         policyPath = props.getProperty("security.app.home",".")+File.separator+"WEB-INF"+File.separator+"classes"+File.separator+"esg"+File.separator+"security"+File.separator+"config"+File.separator;
 
         policySet = new HashSet<PolicyWrapper>();
+        myPolicy = new Policies();
     }
 
 
@@ -256,9 +257,9 @@ public class PolicyGleaner {
         PolicyWrapper(Policy policy) {
             this.policy = policy;
             StringBuffer sb = new StringBuffer("policy: ");
-            sb.append("["+policy.getResource()+"] [");
-            sb.append("g["+policy.getAttributeType()+"] [");
-            sb.append("r["+policy.getAttributeValue()+"] [");
+            sb.append("["+policy.getResource()+"] ");
+            sb.append("g["+policy.getAttributeType()+"] ");
+            sb.append("r["+policy.getAttributeValue()+"] ");
             sb.append("a["+policy.getAction()+"]");
             outputString = sb.toString();
         }
@@ -282,32 +283,33 @@ public class PolicyGleaner {
     //--------------------------
     public static void main(String[] args) {
         PolicyGleaner pGleaner = null;
+        pGleaner = new PolicyGleaner();
+        pGleaner.addPolicy(".*test.*",  "superGroup", "boss", "Write");
+        pGleaner.addPolicy(".*cmip5.*", "otherGroup", "user", "Read");
+        pGleaner.commit().savePolicyAs("test_policy.out");
 
-        //pGleaner.add(".*test.*", "superGroup", "boss", "Write");
-        //pGleaner.commit().savePolicyAs("test_policy.out");
-
-        if(args.length > 0) {
-            if(args[0].equals("load")) {
-                System.out.println(args[0]+"ing...");
-                pGleaner = new PolicyGleaner();
-                if(args.length == 2) {
-                    if(args[1].equals("default")) {
-                        System.out.println(pGleaner.loadMyPolicy());
-                    }else {
-                        System.out.println(pGleaner.loadMyPolicy(args[1]));
-                    }
-                    //Do some manipulation here...
-                    //And show it...
-                }
-                if(args.length == 3) {
-                    pGleaner.savePolicyAs(args[2]);
-                }else{
-                    pGleaner.savePolicy();
-                }
-            }else {
-                System.out.println("illegal arg: "+args[0]);
-            }
-        }
+        //if(args.length > 0) {
+        //    if(args[0].equals("load")) {
+        //        System.out.println(args[0]+"ing...");
+        //        pGleaner = new PolicyGleaner();
+        //        if(args.length == 2) {
+        //            if(args[1].equals("default")) {
+        //                System.out.println(pGleaner.loadMyPolicy());
+        //            }else {
+        //                System.out.println(pGleaner.loadMyPolicy(args[1]));
+        //            }
+        //            //Do some manipulation here...
+        //            //And show it...
+        //        }
+        //        if(args.length == 3) {
+        //            pGleaner.savePolicyAs(args[2]);
+        //        }else{
+        //            pGleaner.savePolicy();
+        //        }
+        //    }else {
+        //        System.out.println("illegal arg: "+args[0]);
+        //    }
+        //}
     }
 
 }
