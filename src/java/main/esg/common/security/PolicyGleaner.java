@@ -89,7 +89,7 @@ public class PolicyGleaner {
     private Policies myPolicy = null;
     private boolean dirty = false;
 
-    
+
     public PolicyGleaner() { this(null); }
     public PolicyGleaner(Properties props) {
         this.props = props;
@@ -106,7 +106,7 @@ public class PolicyGleaner {
         policyPath = props.getProperty("security.app.home",".")+File.separator+"WEB-INF"+File.separator+"classes"+File.separator+"esg"+File.separator+"security"+File.separator+"config"+File.separator;
     }
 
-    
+
     public Policies getMyPolicy() { return myPolicy; }
 
     public synchronized PolicyGleaner loadMyPolicy() { return this.loadMyPolicy(policyPath+policyFile); }
@@ -146,11 +146,11 @@ public class PolicyGleaner {
         }
         return success;
     }
-    
+
     //--------------------------
     //Policy manipulation methods
     //--------------------------
-    
+
 
 
     //--------------------------
