@@ -31,4 +31,7 @@
     <policy resource=".*test.*" attribute_type="wheel" attribute_value="super" action="Write"/>
     <policy resource=".*dycore_2008.*" attribute_type="NOAA ESRL" attribute_value="publisher" action="Write"/>
     <policy resource=".*esgf-dashboard.*" attribute_type="wheel" attribute_value="super" action="Read"/>
+    <policy resource=".*cssef_data.*" attribute_type="CSSEF_PNNL" attribute_value="user" action="Read"/> 
+    <policy resource=".*cssef.*" attribute_type="CSSEF_PNNL" attribute_value="user" action="Read"/> 
+    <policy resource=".*cssef.*" attribute_type="CSSEF_PNNL" attribute_value="publisher" action="Write"/> 
 </policies>
