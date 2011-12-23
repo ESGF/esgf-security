@@ -336,7 +336,6 @@ public final class UserMigrationTool {
                         }
                     }catch(ESGFDataAccessException e) {
                         log.error("Sorry, could NOT create permission tuple: u["+uname+"] g["+gname+"] r["+rname+"] ",e);
-                        log.warn(e.getMessage());
                     }
                 }
                 return i;

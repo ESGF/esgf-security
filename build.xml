@@ -376,6 +376,43 @@ Builds the project via ant (obviously).
     </jar>
   </target>
 
+  <target name="make_user_migration_tool_jar" depends="make" description="(Creates jar file for user migration tool)">
+    <echo message="JAR -  ${build_dir} ->> ${dist_dir}/${module}-user-migration-${version_num}.jar"/>
+    <delete>
+      <fileset dir="." includes="${dist_dir}/${module}-user-migration*.jar"/>
+    </delete>
+    <mkdir dir="${dist_dir}" />
+    <jar destfile="${dist_dir}/${module}-user-migration-${version_num}.jar">
+      <fileset dir="${build_dir}"
+               includes="esg/node/util/migrate/UserMigrationTool*,esg/node/security/*,esg/security/utils/*,esg/security/utils/encryption/*,log4j.xml"/>
+      <manifest>
+        <attribute name="Organization" value="${organization}"/>
+        <attribute name="Author"       value="${author}"/>
+        <attribute name="Project"      value="${project_name} User Migration Tool"/>
+        <attribute name="Module"       value="${module}"/>
+        <attribute name="Version"      value="${version_num}"/>
+	<attribute name="Branch"       value="${branch}"/>
+	<attribute name="Commit"       value="${commit}"/>
+        <attribute name="Release-Name" value="${release_name}"/>
+        <attribute name="Main-Class"   value="esg.node.util.migrate.UserMigrationTool"/>
+        <section name="esg/node/util/migrate/">
+          <attribute name="Sealed" value="${seal}"/>
+        </section>
+      </manifest>
+      <zipgroupfileset dir="${lib_fetched_dir}">
+        <exclude name="*sources.jar,*javadocs.jar"/>
+        <include name="log4j*.jar"/>
+        <include name="commons-logging*.jar"/>
+        <include name="commons-pool*.jar"/>
+        <include name="commons-dbcp*.jar"/>
+        <include name="commons-dbutils*.jar"/>
+        <include name="esgf-node-manager-common*.jar"/>
+        <include name="postgresql-8.3-603.jdbc3.jar"/>
+      </zipgroupfileset>
+    </jar>
+    <!-- <signjar jar="${dist_dir}/${module}-user-migration-${version_num}.jar" alias="${signing_alias}" keystore="${keystore}" storepass="${storepass}"/> -->
+  </target>
+
   <target name="make_test_jar" depends="make_test" description="(Creates test jar file)">
     <echo message="JAR -  ${test_build_dir} ->> ${dist_dir}/${module}-test-${version_num}.jar"/>
     <delete>
@@ -400,7 +437,7 @@ Builds the project via ant (obviously).
     </jar>
   </target>
   
-  <target name="make_all_jars" depends="make_jar,make_test_jar"/>
+  <target name="make_all_jars" depends="make_jar,make_user_migration_tool_jar,make_test_jar"/>
 	
   <target name="make_war" depends="make,init"
 	          description="(Creates war file of this project)">
@@ -719,44 +756,6 @@ Builds the project via ant (obviously).
     </java>
     
   </target>
-
-  <target name="make_user_migration_tool_jar" depends="make" description="(Creates jar file for user migration tool)">
-    <echo message="JAR -  ${build_dir} ->> ${dist_dir}/${module}-user-migration-${version_num}.jar"/>
-    <delete>
-      <fileset dir="." includes="${dist_dir}/${module}-user-migration*.jar"/>
-    </delete>
-    <mkdir dir="${dist_dir}" />
-    <jar destfile="${dist_dir}/${module}-user-migration-${version_num}.jar">
-      <fileset dir="${build_dir}"
-               includes="esg/node/util/migrate/UserMigrationTool*,esg/node/security/*,esg/security/utils/*,esg/security/utils/encryption/*,log4j.xml"/>
-      <manifest>
-        <attribute name="Organization" value="${organization}"/>
-        <attribute name="Author"       value="${author}"/>
-        <attribute name="Project"      value="${project_name} User Migration Tool"/>
-        <attribute name="Module"       value="${module}"/>
-        <attribute name="Version"      value="${version_num}"/>
-	<attribute name="Branch"       value="${branch}"/>
-	<attribute name="Commit"       value="${commit}"/>
-        <attribute name="Release-Name" value="${release_name}"/>
-        <attribute name="Main-Class"   value="esg.node.util.migrate.UserMigrationTool"/>
-        <section name="esg/node/util/migrate/">
-          <attribute name="Sealed" value="${seal}"/>
-        </section>
-      </manifest>
-      <zipgroupfileset dir="${lib_fetched_dir}">
-        <exclude name="*sources.jar,*javadocs.jar"/>
-        <include name="log4j*.jar"/>
-        <include name="commons-logging*.jar"/>
-        <include name="commons-pool*.jar"/>
-        <include name="commons-dbcp*.jar"/>
-        <include name="commons-dbutils*.jar"/>
-        <include name="esgf-node-manager-common*.jar"/>
-        <include name="postgresql-8.3-603.jdbc3.jar"/>
-      </zipgroupfileset>
-    </jar>
-    <!-- <signjar jar="${dist_dir}/${module}-user-migration-${version_num}.jar" alias="${signing_alias}" keystore="${keystore}" storepass="${storepass}"/> -->
-  </target>
-
   
   <target name="make_everything" depends="make_dist,test,docs,dep_report"
 	  description="(Builds Everything... Distributions, Tests, Docs n Reports)">
