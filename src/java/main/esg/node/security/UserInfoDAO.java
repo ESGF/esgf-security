@@ -232,9 +232,9 @@ public class UserInfoDAO {
 
     private static final String  adminName = "rootAdmin";
     
-    //private static final Pattern openidUrlPattern = Pattern.compile("https://([^/ ]*)/.*[/]*/([^/ @*%#!()<>+=]*$)");
-    private static final Pattern openidUrlPattern = Pattern.compile("https://([^:/]*)(:(?:[0-9]*))?/([^ &@*%#!()<>+=]*/)*([^/ &@*%#!()<>+=]*$)");
-    private static final Pattern usernamePattern = Pattern.compile("^[^/ &@*%#!()<>+=]*$");
+    //private static final Pattern openidUrlPattern = Pattern.compile("https://([^/ ]*)/.*[/]*/([^/ *%#!()<>+=]*$)");
+    private static final Pattern openidUrlPattern = Pattern.compile("https://([^:/]*)(:(?:[0-9]*))?/([^ &*%#!()<>+=]*/)*([^/ &@*%#!()<>+=]*$)");
+    private static final Pattern usernamePattern = Pattern.compile("^[^/ &*%#!()<>+=]*$");
     
     private PasswordEncoder encoder = new MD5CryptPasswordEncoder();
     
@@ -518,10 +518,10 @@ public class UserInfoDAO {
                         openidPort=":"+openidPort;
                     }
                     
-                    openid = "https://"+openidHost+openidPort+"/esgf-idp/openid/"+username;
+                    openid = "https://"+openidHost+openidPort+"/esgf-idp/openid/"+id;
                     
                 }else {
-                    log.warn("Sorry money, your id is not well formed");
+                    log.warn("Sorry money, your id ["+id+"]is not well formed");
                     return null;
                 }
             }

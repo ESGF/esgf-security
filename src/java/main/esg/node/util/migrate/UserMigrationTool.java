@@ -95,7 +95,7 @@ public final class UserMigrationTool {
     //Remote "Gateway" queries
     //-------------------------------------------------------
     private static final String sourceUserInfoQuery = "select firstname, lastname, email, username, password, dn, organization, city, state, country from security.user where username!=''";
-    private static final String sourceGroupInfoQuery = "select g.name as name, g.description as description, g.visible as visible, g.automatic_approval as automatic_approval from security.group as g, security.user as u, security.membership as m, security.role as r where u.username='rootAdmin' and u.id=m.user_id and m.group_id=g.id and m.role_id=r.id and r.name='admin'";
+    private static final String sourceGroupInfoQuery = "select g.name as name, g.description as description, g.visible as visible, g.automatic_approval as automatic_approval from security.group as g";
     private static final String sourceRoleInfoQuery = "select name, description from security.role";
     private static final String sourcePermissionInfoQuery = "select u.username as uname, g.name as gname, r.name as rname from security.user as u, security.group as g, security.role as r, security.membership as m, security.status as st where u.username not in ('', 'rootAdmin') and m.user_id=u.id and m.group_id=g.id and m.role_id=r.id and m.status_id=st.id and st.name='valid'";
     //-------------------------------------------------------
@@ -104,6 +104,7 @@ public final class UserMigrationTool {
     
     //ToDo: should throw exception here
     public UserMigrationTool init(Properties props) {
+        log.trace("props = "+props);
         if(setupTargetResources()) setupSourceResources(props);
         return this;
     }
@@ -113,7 +114,7 @@ public final class UserMigrationTool {
     //-------------------------------------------------------
     public UserMigrationTool setupSourceResources(Properties props) {
         
-        log.trace("Setting up source data source ");
+        log.info("Setting up source data source ");
         if(props == null) { log.error("Property object is ["+props+"]: Cannot setup up data source"); return this; }
         String user = props.getProperty("db.user","dbsuper");
         String password = props.getProperty("db.password");
@@ -154,28 +155,34 @@ public final class UserMigrationTool {
     //-------------------------------------------------------
     private boolean setupTargetResources() { return this.setupTargetResources(null,null); }
 
-    private boolean setupTargetResources(UserInfoCredentialedDAO userDAO, GroupRoleDAO groupRoleDAO) {
+    private boolean setupTargetResources(UserInfoCredentialedDAO userDAO_, GroupRoleDAO groupRoleDAO_) {
 
         System.out.println("Setting up target (local) resources...");
 
         try{
             ESGFProperties env = new ESGFProperties();
-            if(userDAO == null) {
+            if(userDAO_ == null) {
+                log.trace("need to instantiate user data object...");
                 this.userDAO = new UserInfoCredentialedDAO("rootAdmin",
                                                            env.getAdminPassword(),
                                                            env);
             }else {
                 this.userDAO = userDAO;
             }
-            
-            if(groupRoleDAO == null) {
-                groupRoleDAO = new GroupRoleDAO(env);
+            log.trace("userDAO = "+(userDAO == null ? "[NULL]" : "[OK]"));
+
+            if(groupRoleDAO_ == null) {
+                log.trace("need to instantiate group/role data object...");
+                this.groupRoleDAO = new GroupRoleDAO(env);
             }else {
-                this.groupRoleDAO = groupRoleDAO;
+                log.trace("re-using previously instantiated group/role data object");
+                this.groupRoleDAO = groupRoleDAO_;
             }
+            log.trace("group/role = "+(groupRoleDAO == null ? "[NULL]" : "[OK]"));
+            
         }catch(java.io.IOException e) { e.printStackTrace(); }
         
-        return ((null != userDAO) && (null != groupRoleDAO));
+        return ((null != this.userDAO) && (null != this.groupRoleDAO));
     }
     
     public void shutdownSourceResources() {
@@ -258,29 +265,43 @@ public final class UserMigrationTool {
         ResultSetHandler<Integer> usersResultSetHandler = new ResultSetHandler<Integer>() {
             public Integer handle(ResultSet rs) throws SQLException{
                 int i=0;
+                int errorCount=0;
+                String currentUsername=null;
                 while(rs.next()) {
-                    UserInfo userInfo = UserMigrationTool.this.userDAO.getUserById(rs.getString(1));
-                    userInfo.setFirstName(rs.getString("firstname")).
-                        //setMiddleName(rs.getString("middlename")).
-                        setLastName(rs.getString("lastname")).
-                        setEmail(rs.getString("email")).
-                        setUserName(rs.getString("username")).
-                        setDn(rs.getString("dn")).
-                        setOrganization(rs.getString("organization")).
-                        //setOrgType(rs.getString("organization_type")).
-                        setCity(rs.getString("city")).
-                        setState(rs.getString("state")).
-                        setCountry(rs.getString("country"));
-                    //NOTE: verification token not applicable
-                    //Status code msut be set separately... (below) field #13
-                    //Password literal must be set separately... (see setPassword - with true boolean, below) field #14
-                    
-                    UserMigrationTool.this.userDAO.addUser(userInfo);
-                    //UserMigrationTool.this.userDAO.setStatusCode(userInfo.getOpenid(),rs.getInt(13)); //statusCode
-                    UserMigrationTool.this.userDAO.setPassword(userInfo.getOpenid(),rs.getString("password"),true); //password (literal)
-                    i++;
-                    log.info("Migrated User #"+i+": "+userInfo.getUserName()+" --> "+userInfo.getOpenid());
+                    try{
+                        currentUsername = rs.getString("username");
+                        if(currentUsername.equals("rootAdmin")) { 
+                            System.out.println("NOTE: Will not overwrite local rootAdmin information");
+                            continue; 
+                        }
+                        log.trace("Inspecting username: "+currentUsername);
+                        UserInfo userInfo = UserMigrationTool.this.userDAO.getUserById(currentUsername);
+                        userInfo.setFirstName(rs.getString("firstname")).
+                            //setMiddleName(rs.getString("middlename")).
+                            setLastName(rs.getString("lastname")).
+                            setEmail(rs.getString("email")).
+                            setUserName(rs.getString("username")).
+                            setDn(rs.getString("dn")).
+                            setOrganization(rs.getString("organization")).
+                            //setOrgType(rs.getString("organization_type")).
+                            setCity(rs.getString("city")).
+                            setState(rs.getString("state")).
+                            setCountry(rs.getString("country"));
+                        //NOTE: verification token not applicable
+                        //Status code msut be set separately... (below) field #13
+                        //Password literal must be set separately... (see setPassword - with true boolean, below) field #14
+                        
+                        UserMigrationTool.this.userDAO.addUser(userInfo);
+                        //UserMigrationTool.this.userDAO.setStatusCode(userInfo.getOpenid(),rs.getInt(13)); //statusCode
+                        UserMigrationTool.this.userDAO.setPassword(userInfo.getOpenid(),rs.getString("password"),true); //password (literal)
+                        i++;
+                        log.info("Migrated User #"+i+": "+userInfo.getUserName()+" --> "+userInfo.getOpenid());
+                    }catch(Throwable t) {
+                        log.error("Sorry, could NOT migrate user: "+currentUsername);
+                        errorCount++;
+                    }
                 }
+                log.info("Inspected "+i+" User Records, with "+errorCount+" failed");
                 return i;
             }
         };
@@ -300,11 +321,22 @@ public final class UserMigrationTool {
         ResultSetHandler<Integer> permissionsResultSetHandler = new ResultSetHandler<Integer>() {
             public Integer handle(ResultSet rs) throws SQLException{
                 int i=0;
+                String uname=null;
+                String gname=null;
+                String rname=null;
                 while(rs.next()) {
-                    //                                                [uname]        [gname]        [rname]
-                    if(UserMigrationTool.this.userDAO.addPermission(rs.getString(1),rs.getString(2),rs.getString(3))) {
-                        i++;
-                        log.info("Migrated Permission #"+i+": ["+rs.getString(1)+"] ["+rs.getString(2)+"] ["+rs.getString(3)+"]"); 
+                    try{
+                        uname=rs.getString(1);
+                        gname=rs.getString(2);
+                        rname=rs.getString(3);
+                        log.trace("Migrating permission tuple: u["+uname+"] g["+gname+"] r["+rname+"] ");
+                        if(UserMigrationTool.this.userDAO.addPermission(uname,gname,rname)) {
+                            i++;
+                            log.info("Migrated Permission #"+i+": ["+rs.getString(1)+"] ["+rs.getString(2)+"] ["+rs.getString(3)+"]"); 
+                        }
+                    }catch(ESGFDataAccessException e) {
+                        log.error("Sorry, could NOT create permission tuple: u["+uname+"] g["+gname+"] r["+rname+"] ",e);
+                        log.warn(e.getMessage());
                     }
                 }
                 return i;
