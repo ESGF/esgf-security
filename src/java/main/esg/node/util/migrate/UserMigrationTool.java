@@ -335,7 +335,7 @@ public final class UserMigrationTool {
                             log.info("Migrated Permission #"+i+": ["+rs.getString(1)+"] ["+rs.getString(2)+"] ["+rs.getString(3)+"]"); 
                         }
                     }catch(ESGFDataAccessException e) {
-                        log.error("Sorry, could NOT create permission tuple: u["+uname+"] g["+gname+"] r["+rname+"] ",e);
+                        log.error("Sorry, could NOT create permission tuple: u["+uname+"] g["+gname+"] r["+rname+"] ");
                     }
                 }
                 return i;
