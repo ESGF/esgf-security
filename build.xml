@@ -384,7 +384,7 @@ Builds the project via ant (obviously).
     <mkdir dir="${dist_dir}" />
     <jar destfile="${dist_dir}/${module}-user-migration-${version_num}.jar">
       <fileset dir="${build_dir}"
-               includes="esg/node/util/migrate/UserMigrationTool*,esg/node/security/*,esg/security/utils/*,esg/security/utils/encryption/*,log4j.xml"/>
+               includes="esg/node/util/migrate/*,esg/node/security/*,esg/security/utils/*,esg/security/utils/encryption/*,log4j.xml"/>
       <manifest>
         <attribute name="Organization" value="${organization}"/>
         <attribute name="Author"       value="${author}"/>

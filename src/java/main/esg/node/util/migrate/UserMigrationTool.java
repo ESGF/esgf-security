@@ -49,6 +49,9 @@
 ***************************************************************************/
 package esg.node.util.migrate;
 
+import java.io.*;
+import java.util.*;
+
 import java.util.Properties;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -79,7 +82,7 @@ import org.apache.commons.logging.impl.*;
 public final class UserMigrationTool {
 
     private static Log log = LogFactory.getLog(UserMigrationTool.class);
-    
+
     //For source database access...
     private PoolingDataSource sourceDataSource = null;
     private GenericObjectPool connectionPool = null;
@@ -90,7 +93,7 @@ public final class UserMigrationTool {
     private UserInfo userInfo = null;
     private UserInfoCredentialedDAO userDAO = null;
     private GroupRoleDAO groupRoleDAO = null;
-    
+
     //-------------------------------------------------------
     //Remote "Gateway" queries
     //-------------------------------------------------------
@@ -99,9 +102,9 @@ public final class UserMigrationTool {
     private static final String sourceRoleInfoQuery = "select name, description from security.role";
     private static final String sourcePermissionInfoQuery = "select u.username as uname, g.name as gname, r.name as rname from security.user as u, security.group as g, security.role as r, security.membership as m, security.status as st where u.username not in ('', 'rootAdmin') and m.user_id=u.id and m.group_id=g.id and m.role_id=r.id and m.status_id=st.id and st.name='valid'";
     //-------------------------------------------------------
-    
+
     public UserMigrationTool() { }
-    
+
     //ToDo: should throw exception here
     public UserMigrationTool init(Properties props) {
         log.trace("props = "+props);
@@ -113,7 +116,7 @@ public final class UserMigrationTool {
     //Remote "Gateway" resouce setup...
     //-------------------------------------------------------
     public UserMigrationTool setupSourceResources(Properties props) {
-        
+
         log.info("Setting up source data source ");
         if(props == null) { log.error("Property object is ["+props+"]: Cannot setup up data source"); return this; }
         String user = props.getProperty("db.user","dbsuper");
@@ -126,10 +129,10 @@ public final class UserMigrationTool {
         String protocol = props.getProperty("db.protocol","jdbc:postgresql:");
 
         return this.setupSourceResources(protocol,host,port,database,user,password);
-                
+
     }
-    
-    public UserMigrationTool setupSourceResources(String protocol, 
+
+    public UserMigrationTool setupSourceResources(String protocol,
                                                   String host,
                                                   String port,
                                                   String database,
@@ -137,7 +140,7 @@ public final class UserMigrationTool {
                                                   String password) {
 
         System.out.println("Setting up source resources...");
-        
+
         String connectURI = protocol+"//"+host+":"+port+"/"+database; //zoiks
         log.debug("Source Connection URI  = "+connectURI);
         log.debug("Source Connection User = "+user);
@@ -179,12 +182,12 @@ public final class UserMigrationTool {
                 this.groupRoleDAO = groupRoleDAO_;
             }
             log.trace("group/role = "+(groupRoleDAO == null ? "[NULL]" : "[OK]"));
-            
+
         }catch(java.io.IOException e) { e.printStackTrace(); }
-        
+
         return ((null != this.userDAO) && (null != this.groupRoleDAO));
     }
-    
+
     public void shutdownSourceResources() {
         log.info("Shutting Down Source Database Resource...");
         try{
@@ -194,7 +197,7 @@ public final class UserMigrationTool {
         }
         sourceDataSource = null;
     }
-    
+
 
     //-------------------------------------------------------
     //Pump the data from source --to-> target
@@ -207,33 +210,33 @@ public final class UserMigrationTool {
         migratePermissions();
         return 0;
     }
-    
+
     public int migrateRoles() {
         int ret = 0;
         ResultSetHandler<Integer> rolesResultSetHandler = new ResultSetHandler<Integer>() {
             public Integer handle(ResultSet rs) throws SQLException{
                 int i=0;
                 while(rs.next()) {
-                    //                                              [name]         [description] 
+                    //                                              [name]         [description]
                     if(UserMigrationTool.this.groupRoleDAO.addRole(rs.getString(1),rs.getString(2))) {
                         i++;
-                        log.info("Migrated role #"+i+": "+rs.getString(1));
+                        System.out.println("Migrated role #"+i+": "+rs.getString(1));
                     }
                 }
                 return i;
             }
         };
-        
+
         try {
             ret = queryRunner.query(sourceRoleInfoQuery, rolesResultSetHandler);
             log.info("Migrated ["+ret+"] role records");
         }catch(SQLException e) {
             e.printStackTrace();
         }
-        
+
         return ret;
     }
-    
+
     public int migrateGroups() {
         int ret = 0;
         ResultSetHandler<Integer> groupsResultSetHandler = new ResultSetHandler<Integer>() {
@@ -243,20 +246,20 @@ public final class UserMigrationTool {
                     //                                               [name]         [description]    [visible]         [automatic_approval]
                     if(UserMigrationTool.this.groupRoleDAO.addGroup(rs.getString(1),rs.getString(2), rs.getBoolean(3), rs.getBoolean(4))) {
                         i++;
-                        log.info("Migrated group #"+i+": "+rs.getString(1));
+                        System.out.println("Migrated group #"+i+": "+rs.getString(1));
                     }
                 }
                 return i;
             }
         };
-        
+
         try {
             ret = queryRunner.query(sourceGroupInfoQuery, groupsResultSetHandler);
             log.info("Migrated ["+ret+"] group records");
         }catch(SQLException e) {
             e.printStackTrace();
         }
-        
+
         return ret;
     }
 
@@ -270,9 +273,9 @@ public final class UserMigrationTool {
                 while(rs.next()) {
                     try{
                         currentUsername = rs.getString("username");
-                        if(currentUsername.equals("rootAdmin")) { 
+                        if(currentUsername.equals("rootAdmin")) {
                             System.out.println("NOTE: Will not overwrite local rootAdmin information");
-                            continue; 
+                            continue;
                         }
                         log.trace("Inspecting username: "+currentUsername);
                         UserInfo userInfo = UserMigrationTool.this.userDAO.getUserById(currentUsername);
@@ -290,12 +293,12 @@ public final class UserMigrationTool {
                         //NOTE: verification token not applicable
                         //Status code msut be set separately... (below) field #13
                         //Password literal must be set separately... (see setPassword - with true boolean, below) field #14
-                        
+
                         UserMigrationTool.this.userDAO.addUser(userInfo);
                         //UserMigrationTool.this.userDAO.setStatusCode(userInfo.getOpenid(),rs.getInt(13)); //statusCode
                         UserMigrationTool.this.userDAO.setPassword(userInfo.getOpenid(),rs.getString("password"),true); //password (literal)
                         i++;
-                        log.info("Migrated User #"+i+": "+userInfo.getUserName()+" --> "+userInfo.getOpenid());
+                        System.out.println("Migrated User #"+i+": "+userInfo.getUserName()+" --> "+userInfo.getOpenid());
                     }catch(Throwable t) {
                         log.error("Sorry, could NOT migrate user: "+currentUsername);
                         errorCount++;
@@ -305,7 +308,7 @@ public final class UserMigrationTool {
                 return i;
             }
         };
-        
+
         try {
             ret = queryRunner.query(sourceUserInfoQuery, usersResultSetHandler);
             log.info("Migrated ["+ret+"] user records");
@@ -313,9 +316,9 @@ public final class UserMigrationTool {
             e.printStackTrace();
         }
         return ret;
-        
+
     }
-    
+
     public int migratePermissions() {
         int ret = 0;
         ResultSetHandler<Integer> permissionsResultSetHandler = new ResultSetHandler<Integer>() {
@@ -332,7 +335,7 @@ public final class UserMigrationTool {
                         log.trace("Migrating permission tuple: u["+uname+"] g["+gname+"] r["+rname+"] ");
                         if(UserMigrationTool.this.userDAO.addPermission(uname,gname,rname)) {
                             i++;
-                            log.info("Migrated Permission #"+i+": ["+rs.getString(1)+"] ["+rs.getString(2)+"] ["+rs.getString(3)+"]"); 
+                            System.out.println("Migrated Permission #"+i+": ["+rs.getString(1)+"] ["+rs.getString(2)+"] ["+rs.getString(3)+"]");
                         }
                     }catch(ESGFDataAccessException e) {
                         log.error("Sorry, could NOT create permission tuple: u["+uname+"] g["+gname+"] r["+rname+"] ");
@@ -341,7 +344,7 @@ public final class UserMigrationTool {
                 return i;
             }
         };
-        
+
         try{
             ret = queryRunner.query(sourcePermissionInfoQuery, permissionsResultSetHandler);
             log.info("Migrated ["+ret+"] permission records");
@@ -355,19 +358,82 @@ public final class UserMigrationTool {
     //Main
     //-------------------------------------------------------
     public static void main(String[] args) {
-        //Enter the connection URI information
-        //setup source connection
-        Properties props = new Properties();
-        //manditory
-        if(args.length >= 1) props.setProperty("db.user",args[0]);
-        if(args.length >= 2) props.setProperty("db.password",args[1]);
-        //have defaults
-        if(args.length >= 3) props.setProperty("db.database",args[2]);
-        if(args.length >= 4) props.setProperty("db.host",args[3]);
-        if(args.length >= 5) props.setProperty("db.port",args[4]);
-        if(args.length >= 6) props.setProperty("db.protocol",args[5]);
+        try {
+            //Enter the connection URI information
+            //setup source connection
+            Properties props = new Properties();
+            if(args.length >= 4) {
+                for(int i=0;i<(args.length-1);i++) {
+                    System.out.println();
+                    if("-U".equals(args[i])) {
+                        i++;
+                        System.out.print("user = ");
+                        if(args[i].startsWith("-")) { --i; continue; }
+                        props.setProperty("db.user",args[i]);
+                        System.out.print(args[i]);
+                        continue;
+                    }
+                    if("-h".equals(args[i])) {
+                        i++;
+                        System.out.print("host = ");
+                        if(args[i].startsWith("-")) { --i; continue; }
+                        props.setProperty("db.host",args[i]);
+                        System.out.print(args[i]);
+                        continue;
+                    }
+                    if("-p".equals(args[i])) {
+                        i++;
+                        System.out.print("port = ");
+                        if(args[i].startsWith("-")) { --i; continue; }
+                        props.setProperty("db.port",args[i]);
+                        System.out.print(args[i]);
+                        continue;
+                    }
+                    if("-d".equals(args[i])) {
+                        i++;
+                        System.out.print("database = ");
+                        if(args[i].startsWith("-")) { --i; continue; }
+                        props.setProperty("db.database",args[i]);
+                        System.out.print(args[i]);
+                        continue;
+                    }
+                }
+                System.out.println();
+            }else {
+                System.out.println("\nUsage:");
+                System.out.println("  java -jar esgf-security-user-migration-x.x.x.jar -U <username> -h <host> -p <port> -d <database>");
+                System.out.println("  (hit return and then enter your password)\n");
+                System.exit(1);
+            }
 
-        (new UserMigrationTool()).init(props).migrate();
+            char password[] = null;
+            try {
+                password = PasswordField.getPassword(System.in, "Enter source database password: ");
+            }catch(IOException ioe) {
+                System.err.println("Ooops sumthin' ain't right with the input... :-(");
+                System.exit(1);
+                ioe.printStackTrace();
+            }
+            if(password == null ) {
+                System.out.println("No password entered");
+                System.exit(1);
+            }
+
+            props.setProperty("db.password",String.valueOf(password));
+
+            System.out.println();
+
+            (new UserMigrationTool()).init(props).migrate();
+
+        }catch(Throwable t) {
+            System.out.println(t.getMessage());
+            System.out.println("\n Sorry, please check your database connection information again, was not able to migrate users :-(\n");
+            System.exit(1);
+        }
+
+        System.out.println("\ndone :-)\n");
+        System.out.println(" Thank you for migrating to the ESGF P2P Node");
+        System.out.println(" http://esgf.org\n");
     }
-    
+
 }
