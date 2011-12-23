@@ -744,14 +744,14 @@ Builds the project via ant (obviously).
         </section>
       </manifest>
       <zipgroupfileset dir="${lib_fetched_dir}">
-        <include name="log4j-1.2.16.jar"/>
-        <include name="commons-logging-1.1.1.jar"/>
-        <include name="commons-pool-1.5.4.jar"/>
-        <include name="commons-dbcp-1.4.jar"/>
-        <include name="commons-dbutils-1.3.jar"/>
-        <include name="esgf-node-manager-common-0.6.1.jar"/>
+        <exclude name="*sources.jar,*javadocs.jar"/>
+        <include name="log4j*.jar"/>
+        <include name="commons-logging*.jar"/>
+        <include name="commons-pool*.jar"/>
+        <include name="commons-dbcp*.jar"/>
+        <include name="commons-dbutils*.jar"/>
+        <include name="esgf-node-manager-common*.jar"/>
         <include name="postgresql-8.3-603.jdbc3.jar"/>
-
       </zipgroupfileset>
     </jar>
     <!-- <signjar jar="${dist_dir}/${module}-user-migration-${version_num}.jar" alias="${signing_alias}" keystore="${keystore}" storepass="${storepass}"/> -->
