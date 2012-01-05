@@ -89,12 +89,15 @@ tomcat_install_dir=${CATALINA_HOME:-${install_prefix}/tomcat}
 python_version=${python_version:-"2.6"}
 config_file=${esg_root_dir}/config/esgf.properties
 
+security_web_service_name="esgf-security"
+esgf_user_migration_launcher="esgf-user-migrate"
+
 
 init() {
     #[ -n "${envfile}" ] && [ -e "${envfile}" ] && source ${envfile} && ((VERBOSE)) && printf "security services: sourcing environment from: ${envfile} \n"
 
     security_dist_url=${esg_dist_url}/esgf-security/esgf-security.war
-    security_app_context_root=esgf-security
+    security_app_context_root=${security_web_service_name:-esgf-security}
     security_app_home=${tomcat_install_dir}/webapps/${security_app_context_root}
 
     security_attribute_service_host=${security_attribute_service_host:-${esgf_host:-$(hostname --fqdn)}}
@@ -204,6 +207,9 @@ setup_security() {
     #----------------------------
     
     popd >& /dev/null
+
+    fetch_user_migration_launcher
+
     write_security_install_log
     checked_done 0
 
@@ -332,5 +338,14 @@ clean_security_database_subsystem_installation() {
             echo " Could not find security tables in the database."
         fi 
     fi
+    return 0
+}
+
+fetch_user_migration_launcher() {
+    pushd ${scripts_dir} >& /dev/null
+    checked_get ${esgf_user_migration_launcher} ${esg_dist_url}/${security_web_service_name}/${esgf_user_migration_launcher} $((force_install))
+    (( $? > 1 )) && echo " ERROR: Could not download ${esg_dist_url}/${security_web_service_name}/${esgf_user_migration_launcher} :-(" && popd >& /dev/null && return 1
+    chmod 755 ${esgf_user_migration_launcher}
+    popd >& /dev/null
     return 0
 }
