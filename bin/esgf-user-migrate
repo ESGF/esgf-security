@@ -56,6 +56,7 @@ envfile="/etc/esg.env"
 
 DEBUG=${DEBUG:-0}
 VERBOSE=${VERBOSE:-0}
+version=0.0.1
 
 esgf_user_migrate() {
     [ ! -e "${envfile}" ] && printf "Sorry must be able to source ${envfile}, aborting..." && exit 1
@@ -158,7 +159,7 @@ esgf_user_migrate_usage() {
    Usage:
 
       -----------------------------------------------------
-      > ${0##*/} [--help|-h] [--force] [--devel] [--verbose] [--debug] [-p <port>] [-d <database>] -U <username> -h <host> 
+      > ${0##*/} [--help] [--force] [--devel] [--verbose] [--debug] [-p <port>] [-d <database>] -U <username> -h <host> 
       (enter password at prompt)
       -----------------------------------------------------
 
@@ -174,9 +175,11 @@ esgf_user_migrate_usage() {
       --force   - force download of wrapped jar into tools dir regardless of checksum validation
       --verbose - provide more output
       --debug   - provide debug output
+      --help    - this usage output
+      --version - version information
 
       Ex:
-      > $0 --verbose -U gavin -h pcmdi3.llnl.gov
+      > ${0##*/} --verbose -U gavin -h pcmdi3.llnl.gov
 
       (be sure that the source db exposes the port to this host: check pg_hba.conf file for details)
 
@@ -192,7 +195,7 @@ main() {
     while [ -n "$1" ]; do 
         case $1 in 
 	    -v | --version)
-                echo ""
+                echo "Version ${version}"
 	        echo "Earth Systems Grid Federation (http://esgf.org)"
 	        echo "ESGF P2P User Migration Utility"
 	        echo ""
