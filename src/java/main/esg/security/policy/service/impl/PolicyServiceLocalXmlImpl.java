@@ -34,11 +34,12 @@ import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
-import org.springframework.core.io.ClassPathResource;
 
 import esg.security.policy.service.api.PolicyAttribute;
 import esg.security.policy.service.api.PolicyService;
 import esg.security.policy.service.api.PolicyStatement;
+import esg.security.registry.service.api.ReloadableFileSetObserver;
+import esg.security.registry.service.impl.ReloadableFileSet;
 import esg.security.utils.xml.Parser;
 
 /**
@@ -51,15 +52,12 @@ import esg.security.utils.xml.Parser;
  * @author luca.cinquini
  *
  */
-public class PolicyServiceLocalXmlImpl implements PolicyService {
+public class PolicyServiceLocalXmlImpl implements PolicyService, ReloadableFileSetObserver {
 	
 	LinkedHashMap<Pattern, List<PolicyStatement>> policies = new LinkedHashMap<Pattern, List<PolicyStatement>>();
 	
-	// local XML files holding policy statements
-    private final List<File> policyFiles = new ArrayList<File>();
-    
-    // latest modification time of all policy files
-    long policyFilesLastModTime = 0L; // Unix Epoch
+    // Utility class that watches the set of local XML configuration files for changes.
+    private ReloadableFileSet watcher;
     
     private final Log LOG = LogFactory.getLog(this.getClass());
 	
@@ -72,54 +70,40 @@ public class PolicyServiceLocalXmlImpl implements PolicyService {
      */
 	public PolicyServiceLocalXmlImpl(final String xmlFilePaths) throws Exception {
 		
-	    // loop over all configured local XML files
-        for (final String xmlFilePath : xmlFilePaths.split("\\s*,\\s*")) {
-            if (LOG.isInfoEnabled()) LOG.info("Parsing XML file:"+xmlFilePath);
-            // absolute path
-            if (xmlFilePath.startsWith("/")) {
-                policyFiles.add( new File(xmlFilePath) );
-            // classpath relative path
-            } else {
-                policyFiles.add( new ClassPathResource(xmlFilePath).getFile() );
-            }
-        }
-        update();
-
+        // instantiate files watcher
+        watcher = new ReloadableFileSet(xmlFilePaths);
+        watcher.setObserver(this);
+        
+        // trigger first loading of configuration files
+        watcher.reload();
 		
 	}
 	
 	/** Method to update the local policy map by re-parsing the configured XML files.
 	 *  This method disregards parsing errors from any single file, and moves on to parsing the next file.
 	 */
-    public void update() {
+	public void parse(final List<File> policyFiles) {
+                                
+        // temporary storage for policy statements
+        final LinkedHashMap<Pattern, List<PolicyStatement>> _policies = new LinkedHashMap<Pattern, List<PolicyStatement>>();
         
-        // update only if files have changed
-        long lastMod = this.getLastModified();
-        if (lastMod > policyFilesLastModTime) {
-            policyFilesLastModTime = lastMod;
-                        
-            // temporary storage for policy statements
-            final LinkedHashMap<Pattern, List<PolicyStatement>> _policies = new LinkedHashMap<Pattern, List<PolicyStatement>>();
-            
-            // loop over policy files
-            for (final File policyFile : policyFiles) {   
+        // loop over policy files
+        for (final File policyFile : policyFiles) {   
 
-                try {
-                    parseXml(policyFile, _policies);
-                    if (LOG.isInfoEnabled()) LOG.info("Loaded information from policy file="+policyFile.getAbsolutePath()); 
-                } catch(Exception e) {
-                    LOG.warn("Error pasring XML policy file: "+policyFile.getAbsolutePath()+": "+e.getMessage());
-                }
-                
+            try {
+                parseXml(policyFile, _policies);
+                if (LOG.isInfoEnabled()) LOG.info("Loaded information from policy file="+policyFile.getAbsolutePath()); 
+            } catch(Exception e) {
+                LOG.warn("Error pasring XML policy file: "+policyFile.getAbsolutePath()+": "+e.getMessage());
             }
-            
-            // update local data storage
-            synchronized (policies) {
-                policies = _policies;
-            }
-            print();
             
         }
+        
+        // update local data storage
+        synchronized (policies) {
+            policies = _policies;
+        }
+        print();            
                 
     }
 
@@ -127,7 +111,7 @@ public class PolicyServiceLocalXmlImpl implements PolicyService {
 	public List<PolicyAttribute> getRequiredAttributes(String resource, String action) {
 	    
         // reload policies if needed
-        update();        
+        watcher.reload();        
 
 		final List<PolicyAttribute> attributes = new ArrayList<PolicyAttribute>();
 		
@@ -191,20 +175,5 @@ public class PolicyServiceLocalXmlImpl implements PolicyService {
 			}
 		}
 	}
-
-	/**
-     * Method to return the last update time of all policy files
-     * @return
-     */
-    private long getLastModified() {
-        
-        long lastModified = 0;
-        for (final File file : policyFiles) {
-            if (file.exists() && file.lastModified()>lastModified) {
-                lastModified = file.lastModified();
-            }
-        }       
-        return lastModified;
-    }
     
 }

@@ -18,6 +18,7 @@
  ******************************************************************************/
 package esg.security.utils.xml;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -88,7 +89,9 @@ public class Parser {
    */
   public static Document toJDOM(String xmlfile) throws JDOMException, IOException {
 
-     Document jdoc = builder.build( xmlfile );
+     FileInputStream in = new FileInputStream( xmlfile );
+     Document jdoc = builder.build( in );
+     in.close();
      return jdoc;
 
   } // toJDOM()
@@ -102,6 +105,7 @@ public class Parser {
 
      StringReader sr = new StringReader(xmlstring);
      Document jdoc =  builder.build(sr);
+     sr.close();
      return jdoc;
 
   } // StringToJDOM()
@@ -125,7 +129,9 @@ public class Parser {
   public static Document toJDOM(String xmlfile, boolean validate) throws JDOMException, IOException {
 
      SAXBuilder _builder = getBuilder(validate);
-     Document jdoc = _builder.build( xmlfile );
+     FileInputStream in = new FileInputStream( xmlfile );
+     Document jdoc = _builder.build( in );
+     in.close();
      return jdoc;
 
   } // toJDOM()
@@ -139,7 +145,9 @@ public class Parser {
 
      SAXBuilder _builder = getBuilder(validate);
      if (xmlfile.indexOf("classpath:")>=0) xmlfile = xmlfile.substring(10);  // remove "classpath:"
-     Document jdoc = _builder.build((new Parser()).getClass().getClassLoader().getResourceAsStream(xmlfile));
+     InputStream in = (new Parser()).getClass().getClassLoader().getResourceAsStream(xmlfile);
+     Document jdoc = _builder.build(in);
+     in.close();
      return jdoc;
 
   } // classpathToJDOM()
@@ -155,6 +163,7 @@ public class Parser {
      InputStream is = ClassLoader.getSystemClassLoader().getResource(filename).openStream();
      //InputStream is = new Object().getClass().getResourceAsStream (filename);
      Document jdoc = _builder.build( is );
+     is.close();
      return jdoc;
 
   } // classpathResourceToJDOM()
@@ -170,6 +179,7 @@ public class Parser {
      StringReader sr = new StringReader(xmlstring);
      SAXBuilder _builder = getBuilder(validate);
      Document jdoc =  _builder.build(sr);
+     sr.close();
      return jdoc;
 
   } // StringToJDOM()

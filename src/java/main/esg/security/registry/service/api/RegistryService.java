@@ -68,16 +68,5 @@ public interface RegistryService {
      * @return
      */
     LinkedHashSet<String> getShards();
-	
-	/**
-	 * Method to return the last update time, in milliseconds from the epoch.
-	 * @return
-	 */
-	long getLastUpdateTime();
-	
-	/**
-	 * Method to reload the content of the registry.
-	 */
-	void update();
 
 }

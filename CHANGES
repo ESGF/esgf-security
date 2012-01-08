@@ -96,3 +96,6 @@ Version 1.5.1
 
 Version 1.5.2
 - Changed the namespace of the shards file.
+
+Version 1.5.3
+- Moved to using esg_policies.xml and esgf_ats.xml
