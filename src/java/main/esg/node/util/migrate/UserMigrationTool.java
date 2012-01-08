@@ -244,7 +244,7 @@ public final class UserMigrationTool {
                 int i=0;
                 while(rs.next()) {
                     //                                               [name]         [description]    [visible]         [automatic_approval]
-                    if(UserMigrationTool.this.groupRoleDAO.addGroup(rs.getString(1),rs.getString(2), rs.getBoolean(3), rs.getBoolean(4))) {
+                    if(UserMigrationTool.this.groupRoleDAO.addGroup(transform(rs.getString(1)),rs.getString(2), rs.getBoolean(3), rs.getBoolean(4))) {
                         i++;
                         System.out.println("Migrated group #"+i+": "+rs.getString(1));
                     }
@@ -261,6 +261,20 @@ public final class UserMigrationTool {
         }
 
         return ret;
+    }
+
+    //Simple helper function to transform strings.  In this case we
+    //use it to turn User to user, which is more amenable to the P2P
+    //group naming convention. Clearly, this can become as ellaborate
+    //as we may wish...
+    private String transform(String in) {
+        String out = null;
+        if(in.equals("User")) {
+            out = in.toLowerCase();
+        }else{
+            out = in;
+        }
+        return out;
     }
 
     public int migrateUsers() {
