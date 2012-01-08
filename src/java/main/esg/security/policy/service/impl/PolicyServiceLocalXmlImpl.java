@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -40,9 +42,9 @@ import esg.security.policy.service.api.PolicyStatement;
 import esg.security.utils.xml.Parser;
 
 /**
- * Implementation of {@link esg.security.policy.service.api.PolicyService} backed up by a local XML configuration file.
- * The XML file contains regular expressions matching the resource identifiers, and this service implementation will return
- * the policy statements for the first match found, for the given action.
+ * Implementation of {@link esg.security.policy.service.api.PolicyService} backed up by one or more local XML configuration files.
+ * The XML files contain regular expressions matching the resource identifiers, and this service implementation will return
+ * the policy statements for the first match found, for the given action. The local policy files are automatically reloaded if changed.
  * 
  * Note that this implementation disregards the case of the "action" parameter (i.e. "Read" and "read" are considered identical).
  * 
@@ -51,17 +53,81 @@ import esg.security.utils.xml.Parser;
  */
 public class PolicyServiceLocalXmlImpl implements PolicyService {
 	
-	final LinkedHashMap<Pattern, List<PolicyStatement>> policies = new LinkedHashMap<Pattern, List<PolicyStatement>>();
+	LinkedHashMap<Pattern, List<PolicyStatement>> policies = new LinkedHashMap<Pattern, List<PolicyStatement>>();
 	
-	public PolicyServiceLocalXmlImpl(final String xmlFilePath) throws Exception {
+	// local XML files holding policy statements
+    private final List<File> policyFiles = new ArrayList<File>();
+    
+    // latest modification time of all policy files
+    long policyFilesLastModTime = 0L; // Unix Epoch
+    
+    private final Log LOG = LogFactory.getLog(this.getClass());
+	
+    /**
+     * Constructor accepts a comma-separated list of one or more files.
+     * Files can be specified with an absolute path (if starting with '/') or with a relative classpath (if not starting with '/').
+     * 
+     * @param xmlFilePaths
+     * @throws Exception
+     */
+	public PolicyServiceLocalXmlImpl(final String xmlFilePaths) throws Exception {
 		
-		final File file = new ClassPathResource(xmlFilePath).getFile();
-		parseXml(file);
+	    // loop over all configured local XML files
+        for (final String xmlFilePath : xmlFilePaths.split("\\s*,\\s*")) {
+            if (LOG.isInfoEnabled()) LOG.info("Parsing XML file:"+xmlFilePath);
+            // absolute path
+            if (xmlFilePath.startsWith("/")) {
+                policyFiles.add( new File(xmlFilePath) );
+            // classpath relative path
+            } else {
+                policyFiles.add( new ClassPathResource(xmlFilePath).getFile() );
+            }
+        }
+        update();
+
 		
 	}
+	
+	/** Method to update the local policy map by re-parsing the configured XML files.
+	 *  This method disregards parsing errors from any single file, and moves on to parsing the next file.
+	 */
+    public void update() {
+        
+        // update only if files have changed
+        long lastMod = this.getLastModified();
+        if (lastMod > policyFilesLastModTime) {
+            policyFilesLastModTime = lastMod;
+                        
+            // temporary storage for policy statements
+            final LinkedHashMap<Pattern, List<PolicyStatement>> _policies = new LinkedHashMap<Pattern, List<PolicyStatement>>();
+            
+            // loop over policy files
+            for (final File policyFile : policyFiles) {   
+
+                try {
+                    parseXml(policyFile, _policies);
+                    if (LOG.isInfoEnabled()) LOG.info("Loaded information from policy file="+policyFile.getAbsolutePath()); 
+                } catch(Exception e) {
+                    LOG.warn("Error pasring XML policy file: "+policyFile.getAbsolutePath()+": "+e.getMessage());
+                }
+                
+            }
+            
+            // update local data storage
+            synchronized (policies) {
+                policies = _policies;
+            }
+            print();
+            
+        }
+                
+    }
 
 	@Override
 	public List<PolicyAttribute> getRequiredAttributes(String resource, String action) {
+	    
+        // reload policies if needed
+        update();        
 
 		final List<PolicyAttribute> attributes = new ArrayList<PolicyAttribute>();
 		
@@ -80,9 +146,17 @@ public class PolicyServiceLocalXmlImpl implements PolicyService {
 
 	}
 	
-	// method to parse the XML file containing the policy statements into the local map.
-	void parseXml(final File file) throws MalformedURLException, IOException, JDOMException {
-		
+	/**
+	 * Method to parse a single XML file containing policy statements into the given policy map.
+	 * 
+	 * @param file
+	 * @param _policies
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws JDOMException
+	 */
+	void parseXml(final File file, final LinkedHashMap<Pattern, List<PolicyStatement>> _policies) throws MalformedURLException, IOException, JDOMException {
+			    	    
 		final Document doc = Parser.toJDOM(file.getAbsolutePath(), false);
 		final Element root = doc.getRootElement();
 		
@@ -95,13 +169,13 @@ public class PolicyServiceLocalXmlImpl implements PolicyService {
 			final Pattern pattern = Pattern.compile(resource);
 			if (patterns.get(resource)==null) {
 				patterns.put(resource, pattern);
-				policies.put(pattern, new ArrayList<PolicyStatement>());
+				_policies.put(pattern, new ArrayList<PolicyStatement>());
 			}
-			policies.get(patterns.get(resource)).add(
-					new PolicyStatementImpl(policy.getAttributeValue("resource"), 
-					    		            policy.getAttributeValue("attribute_type"), 
-					    		            policy.getAttributeValue("attribute_value"),
-					    		            policy.getAttributeValue("action")) 
+			_policies.get(patterns.get(resource)).add(
+			  		      new PolicyStatementImpl(policy.getAttributeValue("resource"), 
+					    	 	                  policy.getAttributeValue("attribute_type"), 
+					    		                  policy.getAttributeValue("attribute_value"),
+					    		                  policy.getAttributeValue("action")) 
 			);
 		}
 		
@@ -118,4 +192,19 @@ public class PolicyServiceLocalXmlImpl implements PolicyService {
 		}
 	}
 
+	/**
+     * Method to return the last update time of all policy files
+     * @return
+     */
+    private long getLastModified() {
+        
+        long lastModified = 0;
+        for (final File file : policyFiles) {
+            if (file.exists() && file.lastModified()>lastModified) {
+                lastModified = file.lastModified();
+            }
+        }       
+        return lastModified;
+    }
+    
 }
