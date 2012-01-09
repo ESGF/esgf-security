@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<policies>
+<policies xmlns="http://www.esgf.org/security">
         <!-- Admin-restricted applications -->
         <policy resource=".*esgf-dashboard.*" attribute_type="wheel" attribute_value="super" action="Read"/>
         
