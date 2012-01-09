@@ -34,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
+import org.jdom.Namespace;
 
 import esg.security.policy.service.api.PolicyAttribute;
 import esg.security.policy.service.api.PolicyService;
@@ -60,6 +61,8 @@ public class PolicyServiceLocalXmlImpl implements PolicyService, ReloadableFileS
     private ReloadableFileSet watcher;
     
     private final Log LOG = LogFactory.getLog(this.getClass());
+    
+    private final static Namespace NS = Namespace.getNamespace("http://www.esgf.org/security");
 	
     /**
      * Constructor accepts a comma-separated list of one or more files.
@@ -147,7 +150,7 @@ public class PolicyServiceLocalXmlImpl implements PolicyService, ReloadableFileS
 		// must store additional map because Pattern does not re-implement hashCode()
 		final Map<String, Pattern> patterns = new HashMap<String, Pattern>();
 		
-		for (final Object pol : root.getChildren("policy")) {
+		for (final Object pol : root.getChildren("policy", NS)) {
 			final Element policy = (Element)pol;
 			final String resource = policy.getAttributeValue("resource");
 			final Pattern pattern = Pattern.compile(resource);
