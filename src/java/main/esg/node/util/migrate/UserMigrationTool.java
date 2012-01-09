@@ -344,7 +344,7 @@ public final class UserMigrationTool {
                 while(rs.next()) {
                     try{
                         uname=rs.getString(1);
-                        gname=rs.getString(2);
+                        gname=transform(rs.getString(2));
                         rname=rs.getString(3);
                         log.trace("Migrating permission tuple: u["+uname+"] g["+gname+"] r["+rname+"] ");
                         if(UserMigrationTool.this.userDAO.addPermission(uname,gname,rname)) {
