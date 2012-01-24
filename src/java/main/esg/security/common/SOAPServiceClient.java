@@ -22,8 +22,10 @@ import java.io.IOException;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpConnectionManager;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.SimpleHttpConnectionManager;
 import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.logging.Log;
@@ -34,14 +36,25 @@ import org.apache.commons.logging.LogFactory;
  * This class uses the Apache {@link HttpClient} to execute the actual HTTP invocation.
  */
 public class SOAPServiceClient {
+    
+    // connection timeout in milliseconds
+    private final static int TIMEOUT = 5000;
 	
-	private final HttpClient client = new HttpClient();
+	private final HttpClient client;
+	
+	public SOAPServiceClient() {
+	    HttpConnectionManager manager = new SimpleHttpConnectionManager();
+	    manager.getParams().setConnectionTimeout(TIMEOUT);
+	    manager.getParams().setSoTimeout(TIMEOUT);
+	    client = new HttpClient(manager);
+	    
+	}
 	
 	protected final static Log LOG = LogFactory.getLog(SOAPServiceClient.class);
 	
 	public String doSoap(final String endpoint, final String soapRequest) {
 		
-		if (LOG.isDebugEnabled()) LOG.debug("Querying SOAP endpoint: "+endpoint);
+		if (LOG.isDebugEnabled()) LOG.debug("Querying SOAP endpoint: "+endpoint+" timeout="+TIMEOUT+" milliseconds");
 	    final PostMethod method = new PostMethod(endpoint);
 
 		try {

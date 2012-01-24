@@ -99,3 +99,6 @@ Version 1.5.2
 
 Version 1.5.3
 - Moved to using esg_policies.xml and esgf_ats.xml, with security namespace xmlns="http://www.esgf.org/security"
+
+Version 1.5.4
+- Inserted connection timeout in SOAPServiceClient, to prevent deadlock when remote services are not available.
