@@ -49,7 +49,7 @@ import esg.security.registry.service.api.UnknownPolicyAttributeTypeException;
 import esg.xml.EsgWhitelist.TrustedServices.Gateway.AttributeService;
 
 /**
- * Implementation of {@link SAMLAuthorizationFactory} that combined the information from the following collaborators:
+ * Implementation of {@link SAMLAuthorizationFactory} that combines the information from the following collaborators:
  * <ul>
  * 	<li>The resource policies from a {@link PolicyService}
  *  <li>The {@link AttributeService}s endpoints from a {@link RegistryService}

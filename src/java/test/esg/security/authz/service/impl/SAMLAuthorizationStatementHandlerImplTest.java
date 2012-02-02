@@ -19,6 +19,8 @@
 package esg.security.authz.service.impl;
 
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -51,8 +53,15 @@ public class SAMLAuthorizationStatementHandlerImplTest {
 	
 	protected final static Log LOG = LogFactory.getLog(SAMLAuthorizationStatementHandlerImplTest.class);
 	
+    private static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+    private static SimpleDateFormat df = new SimpleDateFormat(DATE_FORMAT);
+    
+    private final String NOT_BEFORE = "2012-02-02T16:39:58.047+0000";
+    private final String NOT_ON_OR_AFTER = "2012-02-03T16:39:58.047+0000";
+
+	
 	@Before
-	public void beforeSetup() throws ConfigurationException, SAMLUnknownPrincipalException {
+	public void beforeSetup() throws ConfigurationException, SAMLUnknownPrincipalException, ParseException {
 				
 		// SAML object builder
 		builder = SAMLBuilder.getInstance();
@@ -66,6 +75,8 @@ public class SAMLAuthorizationStatementHandlerImplTest {
 		final Vector<String> actions = new Vector<String>();
 		actions.add(SAMLTestParameters.TEST_ACTION);
 		testAuthorizations = samlAuthorizationsFactory.newInstance(SAMLTestParameters.IDENTIFIER, SAMLTestParameters.TEST_RESOURCE_PATH, actions);
+		testAuthorizations.setNotBefore(df.parse(NOT_BEFORE));
+		testAuthorizations.setNotOnOrAfter(df.parse(NOT_ON_OR_AFTER));
 		
 	}
 	
@@ -117,7 +128,9 @@ public class SAMLAuthorizationStatementHandlerImplTest {
 	        		testAuthorizations.getAuthorizations().get(0).getDecision());
 	        Assert.assertEquals("Wrong action type", samlAuthorizations.getAuthorizations().get(0).getActions().get(0),
 	        		testAuthorizations.getAuthorizations().get(0).getActions().get(0));
-	        
+	        Assert.assertEquals(df.parse(NOT_BEFORE), testAuthorizations.getNotBefore());
+	        Assert.assertEquals(df.parse(NOT_ON_OR_AFTER), testAuthorizations.getNotOnOrAfter());
+	        	        
 		}
 	
 	}

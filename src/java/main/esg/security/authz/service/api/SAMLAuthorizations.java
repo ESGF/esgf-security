@@ -18,6 +18,7 @@
  ******************************************************************************/
 package esg.security.authz.service.api;
 
+import java.util.Date;
 import java.util.Vector;
 
 /**
@@ -36,4 +37,13 @@ public interface SAMLAuthorizations {
 	String getIssuer();
 	
 	void setIssuer(String issuer);
+	
+	Date getNotBefore();
+	    
+	void setNotBefore(Date notBefore);
+	    
+	Date getNotOnOrAfter();
+	    
+	void setNotOnOrAfter(Date notOnOrAfter);
+	
 }

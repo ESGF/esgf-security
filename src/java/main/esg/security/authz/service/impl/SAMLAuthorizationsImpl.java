@@ -18,6 +18,7 @@
  ******************************************************************************/
 package esg.security.authz.service.impl;
 
+import java.util.Date;
 import java.util.Vector;
 
 import esg.security.authz.service.api.SAMLAuthorization;
@@ -39,6 +40,18 @@ public class SAMLAuthorizationsImpl implements SAMLAuthorizations {
 	 * The identity about which the authorization statements are made.
 	 */
 	private String identity;
+	
+	/**
+	 * The date before which these authorizations are NOT be be consider valid.
+	 */
+	private Date notBefore;
+	
+	
+	/**
+	 * The date after which these authorizations are NOT to be considered valid.
+	 */
+	private Date notOnOrAfter;
+
 
 	public SAMLAuthorizationsImpl() {
 		this.authorizations = new Vector<SAMLAuthorization>();
@@ -73,5 +86,21 @@ public class SAMLAuthorizationsImpl implements SAMLAuthorizations {
 	public void setIdentity(String identity) {
 		this.identity = identity;
 	}
+	
+    public Date getNotBefore() {
+        return this.notBefore;
+    }
+
+    public void setNotBefore(Date notBefore) {
+        this.notBefore = notBefore;
+    }
+
+    public Date getNotOnOrAfter() {
+        return this.notOnOrAfter;
+    }
+
+    public void setNotOnOrAfter(Date notOnOrAfter) {
+        this.notOnOrAfter = notOnOrAfter;
+    }
 	
 }
