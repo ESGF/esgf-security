@@ -102,3 +102,6 @@ Version 1.5.3
 
 Version 1.5.4
 - Inserted connection timeout in SOAPServiceClient, to prevent deadlock when remote services are not available.
+
+Version 1.5.5
+- Changing names of policy files to esgf_policies_local.xml, esgf_policies_common.xml
