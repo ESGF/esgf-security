@@ -221,6 +221,7 @@ public class RegistryServiceLocalXmlImpl implements RegistryService, ReloadableF
                                 _attributeServices.put(aType, new ArrayList<URL>());
                             }
             			    _attributeServices.get(aType).add(new URL(_attr.getAttributeValue("attributeService")));
+            			    LOG.info("Added attribute service: "+_attr.getAttributeValue("attributeService"));
             			}
             			
             			// registration service
@@ -229,6 +230,7 @@ public class RegistryServiceLocalXmlImpl implements RegistryService, ReloadableF
                                 _registrationServices.put(aType, new ArrayList<URL>());
                             }
             			    _registrationServices.get(aType).add(new URL(_attr.getAttributeValue("registrationService")));
+            			    LOG.info("Added registration service: "+_attr.getAttributeValue("registrationService"));
             			}
             			
             		}
@@ -237,8 +239,9 @@ public class RegistryServiceLocalXmlImpl implements RegistryService, ReloadableF
         		} else if (root.getName().equals("idp_whitelist")) {
         		    
         		    for (final Object value : root.getChildren("value", NS)) {
-        		        final Element element = (Element)value;
+        		        final Element element = (Element)value;       		        
         		        _identityProviders.add( new URL(element.getText()) );
+        		        LOG.info( "Added identity provider: "+ element.getText());
         		    }
         		    
         		// parse Authorization Services section
@@ -247,13 +250,15 @@ public class RegistryServiceLocalXmlImpl implements RegistryService, ReloadableF
                     for (final Object value : root.getChildren("value", NS)) {
                         final Element element = (Element)value;
                         _authorizationServices.add( new URL(element.getText()) );
+                        LOG.info( "Added authorization service: "+ element.getText());
                     }
         		    
                 // parse LAS servers section
         		} else if (root.getName().equals("las_servers")) {
                     for (final Object obj : root.getChildren("las_server", NS2)) {
-                        final Element element = (Element)obj;
+                        final Element element = (Element)obj;                        
                         _lasServers.add( element.getAttributeValue("ip") );
+                        LOG.info("Added IP: "+  element.getAttributeValue("ip") );
                     }
         		    
                 // parse Solr shards section
