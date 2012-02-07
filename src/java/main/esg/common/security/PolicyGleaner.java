@@ -83,7 +83,7 @@ import org.apache.commons.logging.impl.*;
 public class PolicyGleaner {
 
     private static final Log log = LogFactory.getLog(PolicyGleaner.class);
-    private static final String policyFile = "esgf_policies.xml";
+    private static final String policyFile = "esgf_policies_local.xml";
     private String policyPath = null;
     private Properties props = null;
     private String stringOutput = "<oops>";
@@ -285,7 +285,7 @@ public class PolicyGleaner {
     public static void main(String[] args) {
         PolicyGleaner pGleaner = null;
         pGleaner = new PolicyGleaner(new Properties());
-        pGleaner.loadMyPolicy("../esgf_policies.xml");
+        pGleaner.loadMyPolicy("../esgf_policies_local.xml");
         pGleaner.addPolicy(".*test.*",  "superGroup", "boss", "Write");
         pGleaner.addPolicy(".*cmip5.*", "otherGroup", "user", "Read");
         pGleaner.commit().savePolicyAs("../test_policy.out");
