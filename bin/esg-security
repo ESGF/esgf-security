@@ -372,5 +372,26 @@ setup_policy_files() {
         cp -v ${policy_file_dist_dir}/${policy_file_name}_common.xml ${esg_config_dir}
         chown ${tomcat_user}:${tomcat_group} ${esg_config_dir}/${policy_file_name}_common.xml && \
             chmod 640 ${esg_config_dir}/${policy_file_name}_common.xml
+    else
+        if [  -f "${policy_file_dist_dir}/${policy_file_name}_common.xml" ]; then
+            if (diff <(md5sum_ "${esg_config_dir}/${policy_file_name}_common.xml" | awk ' {print $1}') <(md5sum_ "${policy_file_dist_dir}/${policy_file_name}_common.xml" | awk ' {print $1}')); then
+                echo "Detected change in common policy file... replacing with distribution's common policy file"
+                mv -v ${esg_config_dir}/${policy_file_name}_common.xml{,.bak}
+                cp -v ${policy_file_dist_dir}/${policy_file_name}_common.xml "${esg_config_dir}"
+            fi
+        fi
     fi
 }
+
+#-------------------
+#Utility function, wraps md5sum so it may be used on either mac or
+#linux machines
+md5sum_() {
+    hash -r
+    if type md5sum >& /dev/null; then
+        echo $(md5sum $@)
+    else
+        echo $(md5 $@ | sed -n 's/MD5[ ]*\(.*\)[^=]*=[ ]*\(.*$\)/\2 \1/p')
+    fi
+}
+#-------------------
