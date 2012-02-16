@@ -25,7 +25,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpConnectionManager;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.SimpleHttpConnectionManager;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.logging.Log;
@@ -43,7 +43,8 @@ public class SOAPServiceClient {
 	private final HttpClient client;
 	
 	public SOAPServiceClient() {
-	    HttpConnectionManager manager = new SimpleHttpConnectionManager();
+	    //HttpConnectionManager manager = new SimpleHttpConnectionManager();
+	    HttpConnectionManager manager = new MultiThreadedHttpConnectionManager();
 	    manager.getParams().setConnectionTimeout(TIMEOUT);
 	    manager.getParams().setSoTimeout(TIMEOUT);
 	    client = new HttpClient(manager);
