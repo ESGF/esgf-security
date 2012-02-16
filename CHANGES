@@ -105,3 +105,6 @@ Version 1.5.4
 
 Version 1.5.5
 - Changing names of policy files to esgf_policies_local.xml, esgf_policies_common.xml
+
+Version 1.5.6
+- Switched to apache commons MultiThreadedHttpConnectionManager
