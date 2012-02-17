@@ -18,6 +18,7 @@
  ******************************************************************************/
 package esg.security.attr.service.api;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,6 +53,14 @@ public interface SAMLAttributes {
 	String getIssuer();
 	
 	void setIssuer(String issuer);
+	
+	Date getNotBefore();
+	
+	void setNotBefore(Date date);
+	
+	Date getNotOnOrAfter();
+	
+	void setNotOnOrAfter(Date date);
 
 	/**
 	 * Retrieves string-based access control attributes.

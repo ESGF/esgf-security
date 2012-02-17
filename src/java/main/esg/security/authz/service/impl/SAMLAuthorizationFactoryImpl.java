@@ -19,6 +19,7 @@
 package esg.security.authz.service.impl;
 
 import java.net.URL;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -137,7 +138,8 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 				    // key into the cache map
 				    final String key = identifier + "|" + url +"|" + action;
 					
-					if (!cache.containsKey(key)) {
+					if (!cache.containsKey(key) || isExpired(cache.get(key))) {
+					    if (LOG.isDebugEnabled()) LOG.debug("Key="+key+" not found or expired, must querying attribute service");
 						// query remote attribute service
 						final SAMLAttributes samlAttributes = this.getUserAttributes(identifier, url, attServiceMap.get(url));
 						cache.put(key, samlAttributes);
@@ -298,6 +300,25 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 		} // loop over actions
 		
 		return attServiceMap;
+	}
+	
+	/**
+	 * Method to check that the available SAML attributes are still valid
+	 * @param samlAttributes
+	 * @return
+	 */
+	private boolean isExpired(final SAMLAttributes samlAttributes) {
+	    
+	    final Date now = new Date(System.currentTimeMillis());
+	    if (   now.before(samlAttributes.getNotBefore())
+	        || now.after(samlAttributes.getNotOnOrAfter())) {
+	        if (LOG.isDebugEnabled()) LOG.debug("Cached SAML attributes have expired: now="+now);
+	        LOG.debug("SAML Attributes="+samlAttributes);
+	        return true;
+	    } else {
+	        return false;
+	    }
+	    
 	}
 
 	@Override

@@ -19,6 +19,7 @@
 package esg.security.attr.service.impl;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -40,6 +41,10 @@ public class SAMLAttributesImpl implements SAMLAttributes {
 	private String openid;
 	
 	private String email;
+	
+	private Date notBefore;
+	
+	private Date notOnOrAfter;
 	
 	/**
 	 * The authority that issued these attributes.
@@ -104,7 +109,23 @@ public class SAMLAttributesImpl implements SAMLAttributes {
 		this.email = email;
 	}
 
-	public Map<String,Set<String>> getAttributes() {
+    public Date getNotBefore() {
+        return this.notBefore;
+    }
+
+    public void setNotBefore(Date date) {
+        this.notBefore = date;
+    }
+
+    public Date getNotOnOrAfter() {
+        return this.notOnOrAfter;
+    }
+
+    public void setNotOnOrAfter(Date date) {
+        this.notOnOrAfter = date;
+    }
+
+    public Map<String,Set<String>> getAttributes() {
 		return Collections.unmodifiableMap(attributes);
 	}
 
@@ -143,6 +164,7 @@ public class SAMLAttributesImpl implements SAMLAttributes {
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer("Openid="+openid+" First Name="+firstName+" Last Name="+lastName+" Email="+email+" Issuer="+issuer);
+		sb.append("\n\tValid not before="+this.getNotBefore()+" and notOnOrAfter="+this.getNotOnOrAfter());
 		for (final String attType : attributes.keySet()) {
 			sb.append("\n\tAttribute type="+attType+" value(s)=");
 			for (final String attValue : attributes.get(attType)) {

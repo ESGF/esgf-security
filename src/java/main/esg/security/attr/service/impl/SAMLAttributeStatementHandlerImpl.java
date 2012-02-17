@@ -25,6 +25,7 @@ import org.joda.time.DateTime;
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.Attribute;
 import org.opensaml.saml2.core.AttributeStatement;
+import org.opensaml.saml2.core.Conditions;
 import org.opensaml.saml2.core.Issuer;
 import org.opensaml.xml.XMLObject;
 import org.opensaml.xml.schema.XSAny;
@@ -152,6 +153,11 @@ class SAMLAttributeStatementHandlerImpl implements SAMLAttributeStatementHandler
 		// extract attribute authority
 		final Issuer issuer = assertion.getIssuer();
 		if (issuer!=null) samlAttributes.setIssuer(issuer.getValue());
+		
+		// record valid time interval
+		final Conditions conditions = assertion.getConditions();
+		samlAttributes.setNotBefore(conditions.getNotBefore().toDate());
+		samlAttributes.setNotOnOrAfter(conditions.getNotOnOrAfter().toDate());
 					
 		// loop over all SAML attributes
 		final List<AttributeStatement> attributeStatements = assertion.getAttributeStatements();
