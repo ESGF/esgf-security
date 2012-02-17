@@ -92,6 +92,10 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 	
 	private final static Log LOG = LogFactory.getLog(SAMLAuthorizationFactoryImpl.class);
 	
+    // Map that caches the user attributes (type and value) retrieved from a remote attribute service, for a given action.
+	// map: (user_openid+attribute_service_url+action, user_attributes))
+    final Map<String, SAMLAttributes> cache = new HashMap<String, SAMLAttributes>();
+	
 	public SAMLAuthorizationFactoryImpl(final String issuer, final PolicyService policyService, final RegistryService registryService) {
 		
 		this.issuer = issuer;
@@ -114,9 +118,6 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 		// get map(att_service_url, att_type+): for each attribute service it maps all the attribute types that must be queried (across all actions)
 		final Map<URL, Set<String>> attServiceMap = this.getAttributeServices(resource, policyMap);
 		
-		// cache map(att_service_url, (att_type & att_value)+):
-		// for each attribute service URL it caches the user attributes (type and value) retrieved from that service.
-		final Map<URL, SAMLAttributes> userAttributesMap = new HashMap<URL, SAMLAttributes>();
 		for (final String action : actions) {
 			
 			// default decision for this action
@@ -132,15 +133,20 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 			
 				// retrieve user attributes from each service, if it was not queried already
 				for (final URL url : attServiceMap.keySet()) {
+				    
+				    // key into the cache map
+				    final String key = identifier + "|" + url +"|" + action;
 					
-					if (!userAttributesMap.containsKey(url)) {
+					if (!cache.containsKey(key)) {
 						// query remote attribute service
 						final SAMLAttributes samlAttributes = this.getUserAttributes(identifier, url, attServiceMap.get(url));
-						userAttributesMap.put(url, samlAttributes);
+						cache.put(key, samlAttributes);
+					} else {
+					    if (LOG.isDebugEnabled()) LOG.debug("Reusing attribute service invocation for:"+key+" value="+cache.get(key));
 					}
 					
 					// match resource policies for this action to user attributes from this attribute service
-					boolean authorized = this.match(policyMap.get(action), userAttributesMap.get(url));
+					boolean authorized = this.match(policyMap.get(action), cache.get(key));
 					if (authorized) {
 						decision = DecisionTypeEnumeration.PERMIT.toString();
 						// don't query any more attribute services, for this action
