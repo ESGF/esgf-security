@@ -14,16 +14,9 @@
     	<!-- <property name="whiteListCertificateProvider" ref="whiteList"/> -->
     </bean>
     <bean name="samlAttributeService" class="esg.security.attr.service.impl.SAMLAttributeServiceSoapImpl" />
- 	<!-- Example implementation of SAMLAttributeFactory, configured to write SAML attributes of a specific "name"
-  	<bean id="samlAttributeFactory" class="esg.security.attr.service.impl.SAMLAttributeFactoryTrivialImpl">
-  		<property name="samlStringAttributeName"><value>urn:esgf:test:attribute_name</value></property>
-  		<property name="samlGroupRoleAttributeName"><value>urn:esgf:test:grouprole</value></property>
-  	</bean> -->
-  	<!-- Example implementation that looks up user attributes in local XML file 
-  	<bean id="samlAttributeFactory" class="esg.security.attr.service.impl.SAMLAttributeFactoryLocalXmlImpl">
-  		<constructor-arg index="0"><value>ESGF Attribute Service</value></constructor-arg>
-  		<constructor-arg index="1"><value>esg/security/config/ESGFusers.xml</value></constructor-arg>
-  	</bean> -->
+    
+
+ 
   	<!-- Production implementation that looks up users in a relational database -->
   	<bean id="samlAttributeFactory" class="esg.security.attr.service.impl.SAMLAttributeFactoryDAOImpl">
   		<constructor-arg index="0"><value>ESGF Attribute Service</value></constructor-arg>
@@ -35,18 +28,29 @@
   	<bean id="esgfProperties" class="esg.common.util.ESGFProperties" />
 
   	
-  	<!-- ESG SAML-based Authorization Service stack (with example white list) -->
-<!--   	<bean name="authorizationServiceController" class="esg.security.authz.web.SAMLAuthorizationServiceSoapController">
+
+  	<!-- Registration Service -->
+  	<bean id="registrationService" class="esg.security.registration.service.impl.RegistrationServiceImpl" />
+  	<bean id="registrationServiceController" class="esg.security.registration.web.RegistrationServiceController">
+  		<constructor-arg index="0" ref="registrationService"/>
   	</bean>
+  	
+
+  	
+  	<!-- Test controller -->
+  	<bean name="testController" class="esg.security.webclient.TestController" />
+  	
+  	<!-- Everything below here is obsolete and will be replaced, in time, by the same services already deployed on the ORP and IdP -->
+
+  	<!-- ESG SAML-based Authorization Service stack (with example white list) -->
+    <bean name="authorizationServiceController" class="esg.security.authz.web.SAMLAuthorizationServiceSoapController"></bean>
   	<bean name="samlAuthorizationService" class="esg.security.authz.service.impl.SAMLAuthorizationServiceSoapImpl" />
- -->  	
-<!--   	<bean id="samlAuthorizationFactory" class="esg.security.authz.service.impl.SAMLAuthorizationFactoryImpl">
+ 	<bean id="samlAuthorizationFactory" class="esg.security.authz.service.impl.SAMLAuthorizationFactoryImpl">
   		<constructor-arg index="0"><value>ESGF Authorization Service</value></constructor-arg>
   		<constructor-arg index="1" ref="policyService"/>
   		<constructor-arg index="2" ref="registryService"/>
-  	</bean>
- -->  	
-<!--   	<bean id="policyService" class="esg.security.policy.service.impl.PolicyServiceLocalXmlImpl">
+  	</bean> 	
+  	<bean id="policyService" class="esg.security.policy.service.impl.PolicyServiceLocalXmlImpl">
   		<constructor-arg index="0"><value>/esg/config/esgf_policies_local.xml, /esg/config/esgf_policies_common.xml</value></constructor-arg>
   	</bean>
   	<bean id="registryService" class="esg.security.registry.service.impl.RegistryServiceLocalXmlImpl">
@@ -55,24 +59,6 @@
   	<bean id="policyServiceController" class="esg.security.policy.web.PolicyServiceController">
   		<constructor-arg index="0" ref="policyService"/>
   		<constructor-arg index="1" ref="registryService"/>
-  	</bean>
- -->  	
-  	<!-- Registration Service -->
-  	<bean id="registrationService" class="esg.security.registration.service.impl.RegistrationServiceImpl" />
-  	<bean id="registrationServiceController" class="esg.security.registration.web.RegistrationServiceController">
-  		<constructor-arg index="0" ref="registrationService"/>
-  	</bean>
-  	
-  	<!-- Example white list -->
-<!--   	<bean name="whiteList" class="esg.security.common.WhiteListCertificateProvider">
-  		<constructor-arg index="0">
-  			<list>
-  				<value>CN=https://esg-gateway.jpl.nasa.gov/myopenid/rootAdmin, OU=jpl-esg.jpl.nasa.gov, OU=ESG-JPL, O=ESG</value>
-  			</list>
-  		</constructor-arg>
-  	</bean> -->
-  	
-  	<!-- Test controller -->
-  	<bean name="testController" class="esg.security.webclient.TestController" />
+  	</bean>	  	
 
 </beans>
