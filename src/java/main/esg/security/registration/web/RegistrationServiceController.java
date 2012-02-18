@@ -75,9 +75,8 @@ public class RegistrationServiceController {
         final String role = this.getMandatoryRequestParameter(SAMLParameters.HTTP_PARAMETER_ROLE, request);
         if (LOG.isInfoEnabled()) LOG.info("Registering user: "+user+" in group: "+group+" with role: "+role);
         
-        // FIXME
-        //if (!group.equals("Test Group")) throw new ServletException("GET method only supports registration in 'Test Group'");
-        //if (!role.equals("User")) throw new ServletException("GET method only supports registration for role 'User'");
+        if (!group.equals("Test Group")) throw new ServletException("GET method only supports registration in 'Test Group'");
+        if (!role.equals("User")) throw new ServletException("GET method only supports registration for role 'User'");
         
         this.process(user, group, role, response);
         
