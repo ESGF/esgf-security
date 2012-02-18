@@ -77,8 +77,11 @@ class SAMLAuthorizationStatementHandlerImpl implements SAMLAuthorizationStatemen
 	        (samlAuthorizations.getNotBefore()!=null ? new DateTime(samlAuthorizations.getNotBefore()) : new DateTime());
 	    final DateTime notOnOrAfter = 
 	        (samlAuthorizations.getNotOnOrAfter()!=null ? new DateTime(samlAuthorizations.getNotOnOrAfter()) : notBefore.plusSeconds(SAMLParameters.ASSERTION_LIFETIME_IN_SECONDS));
-	    assertion.setConditions( builder.getConditions(notBefore, notOnOrAfter) );
-	    
+	    // FIXME
+	    if (includeFlag) {
+	        assertion.setConditions( builder.getConditions(notBefore, notOnOrAfter) );
+	    }
+	        
 	    final ActionBuilder actionBuilder = new ActionBuilder();
         	
         for (final SAMLAuthorization authz : samlAuthorizations.getAuthorizations()) {
