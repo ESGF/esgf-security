@@ -10,13 +10,12 @@ import java.util.Map;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
-import org.jdom.Namespace;
 
 import esg.security.common.SAMLParameters;
 import esg.security.policy.service.api.PolicyAttribute;
 import esg.security.policy.service.impl.PolicyAttributeImpl;
 import esg.security.utils.xml.Parser;
-import eske.utils.xml.Serializer;
+import esg.security.utils.xml.Serializer;
 
 /**
  * Utility class for XML serialization/deserialization of policy attributes.

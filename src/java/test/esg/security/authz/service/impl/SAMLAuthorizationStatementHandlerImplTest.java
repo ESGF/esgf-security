@@ -39,7 +39,7 @@ import esg.security.authz.service.api.SAMLAuthorizations;
 import esg.security.common.SAMLBuilder;
 import esg.security.common.SAMLTestParameters;
 import esg.security.common.SAMLUnknownPrincipalException;
-import eske.utils.xml.XmlChecker;
+import esg.security.utils.xml.XmlChecker;
 
 /**
  * Test class for {@link SAMLAuthorizationStatementHandlerImpl}.

@@ -36,14 +36,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import esg.security.attr.service.api.SAMLAttributes;
-import esg.security.attr.service.impl.GroupRoleImpl;
-import esg.security.attr.service.impl.SAMLAttributeFactoryTrivialImpl;
-import esg.security.attr.service.impl.SAMLAttributeStatementHandlerImpl;
 import esg.security.common.SAMLBuilder;
 import esg.security.common.SAMLParameters;
 import esg.security.common.SAMLTestParameters;
 import esg.security.common.SAMLUnknownPrincipalException;
-import eske.utils.xml.XmlChecker;
+import esg.security.utils.xml.XmlChecker;
 
 
 /**

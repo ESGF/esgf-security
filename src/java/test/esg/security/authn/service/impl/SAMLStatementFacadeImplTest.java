@@ -40,7 +40,7 @@ import esg.security.common.SAMLParameters;
 import esg.security.common.SAMLTestParameters;
 import esg.security.common.SAMLUnknownPrincipalException;
 import esg.security.utils.ssl.TrivialCertGenerator;
-import eske.utils.xml.XmlChecker;
+import esg.security.utils.xml.XmlChecker;
 
 public class SAMLStatementFacadeImplTest {
 	

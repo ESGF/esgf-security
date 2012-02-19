@@ -27,7 +27,6 @@
 	<classpathentry kind="lib" path="lib/fetched/commons-httpclient-3.1.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/commons-io-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/commons-lang-2.5.jar"/>
-	<classpathentry kind="lib" path="lib/fetched/eske-utils-xml-1.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/jdom-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/spring-beans-2.5.6.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/spring-context-2.5.6.jar"/>

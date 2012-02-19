@@ -25,12 +25,10 @@ import org.junit.Test;
 import org.opensaml.xml.ConfigurationException;
 import org.springframework.core.io.ClassPathResource;
 
-import esg.security.attr.service.impl.SAMLAttributeFactoryTrivialImpl;
-import esg.security.attr.service.impl.SAMLAttributeServiceSoapImpl;
 import esg.security.authz.service.impl.SAMLAuthorizationFactoryTrivialImpl;
 import esg.security.common.SAMLBuilder;
 import esg.security.common.SAMLTestParameters;
-import eske.utils.xml.XmlChecker;
+import esg.security.utils.xml.XmlChecker;
 
 /**
  * Test class for {@link SAMLAttributeServiceSoapImpl}.

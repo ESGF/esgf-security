@@ -34,11 +34,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import esg.security.attr.service.impl.SAMLAttributeFactoryTrivialImpl;
-import esg.security.attr.service.impl.SAMLAttributeQueryResponseBuilderImpl;
 import esg.security.common.SAMLBuilder;
 import esg.security.common.SAMLTestParameters;
-import eske.utils.xml.XmlChecker;
+import esg.security.utils.xml.XmlChecker;
 
 /**
  * Test class for {@link SAMLAuthorizationQueryRequestBuilderImpl}.

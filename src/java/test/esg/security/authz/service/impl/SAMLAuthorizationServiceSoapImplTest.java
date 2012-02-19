@@ -25,11 +25,9 @@ import org.junit.Test;
 import org.opensaml.xml.ConfigurationException;
 import org.springframework.core.io.ClassPathResource;
 
-import esg.security.authz.service.impl.SAMLAuthorizationFactoryTrivialImpl;
-import esg.security.authz.service.impl.SAMLAuthorizationServiceSoapImpl;
 import esg.security.common.SAMLBuilder;
 import esg.security.common.SAMLTestParameters;
-import eske.utils.xml.XmlChecker;
+import esg.security.utils.xml.XmlChecker;
 
 public class SAMLAuthorizationServiceSoapImplTest {
 		

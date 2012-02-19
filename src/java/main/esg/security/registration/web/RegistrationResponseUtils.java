@@ -8,7 +8,7 @@ import org.jdom.JDOMException;
 
 import esg.security.common.SAMLParameters;
 import esg.security.utils.xml.Parser;
-import eske.utils.xml.Serializer;
+import esg.security.utils.xml.Serializer;
 
 /**
  * Class to serialize/deserialize a registration request to/from XML.
