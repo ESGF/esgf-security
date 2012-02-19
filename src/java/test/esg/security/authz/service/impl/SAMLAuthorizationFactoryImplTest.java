@@ -50,8 +50,9 @@ import esg.security.registry.service.impl.RegistryServiceLocalXmlImpl;
 public class SAMLAuthorizationFactoryImplTest {
 	
 	private static String ISSUER = "ESGF Test";
-	private static String POLICY_FILE = "esg/security/policy/service/data/ESGFpolicies.xml";
-	private static String REGISTRY_FILE = "esg/security/registry/service/data/ESGFregistry.xml";
+	private static String POLICY_FILE = "esg/security/policy/service/data/esgf_policies.xml";
+	private static String REGISTRY_FILE = "esg/security/registry/service/data/esgf_ats.xml";
+	private static String IDENTIFIER = "user_openid";
 	
 	private SAMLAuthorizationFactoryImpl factory;
 	private PolicyService policyService;
@@ -74,7 +75,8 @@ public class SAMLAuthorizationFactoryImplTest {
 		actions.add(PolicyAction.Read.toString());
 		actions.add(PolicyAction.Write.toString());
 		Map<URL, Set<String>> attServices = factory.getAttributeServices(resource, factory.getPolicies(resource, actions));
-		URL url = new URL("https://pcmdi3.llnl.gov/esgcet/saml/soap/secure/attributeService.htm");
+		
+		URL url = new URL("https://pcmdi9.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm");
 		Assert.assertTrue(attServices.containsKey(url));
 		final Set<String> attTypes = attServices.get(url);
 		Assert.assertEquals(2,attTypes.size());
@@ -90,11 +92,11 @@ public class SAMLAuthorizationFactoryImplTest {
 		Vector<String> actions = new Vector<String>();
 		actions.add(PolicyAction.Read.toString());
 		Map<URL, Set<String>> attServices = factory.getAttributeServices(resource, factory.getPolicies(resource, actions));
-		URL url = new URL("https://esg-gateway.jpl.nasa.gov/saml/soap/secure/attributeService.htm");
+		URL url = new URL("https://esg-datanode.jpl.nasa.gov/esgf-security/saml/soap/secure/attributeService.htm");
 		Assert.assertTrue(attServices.containsKey(url));
 		final Set<String> attTypes = attServices.get(url);
 		Assert.assertEquals(1,attTypes.size());
-		Assert.assertTrue(attTypes.contains("AIRS"));
+		Assert.assertTrue(attTypes.contains("NASA OBS"));
 	}
 	
 	@Test
@@ -138,7 +140,7 @@ public class SAMLAuthorizationFactoryImplTest {
 		
 		SAMLAttributes userAttributes = new SAMLAttributesImpl("some user", "some issuer");
 		userAttributes.addAttribute("CMIP5 Research", "User");
-		Assert.assertEquals(true, factory.match(policies, userAttributes));
+		Assert.assertEquals(true, factory.match(policies, userAttributes, IDENTIFIER));
 		
 	}
 	
@@ -150,7 +152,7 @@ public class SAMLAuthorizationFactoryImplTest {
 		policies.add(new PolicyAttributeImpl("CMIP5 Commercial","Admin"));
 		
 		SAMLAttributes userAttributes = new SAMLAttributesImpl("some user", "some issuer");
-		Assert.assertEquals(false, factory.match(policies, userAttributes));
+		Assert.assertEquals(false, factory.match(policies, userAttributes, IDENTIFIER));
 		
 	}
 	
@@ -163,7 +165,7 @@ public class SAMLAuthorizationFactoryImplTest {
 		
 		SAMLAttributes userAttributes = new SAMLAttributesImpl("some user", "some issuer");
 		userAttributes.addAttribute("CMIP5 Research", "SuperUser");
-		Assert.assertEquals(false, factory.match(policies, userAttributes));
+		Assert.assertEquals(false, factory.match(policies, userAttributes, IDENTIFIER));
 		
 	}
 	
@@ -176,7 +178,7 @@ public class SAMLAuthorizationFactoryImplTest {
 		
 		SAMLAttributes userAttributes = new SAMLAttributesImpl("some user", "some issuer");
 		userAttributes.addAttribute("CMIP5 Public", "User");
-		Assert.assertEquals(false, factory.match(policies, userAttributes));
+		Assert.assertEquals(false, factory.match(policies, userAttributes, IDENTIFIER));
 		
 	}
 	
@@ -191,7 +193,7 @@ public class SAMLAuthorizationFactoryImplTest {
 		userAttributes.addAttribute("CMIP5 Research","User");
 		userAttributes.addAttribute("CMIP5 Commercial","Admin");
 		userAttributes.addAttribute("AIRS","Admin");
-		Assert.assertEquals(true, factory.match(policies, userAttributes));
+		Assert.assertEquals(true, factory.match(policies, userAttributes, IDENTIFIER));
 		
 	}
 	
@@ -203,7 +205,7 @@ public class SAMLAuthorizationFactoryImplTest {
 		SAMLAttributes userAttributes = new SAMLAttributesImpl("some user", "some issuer");
 		userAttributes.addAttribute("CMIP5 Research","User");
 		userAttributes.addAttribute("CMIP5 Commercial","Admin");
-		Assert.assertEquals(false, factory.match(policies, userAttributes));
+		Assert.assertEquals(false, factory.match(policies, userAttributes, IDENTIFIER));
 	
 	}
 	

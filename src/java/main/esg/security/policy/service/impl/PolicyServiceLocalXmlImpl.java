@@ -112,7 +112,7 @@ public class PolicyServiceLocalXmlImpl implements PolicyService, ReloadableFileS
 
 	@Override
 	public List<PolicyAttribute> getRequiredAttributes(String resource, String action) {
-	    
+	    	    
         // reload policies if needed
         watcher.reload();        
 

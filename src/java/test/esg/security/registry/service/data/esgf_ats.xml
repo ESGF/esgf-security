@@ -20,6 +20,12 @@
                attributeService="https://pcmdi3.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm"
                registrationService="https://pcmdi3.llnl.gov/esgf-security/secure/registrationService.htm" 
                license="licenses/ipccResearchLicense.xml"/>    
+    <attribute type="CMIP5 Commercial" 
+               description="Users of CMIP5 datasets for commercial purposes"
+               attributeService="https://pcmdi9.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm"
+               registrationService="https://pcmdi9.llnl.gov/esgf-security/secure/registrationService.htm" 
+               license="licenses/ipccCommercialLicense.xml"/>
+               
     <attribute type="wheel"
                attributeService="https://localhost/esgf-security/saml/soap/secure/attributeService.htm"
                description="Local Administrators" />

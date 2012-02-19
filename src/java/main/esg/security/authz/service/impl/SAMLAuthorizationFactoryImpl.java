@@ -23,6 +23,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -79,7 +80,6 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 	 * Service responsible for locating the AttributeService managing the required attribute types.
 	 */
 	private RegistryService registryService;
-	
 
 	/**
 	 * Client used to build the attribute query request.
@@ -94,8 +94,8 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 	private final static Log LOG = LogFactory.getLog(SAMLAuthorizationFactoryImpl.class);
 	
     // Map that caches the user attributes (type and value) retrieved from a remote attribute service, for a given action.
-	// map: (user_openid+attribute_service_url+action, user_attributes))
-    final Map<String, SAMLAttributes> cache = new HashMap<String, SAMLAttributes>();
+	// map: (user_openid, user_attributes+))
+    final Map<String, Set<SAMLAttributes>> cache = new HashMap<String, Set<SAMLAttributes>>();
 	
 	public SAMLAuthorizationFactoryImpl(final String issuer, final PolicyService policyService, final RegistryService registryService) {
 		
@@ -128,27 +128,22 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 			if (isFree(policyMap.get(action))) {
 				log("Action="+action+" on resource="+resource+" is allowed with NO resctrictions");	
 				decision = DecisionTypeEnumeration.PERMIT.toString();
+			
+			} else if (isCached(identifier, policyMap.get(action))) {
+			    log("User="+identifier +" has cached attributes for action="+action+" on resource="+resource);
+                decision = DecisionTypeEnumeration.PERMIT.toString();
 				
 			// restricted action on resource
 			} else {
 			
 				// retrieve user attributes from each service, if it was not queried already
 				for (final URL url : attServiceMap.keySet()) {
-				    
-				    // key into the cache map
-				    final String key = identifier + "|" + url +"|" + action;
-					
-					if (!cache.containsKey(key) || isExpired(cache.get(key))) {
-					    if (LOG.isDebugEnabled()) LOG.debug("Key="+key+" not found or expired, must querying attribute service");
-						// query remote attribute service
-						final SAMLAttributes samlAttributes = this.getUserAttributes(identifier, url, attServiceMap.get(url));
-						cache.put(key, samlAttributes);
-					} else {
-					    if (LOG.isDebugEnabled()) LOG.debug("Reusing attribute service invocation for:"+key+" value="+cache.get(key));
-					}
-					
+				    					
+                    // query remote attribute service
+                    final SAMLAttributes samlAttributes = this.getUserAttributes(identifier, url, attServiceMap.get(url));
+                    					
 					// match resource policies for this action to user attributes from this attribute service
-					boolean authorized = this.match(policyMap.get(action), cache.get(key));
+					boolean authorized = this.match(policyMap.get(action), samlAttributes, identifier);
 					if (authorized) {
 						decision = DecisionTypeEnumeration.PERMIT.toString();
 						// don't query any more attribute services, for this action
@@ -189,6 +184,33 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 	}
 	
 	/**
+	 * Method to establish authorization versus the cached user attributes.
+	 * 
+	 * @param identifier
+	 * @param policies
+	 * @return
+	 */
+	boolean isCached(final String identifier, final List<PolicyAttribute> policies) {
+	    
+	    if (cache.containsKey(identifier)) {
+	        
+	        for (Iterator<SAMLAttributes> iter = cache.get(identifier).iterator(); iter.hasNext();) {
+	            final SAMLAttributes samlAttributes = iter.next();
+	            // remove expired attributes
+	            if (this.isExpired(samlAttributes)) {
+	                iter.remove();
+	            // match user attributes versus required policies
+	            } else if (this.match(policies, samlAttributes, identifier)) {
+	                return true;
+	            }
+	        }
+	    }
+	    
+	    // matching cached attributes not found
+	    return false;
+	}
+	
+	/**
 	 * Internal method to retrieve the user attributes for the given types from a remote attribute service
 	 * @param url
 	 * @param attributeTypes
@@ -217,9 +239,10 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 	 * to the user attributes retrieved from an attribute service
 	 * @param policies
 	 * @param samlAttributes
+	 * @param identifier
 	 * @return
 	 */
-	boolean match(List<PolicyAttribute> policies, SAMLAttributes samlAttributes) {
+	boolean match(List<PolicyAttribute> policies, SAMLAttributes samlAttributes, String identifier) {
 		
 		if (samlAttributes!=null) { // may be null because of retrieval error
 			for (final PolicyAttribute policy : policies) {
@@ -230,6 +253,13 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 				// the user attribute values for this attribute type
 				final Set<String> userAttValues = userAttributes.get(policy.getType());
 				if (userAttValues!=null && userAttValues.contains(policy.getValue())) {
+				    
+				    // cache the user that generated a positive authorization
+                    if (!cache.containsKey(identifier)) {
+                        cache.put(identifier, new HashSet<SAMLAttributes>());
+                    }
+                    cache.get(identifier).add(samlAttributes);
+				    
 					return true;
 				}
 			}
