@@ -77,7 +77,6 @@ class SAMLAuthorizationStatementHandlerImpl implements SAMLAuthorizationStatemen
 	        (samlAuthorizations.getNotBefore()!=null ? new DateTime(samlAuthorizations.getNotBefore()) : new DateTime());
 	    final DateTime notOnOrAfter = 
 	        (samlAuthorizations.getNotOnOrAfter()!=null ? new DateTime(samlAuthorizations.getNotOnOrAfter()) : notBefore.plusSeconds(SAMLParameters.ASSERTION_LIFETIME_IN_SECONDS));
-	    // FIXME
 	    if (includeFlag) {
 	        assertion.setConditions( builder.getConditions(notBefore, notOnOrAfter) );
 	    }
@@ -128,8 +127,10 @@ class SAMLAuthorizationStatementHandlerImpl implements SAMLAuthorizationStatemen
 		samlAuthorizations.setIdentity(openid);
 		
 		// extract valid dates
-		samlAuthorizations.setNotBefore( assertion.getConditions().getNotBefore().toDate() );
-		samlAuthorizations.setNotOnOrAfter( assertion.getConditions().getNotOnOrAfter().toDate() );
+		if (assertion.getConditions()!=null) {
+		    samlAuthorizations.setNotBefore( assertion.getConditions().getNotBefore().toDate() );
+		    samlAuthorizations.setNotOnOrAfter( assertion.getConditions().getNotOnOrAfter().toDate() );
+		}
 
 		// loop over all SAML authzDecisionStatements in assertion
 		for (final AuthzDecisionStatement authzStatement : assertion.getAuthzDecisionStatements()) {

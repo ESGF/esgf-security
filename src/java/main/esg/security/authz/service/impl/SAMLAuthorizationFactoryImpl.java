@@ -340,7 +340,9 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 	private boolean isExpired(final SAMLAttributes samlAttributes) {
 	    
 	    final Date now = new Date(System.currentTimeMillis());
-	    if (   now.before(samlAttributes.getNotBefore())
+	    if (   samlAttributes.getNotBefore()==null
+	        || samlAttributes.getNotOnOrAfter()==null
+	        || now.before(samlAttributes.getNotBefore())
 	        || now.after(samlAttributes.getNotOnOrAfter())) {
 	        if (LOG.isDebugEnabled()) LOG.debug("Cached SAML attributes have expired: now="+now);
 	        LOG.debug("SAML Attributes="+samlAttributes);

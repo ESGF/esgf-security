@@ -156,8 +156,10 @@ class SAMLAttributeStatementHandlerImpl implements SAMLAttributeStatementHandler
 		
 		// record valid time interval
 		final Conditions conditions = assertion.getConditions();
-		samlAttributes.setNotBefore(conditions.getNotBefore().toDate());
-		samlAttributes.setNotOnOrAfter(conditions.getNotOnOrAfter().toDate());
+		if (conditions!=null) {
+		    samlAttributes.setNotBefore(conditions.getNotBefore().toDate());
+		    samlAttributes.setNotOnOrAfter(conditions.getNotOnOrAfter().toDate());
+		}
 					
 		// loop over all SAML attributes
 		final List<AttributeStatement> attributeStatements = assertion.getAttributeStatements();

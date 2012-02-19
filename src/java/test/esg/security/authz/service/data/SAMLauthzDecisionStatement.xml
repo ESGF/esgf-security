@@ -3,7 +3,6 @@
    <saml2:Subject>
       <saml2:NameID Format="urn:esg:openid">Test Openid</saml2:NameID>
    </saml2:Subject>
-   <saml2:Conditions NotBefore="2012-02-02T16:39:58.047Z" NotOnOrAfter="2012-02-03T16:39:58.047Z"/>
    <saml2:AuthzDecisionStatement Decision="Permit" Resource="/PATH/TO/FILE">
       <saml2:Action>Read</saml2:Action>
    </saml2:AuthzDecisionStatement>

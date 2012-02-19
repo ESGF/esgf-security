@@ -3,12 +3,12 @@
 <policies xmlns="http://www.esgf.org/security">
 
 
-	<policy resource="\Acmip5.*" attribute_type="CMIP5 Research" attribute_value="User" action="Read"/>
-	<policy resource="\Acmip5.*" attribute_type="CMIP5 Commercial" attribute_value="User" action="Read"/>
-	<policy resource="\Acmip5.*" attribute_type="CMIP5 Research"  attribute_value="Admin" action="Write"/>
-	<policy resource=".+\.airs\..+" attribute_type="NASA OBS" attribute_value="User" action="Read"/>
-	<policy resource=".+\.airs\..+" attribute_type="NASA OBS" attribute_value="Admin" action="Write"/>
-	<policy resource=".*mls.*" attribute_type="NASA OBS" attribute_value="User" action="Read"/>
+	<policy resource="\Acmip5.*" attribute_type="CMIP5 Research" attribute_value="user" action="Read"/>
+	<policy resource="\Acmip5.*" attribute_type="CMIP5 Commercial" attribute_value="user" action="Read"/>
+	<policy resource="\Acmip5.*" attribute_type="CMIP5 Research"  attribute_value="admin" action="Write"/>
+	<policy resource=".+\.airs\..+" attribute_type="NASA OBS" attribute_value="user" action="Read"/>
+	<policy resource=".+\.airs\..+" attribute_type="NASA OBS" attribute_value="admin" action="Write"/>
+	<policy resource=".*mls.*" attribute_type="NASA OBS" attribute_value="user" action="Read"/>
 	
 	<!-- Everybody can read, nobody can write -->
 	<policy resource=".*\/free\/.*" attribute_type="ANY" attribute_value="" action="Read"/>

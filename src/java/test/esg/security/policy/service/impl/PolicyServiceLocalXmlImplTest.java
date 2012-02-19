@@ -34,7 +34,7 @@ import esg.security.policy.service.api.PolicyService;
  */
 public class PolicyServiceLocalXmlImplTest {
 	
-	private static String XMLFILE = "esg/security/policy/service/data/ESGFpolicies.xml";
+	private static String XMLFILE = "esg/security/policy/service/data/esgf_policies.xml";
 	
 	private PolicyService service;
 	
@@ -43,11 +43,11 @@ public class PolicyServiceLocalXmlImplTest {
 	
 	private final String ATT_TYPE1 = "CMIP5 Research";
 	private final String ATT_TYPE2 = "CMIP5 Commercial";
-	private final String ATT_TYPE3 = "AIRS";
+	private final String ATT_TYPE3 = "NASA OBS";
 	private final String ATT_TYPE4 = "MLS";
 	
-	private final String ATT_VALUEA = "User";
-	private final String ATT_VALUEB = "Admin";
+	private final String ATT_VALUEA = "user";
+	private final String ATT_VALUEB = "admin";
 	
 	@Before
 	public void setup() throws Exception {
@@ -68,7 +68,7 @@ public class PolicyServiceLocalXmlImplTest {
 		testPolicy("nasa.jpl.airs.monthly.file", "Write", new String[] { ATT_TYPE3 }, new String[] { ATT_VALUEB } );
 		testPolicy("", "Read", new String[] {}, new String[] {} );
 		testPolicy("cmip5", "", new String[] {}, new String[] {} );
-		testPolicy("xxmlsxx", "Read", new String[] { ATT_TYPE4 }, new String[] { ATT_VALUEA } );
+		testPolicy("xxmlsxx", "Read", new String[] { ATT_TYPE3 }, new String[] { ATT_VALUEA } );
 		testPolicy("xxmlsxx", "Write", new String[] {}, new String[] {} );
 		
 	}
