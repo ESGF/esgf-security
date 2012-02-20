@@ -76,6 +76,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import esg.common.util.ESGFProperties;
@@ -91,8 +92,8 @@ public class UserInfoTest {
     private static UserInfo gavin = null;
     
     private static PasswordEncoder encoder;
-     
-    @BeforeClass
+    
+    //@BeforeClass
     public static void initTest() throws Exception {
         log.info("UserInfoTest initializing");
         
@@ -133,7 +134,7 @@ public class UserInfoTest {
         encoder = userInfoDAO.getEncoder();
     }
     
-    @AfterClass
+    //@AfterClass
     public static void testCleanup() {
         log.info("------------------------");
         log.info("UserInfoTest Cleanup....");
@@ -156,6 +157,7 @@ public class UserInfoTest {
     }
 
     @Test
+    @Ignore
     public void testPassword() {
         System.out.print("Adding user "+gavin.getUserName()+" id="+gavin.getid()+" openid="+gavin.getOpenid()+": ");
         if(userInfoDAO.addUserInfo(gavin)) {
@@ -222,6 +224,7 @@ public class UserInfoTest {
     }
     
     @Test
+    @Ignore
     public void testGetUser() {
         UserInfo dean = userInfoDAO.getUserById("williams13");
         assertNotNull(dean);
@@ -281,6 +284,7 @@ public class UserInfoTest {
     }
 
     @Test
+    @Ignore
     public void testSetPermissions() {
         
         groupRoleDAO.addGroup("CMIP6_test");
@@ -338,6 +342,7 @@ public class UserInfoTest {
     }
 
     @Test
+    @Ignore
     public void testStatus() {
         log.info("Status testing...");
         log.info("Before set status for gavin (status should be 1)");

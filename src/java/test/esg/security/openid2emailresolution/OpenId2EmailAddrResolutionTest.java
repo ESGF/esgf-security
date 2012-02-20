@@ -28,6 +28,7 @@ import javax.mail.internet.InternetAddress;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import esg.security.openid2emailresolution.exceptions.AttributeServiceQueryException;
@@ -52,6 +53,7 @@ public class OpenId2EmailAddrResolutionTest {
 	protected final static Log LOG = LogFactory.getLog(YadisRetrievalTest.class);
 
 	@Test
+	@Ignore
 	public void testResolution() throws IOException, 
 		NoMatchingXrdsServiceException, 
 		XrdsParseException, 
