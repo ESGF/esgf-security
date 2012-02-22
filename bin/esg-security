@@ -383,17 +383,26 @@ setup_policy_files() {
     fi
 }
 
-_fetch_static_ats_whitelist() {
-    local config_dir=${esg_config_dir}
-    local static_list_file="esgf_ats_static.xml"
-    if [ -d "${config_dir:-/esg/config}" ]; then
-        [ -e "${config_dir}/${static_list_file}" ] && debug_print "${config_dir}/${static_list_file} is present will NOT fetch from distribution site" && return 0
-        checked_get ${config_dir}/${static_list_file} ${esg_dist_url}/lists/${static_list_file} $((force_install))
-        (( $? > 1 )) && echo debug_print "[DEBUG]: Could not fetch ${static_list_file} from distribution server" && return 1
-        chown -R ${tomcat_user}:${tomcat_group} ${config_dir}/${static_list_file}
-        chmod 644 ${config_dir}/${static_list_file}
-    fi
-    return 0
+_setup_static_whitelists() {
+    local service_types=($@)
+    local service_type
+    local app_config_dir="${security_app_home:-/usr/local/tomcat/webapps/esgf-security}/WEB-INF/classes/esg/security/config"
+
+    for service_type in ${service_types[@]}; do
+        if [ ! -f "${esg_config_dir}/esgf_${service_type}_static.xml" ] && [ -f "${app_config_dir}/esgf_${service_type}_static.xml" ]; then
+            cp -v ${app_config_dir}/esgf_${service_type}_static.xml ${esg_config_dir}
+            chown ${tomcat_user}:${tomcat_group} ${esg_config_dir}/esgf_${service_type}_static.xml && \
+                chmod 640 ${esg_config_dir}/esgf_${service_type}_static.xml
+        else
+            if [  -f "${app_config_dir}/esgf_${service_type}_static.xml" ]; then
+                if (diff <(md5sum_ "${esg_config_dir}/esgf_${service_type}_static.xml" | awk ' {print $1}') <(md5sum_ "${app_config_dir}/esgf_${service_type}_static.xml" | awk ' {print $1}')); then
+                    echo "Detected change in static ${service_type} policy file... replacing with distribution's static policy file"
+                    mv -v ${esg_config_dir}/esgf_${service_type}_static.xml{,.bak}
+                    cp -v ${app_config_dir}/esgf_${service_type}_static.xml "${esg_config_dir}"
+                fi
+            fi
+        fi
+    done
 }
 
 #--------------------------------------
@@ -403,7 +412,7 @@ _fetch_static_ats_whitelist() {
 #This is how we make sure we are always using the proper credentials.
 security_startup_hook() {
     echo -n "Security Startup Hook:... "
-    _fetch_static_ats_whitelist && echo "[OK]" || echo "[FAIL]"
+    _setup_static_whitelists "ats idp" && echo "[OK]" || echo "[FAIL]"
 }
 
 #-------------------
