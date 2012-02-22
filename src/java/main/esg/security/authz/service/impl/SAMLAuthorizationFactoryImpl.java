@@ -87,9 +87,9 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 	private final SAMLAttributeServiceClient samlAttributeServiceClient;
 	
 	/**
-	 * Client used to send the request via SOAP to the remote AttributeService
+	 * Client used to send the request via SOAP to the remote AttributeService.
 	 */
-	private final SOAPServiceClient soapClient = new SOAPServiceClient();
+	private final SOAPServiceClient soapClient;
 	
 	private final static Log LOG = LogFactory.getLog(SAMLAuthorizationFactoryImpl.class);
 	
@@ -103,6 +103,8 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 		this.policyService = policyService;
 		this.registryService = registryService;
 		samlAttributeServiceClient = new SAMLAttributeServiceClientSoapImpl(this.issuer);
+		
+		this.soapClient = SOAPServiceClient.getInstance();
 
 	}
 

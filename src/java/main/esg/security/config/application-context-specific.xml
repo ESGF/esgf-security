@@ -50,7 +50,7 @@
   		<constructor-arg index="0" ref="registrationService"/>
   	</bean>
   	
-  	<!-- Test controller -->
-  	<bean name="testController" class="esg.security.webclient.TestController" />
+  	<!-- Test controller
+  	<bean name="testController" class="esg.security.webclient.TestController" /> -->
 
 </beans>

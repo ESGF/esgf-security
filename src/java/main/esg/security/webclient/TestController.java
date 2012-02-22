@@ -107,7 +107,7 @@ public class TestController {
 		  samlRequest = replaceDefaultValue(httpRequest, PARAM_ACTION, PARAM_ACTION_DEFAULT, samlRequest);
 		
 		  // SOAP request/response
-		  final SOAPServiceClient client = new SOAPServiceClient();
+		  final SOAPServiceClient client = SOAPServiceClient.getInstance();
 		  final String text = client.doSoap(serviceUrl, samlRequest);
 		  
 		  // render SOAP response to view

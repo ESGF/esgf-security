@@ -112,8 +112,14 @@ Version 1.5.6
 Version 1.5.7
 - Added support (and example) for file esgf_ats_static.xml.
 
-Version 2.0
+Version 2.0.0
 - Cleaned up XML configuration for future support of "data-node-only" install
 - Fixed tests
 - Inserted support for caching of user attributes
 - Removed obsolete jar dependency
+
+Version 2.0.1
+- Made SOAPServiceClient a singleton to prevent multiple instantiations of the underlying Apache HTTP Connection Manager.
+
+Version 2.0.2
+- Moved example main programs into separate folder.
