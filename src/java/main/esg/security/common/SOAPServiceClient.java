@@ -34,25 +34,54 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Generic client class to send a SAML request via SOAP/HTTP, and return a SOAP response from the server.
  * This class uses the Apache {@link HttpClient} to execute the actual HTTP invocation.
+ * Note: this class needs to be a singleton to avoid instantiating too many HTTP connection managers.
  */
 public class SOAPServiceClient {
     
     // connection timeout in milliseconds
     private final static int TIMEOUT = 5000;
+    
+    // maximum number of connection per host
+    private final static int MAX_HOST_CONNECTIONS = 50;
+    private final static int MAX_TOTAL_CONNECTIONS = 200;
+    
+    private static SOAPServiceClient self = new SOAPServiceClient();
 	
 	private final HttpClient client;
 	
-	public SOAPServiceClient() {
-	    //HttpConnectionManager manager = new SimpleHttpConnectionManager();
+	protected final static Log LOG = LogFactory.getLog(SOAPServiceClient.class);
+
+	
+	/**
+	 * Single instance access method.
+	 * 
+	 * @return
+	 */
+	public static SOAPServiceClient getInstance() {
+	    return  self;
+	}
+	
+	/**
+	 * Private constructor to force singleton behavior.
+	 */
+	private SOAPServiceClient() {
+
 	    HttpConnectionManager manager = new MultiThreadedHttpConnectionManager();
 	    manager.getParams().setConnectionTimeout(TIMEOUT);
 	    manager.getParams().setSoTimeout(TIMEOUT);
+	    manager.getParams().setDefaultMaxConnectionsPerHost(MAX_HOST_CONNECTIONS);
+	    manager.getParams().setMaxTotalConnections(MAX_TOTAL_CONNECTIONS);
 	    client = new HttpClient(manager);
 	    
 	}
-	
-	protected final static Log LOG = LogFactory.getLog(SOAPServiceClient.class);
-	
+		
+	/**
+	 * Method that executes the SOAP invocation.
+	 * 
+	 * @param endpoint
+	 * @param soapRequest
+	 * @return
+	 */
 	public String doSoap(final String endpoint, final String soapRequest) {
 		
 		if (LOG.isDebugEnabled()) LOG.debug("Querying SOAP endpoint: "+endpoint+" timeout="+TIMEOUT+" milliseconds");

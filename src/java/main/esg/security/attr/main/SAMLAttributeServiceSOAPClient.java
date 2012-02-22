@@ -40,7 +40,7 @@ public class SAMLAttributeServiceSOAPClient {
 		  
 		  final File file = new ClassPathResource(SAML_REQUEST).getFile();
 		  final String samlRequest = FileUtils.readFileToString(file);
-		  final SOAPServiceClient client = new SOAPServiceClient();
+		  final SOAPServiceClient client = SOAPServiceClient.getInstance();
 		  client.doSoap(ENDPOINT, samlRequest);
 					  
 	  }
