@@ -100,22 +100,10 @@ init() {
     security_app_context_root=${security_web_service_name:-esgf-security}
     security_app_home=${tomcat_install_dir}/webapps/${security_app_context_root}
 
-    security_attribute_service_host=${security_attribute_service_host:-${esgf_host:-$(hostname --fqdn)}}
-    security_attribute_service_port=${security_attribute_service_post:-"443"}
-    security_attribute_service_endpoint=$(echo "https://${security_attribute_service_host}$( if ((security_attribute_service_port != 443)); then echo ":${secuirty_attribute_service_port}"; fi)/esgf-security/saml/soap/secure/attributeService.htm")
-
-    security_authz_service_host=${security_authz_service_host:-${esgf_host:-$(hostname --fqdn)}}
-    security_authz_service_port=${security_authz_service_post:-"443"}
-    security_authz_service_endpoint=$(echo "https://${security_authz_service_host}$( if ((security_authz_service_port != 443)); then echo ":${security_authz_service_port}"; fi)/esgf-security/saml/soap/secure/authorizationService.htm")
-    
-    security_registration_service_host=${security_registration_service_host:-${esgf_host:-$(hostname --fqdn)}}
-    security_registration_service_port=${security_registration_service_post:-"443"}
-    security_registration_service_endpoint=$(echo "https://${security_registration_service_host}$( if ((security_registration_service_port != 443)); then echo ":${security_registration_service_port}"; fi)/esgf-security/secure/registrationService.htm")
-
     esgf_security_version=${esgf_security_version:-"1.2.8"}
     esgf_security_db_version=${esgf_security_db_version:-"0.1.4"}
     esgf_security_egg_file=esgf_security-${esgf_security_db_version}-py${python_version}.egg
-    
+
     #Database information....
     node_db_name=${node_db_name:-"esgcet"}
     postgress_driver=${postgress_driver:-org.postgresql.Driver}
@@ -144,7 +132,7 @@ setup_security() {
     check_webapp_version "${security_app_context_root}" "${esgf_security_version}"
     local ret=$?
     ((ret == 0)) && (( ! force_install )) && echo " [OK]" && return 0
-    
+
     echo
     echo "*******************************"
     echo "Setting up The ESGF Security Services"
@@ -164,7 +152,7 @@ setup_security() {
             echo "Skipping security services installation and setup - will assume it's setup properly"
             return 0
         fi
-        
+
         local dobackup="Y"
         read -p "Do you want to make a back up of the existing distribution?? [Y/n] " dobackup
         [ -z "${dobackup}" ] && dobackup=${default}
@@ -185,7 +173,7 @@ setup_security() {
     local security_dist_file=$(pwd)/${security_dist_url##*/}
     checked_get ${security_dist_file} ${security_dist_url} $((force_install))
     (( $? > 1 )) && echo " ERROR: Could not download ${node_dist_url} :-(" && popd >& /dev/null && checked_done 1
-    
+
     stop_tomcat
 
     #make room for new install
@@ -193,19 +181,19 @@ setup_security() {
         echo "Removing Previous Installation of the ESGF Security Services..."
         [ -d "${security_app_home}" ] && rm -rf ${security_app_home} || echo "WARNING: Strange, can't locate previous install @ ${security_app_home}"
     fi
-    
+
     #----------------------------
     mkdir -p ${security_app_home}
     [ $? != 0 ] && echo "Could not create dir ${security_app_home}" && popd >& /dev/null && checked_done 1
     cd ${security_app_home}
     echo "Expanding war ${security_dist_file} in $(pwd)"
     $JAVA_HOME/bin/jar xf ${security_dist_file}
-    
+
     chown -R ${tomcat_user} ${security_app_home}
     chgrp -R ${tomcat_group} ${security_app_home}
     popd >& /dev/null
     #----------------------------
-    
+
     popd >& /dev/null
 
     setup_policy_files
@@ -220,9 +208,6 @@ write_security_install_log() {
     echo "$(date ${date_format}) webapp:${security_app_context_root}=${esgf_security_version} ${security_app_home}" >> ${install_manifest}
     dedup ${install_manifest}
     write_as_property security_app_home
-    write_as_property security_authz_service_endpoint
-    write_as_property security_attribute_service_endpoint
-    write_as_property security_registration_service_endpoint
     return 0
 }
 
@@ -231,55 +216,58 @@ write_security_install_log() {
 #      installation/configuration (setup_node_manager) 
 #--------------------------------------------------
 configure_postgress() {
-    init
+    if [ $((sel & IDP_BIT ))   != 0 ]; then
 
-    echo
-    echo "*******************************"
-    echo "Configuring Postgres... for ESGF Security"
-    echo "*******************************"
-    echo
-    
-    start_postgress
+        init
 
-    #Create the database...
-    echo "Creating esg node database: [${node_db_name}]"
-    echo "${postgress_install_dir}/bin/createdb ${node_db_name}"
-    PGPASSWORD=${PGPASSWORD:-${pg_sys_acct_passwd}:-${security_admin_password}} ${postgress_install_dir}/bin/createdb ${node_db_name} >& /dev/null
-    (( $? > 1 )) && echo " ERROR: Could not create esg node database: ${node_db_name}" && return 0
-    echo 
+        echo
+        echo "*******************************"
+        echo "Configuring Postgres... for ESGF Security"
+        echo "*******************************"
+        echo
 
-    mkdir -p ${workdir}/${node_dist_dir:-esgf-security-${esgf_security_version}}/db
-    pushd ${workdir}/${node_dist_dir:-esgf-security-${esgf_security_version}}/db >& /dev/null
-    [ $? != 0 ] && echo " ERROR: Could not find node distribution dir ${workdir}/${node_dist_dir}" && checked_done 1
+        start_postgress
 
-    #------------------------------------------------------------------------
-    #Based on the node type selection we build the appropriate database tables
-    #------------------------------------------------------------------------
-    
-    #download the egg file from the distribution server is necessary....
-    checked_get ${esgf_security_egg_file} ${esg_dist_url}/esgf-security/${esgf_security_egg_file} $((force_install))
-    (( $? > 1 )) && return 0
+        #Create the database...
+        echo "Creating esg node database: [${node_db_name}]"
+        echo "${postgress_install_dir}/bin/createdb ${node_db_name}"
+        PGPASSWORD=${PGPASSWORD:-${pg_sys_acct_passwd}:-${security_admin_password}} ${postgress_install_dir}/bin/createdb ${node_db_name} >& /dev/null
+        (( $? > 1 )) && echo " ERROR: Could not create esg node database: ${node_db_name}" && return 0
+        echo
 
-    #install the egg....
-    ((DEBUG)) && "$cdat_home/bin/easy_install ${esgf_security_egg_file}"
-    $cdat_home/bin/easy_install ${esgf_security_egg_file}
-    [ $? != 0 ] && echo "ERROR: Could not create esgf security python module" && checked_done 1
+        mkdir -p ${workdir}/${node_dist_dir:-esgf-security-${esgf_security_version}}/db
+        pushd ${workdir}/${node_dist_dir:-esgf-security-${esgf_security_version}}/db >& /dev/null
+        [ $? != 0 ] && echo " ERROR: Could not find node distribution dir ${workdir}/${node_dist_dir}" && checked_done 1
 
-    #run the code to build the database and install sql migration...
-    ((DEBUG)) && echo "$cdat_home/bin/esgf_security_initialize --dburl ${postgress_user}:${pg_sys_acct_passwd}@${postgress_host}:${postgress_port}/${node_db_name} -c"
-    $cdat_home/bin/esgf_security_initialize --dburl ${postgress_user}:${pg_sys_acct_passwd}@${postgress_host}:${postgress_port}/${node_db_name} -c
-    [ $? != 0 ] && echo "ERROR: Could not create esgf security database tables in ${node_db_name}" && checked_done 1
-    
-    write_security_db_install_log
-    echo
-    
-    popd >& /dev/null
-    echo
-    echo
-    checked_done 0
+        #------------------------------------------------------------------------
+        #Based on the node type selection we build the appropriate database tables
+        #------------------------------------------------------------------------
+
+        #download the egg file from the distribution server is necessary....
+        checked_get ${esgf_security_egg_file} ${esg_dist_url}/esgf-security/${esgf_security_egg_file} $((force_install))
+        (( $? > 1 )) && return 0
+
+        #install the egg....
+        ((DEBUG)) && "$cdat_home/bin/easy_install ${esgf_security_egg_file}"
+        $cdat_home/bin/easy_install ${esgf_security_egg_file}
+        [ $? != 0 ] && echo "ERROR: Could not create esgf security python module" && checked_done 1
+
+        #run the code to build the database and install sql migration...
+        ((DEBUG)) && echo "$cdat_home/bin/esgf_security_initialize --dburl ${postgress_user}:${pg_sys_acct_passwd}@${postgress_host}:${postgress_port}/${node_db_name} -c"
+        $cdat_home/bin/esgf_security_initialize --dburl ${postgress_user}:${pg_sys_acct_passwd}@${postgress_host}:${postgress_port}/${node_db_name} -c
+        [ $? != 0 ] && echo "ERROR: Could not create esgf security database tables in ${node_db_name}" && checked_done 1
+
+        write_security_db_install_log
+        echo
+
+        popd >& /dev/null
+        echo
+        echo
+        checked_done 0
+    else
+        debug_print "This function, configure_postgress(), is not applicable to current node type (${sel})"
+    fi
 }
-
-
 
 write_security_db_install_log() {
     echo "$(date ${date_format}) python:esgf_security=${esgf_security_db_version} " >> ${install_manifest}
@@ -303,9 +291,6 @@ clean_security_webapp_subsystem() {
                 [ $? != 0 ] && echo "ERROR: Unable to remove ${tomcat_install_dir}/webapps/${security_app_context_root}" && return 1
                 perl -n -i -e'print unless m!webapp:esgf-security!' ${install_manifest}
                 remove_property security_app_home
-                remove_property security_authz_service_endpoint
-                remove_property security_attribute_service_endpoint
-                remove_property security_registration_service_endpoint
             fi
         fi
     fi 
@@ -322,12 +307,12 @@ clean_security_database_subsystem_installation() {
     read -p "remove ESGF Security database, database subsystem AND DATA? (esgf_security.*) [y/N]: " doit
     if [ "doit" = "Y" ] || [ "$doit" = "y" ]; then
         if $(psql -U ${postgress_user} esgcet -c "\dt esgf_security.;" | egrep '^\([1-9]* row[s]?\)' >& /dev/null); then
-            
+
             #Call me paranoid but I want some integrity check that this code is what is meant to be straight from the distribution.
             diff <(md5sum ${scripts_dir}/esg-security | tr -s " " | cut -d " " -f 1) <(curl -s -L --insecure ${esg_dist_url}/esgf-security/esg-security.md5 | tr -s " " | cut -d " " -f 1) >& /dev/null
             [ $? != 0 ] && echo " WARNING: Could not verify ${scripts_dir}/esg-security, aborting this uninstall" && return 3
             echo "[VERIFIED]"
-            
+
             backup_db esgcet security
             echo "removing esgf_security.* schema and tables and DATA"
             ${cdat_home}/bin/esgf_security_initialize --dburl ${postgress_user}:${pg_sys_acct_passwd}@localhost:${postgress_port}/esgcet -d 0
@@ -343,66 +328,84 @@ clean_security_database_subsystem_installation() {
 }
 
 fetch_user_migration_launcher() {
-    pushd ${scripts_dir} >& /dev/null
-    checked_get ${esgf_user_migration_launcher} ${esg_dist_url}/${security_web_service_name}/${esgf_user_migration_launcher} $((force_install))
-    (( $? > 1 )) && echo " ERROR: Could not download ${esg_dist_url}/${security_web_service_name}/${esgf_user_migration_launcher} :-(" && popd >& /dev/null && return 1
-    chmod 755 ${esgf_user_migration_launcher}
-    popd >& /dev/null
-    return 0
+    if [ $((sel & IDP_BIT ))   != 0 ]; then
+        pushd ${scripts_dir} >& /dev/null
+        checked_get ${esgf_user_migration_launcher} ${esg_dist_url}/${security_web_service_name}/${esgf_user_migration_launcher} $((force_install))
+        (( $? > 1 )) && echo " ERROR: Could not download ${esg_dist_url}/${security_web_service_name}/${esgf_user_migration_launcher} :-(" && popd >& /dev/null && return 1
+        chmod 755 ${esgf_user_migration_launcher}
+        popd >& /dev/null
+        return 0
+    else
+        debug_print "This function, fetch_user_migration_launcher(), is not applicable to current node type (${sel})"
+    fi
 }
 
+#------------------------------------------------------------------------------
+#"client side files"
+#------------------------------------------------------------------------------
+
 setup_policy_files() {
-    debug_print "setup_policy_files()... "
-    local policy_file_name="esgf_policies"
-    local policy_file_dist_dir="${security_app_home:-/usr/local/tomcat/webapps/esgf-security}/WEB-INF/classes/esg/security/config"
+    if [ $((sel & DATA_BIT ))   != 0 ]; then
+        debug_print "setup_policy_files()... "
+        local policy_file_name="esgf_policies"
+        local policy_file_dist_dir="${security_app_home:-/usr/local/tomcat/webapps/esgf-security}/WEB-INF/classes/esg/security/config"
 
-    #If old named file exists rename
-    # esgf_polcies.xml -> esgf_policies_local.xml
-    [ -f "${esg_config_dir}/${policy_file_name}.xml" ] && mv -v "${esg_config_dir}/${policy_file_name}{,_local}.xml"
-    # esgf_polcies_static.xml -> esgf_policies_common.xml
-    [ -f "${esg_config_dir}/${policy_file_name}_static.xml" ] && mv -v "${esg_config_dir}/${policy_file_name}{_static,_common}.xml"
+        #If old named file exists rename
+        # esgf_polcies.xml -> esgf_policies_local.xml
+        [ -f "${esg_config_dir}/${policy_file_name}.xml" ] && mv -v "${esg_config_dir}/${policy_file_name}{,_local}.xml"
+        # esgf_polcies_static.xml -> esgf_policies_common.xml
+        [ -f "${esg_config_dir}/${policy_file_name}_static.xml" ] && mv -v "${esg_config_dir}/${policy_file_name}{_static,_common}.xml"
 
-    if [ ! -f "${esg_config_dir}/${policy_file_name}_local.xml" ] && [ -f "${policy_file_dist_dir}/${policy_file_name}_local.xml" ]; then
-        cp -v ${policy_file_dist_dir}/${policy_file_name}_local.xml ${esg_config_dir}
-        chown ${tomcat_user}:${tomcat_group} ${esg_config_dir}/${policy_file_name}_local.xml && \
-            chmod 640 ${esg_config_dir}/${policy_file_name}_local.xml
-    fi
+        if [ ! -f "${esg_config_dir}/${policy_file_name}_local.xml" ] && [ -f "${policy_file_dist_dir}/${policy_file_name}_local.xml" ]; then
+            cp -v ${policy_file_dist_dir}/${policy_file_name}_local.xml ${esg_config_dir}
+            chown ${tomcat_user}:${tomcat_group} ${esg_config_dir}/${policy_file_name}_local.xml && \
+                chmod 640 ${esg_config_dir}/${policy_file_name}_local.xml
+        fi
 
-    if [ ! -f "${esg_config_dir}/${policy_file_name}_common.xml" ] && [ -f "${policy_file_dist_dir}/${policy_file_name}_common.xml" ]; then
-        cp -v ${policy_file_dist_dir}/${policy_file_name}_common.xml ${esg_config_dir}
-        chown ${tomcat_user}:${tomcat_group} ${esg_config_dir}/${policy_file_name}_common.xml && \
-            chmod 640 ${esg_config_dir}/${policy_file_name}_common.xml
-    else
-        if [  -f "${policy_file_dist_dir}/${policy_file_name}_common.xml" ]; then
-            if (diff <(md5sum_ "${esg_config_dir}/${policy_file_name}_common.xml" | awk ' {print $1}') <(md5sum_ "${policy_file_dist_dir}/${policy_file_name}_common.xml" | awk ' {print $1}')); then
-                echo "Detected change in common policy file... replacing with distribution's common policy file"
-                mv -v ${esg_config_dir}/${policy_file_name}_common.xml{,.bak}
-                cp -v ${policy_file_dist_dir}/${policy_file_name}_common.xml "${esg_config_dir}"
+        if [ ! -f "${esg_config_dir}/${policy_file_name}_common.xml" ] && [ -f "${policy_file_dist_dir}/${policy_file_name}_common.xml" ]; then
+            cp -v ${policy_file_dist_dir}/${policy_file_name}_common.xml ${esg_config_dir}
+            chown ${tomcat_user}:${tomcat_group} ${esg_config_dir}/${policy_file_name}_common.xml && \
+                chmod 640 ${esg_config_dir}/${policy_file_name}_common.xml
+        else
+            if [  -f "${policy_file_dist_dir}/${policy_file_name}_common.xml" ]; then
+                if (diff <(md5sum_ "${esg_config_dir}/${policy_file_name}_common.xml" | awk ' {print $1}') <(md5sum_ "${policy_file_dist_dir}/${policy_file_name}_common.xml" | awk ' {print $1}')); then
+                    echo "Detected change in common policy file... replacing with distribution's common policy file"
+                    mv -v ${esg_config_dir}/${policy_file_name}_common.xml{,.bak}
+                    cp -v ${policy_file_dist_dir}/${policy_file_name}_common.xml "${esg_config_dir}"
+                fi
             fi
         fi
+    else
+        debug_print "This function, setup_policy_files(), is not applicable to current node type (${sel})"
     fi
 }
 
 _setup_static_whitelists() {
-    local service_types=($@)
-    local service_type
-    local app_config_dir="${security_app_home:-/usr/local/tomcat/webapps/esgf-security}/WEB-INF/classes/esg/security/config"
+    if [ $((sel & DATA_BIT ))   != 0 ]; then
+        local service_types=($@)
+        local service_type
+        local app_config_dir="${security_app_home:-/usr/local/tomcat/webapps/esgf-security}/WEB-INF/classes/esg/security/config"
 
-    for service_type in ${service_types[@]}; do
-        if [ ! -f "${esg_config_dir}/esgf_${service_type}_static.xml" ] && [ -f "${app_config_dir}/esgf_${service_type}_static.xml" ]; then
-            cp -v ${app_config_dir}/esgf_${service_type}_static.xml ${esg_config_dir}
-            chown ${tomcat_user}:${tomcat_group} ${esg_config_dir}/esgf_${service_type}_static.xml && \
-                chmod 640 ${esg_config_dir}/esgf_${service_type}_static.xml
-        else
-            if [  -f "${app_config_dir}/esgf_${service_type}_static.xml" ]; then
-                if (diff <(md5sum_ "${esg_config_dir}/esgf_${service_type}_static.xml" | awk ' {print $1}') <(md5sum_ "${app_config_dir}/esgf_${service_type}_static.xml" | awk ' {print $1}')); then
-                    echo "Detected change in static ${service_type} policy file... replacing with distribution's static policy file"
-                    mv -v ${esg_config_dir}/esgf_${service_type}_static.xml{,.bak}
-                    cp -v ${app_config_dir}/esgf_${service_type}_static.xml "${esg_config_dir}"
+        for service_type in ${service_types[@]}; do
+            if [ ! -f "${esg_config_dir}/esgf_${service_type}_static.xml" ] && [ -f "${app_config_dir}/esgf_${service_type}_static.xml" ]; then
+                echo
+                cp -v ${app_config_dir}/esgf_${service_type}_static.xml ${esg_config_dir}
+                chown ${tomcat_user}:${tomcat_group} ${esg_config_dir}/esgf_${service_type}_static.xml && \
+                    chmod 640 ${esg_config_dir}/esgf_${service_type}_static.xml
+            else
+                if [  -f "${app_config_dir}/esgf_${service_type}_static.xml" ]; then
+                    diff "${esg_config_dir}/esgf_${service_type}_static.xml" "${app_config_dir}/esgf_${service_type}_static.xml" >& /dev/null
+                    if [ $? != 0 ]; then
+                        echo " Detected change in static ${service_type} policy file... replacing with distribution's static policy file"
+                        mv -v ${esg_config_dir}/esgf_${service_type}_static.xml{,.bak}
+                        cp -v ${app_config_dir}/esgf_${service_type}_static.xml "${esg_config_dir}"
+                    fi
                 fi
             fi
-        fi
-    done
+        done
+    else
+        debug_print "This function, _setup_static_whitelists(), is not applicable to current node type (${sel})"
+    fi
 }
 
 #--------------------------------------
@@ -411,8 +414,12 @@ _setup_static_whitelists() {
 #This function is called by esg-node before starting tomcat!
 #This is how we make sure we are always using the proper credentials.
 security_startup_hook() {
-    echo -n "Security Startup Hook:... "
-    _setup_static_whitelists "ats idp" && echo "[OK]" || echo "[FAIL]"
+    if [ $((sel & DATA_BIT ))   != 0 ]; then
+        echo -n "Security Startup Hook:... "
+        _setup_static_whitelists "ats idp" && echo "[OK]" || echo "[FAIL]"
+    else
+        debug_print "This function, security_startup_hook(), is not applicable to current node type (${sel})"
+    fi
 }
 
 #-------------------
