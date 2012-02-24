@@ -123,3 +123,6 @@ Version 2.0.1
 
 Version 2.0.2
 - Moved example main programs into separate folder.
+
+Version 2.0.3
+- Increasing socket time out to 10 secs.
