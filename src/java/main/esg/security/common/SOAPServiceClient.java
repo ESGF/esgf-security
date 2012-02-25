@@ -26,6 +26,7 @@ import org.apache.commons.httpclient.HttpConnectionManager;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.SimpleHttpConnectionManager;
 import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.logging.Log;
@@ -39,7 +40,7 @@ import org.apache.commons.logging.LogFactory;
 public class SOAPServiceClient {
     
     // connection timeout in milliseconds
-    private final static int TIMEOUT = 5000;
+    private final static int TIMEOUT = 10000;
     
     // maximum number of connection per host
     private final static int MAX_HOST_CONNECTIONS = 50;
@@ -66,6 +67,7 @@ public class SOAPServiceClient {
 	 */
 	private SOAPServiceClient() {
 
+	    //HttpConnectionManager manager = new SimpleHttpConnectionManager();
 	    HttpConnectionManager manager = new MultiThreadedHttpConnectionManager();
 	    manager.getParams().setConnectionTimeout(TIMEOUT);
 	    manager.getParams().setSoTimeout(TIMEOUT);
