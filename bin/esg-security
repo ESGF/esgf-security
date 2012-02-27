@@ -366,7 +366,7 @@ setup_policy_files() {
                 chmod 640 ${esg_config_dir}/${policy_file_name}_common.xml
         else
             if [  -f "${policy_file_dist_dir}/${policy_file_name}_common.xml" ]; then
-                if (diff <(md5sum_ "${esg_config_dir}/${policy_file_name}_common.xml" | awk ' {print $1}') <(md5sum_ "${policy_file_dist_dir}/${policy_file_name}_common.xml" | awk ' {print $1}')); then
+                if (! diff "${esg_config_dir}/${policy_file_name}_common.xml" "${policy_file_dist_dir}/${policy_file_name}_common.xml" >& /dev/null); then
                     echo "Detected change in common policy file... replacing with distribution's common policy file"
                     mv -v ${esg_config_dir}/${policy_file_name}_common.xml{,.bak}
                     cp -v ${policy_file_dist_dir}/${policy_file_name}_common.xml "${esg_config_dir}"
