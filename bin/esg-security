@@ -414,6 +414,7 @@ _setup_static_whitelists() {
 security_startup_hook() {
     if [ $((sel & DATA_BIT ))   != 0 ]; then
         echo -n "Security Startup Hook:... "
+        init
         _setup_static_whitelists "ats idp" && echo "[OK]" || echo "[FAIL]"
     else
         debug_print "This function, security_startup_hook(), is not applicable to current node type (${sel})"
