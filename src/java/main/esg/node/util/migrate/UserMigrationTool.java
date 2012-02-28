@@ -97,7 +97,7 @@ public final class UserMigrationTool {
     //-------------------------------------------------------
     //Remote "Gateway" queries
     //-------------------------------------------------------
-    private static final String sourceUserInfoQuery = "select firstname, lastname, email, username, password, dn, organization, city, state, country from security.user where username!=''";
+    private static final String sourceUserInfoQuery = "select firstname, lastname, email, username, password, dn, organization, city, state, country, openid from security.user where username!=''";
     private static final String sourceGroupInfoQuery = "select g.name as name, g.description as description, g.visible as visible, g.automatic_approval as automatic_approval from security.group as g";
     private static final String sourceRoleInfoQuery = "select name, description from security.role";
     private static final String sourcePermissionInfoQuery = "select u.username as uname, g.name as gname, r.name as rname from security.user as u, security.group as g, security.role as r, security.membership as m, security.status as st where u.username not in ('', 'rootAdmin') and m.user_id=u.id and m.group_id=g.id and m.role_id=r.id and m.status_id=st.id and st.name='valid'";
@@ -313,6 +313,12 @@ public final class UserMigrationTool {
                         UserMigrationTool.this.userDAO.setPassword(userInfo.getOpenid(),rs.getString("password"),true); //password (literal)
                         i++;
                         System.out.println("Migrated User #"+i+": "+userInfo.getUserName()+" --> "+userInfo.getOpenid());
+
+                        //-----------------------------------------------------------------------------------------------
+                        //This is just a temporary thing... Doubling up on users... preserving their original openid
+                        userInfo.setOpenid(rs.getString("openid"));
+                        UserMigrationTool.this.userDAO.addUser(userInfo);
+                        //-----------------------------------------------------------------------------------------------
                     }catch(Throwable t) {
                         log.error("Sorry, could NOT migrate user: "+currentUsername);
                         errorCount++;
