@@ -98,6 +98,8 @@ public final class UserMigrationTool {
 
     //hostname of source machine
     private String source = null;
+
+    //hostname of "this" target machine. (remember this migration is a *pull* operation)
     private String myHost = null;
 
     //-------------------------------------------------------
