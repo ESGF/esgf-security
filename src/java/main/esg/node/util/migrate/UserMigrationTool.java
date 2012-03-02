@@ -57,6 +57,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 
+import java.util.regex.Matcher;
+
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.commons.dbcp.ConnectionFactory;
@@ -96,6 +98,7 @@ public final class UserMigrationTool {
 
     //hostname of source machine
     private String source = null;
+    private String myHost = null;
 
     //-------------------------------------------------------
     //Remote "Gateway" queries
@@ -103,7 +106,7 @@ public final class UserMigrationTool {
     private static final String sourceUserInfoQuery = "select firstname, lastname, email, username, password, dn, organization, city, state, country, openid from security.user";
     private static final String sourceGroupInfoQuery = "select g.name as name, g.description as description, g.visible as visible, g.automatic_approval as automatic_approval from security.group as g";
     private static final String sourceRoleInfoQuery = "select name, description from security.role";
-    private static final String sourcePermissionInfoQuery = "select u.openid as oid, g.name as gname, r.name as rname from security.user as u, security.group as g, security.role as r, security.membership as m, security.status as st where u.username not in ('', 'rootAdmin') and m.user_id=u.id and m.group_id=g.id and m.role_id=r.id and m.status_id=st.id and st.name='valid'";
+    private static final String sourcePermissionInfoQuery = "select u.openid as oid, g.name as gname, r.name as rname from security.user as u, security.group as g, security.role as r, security.membership as m, security.status as st where m.user_id=u.id and m.group_id=g.id and m.role_id=r.id and m.status_id=st.id and st.name='valid' and u.openid like 'http%'";
     //-------------------------------------------------------
 
     public UserMigrationTool() { }
@@ -112,6 +115,12 @@ public final class UserMigrationTool {
     public UserMigrationTool init(Properties props) {
         log.trace("props = "+props);
         if(setupTargetResources()) setupSourceResources(props);
+        try{
+            java.util.Properties esgfProperties = new java.util.Properties();
+            esgfProperties.load(new java.io.BufferedReader(new java.io.FileReader(System.getenv().get("ESGF_HOME")+"/config/esgf.properties")));
+            myHost = esgfProperties.getProperty("esgf.host");
+            myHost.trim(); //pretty much calling this to force an NPE if property is not found... so I can stop here (die early).
+        }catch(Exception e) { log.error(e); }
         return this;
     }
 
@@ -248,7 +257,7 @@ public final class UserMigrationTool {
                 int i=0;
                 while(rs.next()) {
                     //                                               [name]         [description]    [visible]         [automatic_approval]
-                    if(UserMigrationTool.this.groupRoleDAO.addGroup(transform(rs.getString(1)),rs.getString(2), rs.getBoolean(3), rs.getBoolean(4))) {
+                    if(UserMigrationTool.this.groupRoleDAO.addGroup(transformGroupName(rs.getString(1)),rs.getString(2), rs.getBoolean(3), rs.getBoolean(4))) {
                         i++;
                         System.out.println("Migrated group #"+i+": "+rs.getString(1));
                     }
@@ -273,7 +282,7 @@ public final class UserMigrationTool {
     //as we may wish...
     //User -> user
     //default -> user
-    private String transform(String in) {
+    private String transformGroupName(String in) {
         String out = null;
         if(in.equals("User")) { out = in.toLowerCase(); }
         else if(in.equals("default")) { out = "user"; }
@@ -317,7 +326,7 @@ public final class UserMigrationTool {
                         //Password literal must be set separately... (see setPassword - with true boolean, below) field #14
 
                         if(currentUsername != null) userInfo.setUserName(currentUsername);
-
+                        
                         if(userInfo.getOpenid().matches("http.*"+UserMigrationTool.this.source+".*")) {
                             userInfo.setOpenid(null); //This will cause the DAO to generate a local Openid
                             UserMigrationTool.this.userDAO.addUser(userInfo);
@@ -351,6 +360,41 @@ public final class UserMigrationTool {
 
     }
 
+    private String transformOpenid(String sourceOpenid) {
+
+        String openid = sourceOpenid;
+        String username = null;
+
+        if (sourceOpenid.matches("http.*"+this.source+".*")) {
+            //Discern if they user put in a an openid url or just a username, 
+            //set values accordingly...
+            Matcher openidMatcher = UserInfoDAO.openidUrlPattern.matcher(openid);
+            String openidHost = null;
+            String openidPort = null;
+            String openidPath = null;
+            if(openidMatcher.find()) {
+                openidHost = openidMatcher.group(1);
+                openidPort = openidMatcher.group(2);
+                openidPath = openidMatcher.group(3);
+                username = openidMatcher.group(4);
+
+                log.trace("submitted openid = "+openid);
+                log.trace("openidHost = "+openidHost);
+                log.trace("openidPort = "+openidPort);
+                log.trace("openidPath = "+openidPath);
+                log.trace("username   = "+username);
+
+                //reconstruct and transform the url scrubbing out port if necessary...
+                openid = "https://"+myHost+"/esgf-idp/openid/"+username;
+                log.trace("transformed oid: "+sourceOpenid+" -> "+openid);
+                return openid;
+            }else{
+                log.warn("Could not transform openid: "+sourceOpenid);
+            }
+        }
+        return openid;
+    }
+
     public int migratePermissions() {
         int ret = 0;
         ResultSetHandler<Integer> permissionsResultSetHandler = new ResultSetHandler<Integer>() {
@@ -359,20 +403,25 @@ public final class UserMigrationTool {
                 String oid=null;
                 String gname=null;
                 String rname=null;
+                int errorCount=0;
+                int migrateCount=0;
                 while(rs.next()) {
                     try{
-                        oid=rs.getString(1);
-                        gname=transform(rs.getString(2));
+                        oid=transformOpenid(rs.getString(1));
+                        gname=transformGroupName(rs.getString(2));
                         rname=rs.getString(3);
                         log.trace("Migrating permission tuple: oid["+oid+"] g["+gname+"] r["+rname+"] ");
                         if(UserMigrationTool.this.userDAO.addPermissionByOpenid(oid,gname,rname)) {
-                            i++;
+                            migrateCount++;
                             System.out.println("Migrated Permission #"+i+": oid["+oid+"] ["+gname+"] ["+rname+"]");
                         }
                     }catch(ESGFDataAccessException e) {
                         log.error("Sorry, could NOT create permission tuple: oid["+oid+"] g["+gname+"] r["+rname+"] ");
+                        errorCount++;
                     }
+                    i++;
                 }
+                log.info("Inspected "+i+" Permission Records: Migrated "+migrateCount+", with "+errorCount+" failed");
                 return i;
             }
         };

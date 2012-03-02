@@ -244,8 +244,8 @@ public class UserInfoDAO {
     private static final String  adminName = "rootAdmin";
     
     //private static final Pattern openidUrlPattern = Pattern.compile("https://([^/ ]*)/.*[/]*/([^/ *%#!()<>+=]*$)");
-    private static final Pattern openidUrlPattern = Pattern.compile("https://([^:/]*)(:(?:[0-9]*))?/([^ &*%#!()<>+=]*/)*([^/ &*%#!()<>+=]*$)");
-    private static final Pattern usernamePattern = Pattern.compile("^[^/ &*%#!()<>+=]*$");
+    public static final Pattern openidUrlPattern = Pattern.compile("https://([^:/]*)(:(?:[0-9]*))?/([^ &*%#!()<>+=]*/)*([^/ &*%#!()<>+=]*$)");
+    public static final Pattern usernamePattern = Pattern.compile("^[^/ &*%#!()<>+=]*$");
     
     private PasswordEncoder encoder = new MD5CryptPasswordEncoder();
     
@@ -673,7 +673,7 @@ public class UserInfoDAO {
                 }
 
                 String openid = "https://"+openidHost+openidPort+"/esgf-idp/openid/"+userInfo.getUserName();
-                log.debug("Constructing default openid: "+openid);
+                log.trace("Constructing default openid: "+openid);
                 userInfo.setOpenid(openid);
             }
 
