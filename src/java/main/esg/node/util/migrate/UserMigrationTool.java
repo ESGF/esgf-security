@@ -94,13 +94,16 @@ public final class UserMigrationTool {
     private UserInfoCredentialedDAO userDAO = null;
     private GroupRoleDAO groupRoleDAO = null;
 
+    //hostname of source machine
+    private String source = null;
+
     //-------------------------------------------------------
     //Remote "Gateway" queries
     //-------------------------------------------------------
-    private static final String sourceUserInfoQuery = "select firstname, lastname, email, username, password, dn, organization, city, state, country, openid from security.user where username!=''";
+    private static final String sourceUserInfoQuery = "select firstname, lastname, email, username, password, dn, organization, city, state, country, openid from security.user";
     private static final String sourceGroupInfoQuery = "select g.name as name, g.description as description, g.visible as visible, g.automatic_approval as automatic_approval from security.group as g";
     private static final String sourceRoleInfoQuery = "select name, description from security.role";
-    private static final String sourcePermissionInfoQuery = "select u.username as uname, g.name as gname, r.name as rname from security.user as u, security.group as g, security.role as r, security.membership as m, security.status as st where u.username not in ('', 'rootAdmin') and m.user_id=u.id and m.group_id=g.id and m.role_id=r.id and m.status_id=st.id and st.name='valid'";
+    private static final String sourcePermissionInfoQuery = "select u.openid as oid, g.name as gname, r.name as rname from security.user as u, security.group as g, security.role as r, security.membership as m, security.status as st where u.username not in ('', 'rootAdmin') and m.user_id=u.id and m.group_id=g.id and m.role_id=r.id and m.status_id=st.id and st.name='valid'";
     //-------------------------------------------------------
 
     public UserMigrationTool() { }
@@ -128,6 +131,7 @@ public final class UserMigrationTool {
         String port = props.getProperty("db.port","5432"); //or perhaps 8080
         String protocol = props.getProperty("db.protocol","jdbc:postgresql:");
 
+        this.source = host;
         return this.setupSourceResources(protocol,host,port,database,user,password);
 
     }
@@ -267,13 +271,13 @@ public final class UserMigrationTool {
     //use it to turn User to user, which is more amenable to the P2P
     //group naming convention. Clearly, this can become as ellaborate
     //as we may wish...
+    //User -> user
+    //default -> user
     private String transform(String in) {
         String out = null;
-        if(in.equals("User")) {
-            out = in.toLowerCase();
-        }else{
-            out = in;
-        }
+        if(in.equals("User")) { out = in.toLowerCase(); }
+        else if(in.equals("default")) { out = "user"; }
+        else{ out = in; }
         return out;
     }
 
@@ -282,8 +286,12 @@ public final class UserMigrationTool {
         ResultSetHandler<Integer> usersResultSetHandler = new ResultSetHandler<Integer>() {
             public Integer handle(ResultSet rs) throws SQLException{
                 int i=0;
+                int migrateCount=0;
+                int transCount=0;
                 int errorCount=0;
                 String currentUsername=null;
+                String openid=null;
+                String target=null;
                 while(rs.next()) {
                     try{
                         currentUsername = rs.getString("username");
@@ -291,8 +299,9 @@ public final class UserMigrationTool {
                             System.out.println("NOTE: Will not overwrite local rootAdmin information");
                             continue;
                         }
-                        log.trace("Inspecting username: "+currentUsername);
-                        UserInfo userInfo = UserMigrationTool.this.userDAO.getUserById(currentUsername);
+                        openid = rs.getString("openid");
+                        log.trace("Inspecting openid: "+openid);
+                        UserInfo userInfo = UserMigrationTool.this.userDAO.getUserById(openid);
                         userInfo.setFirstName(rs.getString("firstname")).
                             //setMiddleName(rs.getString("middlename")).
                             setLastName(rs.getString("lastname")).
@@ -308,23 +317,25 @@ public final class UserMigrationTool {
                         //Status code msut be set separately... (below) field #13
                         //Password literal must be set separately... (see setPassword - with true boolean, below) field #14
 
-                        UserMigrationTool.this.userDAO.addUser(userInfo);
-                        //UserMigrationTool.this.userDAO.setStatusCode(userInfo.getOpenid(),rs.getInt(13)); //statusCode
-                        UserMigrationTool.this.userDAO.setPassword(userInfo.getOpenid(),rs.getString("password"),true); //password (literal)
+                        if(userInfo.getOpenid().matches("http.*"+UserMigrationTool.this.source+".*")) {
+                            userInfo.setOpenid(null); //This will cause the DAO to generate a local Openid
+                            UserMigrationTool.this.userDAO.addUser(userInfo);
+                            //UserMigrationTool.this.userDAO.setStatusCode(userInfo.getOpenid(),rs.getInt(13)); //statusCode
+                            UserMigrationTool.this.userDAO.setPassword(userInfo.getOpenid(),rs.getString("password"),true); //password (literal)
+                            System.out.println("Migrated User #"+i+": "+userInfo.getUserName()+" --> "+userInfo.getOpenid());
+                            migrateCount++;
+                        }else{
+                            UserMigrationTool.this.userDAO.addUser(userInfo);
+                            System.out.println("Transferred User #"+i+": "+userInfo.getUserName()+" --> "+userInfo.getOpenid());
+                            transCount++;
+                        }
                         i++;
-                        System.out.println("Migrated User #"+i+": "+userInfo.getUserName()+" --> "+userInfo.getOpenid());
-
-                        //-----------------------------------------------------------------------------------------------
-                        //This is just a temporary thing... Doubling up on users... preserving their original openid
-                        userInfo.setOpenid(rs.getString("openid"));
-                        UserMigrationTool.this.userDAO.addUser(userInfo);
-                        //-----------------------------------------------------------------------------------------------
                     }catch(Throwable t) {
-                        log.error("Sorry, could NOT migrate user: "+currentUsername);
+                        log.error("Sorry, could NOT migrate/transfer user: "+currentUsername);
                         errorCount++;
                     }
                 }
-                log.info("Inspected "+i+" User Records, with "+errorCount+" failed");
+                log.info("Inspected "+i+" User Records: Migrated "+migrateCount+", Transferred "+transCount+", with "+errorCount+" failed");
                 return i;
             }
         };
@@ -344,21 +355,21 @@ public final class UserMigrationTool {
         ResultSetHandler<Integer> permissionsResultSetHandler = new ResultSetHandler<Integer>() {
             public Integer handle(ResultSet rs) throws SQLException{
                 int i=0;
-                String uname=null;
+                String oid=null;
                 String gname=null;
                 String rname=null;
                 while(rs.next()) {
                     try{
-                        uname=rs.getString(1);
+                        oid=rs.getString(1);
                         gname=transform(rs.getString(2));
                         rname=rs.getString(3);
-                        log.trace("Migrating permission tuple: u["+uname+"] g["+gname+"] r["+rname+"] ");
-                        if(UserMigrationTool.this.userDAO.addPermission(uname,gname,rname)) {
+                        log.trace("Migrating permission tuple: u["+oid+"] g["+gname+"] r["+rname+"] ");
+                        if(UserMigrationTool.this.userDAO.addPermissionByOpenid(oid,gname,rname)) {
                             i++;
-                            System.out.println("Migrated Permission #"+i+": ["+uname+"] ["+gname+"] ["+rname+"]");
+                            System.out.println("Migrated Permission #"+i+": ["+oid+"] ["+gname+"] ["+rname+"]");
                         }
                     }catch(ESGFDataAccessException e) {
-                        log.error("Sorry, could NOT create permission tuple: u["+uname+"] g["+gname+"] r["+rname+"] ");
+                        log.error("Sorry, could NOT create permission tuple: u["+oid+"] g["+gname+"] r["+rname+"] ");
                     }
                 }
                 return i;

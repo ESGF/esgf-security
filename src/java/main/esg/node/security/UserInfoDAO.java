@@ -145,6 +145,12 @@ public class UserInfoDAO {
         "(SELECT id FROM esgf_security.user WHERE username = ? ), "+
         "(SELECT id FROM esgf_security.group WHERE name = ? ), "+
         "(SELECT id FROM esgf_security.role WHERE name = ?))";
+    private static final String addPermissionQueryByOpenid = 
+        "INSERT INTO esgf_security.permission (user_id, group_id, role_id) "+
+        "VALUES ( "+
+        "(SELECT id FROM esgf_security.user WHERE openid = ? ), "+
+        "(SELECT id FROM esgf_security.group WHERE name = ? ), "+
+        "(SELECT id FROM esgf_security.role WHERE name = ?))";
     private static final String delPermissionQuery = 
         "DELETE FROM esgf_security.permission "+
         "WHERE user_id = ? "+
@@ -183,6 +189,11 @@ public class UserInfoDAO {
     private static final String existsPermissionQueryByUsername = 
         "SELECT COUNT(*) FROM esgf_security.permission "+
         "WHERE user_id = (SELECT id FROM esgf_security.user WHERE username = ? ) "+
+        "AND group_id = (SELECT id FROM esgf_security.group WHERE name = ? ) "+
+        "AND role_id = (SELECT id FROM esgf_security.role WHERE name = ? )";
+    private static final String existsPermissionQueryByOpenid = 
+        "SELECT COUNT(*) FROM esgf_security.permission "+
+        "WHERE user_id = (SELECT id FROM esgf_security.user WHERE openid = ? ) "+
         "AND group_id = (SELECT id FROM esgf_security.group WHERE name = ? ) "+
         "AND role_id = (SELECT id FROM esgf_security.role WHERE name = ? )";
     //Status Queries
@@ -434,8 +445,12 @@ public class UserInfoDAO {
        is spurious.
      */
     public synchronized UserInfo getUserByOpenid(String openid) {
-        if ((openidUrlPattern.matcher(openid)).find()) {
-            return getUserById(openid);
+        try {
+            if (openid != null && (openidUrlPattern.matcher(openid)).find()) {
+                return getUserById(openid);
+            }
+        }catch(Exception e) {
+            log.error(e);
         }
         return null;
     }
@@ -491,6 +506,8 @@ public class UserInfoDAO {
                 if(openidPort == null || openidPort.equals(":443")) {
                     log.trace("scrubbing out default openidPort ["+openidPort+"]");
                     openidPort="";
+                }else{
+                    openidPort=":"+openidPort;
                 }
                 
                 //reconstruct the url scrubbing out port if necessary...
@@ -644,7 +661,7 @@ public class UserInfoDAO {
         try{
             log.trace("Inserting UserInfo associated with username: ["+userInfo.getUserName()+"], into database");
 
-            if(userInfo.getOpenid() == null) {
+            if(userInfo.getOpenid() == null || userInfo.getOpenid().isEmpty()) {
                 if(userInfo.getUserName() == null) return false;
                 String openidHost = props.getProperty("esgf.host",getFQDN());
                 String openidPort = props.getProperty("esgf.https.port","");
@@ -991,6 +1008,27 @@ public class UserInfoDAO {
                     log.trace("[ADDED]"); 
                 }else {
                     log.warn("Was not able to add permission (["+userName+"],["+groupName+"],["+roleName+"]) to database, already EXISTS?? Possible intra database concurrency issue!!!");
+                }
+            }else {
+                log.trace("[PERMISSION ALREADY EXISTS]");
+            }
+        }catch(SQLException ex) {
+            log.error(ex);
+            throw new ESGFDataAccessException(ex);
+        }
+        return (numRowsAffected > 0);
+    }
+    public boolean addPermissionByOpenid(String openid, String groupName, String roleName) {
+        int numRowsAffected = -1;
+        try{
+
+            log.trace("Adding Permission ("+openid+", "+groupName+", "+roleName+") ");
+            if(!queryRunner.query(existsPermissionQueryByOpenid, existsResultSetHandler, openid, groupName, roleName)) {
+                numRowsAffected = queryRunner.update(addPermissionQueryByOpenid, openid, groupName, roleName);
+                if (numRowsAffected > 0) {
+                    log.trace("[ADDED]"); 
+                }else {
+                    log.warn("Was not able to add permission (["+openid+"],["+groupName+"],["+roleName+"]) to database, already EXISTS?? Possible intra database concurrency issue!!!");
                 }
             }else {
                 log.trace("[PERMISSION ALREADY EXISTS]");
