@@ -295,7 +295,7 @@ public final class UserMigrationTool {
                 while(rs.next()) {
                     try{
                         currentUsername = rs.getString("username");
-                        if(currentUsername.equals("rootAdmin")) {
+                        if(currentUsername != null && currentUsername.equals("rootAdmin")) {
                             System.out.println("NOTE: Will not overwrite local rootAdmin information");
                             continue;
                         }
@@ -306,7 +306,6 @@ public final class UserMigrationTool {
                             //setMiddleName(rs.getString("middlename")).
                             setLastName(rs.getString("lastname")).
                             setEmail(rs.getString("email")).
-                            setUserName(rs.getString("username")).
                             setDn(rs.getString("dn")).
                             setOrganization(rs.getString("organization")).
                             //setOrgType(rs.getString("organization_type")).
@@ -317,12 +316,14 @@ public final class UserMigrationTool {
                         //Status code msut be set separately... (below) field #13
                         //Password literal must be set separately... (see setPassword - with true boolean, below) field #14
 
+                        if(currentUsername != null) userInfo.setUserName(currentUsername);
+
                         if(userInfo.getOpenid().matches("http.*"+UserMigrationTool.this.source+".*")) {
                             userInfo.setOpenid(null); //This will cause the DAO to generate a local Openid
                             UserMigrationTool.this.userDAO.addUser(userInfo);
                             //UserMigrationTool.this.userDAO.setStatusCode(userInfo.getOpenid(),rs.getInt(13)); //statusCode
                             UserMigrationTool.this.userDAO.setPassword(userInfo.getOpenid(),rs.getString("password"),true); //password (literal)
-                            System.out.println("Migrated User #"+i+": "+userInfo.getUserName()+" --> "+userInfo.getOpenid());
+                            System.out.println("Migrated User #"+i+": "+userInfo.getUserName()+" ("+openid+") --> "+userInfo.getOpenid());
                             migrateCount++;
                         }else{
                             UserMigrationTool.this.userDAO.addUser(userInfo);
@@ -363,13 +364,13 @@ public final class UserMigrationTool {
                         oid=rs.getString(1);
                         gname=transform(rs.getString(2));
                         rname=rs.getString(3);
-                        log.trace("Migrating permission tuple: u["+oid+"] g["+gname+"] r["+rname+"] ");
+                        log.trace("Migrating permission tuple: oid["+oid+"] g["+gname+"] r["+rname+"] ");
                         if(UserMigrationTool.this.userDAO.addPermissionByOpenid(oid,gname,rname)) {
                             i++;
-                            System.out.println("Migrated Permission #"+i+": ["+oid+"] ["+gname+"] ["+rname+"]");
+                            System.out.println("Migrated Permission #"+i+": oid["+oid+"] ["+gname+"] ["+rname+"]");
                         }
                     }catch(ESGFDataAccessException e) {
-                        log.error("Sorry, could NOT create permission tuple: u["+oid+"] g["+gname+"] r["+rname+"] ");
+                        log.error("Sorry, could NOT create permission tuple: oid["+oid+"] g["+gname+"] r["+rname+"] ");
                     }
                 }
                 return i;
