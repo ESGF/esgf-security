@@ -126,3 +126,6 @@ Version 2.0.2
 
 Version 2.1.0
 - Increasing socket time out to 10 secs.
+
+Version 2.1.2
+- Modified registry service to only contain list of unique elements (URLs or strings)
