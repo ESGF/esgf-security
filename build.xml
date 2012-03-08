@@ -240,6 +240,8 @@ Builds the project via ant (obviously).
   <target name="deps" depends="init-ivy" description="(Sets up library dependencies: Ivy)">
     <mkdir dir="${lib_fetched_dir}"/>
     <ivy:retrieve sync="true" conf="default" />
+    <ivy:deliver deliverpattern="dist/[artifact]-[revision].[ext]"
+                 pubrevision="${version_num}" status="milestone" />
     <path id="main_classpath">
       <fileset dir="${lib_fetched_dir}">
 	  	<include name="**/*.jar"/>
