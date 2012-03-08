@@ -231,11 +231,13 @@ public final class UserMigrationTool {
         ResultSetHandler<Integer> rolesResultSetHandler = new ResultSetHandler<Integer>() {
             public Integer handle(ResultSet rs) throws SQLException{
                 int i=0;
+                String roleName=null;
                 while(rs.next()) {
+                    roleName = transformRoleName(rs.getString(1));
                     //                                              [name]         [description]
-                    if(UserMigrationTool.this.groupRoleDAO.addRole(rs.getString(1),rs.getString(2))) {
+                    if(UserMigrationTool.this.groupRoleDAO.addRole(roleName,rs.getString(2))) {
                         i++;
-                        System.out.println("Migrated role #"+i+": "+rs.getString(1));
+                        System.out.println("Migrated role #"+i+": "+roleName);
                     }
                 }
                 return i;
@@ -257,11 +259,12 @@ public final class UserMigrationTool {
         ResultSetHandler<Integer> groupsResultSetHandler = new ResultSetHandler<Integer>() {
             public Integer handle(ResultSet rs) throws SQLException{
                 int i=0;
+                String groupName = transformGroupName(rs.getString(1));
                 while(rs.next()) {
                     //                                               [name]         [description]    [visible]         [automatic_approval]
-                    if(UserMigrationTool.this.groupRoleDAO.addGroup(transformGroupName(rs.getString(1)),rs.getString(2), rs.getBoolean(3), rs.getBoolean(4))) {
+                    if(UserMigrationTool.this.groupRoleDAO.addGroup(groupName,rs.getString(2), rs.getBoolean(3), rs.getBoolean(4))) {
                         i++;
-                        System.out.println("Migrated group #"+i+": "+rs.getString(1));
+                        System.out.println("Migrated group #"+i+": "+groupName);
                     }
                 }
                 return i;
@@ -285,6 +288,14 @@ public final class UserMigrationTool {
     //User -> user
     //default -> user
     private String transformGroupName(String in) {
+        String out = null;
+        if(in.equals("User")) { out = in.toLowerCase(); }
+        else if(in.equals("default")) { out = "user"; }
+        else{ out = in; }
+        return out;
+    }
+
+    private String transformRoleName(String in) {
         String out = null;
         if(in.equals("User")) { out = in.toLowerCase(); }
         else if(in.equals("default")) { out = "user"; }
@@ -411,7 +422,7 @@ public final class UserMigrationTool {
                     try{
                         oid=transformOpenid(rs.getString(1));
                         gname=transformGroupName(rs.getString(2));
-                        rname=rs.getString(3);
+                        rname=transformRoleName(rs.getString(3));
                         log.trace("Migrating permission tuple: oid["+oid+"] g["+gname+"] r["+rname+"] ");
                         if(UserMigrationTool.this.userDAO.addPermissionByOpenid(oid,gname,rname)) {
                             migrateCount++;
