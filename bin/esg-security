@@ -162,6 +162,16 @@ setup_security() {
         fi
 
         echo
+
+        dobackup="Y"
+        read -p "Do you want to make a back up of the existing database schema [${node_db_name}:esgf_security]?? [Y/n] " dobackup
+        [ -z "${dobackup}" ] && dobackup=${default}
+        if [ "${dobackup}" = "Y" ] || [ "${dobackup}" = "y" ]; then
+            echo "Creating a backup archive of the security database schema [$node_db_name:esgf_security]"
+            backup_db -db ${node_db_name} -s security
+        fi
+        unset dobackup
+        echo
     fi
 
     configure_postgress
@@ -311,7 +321,7 @@ clean_security_database_subsystem_installation() {
             [ $? != 0 ] && echo " WARNING: Could not verify ${scripts_dir}/esg-security, aborting this uninstall" && return 3
             echo "[VERIFIED]"
 
-            backup_db -db esgcet -s security
+            backup_db -db ${node_db_name} -s security
             echo "removing esgf_security.* schema and tables and DATA"
             ${cdat_home}/bin/esgf_security_initialize --dburl ${postgress_user}:${pg_sys_acct_passwd}@localhost:${postgress_port}/esgcet -d 0
             [ $? != 0 ] && echo "ERROR: Unable to remove ${tomcat_install_dir}/webapps/${security_app_context_root}" && return 1
