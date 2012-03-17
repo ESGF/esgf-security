@@ -19,6 +19,7 @@
 package esg.security.registry.service.impl;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -192,16 +193,24 @@ public class RegistryServiceLocalXmlImpl implements RegistryService, ReloadableF
 	 * @param file
 	 */
 	public void parse(final List<File> registryFiles) {
-	    	        		    
-	    final Map<String, List<URL>> _attributeServices = new HashMap<String, List<URL>>();
-	    final Map<String, List<URL>> _registrationServices = new HashMap<String, List<URL>>();
-	    final List<URL> _identityProviders = new ArrayList<URL>();
-	    final List<URL> _authorizationServices = new ArrayList<URL>();
+	    
+	    final Map<String, List<String>> _registrationServices = new HashMap<String, List<String>>();
+	    boolean reloadRegistrationServices = false;
+	    final Map<String, List<String>> _attributeServices = new HashMap<String, List<String>>();
+	    boolean reloadAttributeServices = false;
+	    final List<String> _identityProviders = new ArrayList<String>();
+	    boolean reloadIdentityProviders = false;
+	    final List<String> _authorizationServices = new ArrayList<String>();
+	    boolean reloadAuthorizationServices = false;
 	    final List<String> _lasServers = new ArrayList<String>();
+	    boolean reloadLasServers = false;
 	    final LinkedHashSet<String> _shards = new LinkedHashSet<String>();
+	    boolean reloadShards = false;
 	    
 	    // loop over registry files
 	    for (final File registryFile : registryFiles) {   
+	        
+	        if (LOG.isInfoEnabled()) LOG.info("Loading information from registry file="+registryFile.getAbsolutePath()); 
 		        
 	        try {
 		
@@ -210,6 +219,8 @@ public class RegistryServiceLocalXmlImpl implements RegistryService, ReloadableF
         		    		
         		// parse Attribute Services section
         		if (root.getName().equals("ats_whitelist")) {
+        		    reloadAttributeServices = true;
+        		    reloadRegistrationServices = true;
         		        		    
             		for (final Object attr : root.getChildren("attribute", NS)) {
             			final Element _attr = (Element)attr;
@@ -218,18 +229,18 @@ public class RegistryServiceLocalXmlImpl implements RegistryService, ReloadableF
             			// attribute service
             			if (StringUtils.hasText(_attr.getAttributeValue("attributeService"))) {
                             if (_attributeServices.get(aType) == null) {
-                                _attributeServices.put(aType, new ArrayList<URL>());
+                                _attributeServices.put(aType, new ArrayList<String>());
                             }
-                            this.addIfUnique(_attributeServices.get(aType), new URL(_attr.getAttributeValue("attributeService")));
+                            this.addIfUnique(_attributeServices.get(aType), _attr.getAttributeValue("attributeService"));
             			    LOG.info("Added attribute service: "+_attr.getAttributeValue("attributeService"));
             			}
             			
             			// registration service
             			if (StringUtils.hasText(_attr.getAttributeValue("registrationService"))) {
                             if (_registrationServices.get(aType) == null) {
-                                _registrationServices.put(aType, new ArrayList<URL>());
+                                _registrationServices.put(aType, new ArrayList<String>());
                             }
-                            this.addIfUnique(_registrationServices.get(aType), new URL(_attr.getAttributeValue("registrationService")));
+                            this.addIfUnique(_registrationServices.get(aType), _attr.getAttributeValue("registrationService"));
             			    LOG.info("Added registration service: "+_attr.getAttributeValue("registrationService"));
             			}
             			
@@ -237,24 +248,28 @@ public class RegistryServiceLocalXmlImpl implements RegistryService, ReloadableF
             		
             	// parse Identity Providers section
         		} else if (root.getName().equals("idp_whitelist")) {
+        		    reloadIdentityProviders = true;
         		    
         		    for (final Object value : root.getChildren("value", NS)) {
         		        final Element element = (Element)value;       		        
-        		        this.addIfUnique(_identityProviders, new URL(element.getText()));
+        		        this.addIfUnique(_identityProviders, element.getText());
         		        LOG.info( "Added identity provider: "+ element.getText());
         		    }
         		    
         		// parse Authorization Services section
         		} else if (root.getName().equals("azs_whitelist")) {
+        		    reloadAuthorizationServices = true;
         		    
                     for (final Object value : root.getChildren("value", NS)) {
                         final Element element = (Element)value;
-                        this.addIfUnique(_authorizationServices, new URL(element.getText()) );
+                        this.addIfUnique(_authorizationServices, element.getText() );
                         LOG.info( "Added authorization service: "+ element.getText());
                     }
         		    
                 // parse LAS servers section
         		} else if (root.getName().equals("las_servers")) {
+        		    reloadLasServers = true;
+        		    
                     for (final Object obj : root.getChildren("las_server", NS2)) {
                         final Element element = (Element)obj;                        
                         this.addIfUnique(_lasServers, element.getAttributeValue("ip"));
@@ -263,6 +278,8 @@ public class RegistryServiceLocalXmlImpl implements RegistryService, ReloadableF
         		    
                 // parse Solr shards section
                 } else if (root.getName().equals("shards")) {
+                    reloadShards = true;
+                    
                     for (final Object obj : root.getChildren("value", NS)) {
                         final Element element = (Element)obj;
                         _shards.add( element.getText() );
@@ -280,37 +297,86 @@ public class RegistryServiceLocalXmlImpl implements RegistryService, ReloadableF
 	    }
    		
         // update local data storage
-        synchronized (attributeServices) {
-            attributeServices = _attributeServices;
-        }
-        synchronized (registrationServices) {
-            registrationServices = _registrationServices;
-        }
-        synchronized (identityProviders) {
-            identityProviders = _identityProviders;             
-        }
-        synchronized (authorizationServices) {
-            authorizationServices = _authorizationServices;             
-        }
-        synchronized (lasServers) {
-            lasServers = _lasServers;             
-        }
-        synchronized (shards) {
-            shards = _shards;             
-        }               
+	    if (reloadAttributeServices) {
+	        synchronized (attributeServices) {
+	            attributeServices = toURLs(_attributeServices);
+	        }
+	    }
+	    if (reloadRegistrationServices) {
+            synchronized (registrationServices) {
+                registrationServices = toURLs(_registrationServices);
+	            }
+	    }
+	    if (reloadIdentityProviders) {
+    	    synchronized (identityProviders) {
+                identityProviders = toURLs(_identityProviders);             
+            }
+	    }
+	    if (reloadAuthorizationServices) {
+            synchronized (authorizationServices) {
+                authorizationServices = toURLs(_authorizationServices);             
+            }
+	    }
+	    if (reloadLasServers) {
+            synchronized (lasServers) {
+                lasServers = _lasServers;             
+            }
+	    }
+	    if (reloadShards) {
+            synchronized (shards) {
+                shards = _shards;             
+            }               
+	    }
         
 		// print content
 		this.print();
 		
 	}
 	
-	private void addIfUnique(final List<URL> urls, final URL url) {
-	    if (!urls.contains(url)) urls.add(url);
+	/**
+	 * Method to add a URL only if it is not in the list already.
+	 * Note that the comparison MUST be executed on String objects, not URLs:
+	 * a URL comparison involves a live check of the URL itself, and takes forever...!
+	 * 
+	 * @param values
+	 * @param value
+	 */
+	private void addIfUnique(final List<String> values, final String value) {
+	    if (!values.contains(value)) values.add(value);
 	}
 	
-	   private void addIfUnique(final List<String> values, final String value) {
-	        if (!values.contains(value)) values.add(value);
+	/**
+	 * Utility method to convert a list of strings into a list of URLs.
+	 * @param values
+	 * @return
+	 */
+	private List<URL> toURLs(final List<String> values) {
+	    final List<URL> urls = new ArrayList<URL>();
+	    for (final String value : values) {
+	        try {
+	            urls.add(new URL(value));
+	        } catch(MalformedURLException e) {
+	            // skip this URL
+	            LOG.warn(e.getMessage());
+	        }
 	    }
+	    return urls;
+	}
+	
+	/**
+	 * Utility method to convert a map of strings into a map of URLs.
+	 * @param map
+	 * @return
+	 */
+	private Map<String, List<URL>> toURLs(final Map<String, List<String>> map) {
+	    
+	    final Map<String, List<URL>> urls = new HashMap<String, List<URL>>();
+	    for (final String key : map.keySet()) {
+	         urls.put(key, toURLs(map.get(key)) );
+	    }
+	    return urls;
+	    
+	}
 		
 	/**
 	 * Method to dump the registry content to standard output

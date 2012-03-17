@@ -129,3 +129,6 @@ Version 2.1.0
 
 Version 2.1.2
 - Modified registry service to only contain list of unique elements (URLs or strings)
+
+Version 2.1.3
+- Fixed problem with comparing URLs, which was causing loading of registry information to be slow.
