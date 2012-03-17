@@ -311,7 +311,7 @@ clean_security_database_subsystem_installation() {
             [ $? != 0 ] && echo " WARNING: Could not verify ${scripts_dir}/esg-security, aborting this uninstall" && return 3
             echo "[VERIFIED]"
 
-            backup_db esgcet security
+            backup_db -db esgcet -s security
             echo "removing esgf_security.* schema and tables and DATA"
             ${cdat_home}/bin/esgf_security_initialize --dburl ${postgress_user}:${pg_sys_acct_passwd}@localhost:${postgress_port}/esgcet -d 0
             [ $? != 0 ] && echo "ERROR: Unable to remove ${tomcat_install_dir}/webapps/${security_app_context_root}" && return 1
