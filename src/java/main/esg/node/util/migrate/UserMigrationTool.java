@@ -111,6 +111,8 @@ public final class UserMigrationTool {
     private static final String sourcePermissionInfoQuery = "select u.openid as oid, g.name as gname, r.name as rname from security.user as u, security.group as g, security.role as r, security.membership as m, security.status as st where m.user_id=u.id and m.group_id=g.id and m.role_id=r.id and m.status_id=st.id and st.name='valid' and u.openid like 'http%'";
     //-------------------------------------------------------
 
+    private boolean verbatimMigration = false;
+
     public UserMigrationTool() { }
 
     //ToDo: should throw exception here
@@ -122,6 +124,7 @@ public final class UserMigrationTool {
             esgfProperties.load(new java.io.BufferedReader(new java.io.FileReader(System.getenv().get("ESGF_HOME")+"/config/esgf.properties")));
             myHost = esgfProperties.getProperty("esgf.host");
             myHost.trim(); //pretty much calling this to force an NPE if property is not found... so I can stop here (die early).
+            verbatimMigration = Boolean.valueOf(System.getProperty("verbatim_migration", System.getenv().get("verbatim_migration")));
         }catch(Exception e) { log.error(e); }
         return this;
     }
@@ -341,6 +344,11 @@ public final class UserMigrationTool {
                         if(currentUsername != null) userInfo.setUserName(currentUsername);
                         
                         if(userInfo.getOpenid().matches("http.*"+UserMigrationTool.this.source+".*")) {
+                            if(verbatimMigration) {
+                                UserMigrationTool.this.userDAO.addUser(userInfo);
+                                UserMigrationTool.this.userDAO.setPassword(userInfo.getOpenid(),rs.getString("password"),true); //password (literal)
+                                System.out.println("**Migrated User #"+i+": "+userInfo.getUserName()+" ("+openid+") --> "+userInfo.getOpenid());
+                            }
                             userInfo.setOpenid(null); //This will cause the DAO to generate a local Openid
                             UserMigrationTool.this.userDAO.addUser(userInfo);
                             //UserMigrationTool.this.userDAO.setStatusCode(userInfo.getOpenid(),rs.getInt(13)); //statusCode
@@ -420,10 +428,18 @@ public final class UserMigrationTool {
                 int migrateCount=0;
                 while(rs.next()) {
                     try{
+                        if(verbatimMigration) {
+                            oid=rs.getString(1);
+                            gname=transformGroupName(rs.getString(2));
+                            rname=transformRoleName(rs.getString(3));
+                            if(UserMigrationTool.this.userDAO.addPermissionByOpenid(oid,gname,rname)) {
+                                migrateCount++;
+                                System.out.println("**Migrated Permission #"+i+": oid["+oid+"] ["+gname+"] ["+rname+"]");
+                            }
+                        }
                         oid=transformOpenid(rs.getString(1));
                         gname=transformGroupName(rs.getString(2));
                         rname=transformRoleName(rs.getString(3));
-                        log.trace("Migrating permission tuple: oid["+oid+"] g["+gname+"] r["+rname+"] ");
                         if(UserMigrationTool.this.userDAO.addPermissionByOpenid(oid,gname,rname)) {
                             migrateCount++;
                             System.out.println("Migrated Permission #"+i+": oid["+oid+"] ["+gname+"] ["+rname+"]");
