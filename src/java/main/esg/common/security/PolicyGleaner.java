@@ -106,7 +106,10 @@ public class PolicyGleaner {
             log.error(e);
         }
         // /usr/local/tomcat/webapps/esgf-security/WEB-INF/classes/esg/security/config/
-        policyPath = props.getProperty("security.app.home",".")+File.separator+"WEB-INF"+File.separator+"classes"+File.separator+"esg"+File.separator+"security"+File.separator+"config"+File.separator;
+        //policyPath = props.getProperty("security.app.home",".")+File.separator+"WEB-INF"+File.separator+"classes"+File.separator+"esg"+File.separator+"security"+File.separator+"config"+File.separator;
+
+        // /esg/config
+        policyPath = System.getProperty("ESGF_HOME","/esg")+File.separator+"config";
 
         policySet = new HashSet<PolicyWrapper>();
         myPolicy = new Policies();
@@ -116,19 +119,21 @@ public class PolicyGleaner {
     public Policies getMyPolicy() { return myPolicy; }
 
     public synchronized PolicyGleaner loadMyPolicy() { return this.loadMyPolicy(policyPath+policyFile); }
-    public synchronized PolicyGleaner loadMyPolicy(String filename) {
-        log.info("Loading my policy info from "+filename);
-        try{
-            JAXBContext jc = JAXBContext.newInstance(Policies.class);
-            Unmarshaller u = jc.createUnmarshaller();
-            JAXBElement<Policies> root = u.unmarshal(new StreamSource(new File(filename)),Policies.class);
-            myPolicy = root.getValue();
-            int count = 0;
-            for(Policy policy : myPolicy.getPolicy()) { policySet.add(new PolicyWrapper(policy)); count++; } //dedup
-            log.trace("Unmarshalled ["+myPolicy.getPolicy().size()+"] policies - Inspected ["+count+"] polices - resulted in ["+policySet.size()+"] policies");
-            dirty=true;
-        }catch(Exception e) {
-            throw new ESGFPolicyException("Unable to properly load local policy from ["+filename+"]", e);
+    public synchronized PolicyGleaner loadMyPolicy(String... filenames) {
+        for(String filename : filenames) {
+            log.info("Loading my policy info from "+filename);
+            try{
+                JAXBContext jc = JAXBContext.newInstance(Policies.class);
+                Unmarshaller u = jc.createUnmarshaller();
+                JAXBElement<Policies> root = u.unmarshal(new StreamSource(new File(filename)),Policies.class);
+                myPolicy = root.getValue();
+                int count = 0;
+                for(Policy policy : myPolicy.getPolicy()) { policySet.add(new PolicyWrapper(policy)); count++; } //dedup
+                log.trace("Unmarshalled ["+myPolicy.getPolicy().size()+"] policies - Inspected ["+count+"] polices - resulted in ["+policySet.size()+"] policies");
+                dirty=true;
+            }catch(Exception e) {
+                throw new ESGFPolicyException("Unable to properly load policies from ["+filename+"]", e);
+            }
         }
         return this;
     }
@@ -195,7 +200,7 @@ public class PolicyGleaner {
         return this;
     }
 
-    public PolicyGleaner remoteAllForRole(String roleName) {
+    public PolicyGleaner removeAllForRole(String roleName) {
         dirty=true;
         log.trace("Removing all policies with role = "+roleName);
         Set<PolicyWrapper> delSet = new HashSet<PolicyWrapper>();
@@ -285,10 +290,14 @@ public class PolicyGleaner {
     public static void main(String[] args) {
         PolicyGleaner pGleaner = null;
         pGleaner = new PolicyGleaner(new Properties());
-        pGleaner.loadMyPolicy("../esgf_policies_local.xml");
+        pGleaner.loadMyPolicy();
         pGleaner.addPolicy(".*test.*",  "superGroup", "boss", "Write");
         pGleaner.addPolicy(".*cmip5.*", "otherGroup", "user", "Read");
-        pGleaner.commit().savePolicyAs("../test_policy.out");
+        try{
+            pGleaner.commit().savePolicyAs("/tmp/"+File.createTempFile("policy_test_","out").getName());
+        }catch (java.io.IOException e) {
+            System.out.println(e.getMessage());
+        }
         System.out.println(pGleaner);
 
         //if(args.length > 0) {
