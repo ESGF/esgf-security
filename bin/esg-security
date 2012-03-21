@@ -144,7 +144,7 @@ setup_security() {
     local default="Y"
     ((force_install)) && default="N"
     local dosetup
-    if [ -d ${security_app_home} ]; then 
+    if [ -d ${security_app_home} ]; then
         echo "Detected an existing security services installation..."
         read -p "Do you want to continue with security services installation and setup? $([ "$default" = "N" ] && echo "[y/N]" || echo "[Y/n]") " dosetup
         [ -z "${dosetup}" ] && dosetup=${default}
@@ -221,7 +221,7 @@ write_security_install_log() {
 
 #--------------------------------------------------
 #NOTE: This must be run AFTER the esg node web app
-#      installation/configuration (setup_node_manager) 
+#      installation/configuration (setup_node_manager)
 #--------------------------------------------------
 configure_postgress() {
     if [ $((sel & IDP_BIT ))   != 0 ]; then
@@ -236,12 +236,17 @@ configure_postgress() {
 
         start_postgress
 
-        #Create the database...
-        echo "Creating esg node database: [${node_db_name}]"
-        echo "${postgress_install_dir}/bin/createdb ${node_db_name}"
-        PGPASSWORD=${PGPASSWORD:-${pg_sys_acct_passwd}:-${security_admin_password}} ${postgress_install_dir}/bin/createdb ${node_db_name} >& /dev/null
-        (( $? > 1 )) && echo " ERROR: Could not create esg node database: ${node_db_name}" && return 0
-        echo
+        # Determine if the node database already exists
+        if [ -z "$(postgres_list_dbs ${node_db_name})" ] ; then
+            # Create the database...
+            echo "Creating esgf node database: [${node_db_name}]"
+            echo "createdb ${node_db_name}"
+            PGPASSWORD=${PGPASSWORD:-${pg_sys_acct_passwd}} createdb
+            ${node_db_name} >& /dev/null
+            (( $? > 1 )) && echo " ERROR: Could not create esgf node database: ${node_db_name}" && return 0
+        else
+            echo "Database '${node_db_name}' already exists, not recreating for ESGF Security"
+        fi
 
         mkdir -p ${workdir}/${node_dist_dir:-esgf-security-${esgf_security_version}}/db
         pushd ${workdir}/${node_dist_dir:-esgf-security-${esgf_security_version}}/db >& /dev/null
@@ -301,7 +306,7 @@ clean_security_webapp_subsystem() {
                 remove_property security_app_home
             fi
         fi
-    fi 
+    fi
     return 0
 }
 
@@ -330,7 +335,7 @@ clean_security_database_subsystem_installation() {
                 perl -n -i -e'print unless m!python:esgf_security!' ${install_manifest} && echo "[REMOVED]"
         else
             echo " Could not find security tables in the database."
-        fi 
+        fi
     fi
     return 0
 }
