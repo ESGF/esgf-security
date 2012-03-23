@@ -96,9 +96,7 @@ esgf_user_migration_launcher="esgf-user-migrate"
 init() {
     #[ -n "${envfile}" ] && [ -e "${envfile}" ] && source ${envfile} && ((VERBOSE)) && printf "security services: sourcing environment from: ${envfile} \n"
 
-    security_dist_url=${esg_dist_url}/esgf-security/esgf-security.war
     security_app_context_root=${security_web_service_name:-esgf-security}
-    security_app_home=${tomcat_install_dir}/webapps/${security_app_context_root}
 
     esgf_security_version=${esgf_security_version:-"1.2.8"}
     esgf_security_db_version=${esgf_security_db_version:-"0.1.4"}
@@ -106,6 +104,8 @@ init() {
 
     #Database information....
     node_db_name=${node_db_name:-"esgcet"}
+    node_db_security_schema_name="esgf_security"
+
     postgress_driver=${postgress_driver:-org.postgresql.Driver}
     postgress_protocol=${postgress_protocol:-jdbc:postgresql:}
     postgress_host=${PGHOST:-localhost}
@@ -128,95 +128,15 @@ init() {
 setup_security() {
     init
 
-    echo -n "Checking for security services ${esgf_security_version}"
-    check_webapp_version "${security_app_context_root}" "${esgf_security_version}"
-    local ret=$?
-    ((ret == 0)) && (( ! force_install )) && echo " [OK]" && return 0
-
-    echo
-    echo "*******************************"
-    echo "Setting up The ESGF Security Services"
-    echo "*******************************"
-    echo
-
-    local upgrade=${1:-0}
-
-    local default="Y"
-    ((force_install)) && default="N"
-    local dosetup
-    if [ -d ${security_app_home} ]; then
-        echo "Detected an existing security services installation..."
-        read -p "Do you want to continue with security services installation and setup? $([ "$default" = "N" ] && echo "[y/N]" || echo "[Y/n]") " dosetup
-        [ -z "${dosetup}" ] && dosetup=${default}
-        if [ "${dosetup}" != "Y" ] && [ "${dosetup}" != "y" ]; then
-            echo "Skipping security services installation and setup - will assume it's setup properly"
-            return 0
-        fi
-
-        local dobackup="Y"
-        read -p "Do you want to make a back up of the existing distribution?? [Y/n] " dobackup
-        [ -z "${dobackup}" ] && dobackup=${default}
-        if [ "${dobackup}" = "Y" ] || [ "${dobackup}" = "y" ]; then
-            echo "Creating a backup archive of this web application $security_app_home"
-            backup ${security_app_home}
-        fi
-
-        echo
-
-        dobackup="Y"
-        read -p "Do you want to make a back up of the existing database schema [${node_db_name}:esgf_security]?? [Y/n] " dobackup
-        [ -z "${dobackup}" ] && dobackup=${default}
-        if [ "${dobackup}" = "Y" ] || [ "${dobackup}" = "y" ]; then
-            echo "Creating a backup archive of the security database schema [$node_db_name:esgf_security]"
-            backup_db -db ${node_db_name} -s security
-        fi
-        unset dobackup
-        echo
-    fi
-
     configure_postgress
-
-    mkdir -p ${workdir}
-    [ $? != 0 ] && return 1
-    pushd ${workdir} >& /dev/null
-
-    local security_dist_file=$(pwd)/${security_dist_url##*/}
-    checked_get ${security_dist_file} ${security_dist_url} $((force_install))
-    (( $? > 1 )) && echo " ERROR: Could not download ${node_dist_url} :-(" && popd >& /dev/null && checked_done 1
-
-    stop_tomcat
-
-    #----------------------------
-    #make room for new install
-    set_aside_web_app ${security_app_home}
-    #----------------------------
-    mkdir -p ${security_app_home}
-    [ $? != 0 ] && echo "Could not create dir ${security_app_home}" && popd >& /dev/null && checked_done 1
-    cd ${security_app_home}
-    echo "Expanding war ${security_dist_file} in $(pwd)"
-    $JAVA_HOME/bin/jar xf ${security_dist_file}
-    set_aside_web_app_cleanup ${security_app_home} $?
-
-    chown -R ${tomcat_user} ${security_app_home}
-    chgrp -R ${tomcat_group} ${security_app_home}
-    popd >& /dev/null
-    #----------------------------
-
-    popd >& /dev/null
-
     setup_policy_files
     fetch_user_migration_launcher
 
-    write_security_install_log
+    #migration niceness...
+    clean_security_webapp_subsystem()
+
     checked_done 0
 
-}
-
-write_security_install_log() {
-    echo "$(date ${date_format}) webapp:${security_app_context_root}=${esgf_security_version} ${security_app_home}" >> ${install_manifest}
-    dedup ${install_manifest}
-    write_as_property security_app_home
-    return 0
 }
 
 #--------------------------------------------------
@@ -224,6 +144,7 @@ write_security_install_log() {
 #      installation/configuration (setup_node_manager)
 #--------------------------------------------------
 configure_postgress() {
+    local upgrade=${1:-0}
     if [ $((sel & IDP_BIT ))   != 0 ]; then
 
         init
@@ -233,6 +154,9 @@ configure_postgress() {
         echo "Configuring Postgres... for ESGF Security"
         echo "*******************************"
         echo
+
+        local default="Y"
+        ((force_install)) && default="N"
 
         start_postgress
 
@@ -245,7 +169,37 @@ configure_postgress() {
             ${node_db_name} >& /dev/null
             (( $? > 1 )) && echo " ERROR: Could not create esgf node database: ${node_db_name}" && return 0
         else
-            echo "Database '${node_db_name}' already exists, not recreating for ESGF Security"
+            
+            echo "Database '${node_db_name}' already exists..."
+            
+            local default="N"
+            ((force_install)) && default="Y"
+
+            local dosetup
+            if [ -n "$(postgres_list_db_schemas ${node_db_security_schema_name})" ]; then
+                echo "Detected an existing security schema installation..."
+                read -p "Do you want to continue with security schema setup? $([ "$default" = "N" ] && echo "[y/N]" || echo "[Y/n]") " dosetup
+                [ -z "${dosetup}" ] && dosetup=${default}
+                if [ "${dosetup}" != "Y" ] && [ "${dosetup}" != "y" ]; then
+                    echo "Skipping security database schema setup - will assume it's setup properly"
+                    return 0
+                fi
+            fi
+            unset dosetup
+            unset default
+            
+            default="Y"
+            local dobackup="Y"
+            read -p "Do you want to make a back up of the existing database schema [${node_db_name}:${node_db_security_schema_name}]?? [Y/n] " dobackup
+            [ -z "${dobackup}" ] && dobackup=${default}
+            if [ "${dobackup}" = "Y" ] || [ "${dobackup}" = "y" ]; then
+                echo "Creating a backup archive of the security database schema [$node_db_name:esgf_security]"
+                backup_db -db ${node_db_name} -s security
+            fi
+            unset dobackup
+            unset default
+            echo
+
         fi
 
         mkdir -p ${workdir}/${node_dist_dir:-esgf-security-${esgf_security_version}}/db
@@ -294,20 +248,8 @@ write_security_db_install_log() {
 
 clean_security_webapp_subsystem() {
     init
-    local doit="N"
-    if [ -e ${security_app_home} ]; then
-        read -p "remove ESGF Security web service? (${security_app_home}) [y/N]: " doit
-        if [ "doit" = "Y" ] || [ "$doit" = "y" ]; then
-            echo "removing ${tomcat_install_dir}/webapps/${security_app_context_root}"
-            if [ -n ${security_app_home} ]; then
-                rm -rf ${security_app_home}
-                [ $? != 0 ] && echo "ERROR: Unable to remove ${tomcat_install_dir}/webapps/${security_app_context_root}" && return 1
-                perl -n -i -e'print unless m!webapp:esgf-security!' ${install_manifest}
-                remove_property security_app_home
-            fi
-        fi
-    fi
-    return 0
+    perl -n -i -e'print unless m!webapp:esgf-security!' ${install_manifest}
+    remove_property security_app_home
 }
 
 #NOTE: There are certain fields that we are not pulling from (node_db_name and postgress_host).
@@ -329,7 +271,6 @@ clean_security_database_subsystem_installation() {
             backup_db -db ${node_db_name} -s security
             echo "removing esgf_security.* schema and tables and DATA"
             ${cdat_home}/bin/esgf_security_initialize --dburl ${postgress_user}:${pg_sys_acct_passwd}@localhost:${postgress_port}/esgcet -d 0
-            [ $? != 0 ] && echo "ERROR: Unable to remove ${tomcat_install_dir}/webapps/${security_app_context_root}" && return 1
             rm -rvf ${cdat_home}/bin/esgf_security_initialize && \
                 rm -rf ${cdat_home}/lib/python${python_version}/${esgf_security_egg_file} && \
                 perl -n -i -e'print unless m!python:esgf_security!' ${install_manifest} && echo "[REMOVED]"
