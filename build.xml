@@ -440,47 +440,13 @@ Builds the project via ant (obviously).
   </target>
   
   <target name="make_all_jars" depends="make_jar,make_user_migration_tool_jar,make_test_jar"/>
-	
-  <target name="make_war" depends="make,init"
-	          description="(Creates war file of this project)">
-	    <mkdir dir="${dist_dir}" />
-	    <mkdir dir="${dist_dir}/tmplib"/>
 
-	    <copy todir="${dist_dir}/tmplib" overwrite="true" flatten="yes">
-	      <fileset dir="${lib_dir}" includes="**/*.jar" excludes="servlet-api*.jar,**/junit*.jar,**/*sources.jar,**/*javadoc.jar"/>
-	    </copy>
-	  	<echo message="${conf_dir}"/>
-	    <delete file="${dist_dir}/${module}.war"/>
-	    <war destfile="${dist_dir}/${module}.war" webxml="${build_dir}/${module}-web.xml">
-	    	<!-- Add configuration files to WEB-INF -->
-	      <fileset dir="${web_dir}" excludes="WEB-INF/**/web.xml/**,**semantic.cache**"/>
-	      <webinf dir="${conf_dir}" includes="**/*.xml" excludes="${module}-web.xml"/>
-	      <lib dir="${dist_dir}/tmplib">
-	        <include name="**/*.jar"/>
-	        <exclude name="**/*-test*.jar,**/*-common*.jar"/>
-	      </lib>
-	      <classes dir="${build_dir}" excludes="${module}-web.xml,log4j.xml, test/** "/>
-	      <manifest>
-		<attribute name="Organization" value="${organization}"/>
-		<attribute name="Author"       value="${author}"/>
-		<attribute name="Project"      value="${project_name} ${module}"/>
-		<attribute name="Module"       value="${module}"/>
-		<attribute name="Version"      value="${version_num}"/>
-                <attribute name="Branch"       value="${branch}"/>
-                <attribute name="Commit"       value="${commit}"/>
-		<attribute name="Release-Name" value="${release_name}"/>
-	      </manifest>
-	    </war>
-	    <delete dir="${dist_dir}/tmplib"/>
-	  </target>
-
-
-  <target name="make_dist" depends="make_all_jars, make_war, make_python"
+  <target name="make_dist" depends="make_all_jars, make_python"
 	  description="(Creates full software distribution)">
     <delete file="${dist_dir}/${module}-${version_num}.tar.gz"/> 
     <tar destfile="${dist_dir}/${module}-${version_num}.tar">
-      <tarfileset dir="${dist_dir}" includes="**/*${version_num}.jar,**/*.war" prefix="${module}-${version_num}"/>
-   	  <tarfileset dir="${basedir}/etc/conf" prefix="${module}-${version_num}/conf"/>
+      <tarfileset dir="${dist_dir}" includes="**/*${version_num}.jar" prefix="${module}-${version_num}"/>
+      <tarfileset dir="${basedir}/etc/conf" includes="commons*,log4j*" prefix="${module}-${version_num}/conf"/>
       <tarfileset dir="${basedir}" prefix="${module}-${version_num}">
 	<include name="LICENSE"/>
 	<include name="INSTALL"/>
@@ -489,7 +455,6 @@ Builds the project via ant (obviously).
     </tar>
     <gzip destfile="${dist_dir}/${module}-${version_num}.tar.gz" src="${dist_dir}/${module}-${version_num}.tar"/>
     <delete file="${dist_dir}/${module}-${version_num}.tar"/> 
-
   </target>
 
 
@@ -770,41 +735,7 @@ Builds the project via ant (obviously).
     <echo message="Unit Test Report  -> file://${test_reports_dir}/index.html"/>
     <echo message="Coverage Report   -> file://${test_coverage_dir}/index.html"/>
     <echo message="Web Site ----------> http://esgf.org/${module}-site/index.html"/>
-  </target>
-
-
-  <target name="make_web_dir" depends="make, init" 
-	  description="(Assembles the WEB-INF directory to run the web application in place.)">
-    
-    <mkdir dir="${basedir}/WebContent" />
-    <mkdir dir="${basedir}/WebContent/WEB-INF" />
-  	<mkdir dir="${basedir}/WebContent/themes" />
-    <property name="web_deploy_dir" value="${basedir}/WebContent/WEB-INF"/>
-    
-    <!-- web configuration files -->
-    <copy file="${conf_dir}/${module}-web.xml" tofile="${web_deploy_dir}/web.xml"/>
-    <copy todir="${web_deploy_dir}">
-      <fileset dir="${conf_dir}" includes="**/*.xml, **/*.properties" excludes="**/${module}-web.xml"/>
-    </copy>
-    
-    <!-- web views -->
-  	<copy file="${web_dir}/index.jsp" tofile="${basedir}/WebContent/index.jsp"/>
-    <copy todir="${web_deploy_dir}/views">
-      <fileset dir="${web_dir}/WEB-INF/views" />
-    </copy>
-  	
-	<!-- images and css -->
-    <copy todir="${basedir}/WebContent/themes">
-      <fileset dir="${web_dir}/themes" />
-    </copy>
-    
-    <!-- web lib -->
-    <copy todir="${web_deploy_dir}/lib" flatten="true">
-      <fileset dir="${lib_dir}" includes="**/*.jar" excludes="**/junit*.jar,**/*sources.jar,**/*javadoc.jar"/>
-    </copy>
-    
-  </target>
-  
+  </target>  
   
   <!--
       ************************************************************
