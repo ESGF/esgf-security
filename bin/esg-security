@@ -112,7 +112,6 @@ init() {
     postgress_port=${PGPORT:-5432}
     postgress_user=${PGUSER:-dbsuper}
     pg_sys_acct_passwd=${pg_sys_acct_passwd:=${pg_secret:=changeme}}
-    setup_policy_files >& /dev/null
 }
 
 
@@ -129,11 +128,10 @@ setup_security() {
     init
 
     configure_postgress
-    setup_policy_files
     fetch_user_migration_launcher
 
     #migration niceness...
-    clean_security_webapp_subsystem()
+    clean_security_webapp_subsystem
 
     checked_done 0
 
