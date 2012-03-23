@@ -248,6 +248,18 @@ clean_security_webapp_subsystem() {
     init
     perl -n -i -e'print unless m!webapp:esgf-security!' ${install_manifest}
     remove_property security_app_home
+
+    #------------------------
+    # A bit of migration clean up of the now defunct esgf-security web app
+    if [ -d "${tomcat_install_dir}/webapps/esgf-security" ]; then
+        pushd "${tomcat_install_dir}/webapps/" >& /dev/null
+        backup esgf-security
+        echo -n "Removing defunct esgf-security webapp... "
+        rm -rf ${tomcat_install_dir}/webapps/esgf-security
+        [ $? == 0 ] && echo " [OK] " || echo " [FAIL] "
+        popd >& /dev/null
+    fi
+    #------------------------
 }
 
 #NOTE: There are certain fields that we are not pulling from (node_db_name and postgress_host).
