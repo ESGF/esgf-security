@@ -183,9 +183,9 @@ configure_postgress() {
                     return 0
                 fi
             else
-                if (( $(PGPASSWORD=${pg_sys_acct_passwd:=${security_admin_password}} psql -U ${postgress_user} ${db_database} -c "select count(*) from esgf_migrate_version where repository_id LIKE '%ESGF Security%'" | tail -n +3 | head -n 1) > 0 )); then
+                if (( $(PGPASSWORD=${pg_sys_acct_passwd:=${security_admin_password}} psql -U ${postgress_user} ${node_db_name} -c "select count(*) from esgf_migrate_version where repository_id LIKE '%ESGF Security%'" | tail -n +3 | head -n 1) > 0 )); then
                     echo "cleaning out schema migration bookeeping for esgf_security..."
-                    $(PGPASSWORD=${pg_sys_acct_passwd:=${security_admin_password}} psql -U ${postgress_user} ${db_database} -c "delete from esgf_migrate_version where repository_id LIKE '%ESGF Security%'" >& /dev/null)
+                    $(PGPASSWORD=${pg_sys_acct_passwd:=${security_admin_password}} psql -U ${postgress_user} ${node_db_name} -c "delete from esgf_migrate_version where repository_id LIKE '%ESGF Security%'" >& /dev/null)
                 fi
             fi
             unset dosetup
