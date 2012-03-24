@@ -183,6 +183,9 @@ configure_postgress() {
                     return 0
                 fi
             else
+                # NOTE: Important Dependency....
+                # The SQL LIKE statement contains "ESGF Secuirty"
+                # This defined in esgf-security/src/python/esgf/esgf-security/schema_migration/migrate.cfg
                 if (( $(PGPASSWORD=${pg_sys_acct_passwd:=${security_admin_password}} psql -U ${postgress_user} ${node_db_name} -c "select count(*) from esgf_migrate_version where repository_id LIKE '%ESGF Security%'" | tail -n +3 | head -n 1) > 0 )); then
                     echo "cleaning out schema migration bookeeping for esgf_security..."
                     $(PGPASSWORD=${pg_sys_acct_passwd:=${security_admin_password}} psql -U ${postgress_user} ${node_db_name} -c "delete from esgf_migrate_version where repository_id LIKE '%ESGF Security%'" >& /dev/null)
