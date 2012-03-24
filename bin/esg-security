@@ -182,17 +182,22 @@ configure_postgress() {
                     echo "Skipping security database schema setup - will assume it's setup properly"
                     return 0
                 fi
+            else
+                if (( $(PGPASSWORD=${pg_sys_acct_passwd:=${security_admin_password}} psql -U ${postgress_user} ${db_database} -c "select count(*) from esgf_migrate_version where repository_id LIKE '%ESGF Security%'" | tail -n +3 | head -n 1) > 0 )); then
+                    echo "cleaning out schema migration bookeeping for esgf_security..."
+                    $(PGPASSWORD=${pg_sys_acct_passwd:=${security_admin_password}} psql -U ${postgress_user} ${db_database} -c "delete from esgf_migrate_version where repository_id LIKE '%ESGF Security%'" >& /dev/null)
+                fi
             fi
             unset dosetup
             unset default
             
             default="Y"
             local dobackup="Y"
-            read -p "Do you want to make a back up of the existing database schema [${node_db_name}:${node_db_security_schema_name}]?? [Y/n] " dobackup
+            read -p "Do you want to make a back up of the existing database [${node_db_name}]? [Y/n] " dobackup
             [ -z "${dobackup}" ] && dobackup=${default}
             if [ "${dobackup}" = "Y" ] || [ "${dobackup}" = "y" ]; then
-                echo "Creating a backup archive of the security database schema [$node_db_name:esgf_security]"
-                backup_db -db ${node_db_name} -s security
+                echo "Creating a backup archive of the database [$node_db_name]"
+                backup_db -db ${node_db_name}
             fi
             unset dobackup
             unset default
