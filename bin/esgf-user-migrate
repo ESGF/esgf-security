@@ -64,10 +64,12 @@ esgf_user_migrate() {
 
     local esg_dist_url_root=http://198.128.245.140/dist
     local esg_dist_url=${esg_dist_url_root}$( ((devel == 1)) && echo "/devel" || echo "")
-    local security_app_home=$(sed -n 's@^[ ]*security.app.home[ ]*=[ ]*\(.*\)$@\1@p' $ESGF_HOME/config/esgf.properties)
-    local security_app_name=${security_app_home##*/}
-    local security_version=$(sed 's/\r//' <(echo -n $(sed -n 's/^[ ]*Version:[ ]*\(.*\)$/\1/p' ${security_app_home}/META-INF/MANIFEST.MF)))
 
+    local idp_app_home=$(sed -n 's@^[ ]*idp.app.home[ ]*=[ ]*\(.*\)$@\1@p' $ESGF_HOME/config/esgf.properties)
+    local security_version=$(ls ${idp_app_home}/WEB-INF/lib/esgf-security-*.jar | grep -v test | sort -r | head -n1 | sed -n 's#.*esgf-security-\([0-9]\+\.[0-9]\+\.[0-9]\+\).jar#\1#p')
+
+    [ -z "${security_version}" ] && echo "ERROR: Unable to determine secuirty version for migration" && exit 1
+    
     local migration_jarfile=esgf-security-user-migration-${security_version}.jar
     
     pushd $ESGF_HOME/tools >& /dev/null
