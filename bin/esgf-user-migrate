@@ -74,7 +74,7 @@ esgf_user_migrate() {
     
     pushd $ESGF_HOME/tools >& /dev/null
     #http://rainbow.llnl.gov:/dist/devel/esgf-security/esgf-security-user-migration-1.5.2.jar
-    checked_get ${migration_jarfile} ${esg_dist_url}/${security_app_name}/${migration_jarfile} $((force))
+    checked_get ${migration_jarfile} ${esg_dist_url}/esgf-security/${migration_jarfile} $((force))
     (( $? > 1 )) && echo " ERROR: Could not download user migration utility... aborting." && popd && return 1
     ((VERBOSE)) && echo "  $JAVA_HOME/bin/java $( ((verbatim == 1)) && echo "-Dverbatim_migration=true") -jar ${migration_jarfile} $@"
     $JAVA_HOME/bin/java $( ((verbatim == 1)) && echo "-Dverbatim_migration=true") -jar ${migration_jarfile} $@ |& tee /tmp/$0.out
