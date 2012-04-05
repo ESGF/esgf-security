@@ -333,6 +333,16 @@ public class RegistryServiceLocalXmlImpl implements RegistryService, ReloadableF
 		
 	}
 	
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+	public void setShards(final LinkedHashSet<String> _shards) {
+        synchronized (shards) {
+            shards = _shards;             
+        }               
+	}
+	
 	/**
 	 * Method to add a URL only if it is not in the list already.
 	 * Note that the comparison MUST be executed on String objects, not URLs:

@@ -68,5 +68,11 @@ public interface RegistryService {
      * @return
      */
     LinkedHashSet<String> getShards();
+    
+    /**
+     * Method to set the list of shards to query.
+     * @param shards
+     */
+    void setShards(LinkedHashSet<String> shards);
 
 }
