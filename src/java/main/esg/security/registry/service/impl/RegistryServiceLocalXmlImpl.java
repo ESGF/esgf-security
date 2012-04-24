@@ -232,7 +232,6 @@ public class RegistryServiceLocalXmlImpl implements RegistryService, ReloadableF
                                 _attributeServices.put(aType, new ArrayList<String>());
                             }
                             this.addIfUnique(_attributeServices.get(aType), _attr.getAttributeValue("attributeService"));
-            			    LOG.info("Added attribute service: "+_attr.getAttributeValue("attributeService"));
             			}
             			
             			// registration service
@@ -241,7 +240,6 @@ public class RegistryServiceLocalXmlImpl implements RegistryService, ReloadableF
                                 _registrationServices.put(aType, new ArrayList<String>());
                             }
                             this.addIfUnique(_registrationServices.get(aType), _attr.getAttributeValue("registrationService"));
-            			    LOG.info("Added registration service: "+_attr.getAttributeValue("registrationService"));
             			}
             			
             		}
@@ -253,7 +251,6 @@ public class RegistryServiceLocalXmlImpl implements RegistryService, ReloadableF
         		    for (final Object value : root.getChildren("value", NS)) {
         		        final Element element = (Element)value;       		        
         		        this.addIfUnique(_identityProviders, element.getText());
-        		        LOG.info( "Added identity provider: "+ element.getText());
         		    }
         		    
         		// parse Authorization Services section
@@ -263,7 +260,6 @@ public class RegistryServiceLocalXmlImpl implements RegistryService, ReloadableF
                     for (final Object value : root.getChildren("value", NS)) {
                         final Element element = (Element)value;
                         this.addIfUnique(_authorizationServices, element.getText() );
-                        LOG.info( "Added authorization service: "+ element.getText());
                     }
         		    
                 // parse LAS servers section
@@ -273,7 +269,6 @@ public class RegistryServiceLocalXmlImpl implements RegistryService, ReloadableF
                     for (final Object obj : root.getChildren("las_server", NS2)) {
                         final Element element = (Element)obj;                        
                         this.addIfUnique(_lasServers, element.getAttributeValue("ip"));
-                        LOG.info("Added IP: "+  element.getAttributeValue("ip") );
                     }
         		    
                 // parse Solr shards section
@@ -352,7 +347,10 @@ public class RegistryServiceLocalXmlImpl implements RegistryService, ReloadableF
 	 * @param value
 	 */
 	private void addIfUnique(final List<String> values, final String value) {
-	    if (!values.contains(value)) values.add(value);
+	    if (!values.contains(value)) {
+	        values.add(value);
+	        if (LOG.isInfoEnabled()) LOG.info("Added URL endpoint: "+ value);
+	    }
 	}
 	
 	/**
