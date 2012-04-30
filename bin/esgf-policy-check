@@ -59,25 +59,25 @@ VERBOSE=${VERBOSE:-0}
 version=0.0.1
 verbatim=0
 
-esgf_user_migrate() {
+esgf_policy_check() {
     [ ! -e "${envfile}" ] && printf "Sorry must be able to source ${envfile}, aborting..." && exit 1
 
     local esg_dist_url_root=http://198.128.245.140/dist
     local esg_dist_url=${esg_dist_url_root}$( ((devel == 1)) && echo "/devel" || echo "")
 
-    local idp_app_home=$(sed -n 's@^[ ]*idp.service.app.home[ ]*=[ ]*\(.*\)$@\1@p' $ESGF_HOME/config/esgf.properties)
-    local security_version=$(ls ${idp_app_home}/WEB-INF/lib/esgf-security-*.jar | grep -v test | sort -r | head -n1 | sed -n 's#.*esgf-security-\([0-9]\+\.[0-9]\+\.[0-9]\+\).jar#\1#p')
+    local orp_app_home=$(sed -n 's@^[ ]*orp.service.app.home[ ]*=[ ]*\(.*\)$@\1@p' $ESGF_HOME/config/esgf.properties)
+    local security_version=$(ls ${orp_app_home}/WEB-INF/lib/esgf-security-*.jar | grep -v test | sort -r | head -n1 | sed -n 's#.*esgf-security-\([0-9]\+\.[0-9]\+\.[0-9]\+\).jar#\1#p')
 
-    [ -z "${security_version}" ] && echo "ERROR: Unable to determine secuirty version for migration" && exit 1
+    [ -z "${security_version}" ] && echo "ERROR: Unable to determine secuirty version for policy check" && exit 1
     
-    local migration_jarfile=esgf-security-user-migration-${security_version}.jar
+    local jarfile=esgf-security-${security_version}.jar
     
     pushd $ESGF_HOME/tools >& /dev/null
-    #http://rainbow.llnl.gov:/dist/devel/esgf-security/esgf-security-user-migration-1.5.2.jar
-    checked_get ${migration_jarfile} ${esg_dist_url}/esgf-security/${migration_jarfile} $((force))
-    (( $? > 1 )) && echo " ERROR: Could not download user migration utility... aborting." && popd && return 1
-    ((VERBOSE)) && echo "  $JAVA_HOME/bin/java $( ((verbatim == 1)) && echo "-Dverbatim_migration=true") -jar ${migration_jarfile} $@"
-    $JAVA_HOME/bin/java $( ((verbatim == 1)) && echo "-Dverbatim_migration=true") -jar ${migration_jarfile} $@ 2>&1 | tee /tmp/${0##*/}.out
+    #http://rainbow.llnl.gov:/dist/devel/esgf-security/esgf-security-1.5.2.jar
+    checked_get ${jarfile} ${esg_dist_url}/esgf-security/${jarfile} $((force))
+    (( $? > 1 )) && echo " ERROR: Could not download policy check utility... aborting." && popd && return 1
+    ((VERBOSE)) && echo "  $JAVA_HOME/bin/java -jar ${jarfile} $@"
+    $JAVA_HOME/bin/java -jar ${orp_app_home}/WEB-INF/lib/${jarfile} esg.common.security.PolicyChecker $@ 2>&1 | tee /tmp/${0##*/}.out
     popd
     return 0
 }
@@ -158,23 +158,15 @@ checked_get() {
     return 0
 }
 
-esgf_user_migrate_usage() {
+esgf_policy_check_usage() {
     printf "
    Usage:
 
       -----------------------------------------------------
-      > ${0##*/} [--help] [--force] [--devel] [--verbose] [--debug] [-p <port>] [-d <database>] -U <username> -h <host> 
-      (enter password at prompt)
+      > ${0##*/} [--help] [--force] [--devel] [--verbose] [--debug] <resource> 
       -----------------------------------------------------
 
-      (required args)
-      -U - username of source database containing user credentials to migrate
-      -h - fully qualified domain name of host running database
-
-      (optional args)
-      -p - port on which that database is listening (default 5432)
-      -d - database name (default gateway-esg)
-
+      (optional flags)
       --devel   - pull wrapped jar file from development distribution area
       --force   - force download of wrapped jar into tools dir regardless of checksum validation
       --verbose - provide more output
@@ -182,13 +174,8 @@ esgf_user_migrate_usage() {
       --help    - this usage output
       --version - version information
 
-      (--verbatim - additionally migrate original openid
-                    this option is a stop-gap feature to help facilitate P2P transition only)
-
       Ex:
-      > ${0##*/} --verbose -U gavin -h pcmdi3.llnl.gov
-
-      (be sure that the source db exposes the port to this host: check pg_hba.conf file for details)
+      > ${0##*/} https://resource_host/some/path/resource_file.nc
 
 "
     exit 0
@@ -204,12 +191,12 @@ main() {
 	    -v | --version)
                 echo "Version ${version}"
 	        echo "Earth Systems Grid Federation (http://esgf.org)"
-	        echo "ESGF P2P User Migration Utility"
+	        echo "ESGF P2P Security Resource/Policy Check Utility"
 	        echo ""
 	        exit 0
                 ;;
             --help)
-                esgf_user_migrate_usage
+                esgf_policy_check_usage
                 ;;
             --force)
                 force=1
@@ -223,9 +210,6 @@ main() {
             --debug)
                 DEBUG=1
                 ;;
-            --verbatim)
-                verbatim=1
-                ;;
             *)
                 myargs=( ${myargs[@]} $1)
                 ;;
@@ -234,7 +218,7 @@ main() {
     done
 
     ((DEBUG)) && echo "args = [${myargs[@]}]"
-    esgf_user_migrate ${myargs[@]}
+    esgf_policy_check ${myargs[@]}
 }
 
 main $@

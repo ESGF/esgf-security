@@ -91,6 +91,7 @@ config_file=${esg_root_dir}/config/esgf.properties
 
 security_web_service_name="esgf-security"
 esgf_user_migration_launcher="esgf-user-migrate"
+esgf_policy_check_launcher="esgf-policy-check"
 
 
 init() {
@@ -129,6 +130,7 @@ setup_security() {
 
     configure_postgress
     fetch_user_migration_launcher
+    fetch_policy_check_launcher
 
     #migration niceness...
     clean_security_webapp_subsystem
@@ -294,5 +296,18 @@ fetch_user_migration_launcher() {
         return 0
     else
         debug_print "This function, fetch_user_migration_launcher(), is not applicable to current node type (${sel})"
+    fi
+}
+
+fetch_policy_check_launcher() {
+    if [ $((sel & IDP_BIT+DATA_BIT ))   != 0 ]; then
+        pushd ${scripts_dir} >& /dev/null
+        checked_get ${esgf_policy_check_launcher} ${esg_dist_url}/${security_web_service_name}/${esgf_policy_check_launcher} $((force_install))
+        (( $? > 1 )) && echo " ERROR: Could not download ${esg_dist_url}/${security_web_service_name}/${esgf_policy_check_launcher} :-(" && popd >& /dev/null && return 1
+        chmod 755 ${esgf_policy_check_launcher}
+        popd >& /dev/null
+        return 0
+    else
+        debug_print "This function, fetch_policy_check_launcher(), is not applicable to current node type (${sel})"
     fi
 }
