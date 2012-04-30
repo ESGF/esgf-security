@@ -73,7 +73,7 @@ public class PolicyChecker {
         pGleaner.loadMyPolicy();
         PolicyGleaner.PolicyWrapper pw = null;
         for(Policy policy : pGleaner.getMyPolicy().getPolicy()) {
-            System.out.println("checking: "+policy.getResource());
+            //System.out.println("checking: "+policy.getResource());
             if(Pattern.matches(policy.getResource(),resourceInstance)) {
                 pw = pGleaner.new PolicyWrapper(policy);
                 System.out.print("  Triggered policy ->  "+pw);
