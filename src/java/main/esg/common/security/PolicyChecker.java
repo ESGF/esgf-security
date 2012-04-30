@@ -73,15 +73,15 @@ public class PolicyChecker {
         pGleaner.loadMyPolicy();
         PolicyGleaner.PolicyWrapper pw = null;
         for(Policy policy : pGleaner.getMyPolicy().getPolicy()) {
+            System.out.println("checking: "+policy.getResource());
             if(Pattern.matches(policy.getResource(),resourceInstance)) {
                 pw = pGleaner.new PolicyWrapper(policy);
-                System.out.println("  Triggered policy: "+pw);
+                System.out.print("  Triggered policy: "+pw);
             }
         }
     }
     
     public static void main (String[] args) {
-        if (args.length != 1) System.out.println("Must provide resource instance as argument");
         new PolicyChecker().check(args[0]);
     }
 }

@@ -118,7 +118,7 @@ public class PolicyGleaner {
 
     public Policies getMyPolicy() { return myPolicy; }
 
-    public synchronized PolicyGleaner loadMyPolicy() { return this.loadMyPolicy(policyPath+policyFile); }
+    public synchronized PolicyGleaner loadMyPolicy() { return this.loadMyPolicy(policyPath+File.separator+policyFile); }
     public synchronized PolicyGleaner loadMyPolicy(String... filenames) {
         for(String filename : filenames) {
             log.info("Loading my policy info from "+filename);
