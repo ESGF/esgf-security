@@ -45,6 +45,11 @@ public class RegistryServiceLocalXmlImplTest {
 	    
 	    final RegistryService service = new RegistryServiceLocalXmlImpl(ESGF_ATS);
 		
+	    // attribute types
+	    Assert.assertTrue(service.getAttributes().containsKey("CMIP5 Research"));
+	    Assert.assertTrue(service.getAttributes().containsKey("NASA OBS"));
+	    Assert.assertTrue(service.getAttributes().containsKey("wheel"));
+	    
 	    // double endpoints
 		Assert.assertTrue(service.getAttributeServices("CMIP5 Research").contains( new URL("https://pcmdi9.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm")));
         Assert.assertTrue(service.getAttributeServices("CMIP5 Research").contains( new URL("https://pcmdi3.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm")));

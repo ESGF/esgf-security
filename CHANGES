@@ -135,3 +135,6 @@ Version 2.1.3
 
 Version 2.1.4
 - Provided method to manually set the list of shards in the Registry Service
+
+Version 2.1.6
+- Provided facility in RegistryService to retrieve all attribute types, across the federation.

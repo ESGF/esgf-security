@@ -24,6 +24,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,9 @@ import esg.security.utils.xml.Parser;
  * @author luca.cinquini
  */
 public class RegistryServiceLocalXmlImpl implements RegistryService, ReloadableFileSetObserver {
+    
+    // local storage for attribute types, descriptions
+    private Map<String, String> attributes = new LinkedHashMap<String, String>();
 	
 	// local storage of attribute type to attribute services mapping (one-to-many)
 	private Map<String, List<URL>> attributeServices = new HashMap<String, List<URL>>();
@@ -160,6 +164,20 @@ public class RegistryServiceLocalXmlImpl implements RegistryService, ReloadableF
      * {@inheritDoc}
      */
     @Override
+    public Map<String, String> getAttributes() {
+        
+        // reload registry if needed
+        watcher.reload();        
+        
+        // return white list
+        return Collections.unmodifiableMap(attributes);
+        
+    }
+	
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<String> getLasServers() {
         
         // reload registry if needed
@@ -198,6 +216,8 @@ public class RegistryServiceLocalXmlImpl implements RegistryService, ReloadableF
 	    boolean reloadRegistrationServices = false;
 	    final Map<String, List<String>> _attributeServices = new HashMap<String, List<String>>();
 	    boolean reloadAttributeServices = false;
+	    final Map<String, String> _attributes = new LinkedHashMap<String, String>();
+	    boolean reloadAttributes = false;
 	    final List<String> _identityProviders = new ArrayList<String>();
 	    boolean reloadIdentityProviders = false;
 	    final List<String> _authorizationServices = new ArrayList<String>();
@@ -221,10 +241,17 @@ public class RegistryServiceLocalXmlImpl implements RegistryService, ReloadableF
         		if (root.getName().equals("ats_whitelist")) {
         		    reloadAttributeServices = true;
         		    reloadRegistrationServices = true;
+        		    reloadAttributes = true;
         		        		    
             		for (final Object attr : root.getChildren("attribute", NS)) {
             			final Element _attr = (Element)attr;
             			final String aType = _attr.getAttributeValue("type");
+            			final String aDescription = _attr.getAttributeValue("description");
+            			
+            			// attribute
+            			if (StringUtils.hasText(aType)) {
+            			    _attributes.put(aType, aDescription);
+            			}
             			
             			// attribute service
             			if (StringUtils.hasText(_attr.getAttributeValue("attributeService"))) {
@@ -292,6 +319,11 @@ public class RegistryServiceLocalXmlImpl implements RegistryService, ReloadableF
 	    }
    		
         // update local data storage
+	    if (reloadAttributes) {
+	        synchronized (attributes) {
+	            attributes = _attributes;
+            }
+	    }
 	    if (reloadAttributeServices) {
 	        synchronized (attributeServices) {
 	            attributeServices = toURLs(_attributeServices);

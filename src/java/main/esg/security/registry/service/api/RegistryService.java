@@ -21,6 +21,7 @@ package esg.security.registry.service.api;
 import java.net.URL;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 
 import esg.security.attr.service.api.SAMLAttributeService;
 
@@ -29,6 +30,12 @@ import esg.security.attr.service.api.SAMLAttributeService;
  * @author luca.cinquini
  */
 public interface RegistryService {
+    
+    /**
+     * Method to return all available attributes, as (type, description) pairs.
+     * @return
+     */
+    Map<String, String> getAttributes();
 	
 	/**
 	 * Method to retrieve an ordered list of {@link SAMLAttributeService} URLs that manage a given attribute type.
