@@ -85,12 +85,12 @@ esgf_policy_check() {
 
     pushd $ESGF_HOME/tools >& /dev/null
     #http://rainbow.llnl.gov/dist/devel/esgf-security/esgf-security-1.5.2.jar
-    checked_get ${security_jarfile} ${esg_dist_url}/esgf-security/${security_jarfile} $((force))
+    checked_get ${security_jarfile} ${esg_dist_url}/esgf-security/${security_jarfile} $((force)) >& /dev/null
     (( $? > 1 )) && echo " ERROR: Could not download policy check utility... aborting." && popd && return 1
     ((VERBOSE)) && echo "  $JAVA_HOME/bin/java -jar ${security_jarfile} $@"
 
     #http://rainbow.llnl.gov/dist/devel/esgf-node-manager/esgf-node-manager-common-0.6.8.jar
-    checked_get ${manager_common_jarfile} ${esg_dist_url}/esgf-node-manager/${manager_common_jarfile} $((force))
+    checked_get ${manager_common_jarfile} ${esg_dist_url}/esgf-node-manager/${manager_common_jarfile} $((force)) >& /dev/null
     (( $? > 1 )) && echo " ERROR: Could not download policy check utility... aborting." && popd && return 1
     ((VERBOSE)) && echo "  $JAVA_HOME/bin/java -jar ${manager_common_jarfile} $@"
 
