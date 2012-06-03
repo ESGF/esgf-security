@@ -70,15 +70,27 @@ esgf_policy_check() {
 
     [ -z "${security_version}" ] && echo "ERROR: Unable to determine secuirty version for policy check" && exit 1
     
-    local jarfile=esgf-security-${security_version}.jar
+    local security_jarfile=esgf-security-${security_version}.jar
+
+    local thredds_app_home=$(sed -n 's@^[ ]*thredds.app.home[ ]*=[ ]*\(.*\)$@\1@p' $ESGF_HOME/config/esgf.properties)
     
+    local node_manager_version=$(ls ${thredds_app_home}/WEB-INF/lib/esgf-node-manager-common*.jar | grep -v test | sort -r | head -n1 | sed -n 's#.*esgf-node-manager-common-\([0-9]\+\.[0-9]\+\.[0-9]\+\).jar#\1#p')
+    [ -z "${node_manager_version}" ] && echo "ERROR: Unable to determine node manager version for policy check" && exit 1
+    local manager_common_jarfile=esgf-node-manager-common-${node_manager_version}.jar
+
     pushd $ESGF_HOME/tools >& /dev/null
-    #http://rainbow.llnl.gov:/dist/devel/esgf-security/esgf-security-1.5.2.jar
-    checked_get ${jarfile} ${esg_dist_url}/esgf-security/${jarfile} $((force))
+    #http://rainbow.llnl.gov/dist/devel/esgf-security/esgf-security-1.5.2.jar
+    checked_get ${security_jarfile} ${esg_dist_url}/esgf-security/${security_jarfile} $((force))
     (( $? > 1 )) && echo " ERROR: Could not download policy check utility... aborting." && popd && return 1
-    ((VERBOSE)) && echo "  $JAVA_HOME/bin/java -jar ${jarfile} $@"
-    CLASSPATH=/usr/local/tomcat/webapps/thredds/WEB-INF/lib/commons-logging-1.1.jar:/usr/local/tomcat/webapps/thredds/WEB-INF/lib/esgf-node-manager-common-0.6.7.jar:/usr/local/tomcat/webapps/esg-orp/WEB-INF/lib/esgf-security-2.1.4.jar $JAVA_HOME/bin/java esg.common.security.PolicyChecker $@ 2>&1 | tee /tmp/${0##*/}.out
-    popd
+    ((VERBOSE)) && echo "  $JAVA_HOME/bin/java -jar ${security_jarfile} $@"
+
+    #http://rainbow.llnl.gov/dist/devel/esgf-node-manager/esgf-node-manager-common-0.6.8.jar
+    checked_get ${manager_common_jarfile} ${esg_dist_url}/esgf-node-manager/${manager_common_jarfile} $((force))
+    (( $? > 1 )) && echo " ERROR: Could not download policy check utility... aborting." && popd && return 1
+    ((VERBOSE)) && echo "  $JAVA_HOME/bin/java -jar ${manager_common_jarfile} $@"
+
+    CLASSPATH=/usr/local/tomcat/webapps/thredds/WEB-INF/lib/commons-logging-1.1.jar:/usr/local/tomcat/webapps/thredds/WEB-INF/lib/esgf-node-manager-common-${node_manager_version}.jar:/usr/local/tomcat/webapps/esg-orp/WEB-INF/lib/esgf-security-${security_version}.jar $JAVA_HOME/bin/java esg.common.security.PolicyChecker $@ 2>&1 | tee /tmp/${0##*/}.out
+    popd >& /dev/null
     return 0
 }
 
