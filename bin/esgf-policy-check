@@ -72,6 +72,9 @@ esgf_policy_check() {
     
     local security_jarfile=esgf-security-${security_version}.jar
 
+    local node_manager_service_app_home=$(sed -n 's@^[ ]*node.manager.service.app.home[ ]*=[ ]*\(.*\)$@\1@p' $ESGF_HOME/config/esgf.properties)
+    local commons_logging_version=$(ls ${node_manager_service_app_home}/WEB-INF/lib/commons-logging-*.jar | sort -r | head -n1 | sed -n 's#.*commons-logging-\([0-9]\+\.[0-9]\+\.[0-9]\+\).jar#\1#p')
+
     local node_manager_version=$(sed -n 's/.*esgf-node-manager=\(.[^ ]*\).*/\1/p' $ESGF_HOME/esgf-install-manifest)
     [ -z "${node_manager_version}" ] && echo "ERROR: Unable to determine node manager version for policy check" && exit 1
     local manager_common_jarfile=esgf-node-manager-common-${node_manager_version}.jar
@@ -87,7 +90,7 @@ esgf_policy_check() {
     (( $? > 1 )) && echo " ERROR: Could not download policy check utility... aborting." && popd && return 1
     ((VERBOSE)) && echo "  $JAVA_HOME/bin/java -jar ${manager_common_jarfile} $@"
 
-    CLASSPATH=/usr/local/tomcat/webapps/thredds/WEB-INF/lib/commons-logging-1.1.jar:$ESGF_HOME/tools/esgf-node-manager-common-${node_manager_version}.jar:$ESGF_HOME/tools/esgf-security-${security_version}.jar $JAVA_HOME/bin/java esg.common.security.PolicyChecker $@ 2>&1 | tee /tmp/${0##*/}.out
+    CLASSPATH=${node_manager_service_app_home}/WEB-INF/lib/commons-logging-${commons_logging_version}.jar:$ESGF_HOME/tools/esgf-node-manager-common-${node_manager_version}.jar:$ESGF_HOME/tools/esgf-security-${security_version}.jar $JAVA_HOME/bin/java esg.common.security.PolicyChecker $@ 2>&1 | tee /tmp/${0##*/}.out
     popd >& /dev/null
     return 0
 }
