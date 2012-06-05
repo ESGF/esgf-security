@@ -263,6 +263,7 @@ clean_security_webapp_subsystem() {
 clean_security_database_subsystem_installation() {
     init
     local doit="N"
+    if [ $((sel & IDP_BIT ))   != 0 ]; then
 
     read -p "remove ESGF Security database, database subsystem AND DATA? (esgf_security.*) [y/N]: " doit
     if [ "doit" = "Y" ] || [ "$doit" = "y" ]; then
@@ -283,6 +284,10 @@ clean_security_database_subsystem_installation() {
             echo " Could not find security tables in the database."
         fi
     fi
+    else
+        debug_print "This function, fetch_user_migration_launcher(), is not applicable to current node type (${sel})"
+    fi
+
     return 0
 }
 
