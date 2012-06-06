@@ -263,26 +263,31 @@ clean_security_webapp_subsystem() {
 clean_security_database_subsystem_installation() {
     init
     local doit="N"
+    if [ $((sel & IDP_BIT ))   != 0 ]; then
 
-    read -p "remove ESGF Security database, database subsystem AND DATA? (esgf_security.*) [y/N]: " doit
-    if [ "doit" = "Y" ] || [ "$doit" = "y" ]; then
-        if $(psql -U ${postgress_user} esgcet -c "\dt esgf_security.;" | egrep '^\([1-9]* row[s]?\)' >& /dev/null); then
+        read -p "remove ESGF Security database, database subsystem AND DATA? (esgf_security.*) [y/N]: " doit
+        if [ "doit" = "Y" ] || [ "$doit" = "y" ]; then
+            if $(psql -U ${postgress_user} esgcet -c "\dt esgf_security.;" | egrep '^\([1-9]* row[s]?\)' >& /dev/null); then
 
-            #Call me paranoid but I want some integrity check that this code is what is meant to be straight from the distribution.
-            diff <(md5sum ${scripts_dir}/esg-security | tr -s " " | cut -d " " -f 1) <(curl -s -L --insecure ${esg_dist_url}/esgf-security/esg-security.md5 | tr -s " " | cut -d " " -f 1) >& /dev/null
-            [ $? != 0 ] && echo " WARNING: Could not verify ${scripts_dir}/esg-security, aborting this uninstall" && return 3
-            echo "[VERIFIED]"
+                #Call me paranoid but I want some integrity check that this code is what is meant to be straight from the distribution.
+                diff <(md5sum ${scripts_dir}/esg-security | tr -s " " | cut -d " " -f 1) <(curl -s -L --insecure ${esg_dist_url}/esgf-security/esg-security.md5 | tr -s " " | cut -d " " -f 1) >& /dev/null
+                [ $? != 0 ] && echo " WARNING: Could not verify ${scripts_dir}/esg-security, aborting this uninstall" && return 3
+                echo "[VERIFIED]"
 
-            backup_db -db ${node_db_name} -s security
-            echo "removing esgf_security.* schema and tables and DATA"
-            ${cdat_home}/bin/esgf_security_initialize --dburl ${postgress_user}:${pg_sys_acct_passwd}@localhost:${postgress_port}/esgcet -d 0
-            rm -rvf ${cdat_home}/bin/esgf_security_initialize && \
-                rm -rf ${cdat_home}/lib/python${python_version}/${esgf_security_egg_file} && \
-                perl -n -i -e'print unless m!python:esgf_security!' ${install_manifest} && echo "[REMOVED]"
-        else
-            echo " Could not find security tables in the database."
+                backup_db -db ${node_db_name} -s security
+                echo "removing esgf_security.* schema and tables and DATA"
+                ${cdat_home}/bin/esgf_security_initialize --dburl ${postgress_user}:${pg_sys_acct_passwd}@localhost:${postgress_port}/esgcet -d 0
+                rm -rvf ${cdat_home}/bin/esgf_security_initialize && \
+                    rm -rf ${cdat_home}/lib/python${python_version}/${esgf_security_egg_file} && \
+                    perl -n -i -e'print unless m!python:esgf_security!' ${install_manifest} && echo "[REMOVED]"
+            else
+                echo " Could not find security tables in the database."
+            fi
         fi
+    else
+        debug_print "This function, clean_security_database_subsystem_installation(), is not applicable to current node type (${sel})"
     fi
+
     return 0
 }
 

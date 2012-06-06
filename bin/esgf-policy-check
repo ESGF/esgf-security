@@ -65,20 +65,41 @@ esgf_policy_check() {
     local esg_dist_url_root=http://198.128.245.140/dist
     local esg_dist_url=${esg_dist_url_root}$( ((devel == 1)) && echo "/devel" || echo "")
 
-    local orp_app_home=$(sed -n 's@^[ ]*orp.service.app.home[ ]*=[ ]*\(.*\)$@\1@p' $ESGF_HOME/config/esgf.properties)
-    local security_version=$(ls ${orp_app_home}/WEB-INF/lib/esgf-security-*.jar | grep -v test | sort -r | head -n1 | sed -n 's#.*esgf-security-\([0-9]\+\.[0-9]\+\.[0-9]\+\).jar#\1#p')
+    #Determining the security jar version and name...
+    local security_version=$(sed -n 's/.*esgf-security=\(.[^ ]*\).*/\1/p' $ESGF_HOME/esgf-install-manifest)
+    [ -z "${security_version}" ] && echo "ERROR: Unable to determine security library version for policy check" && exit 1
+    local security_jarfile=esgf-security-${security_version}.jar
 
-    [ -z "${security_version}" ] && echo "ERROR: Unable to determine secuirty version for policy check" && exit 1
-    
-    local jarfile=esgf-security-${security_version}.jar
-    
+    #Determining the node manager's common jar version and name...
+    local node_manager_version=$(sed -n 's/.*esgf-node-manager=\(.[^ ]*\).*/\1/p' $ESGF_HOME/esgf-install-manifest)
+    [ -z "${node_manager_version}" ] && echo "ERROR: Unable to determine node manager version for policy check" && exit 1
+    local manager_common_jarfile=esgf-node-manager-common-${node_manager_version}.jar
+
+    #Determining the commons logging jar and version to use (referencing the one in the node manager's lib)...
+    local node_manager_service_app_home=$(sed -n 's@^[ ]*node.manager.service.app.home[ ]*=[ ]*\(.*\)$@\1@p' $ESGF_HOME/config/esgf.properties)
+    local commons_logging_version=$(ls ${node_manager_service_app_home}/WEB-INF/lib/commons-logging-*.jar | sort -r | head -n1 | sed -n 's#.*commons-logging-\([0-9]\+\.[0-9]\+\.[0-9]\+\).jar#\1#p')
+
+    #------------------
+    #Fetching necessary files for PolicyChecker execution...
+    #------------------
+
     pushd $ESGF_HOME/tools >& /dev/null
-    #http://rainbow.llnl.gov:/dist/devel/esgf-security/esgf-security-1.5.2.jar
-    checked_get ${jarfile} ${esg_dist_url}/esgf-security/${jarfile} $((force))
+    #http://rainbow.llnl.gov/dist/devel/esgf-security/esgf-security-1.5.2.jar
+    checked_get ${security_jarfile} ${esg_dist_url}/esgf-security/${security_jarfile} $((force)) >& /dev/null
     (( $? > 1 )) && echo " ERROR: Could not download policy check utility... aborting." && popd && return 1
-    ((VERBOSE)) && echo "  $JAVA_HOME/bin/java -jar ${jarfile} $@"
-    CLASSPATH=/usr/local/tomcat/webapps/thredds/WEB-INF/lib/commons-logging-1.1.jar:/usr/local/tomcat/webapps/thredds/WEB-INF/lib/esgf-node-manager-common-0.6.7.jar:/usr/local/tomcat/webapps/esg-orp/WEB-INF/lib/esgf-security-2.1.4.jar $JAVA_HOME/bin/java esg.common.security.PolicyChecker $@ 2>&1 | tee /tmp/${0##*/}.out
-    popd
+    ((VERBOSE)) && echo "  $JAVA_HOME/bin/java -jar ${security_jarfile} $@"
+
+    #http://rainbow.llnl.gov/dist/devel/esgf-node-manager/esgf-node-manager-common-0.6.8.jar
+    checked_get ${manager_common_jarfile} ${esg_dist_url}/esgf-node-manager/${manager_common_jarfile} $((force)) >& /dev/null
+    (( $? > 1 )) && echo " ERROR: Could not download policy check utility... aborting." && popd && return 1
+    ((VERBOSE)) && echo "  $JAVA_HOME/bin/java -jar ${manager_common_jarfile} $@"
+
+    #------------------
+    #Setting up classpath and excuting PolicyChecker program...
+    #------------------
+
+    CLASSPATH=${node_manager_service_app_home}/WEB-INF/lib/commons-logging-${commons_logging_version}.jar:$ESGF_HOME/tools/esgf-node-manager-common-${node_manager_version}.jar:$ESGF_HOME/tools/esgf-security-${security_version}.jar $JAVA_HOME/bin/java esg.common.security.PolicyChecker $@ 2>&1 | tee /tmp/${0##*/}.out
+    popd >& /dev/null
     return 0
 }
 
