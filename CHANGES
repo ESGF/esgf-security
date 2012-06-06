@@ -138,3 +138,6 @@ Version 2.1.4
 
 Version 2.1.6
 - Provided facility in RegistryService to retrieve all attribute types, across the federation.
+
+Version 2.1.7
+- Forcing reloading of registry file every X minutes.

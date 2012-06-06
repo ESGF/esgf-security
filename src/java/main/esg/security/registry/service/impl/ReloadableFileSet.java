@@ -1,7 +1,9 @@
 package esg.security.registry.service.impl;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -27,6 +29,12 @@ public class ReloadableFileSet {
     
     // latest modification time of all files
     private long filesLastModTime = 0L; // Unix Epoch
+    
+    // mandatory reload time in seconds
+    private int reloadEverySeconds = 600; // 10 minutes
+    
+    private static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+    private static SimpleDateFormat df = new SimpleDateFormat(DATE_FORMAT);
     
     private final Log LOG = LogFactory.getLog(this.getClass());
 
@@ -62,14 +70,19 @@ public class ReloadableFileSet {
     /**
      * Method that checks if any of the files has changed,
      * and notifies the observer in case it has.
+     * A reload is forced even if the file hasn't changed,
+     * but reloadEverySeconds has passed.
      */
     public void reload() {
         
         // loop over files
         for (final File file : files) {
-            if (file.exists() && file.lastModified()>filesLastModTime) {
-                filesLastModTime = file.lastModified();
-                if (LOG.isInfoEnabled()) LOG.info("File set has changed, reloading...");
+            long newTime = file.lastModified();
+            long now = System.currentTimeMillis();
+            if (newTime+reloadEverySeconds*1000 < now) newTime = now;
+            if (file.exists() && newTime>filesLastModTime) {
+                filesLastModTime = newTime;
+                if (LOG.isInfoEnabled()) LOG.info("Reloading file set at time="+df.format(new Date(now)));
                 // notify the observer
                 if (observer!=null) observer.parse(files);
                 break;
