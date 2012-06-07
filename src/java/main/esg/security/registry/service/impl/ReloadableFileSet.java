@@ -28,7 +28,7 @@ public class ReloadableFileSet {
     ReloadableFileSetObserver observer = null;
     
     // latest modification time of all files
-    private long filesLastModTime = 0L; // Unix Epoch
+    private long fileLastReloaded = 0L; // Unix Epoch
     
     // mandatory reload time in seconds
     private int reloadEverySeconds = 600; // 10 minutes
@@ -76,13 +76,11 @@ public class ReloadableFileSet {
     public void reload() {
         
         // loop over files
-        for (final File file : files) {
-            long newTime = file.lastModified();
-            long now = System.currentTimeMillis();
-            if (newTime+reloadEverySeconds*1000 < now) newTime = now;
-            if (file.exists() && newTime>filesLastModTime) {
-                filesLastModTime = newTime;
-                if (LOG.isInfoEnabled()) LOG.info("Reloading file set at time="+df.format(new Date(now)));
+        for (final File file : files) {            
+            if (file.exists() && 
+                (file.lastModified()>fileLastReloaded || (fileLastReloaded+reloadEverySeconds*1000<System.currentTimeMillis()) )) {
+                fileLastReloaded = System.currentTimeMillis();
+                if (LOG.isInfoEnabled()) LOG.info("Reloading file set at time="+df.format(new Date(fileLastReloaded)));
                 // notify the observer
                 if (observer!=null) observer.parse(files);
                 break;
