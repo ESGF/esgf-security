@@ -235,6 +235,117 @@ write_security_db_install_log() {
     return 0
 }
 
+#******************************************************************
+# SECURITY SETUP
+#******************************************************************
+
+security_startup_hook() {
+    init
+    _setup_policy_files && echo ":-D"
+    _setup_static_whitelists "ats idp" && echo ":-D"
+}
+
+_setup_policy_files() {
+    if [ $((sel & DATA_BIT+INDEX_BIT))   != 0 ]; then
+        debug_print "setup_policy_files()... "
+        local tmp_extract_dir=${esg_root_dir:-"/esg"}/tmp
+        local policy_file_name="esgf_policies"
+        local internal_jar_path="esg/security/config"
+        local full_extracted_jar_dir="${tmp_extract_dir}/${internal_jar_path}"
+        local app_path
+        local security_jar_file
+
+        if [ $((sel & DATA_BIT)) != 0 ]; then
+            get_property_as orp_security_authorization_service_app_home app_path
+            security_jar_file="${app_path}/WEB-INF/lib/esgf-security-${esgf_security_version}.jar"
+        elif [ $((sel & INDEX_BIT)) != 0 ]; then
+            get_property_as index_service_app_home app_path
+            security_jar_file="${app_path}/WEB-INF/lib/esgf-security-${esgf_security_version}.jar"
+        else
+            echo "WE SHOULD NEVER BE HERE, BUT SINCE WE ARE WILL EXIT... (see esg-security->_setup_policy_files())"
+            exit 1
+        fi
+
+        ([ -z "${app_path}" ] || [ -z "${security_jar_file}" ] || [ ! -e "${security_jar_file}" ] || [ -z "${JAVA_HOME}" ]) && \
+            echo "Could not determine location of security jar, exiting..." && exit 2
+
+        debug_print "Using security jar file: ${security_jar_file}"
+
+        #If old named file exists rename
+        # esgf_polcies.xml -> esgf_policies_local.xml
+        [ -f "${esg_config_dir}/${policy_file_name}.xml" ] && mv -v ${esg_config_dir}/${policy_file_name}{,_local}.xml
+        # esgf_polcies_static.xml -> esgf_policies_common.xml
+        [ -f "${esg_config_dir}/${policy_file_name}_static.xml" ] && mv -v ${esg_config_dir}/${policy_file_name}{_static,_common}.xml
+
+        if [ ! -f "${esg_config_dir}/${policy_file_name}_local.xml" ]; then
+            (mkdir -p ${tmp_extract_dir}; cd ${tmp_extract_dir}; $JAVA_HOME/bin/jar xvf ${security_jar_file} ${internal_jar_path}/${policy_file_name}_local.xml)
+            cp -v ${full_extracted_jar_dir}/${policy_file_name}_local.xml ${esg_config_dir}
+            chown ${tomcat_user}:${tomcat_group} ${esg_config_dir}/${policy_file_name}_local.xml && \
+                chmod 640 ${esg_config_dir}/${policy_file_name}_local.xml
+        fi
+
+        if [ ! -f "${esg_config_dir}/${policy_file_name}_common.xml" ]; then
+            (mkdir -p ${tmp_extract_dir}; cd ${tmp_extract_dir}; $JAVA_HOME/bin/jar xf ${security_jar_file} ${internal_jar_path}/${policy_file_name}_common.xml)
+            cp -v ${full_extracted_jar_dir}/${policy_file_name}_common.xml ${esg_config_dir}
+            chown ${tomcat_user}:${tomcat_group} ${esg_config_dir}/${policy_file_name}_common.xml && \
+                chmod 640 ${esg_config_dir}/${policy_file_name}_common.xml
+        fi
+    else
+        debug_print "This function, setup_policy_files(), is not applicable to current node type (${sel})"
+    fi
+}
+
+_setup_static_whitelists() {
+    if [ $((sel & DATA_BIT+INDEX_BIT+IDP_BIT))   != 0 ]; then
+        local service_types=($@)
+        local service_type
+        local app_config_dir="${orp_service_app_home:-${tomcat_install_dir:-/usr/local/tomcat}/webapps/esg-orp}/WEB-INF/classes/esg/orp/orp/config"
+
+
+        local tmp_extract_dir=${esg_root_dir:-"/esg"}/tmp
+        local internal_jar_path="esg/security/config"
+        local full_extracted_jar_dir="${tmp_extract_dir}/${internal_jar_path}"
+        local app_path
+        local security_jar_file
+
+        if [ $((sel & DATA_BIT)) != 0 ]; then
+            get_property_as orp_security_authorization_service_app_home app_path
+            security_jar_file="${app_path}/WEB-INF/lib/esgf-security-${esgf_security_version}.jar"
+        elif [ $((sel & INDEX_BIT)) != 0 ]; then
+            get_property_as index_service_app_home app_path
+            security_jar_file="${app_path}/WEB-INF/lib/esgf-security-${esgf_security_version}.jar"
+        elif [ $((sel & IDP_BIT)) != 0 ]; then
+            get_property_as idp_service_app_home app_path
+            security_jar_file="${app_path}/WEB-INF/lib/esgf-security-${esgf_security_version}.jar"
+        else
+            echo "ERROR: Could not find security jar file: esgf-security-${esgf_security_version}.jar"
+            echo "WE SHOULD NEVER BE HERE, BUT SINCE WE ARE WILL EXIT... (see esg-security->_setup_policy_files())"
+            exit 1
+        fi
+
+        ([ -z "${app_path}" ] || [ -z "${security_jar_file}" ] || [ ! -e "${security_jar_file}" ] || [ -z "${JAVA_HOME}" ]) && \
+            echo "Could not determine location of security jar (esgf-security-${esgf_security_version}.jar), exiting..." && exit 2
+
+        debug_print "Using security jar file: ${security_jar_file}"
+
+        for service_type in ${service_types[@]}; do
+            if [ ! -f "${esg_config_dir}/esgf_${service_type}_static.xml" ] && [ -f "${app_config_dir}/esgf_${service_type}_static.xml" ]; then
+                echo
+                (mkdir -p ${tmp_extract_dir}; cd ${tmp_extract_dir}; $JAVA_HOME/bin/jar xf ${security_jar_file} ${internal_jar_path}/esgf_${service_type}_static.xml)
+                cp -v ${full_extracted_jar_dir}/esgf_${service_type}_static.xml ${esg_config_dir}
+                chown ${tomcat_user}:${tomcat_group} ${esg_config_dir}/esgf_${service_type}_static.xml && \
+                    chmod 640 ${esg_config_dir}/esgf_${service_type}_static.xml
+            fi
+        done
+    else
+        debug_print "This function, _setup_static_whitelists(), is not applicable to current node type (${sel})"
+    fi
+}
+
+#******************************************************************
+#******************************************************************
+
+
 #--------------------------------------
 # Clean / Uninstall this module...
 #--------------------------------------
