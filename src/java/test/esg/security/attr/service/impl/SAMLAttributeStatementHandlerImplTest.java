@@ -130,6 +130,30 @@ public class SAMLAttributeStatementHandlerImplTest {
 	}
 	
 	/**
+     * Tests retrieval of all attributes when none is explicitly specified.
+     * @throws Exception
+     */
+    @Test
+    public void testBuildAttributeStatementWithAllAttributes() throws Exception {
+                
+        if (SAMLBuilder.isInitailized()) {
+            
+            // re-initialize the requested attributes
+            requestAttributes = new ArrayList<Attribute>();
+            
+            // execute service invocation
+            final Assertion assertion = samlAttributeStatementHandler.buildAttributeStatement(testAttributes, requestAttributes);
+    
+            // compare to expected test XML
+            final Element assertionElement = builder.marshall(assertion);
+            final String xml = XMLHelper.prettyPrintXML((Node)assertionElement);
+            if (LOG.isDebugEnabled()) LOG.debug(xml);
+            XmlChecker.compare(xml, SAMLTestParameters.ATTRIBUTES_FILE_FULL);
+        } 
+        
+    }
+	
+	/**
 	 * Tests deserialization of the attributes for a test user from a SAML Attribute Statement.
 	 */
 	@Test
