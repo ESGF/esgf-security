@@ -34,16 +34,15 @@ import org.apache.commons.logging.LogFactory;
 import org.opensaml.saml2.core.AttributeQuery;
 import org.opensaml.saml2.core.DecisionTypeEnumeration;
 
-import esg.security.attr.service.api.SAMLAttributeServiceClient;
+import esg.security.attr.service.api.AttributeServiceClient;
 import esg.security.attr.service.api.SAMLAttributes;
-import esg.security.attr.service.impl.SAMLAttributeServiceClientSoapImpl;
+import esg.security.attr.service.impl.AttributeServiceClientImpl;
 import esg.security.attr.service.impl.SAMLAttributesImpl;
 import esg.security.authz.service.api.SAMLAuthorization;
 import esg.security.authz.service.api.SAMLAuthorizationFactory;
 import esg.security.authz.service.api.SAMLAuthorizations;
 import esg.security.common.SAMLParameters;
 import esg.security.common.SAMLUnknownPrincipalException;
-import esg.security.common.SOAPServiceClient;
 import esg.security.policy.service.api.PolicyAttribute;
 import esg.security.policy.service.api.PolicyService;
 import esg.security.registry.service.api.RegistryService;
@@ -80,16 +79,11 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 	 * Service responsible for locating the AttributeService managing the required attribute types.
 	 */
 	private RegistryService registryService;
-
-	/**
-	 * Client used to build the attribute query request.
-	 */
-	private final SAMLAttributeServiceClient samlAttributeServiceClient;
 	
 	/**
-	 * Client used to send the request via SOAP to the remote AttributeService.
+	 * Client used to query the remote attribute services.
 	 */
-	private final SOAPServiceClient soapClient;
+	private final AttributeServiceClient atsClient;
 	
 	private final static Log LOG = LogFactory.getLog(SAMLAuthorizationFactoryImpl.class);
 	
@@ -102,9 +96,7 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 		this.issuer = issuer;
 		this.policyService = policyService;
 		this.registryService = registryService;
-		samlAttributeServiceClient = new SAMLAttributeServiceClientSoapImpl(this.issuer);
-		
-		this.soapClient = SOAPServiceClient.getInstance();
+		this.atsClient = new AttributeServiceClientImpl(this.issuer);
 
 	}
 
@@ -142,7 +134,7 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 				for (final URL url : attServiceMap.keySet()) {
 				    					
                     // query remote attribute service
-                    final SAMLAttributes samlAttributes = this.getUserAttributes(identifier, url, attServiceMap.get(url));
+                    final SAMLAttributes samlAttributes = atsClient.getAttributes(url, identifier, attServiceMap.get(url));
                     					
 					// match resource policies for this action to user attributes from this attribute service
 					boolean authorized = this.match(policyMap.get(action), samlAttributes, identifier);
@@ -210,30 +202,6 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 	    
 	    // matching cached attributes not found
 	    return false;
-	}
-	
-	/**
-	 * Internal method to retrieve the user attributes for the given types from a remote attribute service
-	 * @param url
-	 * @param attributeTypes
-	 * @return
-	 */
-	protected SAMLAttributes getUserAttributes(final String identifier, final URL url, Set<String> attributeTypes) {
-		
-		try {
-			final AttributeQuery attributeQuery = samlAttributeServiceClient.buildStringAttributeQuery(identifier, new ArrayList<String>(attributeTypes));
-			final String attRequest = samlAttributeServiceClient.buildAttributeRequest(attributeQuery);
-			log("Querying attribute service at URL="+url.toString()+" request="+attRequest);		
-			final String attResponse = soapClient.doSoap(url.toString(), attRequest);
-			log("Query response="+attResponse);
-			final SAMLAttributes samlAttributes = samlAttributeServiceClient.parseAttributeResponse(attributeQuery, attResponse);
-			return samlAttributes;
-		} catch(Exception e) {
-			log(e.getMessage());
-			// return empty attributes
-			return new SAMLAttributesImpl(identifier, null);
-		}
-		
 	}
 	
 	/**

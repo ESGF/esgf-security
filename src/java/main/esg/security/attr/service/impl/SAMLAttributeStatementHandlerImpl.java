@@ -197,8 +197,10 @@ class SAMLAttributeStatementHandlerImpl implements SAMLAttributeStatementHandler
 							
 							// process string-based attribute
 							final Element element = attributeValue.getDOM();
-							final Text text = (Text)element.getFirstChild();
-							samlAttributes.addAttribute(attribute.getName(), text.getData().trim());
+							if (element.hasChildNodes()) {
+							    final Text text = (Text)element.getFirstChild();
+							    samlAttributes.addAttribute(attribute.getName(), text.getData().trim());
+							}
 							
 						}
 					}
