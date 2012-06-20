@@ -104,10 +104,10 @@ public class SAMLAttributeServiceClientSoapImpl implements SAMLAttributeServiceC
 			_attributes.add(att);
 		}
 		// FIXME: temporary always request GroupRole for compatibility with legacy system
-		final Attribute att = attributeBuilder.buildObject();
-        att.setName(GROUPROLE);
-        att.setNameFormat(STRING_TYPE);
-        _attributes.add(att);
+		//final Attribute att = attributeBuilder.buildObject();
+        //att.setName(GROUPROLE);
+        //att.setNameFormat(STRING_TYPE);
+        //_attributes.add(att);
 		
 		return this.buildAttributeQuery(openid, _attributes);
 		

@@ -53,6 +53,7 @@ public class SAMLTestParameters {
 	public final static String ATTRIBUTES_FILE ="esg/security/attr/service/data/SAMLattributeStatement.xml";
 	public final static String ATTRIBUTES_FILE_SIGNED ="esg/security/attr/service/data/SAMLattributeStatementSigned.xml";
 	public final static String ATTRIBUTES_FILE_BADC ="esg/security/attr/service/data/SAMLattributeStatementBADC.xml";
+	public final static String ATTRIBUTES_FILE_FULL ="esg/security/attr/service/data/SAMLattributeStatementFull.xml";
 	public final static String ATTRIBUTES_FILE_PARTIAL ="esg/security/attr/service/data/SAMLattributeStatementPartial.xml";
 	public final static String ATTRIBUTE_REQUEST_EMPTY ="esg/security/attr/service/data/SAMLattributeQueryEmpty.xml";
 	public final static String ATTRIBUTE_REQUEST_WITH_ATTRIBUTES ="esg/security/attr/service/data/SAMLattributeQueryWithAttributes.xml";

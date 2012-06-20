@@ -163,18 +163,19 @@ class SAMLAttributeStatementHandlerImpl implements SAMLAttributeStatementHandler
 					
 		// loop over all SAML attributes
 		final List<AttributeStatement> attributeStatements = assertion.getAttributeStatements();
+		
 		for (final AttributeStatement attributeStatement : attributeStatements) {
-			
+
 			for (final Attribute attribute : attributeStatement.getAttributes()) {
-				
+			    
 				if (attribute.getName().equals(SAMLParameters.FIRST_NAME)) {
-					samlAttributes.setFirstName(this.getAttributeValues(attribute).get(0));
+				   samlAttributes.setFirstName(this.getAttributeValue(attribute));
 					
 				} else if (attribute.getName().equals(SAMLParameters.LAST_NAME)) {
-					samlAttributes.setLastName(this.getAttributeValues(attribute).get(0));
+					samlAttributes.setLastName(this.getAttributeValue(attribute));
 						
 				} else if (attribute.getName().equals(SAMLParameters.EMAIL_ADDRESS)) {
-					samlAttributes.setEmail(this.getAttributeValues(attribute).get(0));
+					samlAttributes.setEmail(this.getAttributeValue(attribute));
 					
 				} else {
 					for (final XMLObject attributeValue : attribute.getAttributeValues()) {
@@ -294,7 +295,7 @@ class SAMLAttributeStatementHandlerImpl implements SAMLAttributeStatementHandler
 	}
 	
 	/**
-	 * Utility method to extract all the values of a givenSAML attribute.
+	 * Utility method to extract all the values of a given SAML attribute.
 	 * @param attribute
 	 * @return
 	 */
@@ -302,10 +303,27 @@ class SAMLAttributeStatementHandlerImpl implements SAMLAttributeStatementHandler
 		final List<String> values = new ArrayList<String>();
 		for (final XMLObject attributeValue : attribute.getAttributeValues()) {
 			final Element element = attributeValue.getDOM();
-			final Text text = (Text)element.getFirstChild();
-			values.add(text.getData().trim());
+			if (element.hasChildNodes()) {
+			    final Text text = (Text)element.getFirstChild();
+			    values.add(text.getData().trim());
+			}
 		}
 		return values;
+	}
+	
+	/**
+	 * Utility method to extract the first value of a given SAML attribute, 
+	 * or the blank string if none is found.
+	 * @param attribute
+	 * @return
+	 */
+	private String getAttributeValue(final Attribute attribute) {
+	    List<String> values = this.getAttributeValues(attribute);
+	    if (values.size()>0) {
+	        return values.get(0);
+	    } else {
+	        return "";
+	    }
 	}
 
 	void setIncludeFlag(boolean includeFlag) {
