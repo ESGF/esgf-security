@@ -141,3 +141,6 @@ Version 2.1.6
 
 Version 2.1.7
 - Forcing reloading of registry file every X minutes.
+
+Version 2.1.10
+- Inserting federated attribute service
