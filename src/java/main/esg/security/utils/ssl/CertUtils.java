@@ -18,6 +18,7 @@
  ******************************************************************************/
 package esg.security.utils.ssl;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -41,8 +42,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.io.ClassPathResource;
 
-import esg.security.utils.xml.XmlChecker;
-
 
 /**
  * Utility class to set the keystore and trustore environment to be used in SSL communication.
@@ -54,33 +53,43 @@ public class CertUtils {
 	final private static Log LOG = LogFactory.getLog(CertUtils.class);
 	
 	/**
-	 * Method to set a keystore to the desired file in the classpath.
+	 * Method to set a keystore to the desired file in the classpath or absolute path.
 	 * A keystore is needed by the client to send its own certificate for authentication.
      * Note that the keystore must be trusted by the server.
      * 
-	 * @param keystoreClassPathLocation
+	 * @param keystoreLocation
 	 * @throws Exception
 	 */
-	public static void setKeystore(final String keystoreClassPathLocation) throws Exception {
+	public static void setKeystore(final String keystoreLocation) throws Exception {
 		
-		ClassPathResource keystore = new ClassPathResource(keystoreClassPathLocation, classloader);
-		System.setProperty("javax.net.ssl.keyStore", keystore.getFile().getAbsolutePath()); 
+	    if (keystoreLocation.startsWith("/")) {
+	        File keystore = new File(keystoreLocation);
+	        System.setProperty("javax.net.ssl.keyStore", keystore.getAbsolutePath()); 
+	    } else {
+	        ClassPathResource keystore = new ClassPathResource(keystoreLocation, classloader);
+	        System.setProperty("javax.net.ssl.keyStore", keystore.getFile().getAbsolutePath()); 
+	    }
 		System.setProperty("javax.net.ssl.keyStorePassword","changeit");
 		
 	}
 
 	/**
-	 * Method to set the trustore to the desired file in the classpath.
+	 * Method to set the trustore to the desired file in the classpath or absolute path.
 	 * A trustore is needed for the client to trust the server certificate.
 	 * The trustore must match the certificate used by the server
 	 * 
 	 * @param trustoreClassPathLocation
 	 * @throws Exception
 	 */
-	public static void setTruststore(final String trustoreClassPathLocation) throws Exception {
+	public static void setTruststore(final String trustoreLocation) throws Exception {
 		
-		ClassPathResource trustore = new ClassPathResource(trustoreClassPathLocation, classloader);
-		System.setProperty("javax.net.ssl.trustStore", trustore.getFile().getAbsolutePath()); 
+	    if (trustoreLocation.startsWith("/")) {
+	        File truststore = new File(trustoreLocation);
+	        System.setProperty("javax.net.ssl.trustStore", truststore.getAbsolutePath()); 
+	    } else {
+    		ClassPathResource truststore = new ClassPathResource(trustoreLocation, classloader);
+    		System.setProperty("javax.net.ssl.trustStore", truststore.getFile().getAbsolutePath()); 
+	    } 
 		System.setProperty("javax.net.ssl.trustStorePassword","changeit");
 		
 	}

@@ -16,8 +16,6 @@ import esg.security.attr.service.api.AttributeServiceClient;
 import esg.security.attr.service.api.FederatedAttributeService;
 import esg.security.attr.service.api.SAMLAttributes;
 import esg.security.registry.service.api.RegistryService;
-import esg.security.registry.service.impl.RegistryServiceLocalXmlImpl;
-import esg.security.utils.ssl.CertUtils;
 
 public class FederatedAttributeServiceImpl implements FederatedAttributeService {
     
@@ -132,29 +130,6 @@ public class FederatedAttributeServiceImpl implements FederatedAttributeService 
         public SAMLAttributes getSAMLAttributes() {
             return samlAttributes;
         }  
-        
-    }
-    
-    public final static void main(String[] args) throws Exception {
-        
-        // set certificates for client-server handshake
-        CertUtils.setTruststore("esg/security/resources/esg-truststore.ts");
-        CertUtils.setKeystore("esg/security/resources/esg-datanode-rapidssl.ks");
-        
-        // initialize service
-        final String ESGF_ATS = "esg/security/registry/service/data/esgf_ats.xml";
-        final RegistryService registryService = new RegistryServiceLocalXmlImpl(ESGF_ATS);
-        final String issuer = "ESGF Attribute Service";
-        final FederatedAttributeService self = new FederatedAttributeServiceImpl(issuer, registryService);
-                
-        // execute invocation
-        String identifier = "https://esg-datanode.jpl.nasa.gov/esgf-idp/openid/lucacinquini";
-        Map<String, Set<String>> attributes = self.getAttributes(identifier);
-        for (String atype : attributes.keySet()) {
-            for (String avalue : attributes.get(atype)) {
-                System.out.println("ATTRIBUTE TYPE="+atype+" VALUE="+avalue);
-            }
-        }
         
     }
 
