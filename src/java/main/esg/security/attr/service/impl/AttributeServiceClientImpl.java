@@ -40,7 +40,7 @@ public class AttributeServiceClientImpl implements AttributeServiceClient {
        
         try {
             
-            final AttributeQuery attributeQuery = samlAttributeServiceClient.buildStringAttributeQuery(identifier, new ArrayList<String>());
+            final AttributeQuery attributeQuery = samlAttributeServiceClient.buildStringAttributeQuery(identifier, new ArrayList<String>(types));
             final String attRequest = samlAttributeServiceClient.buildAttributeRequest(attributeQuery);
             if (LOG.isInfoEnabled()) LOG.info("Querying attribute service at URL="+url.toString()+" request="+attRequest); 
             

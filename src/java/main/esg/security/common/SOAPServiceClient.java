@@ -26,7 +26,6 @@ import org.apache.commons.httpclient.HttpConnectionManager;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.SimpleHttpConnectionManager;
 import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.logging.Log;
@@ -101,7 +100,9 @@ public class SOAPServiceClient {
 		    int statusCode = client.executeMethod(method);
 
 		    if (statusCode != HttpStatus.SC_OK) {
-		    	System.err.println("Method failed: " + method.getStatusLine());
+		        String error = "HTTP Method failed: " + method.getStatusLine();
+		    	log(error);
+		    	throw new RuntimeException(error);
 		    }
 		    
 		    // read response headers
