@@ -145,5 +145,5 @@ Version 2.1.7
 Version 2.1.12
 - Inserting federated attribute service
 
-Version 2.1.13
+Version 2.2.1
 -- Inserted facility to resolve user openid into user data.

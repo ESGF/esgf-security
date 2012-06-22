@@ -10,7 +10,7 @@ import org.jdom.Namespace;
 
 import esg.security.attr.service.api.YadisClient;
 import esg.security.utils.http.HttpUtils;
-import eske.utils.xml.Parser;
+import esg.security.utils.xml.Parser;
 
 public class YadisClientImpl implements YadisClient {
     
