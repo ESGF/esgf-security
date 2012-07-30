@@ -24,9 +24,10 @@
 	<value>https://esg2-gw.ccs.ornl.gov/esgcet/openid/provider.htm</value>
 	<value>https://esg-gw.ornl.teragrid.org/openid/provider.htm</value>
 
-        <value>https://hydra.fsl.noaa.gov/esgf-idp/idp/openidServer.htm</value>
-        <value>https://dev-hydra.esrl.svc/esgf-idp/idp/openidServer.htm</value>
- 
-        <value>https://test-datanode.jpl.nasa.gov/esgf-idp/idp/openidServer.htm</value>
+    <value>https://hydra.fsl.noaa.gov/esgf-idp/idp/openidServer.htm</value>
+    <value>https://dev-hydra.esrl.svc/esgf-idp/idp/openidServer.htm</value>
+    <value>https://pcmdi9.llnl.gov/esgf-idp/idp/openidServer.htm</value>
+    <value>https://esg-datanode.jpl.nasa.gov/esgf-idp/idp/openidServer.htm</value>
+    <value>https://test-datanode.jpl.nasa.gov/esgf-idp/idp/openidServer.htm</value>
 
 </idp_whitelist>
