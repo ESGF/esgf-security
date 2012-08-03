@@ -220,6 +220,9 @@ public class UserInfoDAO {
     private static final String getPasswordQuery = 
         "SELECT password FROM esgf_security.user WHERE openid = ?";
 
+    private static final String getOpenidsForEmailQuery =
+        "SELECT openid FROM esgf_security.user WHERE email = ? ";
+
     //-------------------
 
     private static final String showUsersQuery =
@@ -961,6 +964,23 @@ public class UserInfoDAO {
             throw new ESGFDataAccessException(ex);
         }
         return verificationToken;
+    }
+
+    List<String[]> getOpenidsForEmail(String email) {
+        try {
+            log.trace("Fetching openids associted with the email address "+email);
+            List<String[]> results = queryRunner.query(getOpenidsForEmailQuery, basicResultSetHandler, email);
+            log.trace("Query is: "+getOpenidsForEmailQuery);
+            assert (null != results);
+            if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
+            return results;
+        }catch(SQLException ex) {
+            log.error(ex);
+            throw new ESGFDataAccessException(ex);
+        }catch(Throwable t) {
+            log.error(t);
+        }
+        return new ArrayList<String[]>();
     }
 
     //-------------------------------------------------------

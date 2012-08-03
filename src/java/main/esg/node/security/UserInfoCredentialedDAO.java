@@ -38,6 +38,7 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import java.util.List;
 
 import esg.security.utils.encryption.PasswordEncoder;
 
@@ -265,6 +266,13 @@ public class UserInfoCredentialedDAO {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return userInfoDAO.getVerificationToken(openid);
+    }
+
+    public List<String[]> getOpenidsForEmail(String email) {
+        if(!checkCredentials()) {
+            throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
+        }
+        return userInfoDAO.getOpenidsForEmail(email);
     }
 
 
