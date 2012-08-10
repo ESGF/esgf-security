@@ -11,11 +11,11 @@
 
 	<!-- Loggers -->
 	<logger name="esg" additivity="false">
-		<level value="DEBUG" />
+		<level value="INFO" />
 		<appender-ref ref="esgSamlLog" />
 	</logger>
     <logger name="esgf" additivity="false">
-		<level value="DEBUG" />
+		<level value="INFO" />
 		<appender-ref ref="esgSamlLog" />
 	</logger>
 	
