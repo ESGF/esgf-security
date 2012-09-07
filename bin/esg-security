@@ -126,6 +126,14 @@ init() {
 # In update mode it will always pull down latest after archiving old
 #
 setup_security() {
+    echo -n "Checking for esgf security (lib) ${esgf_security_version}"
+    local currently_installed_version="$(sed -n 's/^.*esgf-security=\(.[0-9]*\.[0-9]*\.[0-9]*\).*$/\1/p' ${install_manifest}/)"
+    if [ -n "$currently_installed_version" ]; then
+        check_version_with "esgf-security" "${currently_installed_version}" ${esgf_security_version}
+        local ret=$?
+        ((ret == 0)) && (( ! force_install )) && echo " [OK]" && return 0
+    fi
+
     init
 
     configure_postgress
