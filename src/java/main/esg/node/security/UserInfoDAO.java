@@ -94,6 +94,14 @@ public class UserInfoDAO {
 
     private static final long serialVersionUID = 1L;
     
+    /*
+      Let me say this right up front.  I am NOT a DBA nor a SQL maven.
+      I know how to pull things out of a database by hook or by crook
+      (as is probably quite evident below). If you are a SQL jedi then
+      please feel free to optimize the queries accordingly as long as
+      the output is identical!  -gavin
+     */
+
     //-------------------
     //Selection queries (fills in the UserInfo data carrying object)
     //-------------------

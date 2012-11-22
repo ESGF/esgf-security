@@ -65,6 +65,14 @@ public class GroupRoleDAO implements Serializable {
     //-------------------
     //Insertion queries
     //-------------------
+
+    /*
+      Let me say this right up front.  I am NOT a DBA nor a SQL maven.
+      I know how to pull things out of a database by hook or by crook
+      (as is probably quite evident below). If you are a SQL jedi then
+      please feel free to optimize the queries accordingly as long as
+      the output is identical!  -gavin
+     */
     
     /**
 	 * 
@@ -131,6 +139,13 @@ public class GroupRoleDAO implements Serializable {
     private static final String showUsersInRoleQuery =
         "SELECT username, firstname, lastname, openid FROM esgf_security.user WHERE id IN (SELECT p.user_id FROM esgf_security.permission as p WHERE p.role_id = (SELECT id FROM esgf_security.role WHERE name = ? ))";
 
+    //-------------------
+
+    private static final String showGroupsNotSubscribedToQuery =
+        "SELECT * from esgf_security.group WHERE id NOT in (SELECT DISTINCT group_id FROM esgf_security.permission WHERE user_id = (SELECT id FROM esgf_security.user WHERE openid = ? ))";
+
+    private static final String showGroupsSubscribedToQuery =
+        "SELECT * FROM esgf_security.group WHERE id IN (SELECT DISTINCT group_id FROM esgf_security.permission WHERE user_id = (SELECT id FROM esgf_security.user WHERE openid = ? ))";
 
     private static final Log log = LogFactory.getLog(GroupRoleDAO.class);
 
@@ -467,6 +482,39 @@ public class GroupRoleDAO implements Serializable {
         }
         return new ArrayList<String[]>();
     }
+
+    public List<String[]> getGroupEntriesFor(String openid) {
+        try{
+            log.trace("Fetching raw groups data from database table of groups "+openid+" is in");
+            List<String[]> results = queryRunner.query(showGroupsSubscribedToQuery, basicResultSetHandler, openid);
+            log.trace("Query is: "+showGroupsSubscribedToQuery);
+            assert (null != results);
+            if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
+            return results;
+        }catch(SQLException ex) {
+            log.error(ex);
+        }catch(Throwable t) {
+            log.error(t);
+        }
+        return new ArrayList<String[]>();
+    }
+
+    public List<String[]> getGroupEntriesNotFor(String openid) {
+        try{
+            log.trace("Fetching raw groups data from database table of groups "+openid+" is NOT in");
+            List<String[]> results = queryRunner.query(showGroupsNotSubscribedToQuery, basicResultSetHandler, openid);
+            log.trace("Query is: "+showGroupsNotSubscribedToQuery);
+            assert (null != results);
+            if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
+            return results;
+        }catch(SQLException ex) {
+            log.error(ex);
+        }catch(Throwable t) {
+            log.error(t);
+        }
+        return new ArrayList<String[]>();
+    }
+
 
     public List<String[]> getUsersInGroup(String groupname) {
         try{
