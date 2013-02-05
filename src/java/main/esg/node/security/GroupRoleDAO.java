@@ -147,6 +147,19 @@ public class GroupRoleDAO implements Serializable {
     private static final String showGroupsSubscribedToQuery =
         "SELECT * FROM esgf_security.group WHERE id IN (SELECT DISTINCT group_id FROM esgf_security.permission WHERE user_id = (SELECT id FROM esgf_security.user WHERE openid = ? ))";
 
+     //-------------------
+
+    private static final String showUsersInGroupNotApprovedQuerey = 
+        "SELECT u.firstname, u.middlename, u.lastname, u.email, u.username, u.organization, u.city, u.state, u.country, r.name as role " +
+        "FROM esgf_security.permission as p, esgf_security.user as u, esgf_security.role as r, esgf_security.group " + 
+        "WHERE p.group_id = g.id" + 
+        "AND p.approved = 'f' " + 
+        "AND p.user_id = u.id " + 
+        "AND p.role_id = r.id " + 
+        "AND g.name = ?";
+
+    //-------------------
+ 
     private static final Log log = LogFactory.getLog(GroupRoleDAO.class);
 
     private Properties props = null;
@@ -569,6 +582,22 @@ public class GroupRoleDAO implements Serializable {
             log.trace("Fetching users for the given role "+rolename);
             List<String[]> results = queryRunner.query(showUsersInRoleQuery, basicResultSetHandler, rolename);
             log.trace("Query is: "+showUsersInRoleQuery);
+            assert (null != results);
+            if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
+            return results;
+        }catch(SQLException ex) {
+            log.error(ex);
+        }catch(Throwable t) {
+            log.error(t);
+        }
+        return new ArrayList<String[]>();
+    }
+
+    public List<String[]> showUsersInGroupNotApprovedQuerey(String groupName){
+        try{
+            log.trace("Fetching users not approved for the group "+groupName);
+            List<String[]> results = queryRunner.query(showUsersInGroupNotApprovedQuerey, basicResultSetHandler, groupName);
+            log.trace("Query is: "+showUsersInGroupNotApprovedQuerey);
             assert (null != results);
             if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
             return results;
