@@ -107,3 +107,4 @@ o This project requires Java 1.6 because of faulty XML libraries in Java 1.5 and
 Alternatively, if running with Java 1.5, the correct XML libraries can be placed in the JVM endorsed directory.
 For convenience, the ant task "make_endorsed" can be run to download all the required jars in the subdirectory lib/endorsed.
 These jars then need to be copied into the Java 1.5 endorsed directory.
+

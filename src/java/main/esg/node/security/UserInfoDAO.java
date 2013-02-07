@@ -94,6 +94,14 @@ public class UserInfoDAO {
 
     private static final long serialVersionUID = 1L;
     
+    /*
+      Let me say this right up front.  I am NOT a DBA nor a SQL maven.
+      I know how to pull things out of a database by hook or by crook
+      (as is probably quite evident below). If you are a SQL jedi then
+      please feel free to optimize the queries accordingly as long as
+      the output is identical!  -gavin
+     */
+
     //-------------------
     //Selection queries (fills in the UserInfo data carrying object)
     //-------------------
@@ -126,7 +134,7 @@ public class UserInfoDAO {
     //Permission Queries...
     private static final String getPermissionsQuery = 
         "SELECT g.name, r.name from esgf_security.group as g, esgf_security.role as r, esgf_security.permission as p, esgf_security.user as u "+
-        "WHERE p.user_id = u.id and u.openid = ? and p.group_id = g.id and p.role_id = r.id "+
+        "WHERE p.user_id = u.id and u.openid = ? and p.group_id = g.id and p.role_id = r.id and p.approved = 't' "+
         "ORDER BY g.name";
     private static final String setPermissionQuery =
         "UPDATE esgf_security.permission set approved = ? "+
