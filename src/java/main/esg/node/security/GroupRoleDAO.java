@@ -159,6 +159,13 @@ public class GroupRoleDAO implements Serializable {
         "AND g.name = ?";
 
     //-------------------
+    
+    private static final String allNonApprovedQuery = 
+      "SELECT g.name, g.id, u.username, u.id, r.name, r.id "+
+      "FROM esgf_security.group as g, esgf_security.permission as p, esgf_security.user as u, esgf_security.role as r " + 
+      "WHERE p.approved = 'f' AND g.id = p.group_id AND u.id = p.user_id AND r.id = p.role_id";
+    
+    //-------------------
  
     private static final Log log = LogFactory.getLog(GroupRoleDAO.class);
 
@@ -598,6 +605,22 @@ public class GroupRoleDAO implements Serializable {
             log.trace("Fetching users not approved for the group "+groupName);
             List<String[]> results = queryRunner.query(showUsersInGroupNotApprovedQuerey, basicResultSetHandler, groupName);
             log.trace("Query is: "+showUsersInGroupNotApprovedQuerey);
+            assert (null != results);
+            if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
+            return results;
+        }catch(SQLException ex) {
+            log.error(ex);
+        }catch(Throwable t) {
+            log.error(t);
+        }
+        return new ArrayList<String[]>();
+    }
+
+    public List<String[]> allNonApprovedQuery(){
+        try{
+            log.trace("Fetching list of all groups and users not approved for the group ");
+            List<String[]> results = queryRunner.query(allNonApprovedQuery, basicResultSetHandler);
+            log.trace("Query is: "+allNonApprovedQuery);
             assert (null != results);
             if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
             return results;
