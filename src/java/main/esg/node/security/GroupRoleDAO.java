@@ -91,6 +91,10 @@ public class GroupRoleDAO implements Serializable {
         "UPDATE esgf_security.group "+
         "SET name=? "+
         "WHERE id=?";
+    private static final String updateWholeGroupQuery = 
+        "UPDATE esgf_security.group "+
+        "Set name=?, description=?, visible=? automatic_approval=? "+
+        "WHERE id=?";
     //private static final String getNextGroupPrimaryKeyValQuery = 
     //    "SELECT NEXTVAL('esgf_security.group_id_seq')";
     private static final String addGroupQuery = 
@@ -369,6 +373,18 @@ public class GroupRoleDAO implements Serializable {
         return (numRowsAffected > 0);
     }
     
+    public synchronized boolean updateWholeGroup(int id, String groupName, String groupDesc, boolean vis, boolean autoApprove) {
+        int groupid = -1;
+        int numRowsAffected = -1;
+
+        try{
+            numRowsAffected = queryRunner.update(updateWholeGroupQuery, groupName,groupDesc,vis,autoApprove,id);
+        }catch(SQLException ex) {
+            log.error(ex);
+        }
+        return (numRowsAffected > 0);
+    }
+
     public synchronized boolean renameGroup(String origName, String newName) {
         int groupid = -1;
         int numRowsAffected = -1;
