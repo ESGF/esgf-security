@@ -91,6 +91,10 @@ public class GroupRoleDAO implements Serializable {
         "UPDATE esgf_security.group "+
         "SET name=? "+
         "WHERE id=?";
+    private static final String updateWholeGroupQuery = 
+        "UPDATE esgf_security.group "+
+        "Set name=?, description=?, visible=? automatic_approval=? "+
+        "WHERE id=?";
     //private static final String getNextGroupPrimaryKeyValQuery = 
     //    "SELECT NEXTVAL('esgf_security.group_id_seq')";
     private static final String addGroupQuery = 
@@ -134,19 +138,39 @@ public class GroupRoleDAO implements Serializable {
     //-------------------
     
     private static final String showUsersInGroupQuery =
-        "SELECT username, firstname, lastname, openid FROM esgf_security.user WHERE id IN (SELECT p.user_id FROM esgf_security.permission as p WHERE p.group_id = (SELECT id FROM esgf_security.group WHERE name = ? ))";
+        "SELECT username, firstname, lastname, openid FROM esgf_security.user WHERE id IN (SELECT p.user_id FROM esgf_security.permission as p WHERE p.group_id = (SELECT id FROM esgf_security.group WHERE name = ? )) AND p.approved = 't'";
 
     private static final String showUsersInRoleQuery =
-        "SELECT username, firstname, lastname, openid FROM esgf_security.user WHERE id IN (SELECT p.user_id FROM esgf_security.permission as p WHERE p.role_id = (SELECT id FROM esgf_security.role WHERE name = ? ))";
+        "SELECT username, firstname, lastname, openid FROM esgf_security.user WHERE id IN (SELECT p.user_id FROM esgf_security.permission as p WHERE p.role_id = (SELECT id FROM esgf_security.role WHERE name = ? )) AND p.approved = 't'";
 
     //-------------------
 
     private static final String showGroupsNotSubscribedToQuery =
-        "SELECT * from esgf_security.group WHERE id NOT in (SELECT DISTINCT group_id FROM esgf_security.permission WHERE user_id = (SELECT id FROM esgf_security.user WHERE openid = ? ))";
+        "SELECT * from esgf_security.group WHERE id NOT in (SELECT DISTINCT group_id FROM esgf_security.permission as p WHERE user_id = (SELECT id FROM esgf_security.user WHERE openid = ? ))";
 
     private static final String showGroupsSubscribedToQuery =
-        "SELECT * FROM esgf_security.group WHERE id IN (SELECT DISTINCT group_id FROM esgf_security.permission WHERE user_id = (SELECT id FROM esgf_security.user WHERE openid = ? ))";
+        "SELECT * FROM esgf_security.group WHERE id IN (SELECT DISTINCT group_id FROM esgf_security.permission as p WHERE user_id = (SELECT id FROM esgf_security.user WHERE openid = ? )) AND p.approved = 't'";
 
+     //-------------------
+
+    private static final String showUsersInGroupNotApprovedQuerey = 
+        "SELECT u.firstname, u.middlename, u.lastname, u.email, u.username, u.organization, u.city, u.state, u.country, r.name as role " +
+        "FROM esgf_security.permission as p, esgf_security.user as u, esgf_security.role as r, esgf_security.group " + 
+        "WHERE p.group_id = g.id" + 
+        "AND p.approved = 'f' " + 
+        "AND p.user_id = u.id " + 
+        "AND p.role_id = r.id " + 
+        "AND g.name = ?";
+
+    //-------------------
+    
+    private static final String allNonApprovedQuery = 
+      "SELECT g.name, g.id, u.username, u.id, r.name, r.id "+
+      "FROM esgf_security.group as g, esgf_security.permission as p, esgf_security.user as u, esgf_security.role as r " + 
+      "WHERE p.approved = 'f' AND g.id = p.group_id AND u.id = p.user_id AND r.id = p.role_id";
+    
+    //-------------------
+ 
     private static final Log log = LogFactory.getLog(GroupRoleDAO.class);
 
     private Properties props = null;
@@ -349,6 +373,18 @@ public class GroupRoleDAO implements Serializable {
         return (numRowsAffected > 0);
     }
     
+    public synchronized boolean updateWholeGroup(int id, String groupName, String groupDesc, boolean vis, boolean autoApprove) {
+        int groupid = -1;
+        int numRowsAffected = -1;
+
+        try{
+            numRowsAffected = queryRunner.update(updateWholeGroupQuery, groupName,groupDesc,vis,autoApprove,id);
+        }catch(SQLException ex) {
+            log.error(ex);
+        }
+        return (numRowsAffected > 0);
+    }
+
     public synchronized boolean renameGroup(String origName, String newName) {
         int groupid = -1;
         int numRowsAffected = -1;
@@ -569,6 +605,38 @@ public class GroupRoleDAO implements Serializable {
             log.trace("Fetching users for the given role "+rolename);
             List<String[]> results = queryRunner.query(showUsersInRoleQuery, basicResultSetHandler, rolename);
             log.trace("Query is: "+showUsersInRoleQuery);
+            assert (null != results);
+            if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
+            return results;
+        }catch(SQLException ex) {
+            log.error(ex);
+        }catch(Throwable t) {
+            log.error(t);
+        }
+        return new ArrayList<String[]>();
+    }
+
+    public List<String[]> showUsersInGroupNotApprovedQuerey(String groupName){
+        try{
+            log.trace("Fetching users not approved for the group "+groupName);
+            List<String[]> results = queryRunner.query(showUsersInGroupNotApprovedQuerey, basicResultSetHandler, groupName);
+            log.trace("Query is: "+showUsersInGroupNotApprovedQuerey);
+            assert (null != results);
+            if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
+            return results;
+        }catch(SQLException ex) {
+            log.error(ex);
+        }catch(Throwable t) {
+            log.error(t);
+        }
+        return new ArrayList<String[]>();
+    }
+
+    public List<String[]> allNonApprovedQuery(){
+        try{
+            log.trace("Fetching list of all groups and users not approved for the group ");
+            List<String[]> results = queryRunner.query(allNonApprovedQuery, basicResultSetHandler);
+            log.trace("Query is: "+allNonApprovedQuery);
             assert (null != results);
             if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
             return results;
