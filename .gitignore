@@ -47,3 +47,5 @@ generated/
 src/python/esgf/setup.py
 src/python/esgf/scripts/esgf_security_initialize
 bin/post.manif
+src/python/esgf/build/
+src/python/esgf/esgf_security.egg-info/

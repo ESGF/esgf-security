@@ -3,6 +3,9 @@
 This project contains a web application that can be used to deploy an ESG Attribute Service and/or an ESG Authorization service.
 Additionally, the packaged jar contains ESG utilities for parsing and producing SAML statements that can be used in other ESG SAML-aware projects.
 
+git remote add upstream https://git@github.com/ESGF/esgf-security.git
+
+
 >>> PREREQUISITES
 
 o Fairly recent distribution of Ant: 1.7+

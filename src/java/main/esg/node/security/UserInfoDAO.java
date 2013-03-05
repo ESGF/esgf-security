@@ -134,7 +134,7 @@ public class UserInfoDAO {
     //Permission Queries...
     private static final String getPermissionsQuery = 
         "SELECT g.name, r.name from esgf_security.group as g, esgf_security.role as r, esgf_security.permission as p, esgf_security.user as u "+
-        "WHERE p.user_id = u.id and u.openid = ? and p.group_id = g.id and p.role_id = r.id "+
+        "WHERE p.user_id = u.id and u.openid = ? and p.group_id = g.id and p.role_id = r.id and p.approved = 't' "+
         "ORDER BY g.name";
     private static final String setPermissionQuery =
         "UPDATE esgf_security.permission set approved = ? "+
