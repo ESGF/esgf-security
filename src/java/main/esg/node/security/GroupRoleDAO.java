@@ -91,10 +91,7 @@ public class GroupRoleDAO implements Serializable {
         "UPDATE esgf_security.group "+
         "SET name=? "+
         "WHERE id=?";
-    private static final String updateWholeGroupQuery = 
-        "UPDATE esgf_security.group "+
-        "Set name=?, description=?, visible=? automatic_approval=? "+
-        "WHERE id=?";
+    
     //private static final String getNextGroupPrimaryKeyValQuery = 
     //    "SELECT NEXTVAL('esgf_security.group_id_seq')";
     private static final String addGroupQuery = 
@@ -169,8 +166,23 @@ public class GroupRoleDAO implements Serializable {
       "FROM esgf_security.group as g, esgf_security.permission as p, esgf_security.user as u, esgf_security.role as r " + 
       "WHERE p.approved = 'f' AND g.id = p.group_id AND u.id = p.user_id AND r.id = p.role_id";
     
+    private static final String setApprovedQuery =
+      "UPDATE esgf_security.permission " + 
+      "SET aoorived = 't' " + 
+      "WHERE user_id = ? " + 
+      "AND group_id = ?";
+
+    private static final String updateWholeGroupQuery = 
+      "UPDATE esgf_security.group "+
+      "Set name=?, description=?, visible=? automatic_approval=? "+
+      "WHERE id=?";
+
     //-------------------
- 
+
+    private static final String placeholder = "";
+
+    //-------------------
+    
     private static final Log log = LogFactory.getLog(GroupRoleDAO.class);
 
     private Properties props = null;
@@ -367,18 +379,6 @@ public class GroupRoleDAO implements Serializable {
             //If this group does not exist in the database then add (INSERT) a new one
             //groupid = queryRunner.query(getNextGroupPrimaryKeyValQuery, idResultSetHandler);
             numRowsAffected = queryRunner.update(setAutoApproveGroupQuery,autoApprove,groupid);
-        }catch(SQLException ex) {
-            log.error(ex);
-        }
-        return (numRowsAffected > 0);
-    }
-    
-    public synchronized boolean updateWholeGroup(int id, String groupName, String groupDesc, boolean vis, boolean autoApprove) {
-        int groupid = -1;
-        int numRowsAffected = -1;
-
-        try{
-            numRowsAffected = queryRunner.update(updateWholeGroupQuery, groupName,groupDesc,vis,autoApprove,id);
         }catch(SQLException ex) {
             log.error(ex);
         }
@@ -632,6 +632,19 @@ public class GroupRoleDAO implements Serializable {
         return new ArrayList<String[]>();
     }
 
+    //TODO make these three querys work...
+    public synchronized boolean updateWholeGroup(int id, String groupName, String groupDesc, boolean vis, boolean autoApprove) {
+        int groupid = -1;
+        int numRowsAffected = -1;
+
+        try{
+            numRowsAffected = queryRunner.update(updateWholeGroupQuery, groupName, groupDesc, vis, autoApprove, id);
+        }catch(SQLException ex) {
+            log.error(ex);
+        }
+        return (numRowsAffected > 0);
+    }
+
     public List<String[]> allNonApprovedQuery(){
         try{
             log.trace("Fetching list of all groups and users not approved for the group ");
@@ -647,7 +660,22 @@ public class GroupRoleDAO implements Serializable {
         }
         return new ArrayList<String[]>();
     }
-
+    
+    public List<String[]> setApprovedQuery(int userId, int groupId){
+        try{
+            log.trace("Approving a user in to a group ");
+            List<String[]> results = queryRunner.query(setApprovedQuery, basicResultSetHandler, userId, groupId);
+            log.trace("Query is: "+setApprovedQuery);
+            assert (null != results);
+            if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
+            return results;
+        }catch(SQLException ex) {
+            log.error(ex);
+        }catch(Throwable t) {
+            log.error(t);
+        }
+        return new ArrayList<String[]>();
+    }
     //------------------------------------
     
     public String toString() {
