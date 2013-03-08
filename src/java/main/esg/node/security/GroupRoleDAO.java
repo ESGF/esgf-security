@@ -150,7 +150,7 @@ public class GroupRoleDAO implements Serializable {
 
      //-------------------
 
-    private static final String showUsersInGroupNotApprovedQuerey = 
+    private static final String showUsersInGroupNotApprovedQuery = 
         "SELECT u.firstname, u.middlename, u.lastname, u.email, u.username, u.organization, u.city, u.state, u.country, r.name as role " +
         "FROM esgf_security.permission as p, esgf_security.user as u, esgf_security.role as r, esgf_security.group " + 
         "WHERE p.group_id = g.id" + 
@@ -168,7 +168,7 @@ public class GroupRoleDAO implements Serializable {
     
     private static final String setApprovedQuery =
       "UPDATE esgf_security.permission " + 
-      "SET aoorived = 't' " + 
+      "SET approved = 't' " + 
       "WHERE user_id = ? " + 
       "AND group_id = ?";
 
@@ -616,11 +616,11 @@ public class GroupRoleDAO implements Serializable {
         return new ArrayList<String[]>();
     }
 
-    public List<String[]> showUsersInGroupNotApprovedQuerey(String groupName){
+    public List<String[]> showUsersInGroupNotApprovedQuery(String groupName){
         try{
             log.trace("Fetching users not approved for the group "+groupName);
-            List<String[]> results = queryRunner.query(showUsersInGroupNotApprovedQuerey, basicResultSetHandler, groupName);
-            log.trace("Query is: "+showUsersInGroupNotApprovedQuerey);
+            List<String[]> results = queryRunner.query(showUsersInGroupNotApprovedQuery, basicResultSetHandler, groupName);
+            log.trace("Query is: "+showUsersInGroupNotApprovedQuery);
             assert (null != results);
             if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
             return results;
