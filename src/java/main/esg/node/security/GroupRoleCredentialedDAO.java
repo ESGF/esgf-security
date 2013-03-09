@@ -268,11 +268,11 @@ public class GroupRoleCredentialedDAO implements Serializable {
         return groupRoleDAO.getUsersInRole(rolename);
     }
 
-    public List<String[]> showUsersInGroupNotApprovedQuery(String groupName){
+    public List<String[]> showUsersInGroupNotApproved(String groupName){
         if(!checkGroupRolePrivs()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
-        return groupRoleDAO.showUsersInGroupNotApprovedQuery(groupName);
+        return groupRoleDAO.showUsersInGroupNotApproved(groupName);
     }
 
     public synchronized boolean updateWholeGroup(int id, String groupName, String groupDesc, boolean vis, boolean autoApprove) {
@@ -282,18 +282,26 @@ public class GroupRoleCredentialedDAO implements Serializable {
         return groupRoleDAO.updateWholeGroup(id,groupName,groupDesc,vis,autoApprove);
     }
 
-    public List<String[]> allNonApprovedQuery() {
+    public List<String[]> allNonApproved() {
         if(!checkGroupRolePrivs()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
-        return groupRoleDAO.allNonApprovedQuery();
+        return groupRoleDAO.allNonApproved();
     }
     
-    public List<String[]> setApprovedQuery(int userId, int groupId) {
+    public List<String[]> setApproved(int userId, int groupId) {
         if(!checkGroupRolePrivs()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
-        return groupRoleDAO.setApprovedQuery(userId,groupId);
+        return groupRoleDAO.setApproved(userId,groupId);
+    }
+
+    //More Friendly Signature
+    public List<String[]> setApproved(String openid, String groupName) {
+        if(!checkGroupRolePrivs()) {
+            throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
+        }
+        return groupRoleDAO.setApproved(openid,groupName);
     }
 
     //------------------------------------

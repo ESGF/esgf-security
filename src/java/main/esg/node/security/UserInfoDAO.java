@@ -1187,7 +1187,7 @@ public class UserInfoDAO {
     //User Movement between Groups/Roles Query en mass
     //-------------------------------------------------------
 
-    public synchronized boolean moveAllUsersInGroupTo(String sourceGroupName, String targetGroupName) {
+    synchronized boolean moveAllUsersInGroupTo(String sourceGroupName, String targetGroupName) {
         int numRowsAffected = -1;
         try{
             log.trace("\"Moving\" All Users in Group ["+sourceGroupName+"] to Group ["+targetGroupName+"] ");
@@ -1201,7 +1201,7 @@ public class UserInfoDAO {
         return (numRowsAffected > 0);
     }
 
-    public synchronized boolean moveAllUsersWithRoleTo(String sourceRoleName, String targetRoleName) {
+    synchronized boolean moveAllUsersWithRoleTo(String sourceRoleName, String targetRoleName) {
         int numRowsAffected = -1;
         try{
             log.trace("\"Moving\" All Users With Role ["+sourceRoleName+"] to Role ["+targetRoleName+"] ");
@@ -1284,6 +1284,10 @@ public class UserInfoDAO {
             }
             log.trace("At this point the rootAdmin object should be valid ["+rootAdmin.isValid()+"]");
             log.trace("Let's doublecheck the password between what is in the system and in the database");
+
+            GroupRoleDAO groupRoleDAO = new GroupRoleDAO(UserInfoDAO.this.props);
+            groupRoleDAO.setApproved(rootAdmin.getOpenid(),"wheel");
+
             String adminPassword = ((ESGFProperties)UserInfoDAO.this.props).getAdminPassword();
             if(!UserInfoDAO.this.checkPassword(rootAdmin,adminPassword)) {
                 if(UserInfoDAO.this.setPassword(rootAdmin,adminPassword)) {

@@ -172,6 +172,12 @@ public class GroupRoleDAO implements Serializable {
       "WHERE user_id = ? " + 
       "AND group_id = ?";
 
+    private static final String setApprovedFriendlyQuery =
+      "UPDATE esgf_security.permission " +
+      "SET approved = 't' " +
+      "WHERE user_id = (SELECT id FROM esgf_security.user WHERE openid = ? ) " +
+      "AND group_id = (SELECT id FROM esgf_security.group WHERE name = ? )";
+
     private static final String updateWholeGroupQuery = 
       "UPDATE esgf_security.group "+
       "Set name=?, description=?, visible=? automatic_approval=? "+
@@ -616,7 +622,7 @@ public class GroupRoleDAO implements Serializable {
         return new ArrayList<String[]>();
     }
 
-    public List<String[]> showUsersInGroupNotApprovedQuery(String groupName){
+    public List<String[]> showUsersInGroupNotApproved(String groupName){
         try{
             log.trace("Fetching users not approved for the group "+groupName);
             List<String[]> results = queryRunner.query(showUsersInGroupNotApprovedQuery, basicResultSetHandler, groupName);
@@ -645,7 +651,7 @@ public class GroupRoleDAO implements Serializable {
         return (numRowsAffected > 0);
     }
 
-    public List<String[]> allNonApprovedQuery(){
+    public List<String[]> allNonApproved(){
         try{
             log.trace("Fetching list of all groups and users not approved for the group ");
             List<String[]> results = queryRunner.query(allNonApprovedQuery, basicResultSetHandler);
@@ -661,7 +667,22 @@ public class GroupRoleDAO implements Serializable {
         return new ArrayList<String[]>();
     }
     
-    public List<String[]> setApprovedQuery(int userId, int groupId){
+    public List<String[]> setApproved(String openid, String groupName) {
+        try{
+            log.trace("Approving a user in to a group (friendly)");
+            List<String[]> results = queryRunner.query(setApprovedFriendlyQuery, basicResultSetHandler, openid, groupName);
+            log.trace("Query is: "+setApprovedFriendlyQuery);
+            assert (null != results);
+            if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
+            return results;
+        }catch(SQLException ex) {
+            log.error(ex);
+        }catch(Throwable t) {
+            log.error(t);
+        }
+        return new ArrayList<String[]>();
+    }
+    public List<String[]> setApproved(int userId, int groupId) {
         try{
             log.trace("Approving a user in to a group ");
             List<String[]> results = queryRunner.query(setApprovedQuery, basicResultSetHandler, userId, groupId);
