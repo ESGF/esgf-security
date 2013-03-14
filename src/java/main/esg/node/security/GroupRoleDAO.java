@@ -172,6 +172,11 @@ public class GroupRoleDAO implements Serializable {
       "WHERE user_id = ? " + 
       "AND group_id = ?";
 
+    private static final String setRejectQuery =
+      "DELETE FROM esgf_security.permission " + 
+      "WHERE user_id = ? " + 
+      "AND group_id = ?";
+    
     private static final String setApprovedFriendlyQuery =
       "UPDATE esgf_security.permission " +
       "SET approved = 't' " +
@@ -180,7 +185,7 @@ public class GroupRoleDAO implements Serializable {
 
     private static final String updateWholeGroupQuery = 
       "UPDATE esgf_security.group "+
-      "Set name=?, description=?, visible=? automatic_approval=? "+
+      "Set name=?, description=?, visible=?, automatic_approval=? "+
       "WHERE id=?";
 
     //-------------------
@@ -343,6 +348,7 @@ public class GroupRoleDAO implements Serializable {
             numRowsAffected = queryRunner.update(addGroupQuery,groupName,groupDesc,groupVisible,groupAutoApprove);
         }catch(SQLException ex) {
             log.error(ex);
+            System.out.println(ex);
         }
         return (numRowsAffected > 0);
     }
@@ -638,9 +644,7 @@ public class GroupRoleDAO implements Serializable {
         return new ArrayList<String[]>();
     }
 
-    //TODO make these three querys work...
     public synchronized boolean updateWholeGroup(int id, String groupName, String groupDesc, boolean vis, boolean autoApprove) {
-        int groupid = -1;
         int numRowsAffected = -1;
 
         try{
@@ -667,35 +671,35 @@ public class GroupRoleDAO implements Serializable {
         return new ArrayList<String[]>();
     }
     
-    public List<String[]> setApproved(String openid, String groupName) {
+    public synchronized boolean setApproved(String openid, String groupName) {
+        int numRowsAffected = -1;
+
         try{
-            log.trace("Approving a user in to a group (friendly)");
-            List<String[]> results = queryRunner.query(setApprovedFriendlyQuery, basicResultSetHandler, openid, groupName);
-            log.trace("Query is: "+setApprovedFriendlyQuery);
-            assert (null != results);
-            if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
-            return results;
+            numRowsAffected = queryRunner.update(setApprovedFriendlyQuery, openid, groupName);
         }catch(SQLException ex) {
             log.error(ex);
-        }catch(Throwable t) {
-            log.error(t);
         }
-        return new ArrayList<String[]>();
+        return (numRowsAffected > 0);
     }
-    public List<String[]> setApproved(int userId, int groupId) {
+    public synchronized boolean setApproved(int userId, int groupId) {
+        int numRowsAffected = -1;
+        
         try{
-            log.trace("Approving a user in to a group ");
-            List<String[]> results = queryRunner.query(setApprovedQuery, basicResultSetHandler, userId, groupId);
-            log.trace("Query is: "+setApprovedQuery);
-            assert (null != results);
-            if(results != null) { log.trace("Retrieved "+(results.size()-1)+" records"); }
-            return results;
+            numRowsAffected = queryRunner.update(setApprovedQuery, userId, groupId);
         }catch(SQLException ex) {
             log.error(ex);
-        }catch(Throwable t) {
-            log.error(t);
         }
-        return new ArrayList<String[]>();
+        return (numRowsAffected > 0);
+    }
+    public synchronized boolean setReject(int userId, int groupId) {
+        int numRowsAffected = -1;
+
+        try{
+            numRowsAffected = queryRunner.update(setRejectQuery, userId, groupId);
+        }catch(SQLException ex) {
+            log.error(ex);
+        }
+        return (numRowsAffected > 0);
     }
     //------------------------------------
     

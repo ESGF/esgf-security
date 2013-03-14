@@ -40,8 +40,14 @@
 package esg.node.security;
 
 import java.io.Serializable;
-import java.util.List;
+
 import java.util.Properties;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -111,12 +117,36 @@ public class GroupRoleCredentialedDAO implements Serializable {
     //complicated later and only have to do that in one place,
     //here. :-) -gavin
     public final boolean checkCredentials() {
-        System.out.println("checkCredientials() -> Matthew, please implement me! :-) ");
-        return true; 
+        System.out.println("checkCredientials() -> Matthew, implemented me! :) ");
+        //Are you rootAdmin???
+        if(userInfo.getUserName().toString().equals("rootAdmin")){
+          return true;
+        }
+        return false;
     }
-    public final boolean checkGroupRolePrivs() {
+
+    public final boolean checkGroupRolePrivs(String groupName) {
         System.out.println("checkGrouprRolePrivs() -> Matthew, please implement me! :-) ");
-        return true; 
+        // Are you a admin of said group?
+        System.out.println(userInfo.getUserName());
+        if(userInfo.getUserName().toString().equals("rootAdmin")){
+          return true;
+        }
+        else{
+          String name = groupName;
+          Map<String, Set<String>> permissions = userInfo.getPermissions();
+          for(Object group : permissions.keySet()){
+            if(group.toString() == name){
+              Iterator<String> myit = permissions.get(group).iterator();
+              while(myit.hasNext()){
+                if(myit.next() == "super" || myit.next() == "admin"){
+                  return true;
+                }
+              }
+            }
+          }
+        }
+        return false; 
     }
     //-----------------------------------------------------------------
     
@@ -136,7 +166,7 @@ public class GroupRoleCredentialedDAO implements Serializable {
     }
     
     public synchronized boolean addGroup(String groupName, String groupDesc, boolean groupVisible, boolean groupAutoApprove) {
-        if(!checkGroupRolePrivs()) {
+        if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return groupRoleDAO.addGroup(groupName, groupDesc, groupVisible, groupAutoApprove);
@@ -147,21 +177,21 @@ public class GroupRoleCredentialedDAO implements Serializable {
     }
     
     public boolean isRoleValid(String roleName) {
-        if(!checkGroupRolePrivs()) {
+        if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return groupRoleDAO.isRoleValid(roleName);
     }
     
     public synchronized boolean setAutoApprove(String groupName, boolean autoApprove) {
-        if(!checkGroupRolePrivs()) {
+        if(!checkGroupRolePrivs(groupName)) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return groupRoleDAO.setAutoApprove(groupName,autoApprove);
     }
 
     public synchronized boolean renameGroup(String origName, String newName) {
-        if(!checkGroupRolePrivs()) {
+        if(!checkGroupRolePrivs(origName)) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return groupRoleDAO.renameGroup(origName,newName);
@@ -169,9 +199,10 @@ public class GroupRoleCredentialedDAO implements Serializable {
     
     //TODO: What to really do here to make this happen
     public synchronized boolean deleteGroup(String groupName) {
-        if(!checkGroupRolePrivs()) {
+        if(!checkGroupRolePrivs(groupName)) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
+        // logic to first remove all users should go here!
         return groupRoleDAO.deleteGroup(groupName);
     }
     
@@ -180,14 +211,14 @@ public class GroupRoleCredentialedDAO implements Serializable {
     }
 
     public synchronized boolean addRole(String roleName, String roleDesc) {
-        if(!checkGroupRolePrivs()) {
+        if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return groupRoleDAO.addRole(roleName,roleDesc);
     }
 
     public synchronized boolean renameRole(String origName, String newName) {
-        if(!checkGroupRolePrivs()) {
+        if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return groupRoleDAO.renameRole(origName,newName);
@@ -195,7 +226,7 @@ public class GroupRoleCredentialedDAO implements Serializable {
     
     //TODO: What to really do here to make this happen
     public synchronized boolean deleteRole(String roleName) {
-        if(!checkGroupRolePrivs()) {
+        if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return groupRoleDAO.deleteRole(roleName);
@@ -206,99 +237,106 @@ public class GroupRoleCredentialedDAO implements Serializable {
     //-------------------------------------------------------
 
     public List<String[]> getGroupEntry(String groupname) {
-        if(!checkGroupRolePrivs()) {
+        if(!checkGroupRolePrivs(groupname)) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return groupRoleDAO.getGroupEntry(groupname);
     }
     
     public boolean isAutomaticApproval(String groupname) {
-        if(!checkGroupRolePrivs()) {
+        if(!checkGroupRolePrivs(groupname)) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return groupRoleDAO.isAutomaticApproval(groupname);
     }
     
     public List<String[]> getGroupEntries() {
-        if(!checkGroupRolePrivs()) {
+        if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return groupRoleDAO.getGroupEntries();
     }
     
     public List<String[]> getGroupEntriesFor(String openid) {
-        if(!checkGroupRolePrivs()) {
+        if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return groupRoleDAO.getGroupEntriesFor(openid);
     }
 
     public List<String[]> getGroupEntriesNotFor(String openid) {
-        if(!checkGroupRolePrivs()) {
+        if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return groupRoleDAO.getGroupEntriesNotFor(openid);
     }
 
     public List<String[]> getUsersInGroup(String groupname) {
-        if(!checkGroupRolePrivs()) {
+        if(!checkGroupRolePrivs(groupname)) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return groupRoleDAO.getUsersInGroup(groupname);
     }
 
     public List<String[]> getRoleEntry(String rolename) {
-        if(!checkGroupRolePrivs()) {
+        if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return groupRoleDAO.getRoleEntry(rolename);
     }
 
     public List<String[]> getRoleEntries() {
-        if(!checkGroupRolePrivs()) {
+        if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return groupRoleDAO.getRoleEntries();
     }
 
     public List<String[]> getUsersInRole(String rolename) {
-        if(!checkGroupRolePrivs()) {
+        if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return groupRoleDAO.getUsersInRole(rolename);
     }
 
     public List<String[]> showUsersInGroupNotApproved(String groupName){
-        if(!checkGroupRolePrivs()) {
+        if(!checkGroupRolePrivs(groupName)) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return groupRoleDAO.showUsersInGroupNotApproved(groupName);
     }
 
     public synchronized boolean updateWholeGroup(int id, String groupName, String groupDesc, boolean vis, boolean autoApprove) {
-        if(!checkGroupRolePrivs()) {
+        if(!checkGroupRolePrivs(groupName)) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return groupRoleDAO.updateWholeGroup(id,groupName,groupDesc,vis,autoApprove);
     }
 
     public List<String[]> allNonApproved() {
-        if(!checkGroupRolePrivs()) {
+        if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return groupRoleDAO.allNonApproved();
     }
     
-    public List<String[]> setApproved(int userId, int groupId) {
-        if(!checkGroupRolePrivs()) {
+    public synchronized boolean setApproved(int userId, int groupId) {
+        if(!checkCredentials()) {
+            throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
+        }
+        return groupRoleDAO.setApproved(userId,groupId);
+    }
+
+    public synchronized boolean setReject(int userId, int groupId) {
+        if(!checkCredentials()) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return groupRoleDAO.setApproved(userId,groupId);
     }
 
     //More Friendly Signature
-    public List<String[]> setApproved(String openid, String groupName) {
-        if(!checkGroupRolePrivs()) {
+    public synchronized boolean setApproved(String openid, String groupName) {
+        if(!checkGroupRolePrivs(groupName)) {
             throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
         }
         return groupRoleDAO.setApproved(openid,groupName);
