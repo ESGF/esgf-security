@@ -517,8 +517,6 @@ public class UserInfoDAO {
                 if(openidPort == null || openidPort.equals(":443")) {
                     log.trace("scrubbing out default openidPort ["+openidPort+"]");
                     openidPort="";
-                }else{
-                    openidPort=":"+openidPort;
                 }
                 
                 //reconstruct the url scrubbing out port if necessary...
