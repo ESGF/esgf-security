@@ -54,10 +54,18 @@ public class ReloadableFileSet {
             if (LOG.isInfoEnabled()) LOG.info("Using file:"+filePath);
             // absolute path
             if (filePath.startsWith("/")) {
-                files.add( new File(filePath) );
+                File file = new File(filePath); 
+                if (!file.exists()) {
+                    throw new Exception("File "+file.getAbsolutePath()+" not found");
+                }
+                files.add( file );
             // classpath relative path
             } else {
-                files.add( new ClassPathResource(filePath).getFile() );
+                File file = new ClassPathResource(filePath).getFile();
+                if (!file.exists()) {
+                    throw new Exception("File "+file.getAbsolutePath()+" not found");
+                }
+                files.add( file );
             }
         }
     
