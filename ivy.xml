@@ -77,7 +77,7 @@ Note: Check Maven for propery dependency parameter values @
     <dependency org="org.esgf" name="esgf-node-manager" rev="latest.milestone"/>
 
     <dependency org="commons-logging" name="commons-logging" rev="1.1.1" conf="default->default" />
-    <dependency org="log4j" name="log4j" rev="1.2.14" conf="default->default" >
+    <dependency org="log4j" name="log4j" rev="1.2.16" conf="default->default" >
       <exclude org="com.sun.jdmk"/>
       <exclude org="com.sun.jmx"/>
       <exclude org="javax.jms"/>
