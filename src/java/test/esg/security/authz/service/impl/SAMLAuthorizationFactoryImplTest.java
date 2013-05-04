@@ -76,7 +76,7 @@ public class SAMLAuthorizationFactoryImplTest {
 		actions.add(PolicyAction.Write.toString());
 		Map<URL, Set<String>> attServices = factory.getAttributeServices(resource, factory.getPolicies(resource, actions));
 		
-		URL url = new URL("https://pcmdi9.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm");
+		URL url = new URL("https://pcmdi9.llnl.gov/esgf-idp/saml/soap/secure/attributeService.htm");
 		Assert.assertTrue(attServices.containsKey(url));
 		final Set<String> attTypes = attServices.get(url);
 		Assert.assertEquals(2,attTypes.size());
@@ -92,7 +92,7 @@ public class SAMLAuthorizationFactoryImplTest {
 		Vector<String> actions = new Vector<String>();
 		actions.add(PolicyAction.Read.toString());
 		Map<URL, Set<String>> attServices = factory.getAttributeServices(resource, factory.getPolicies(resource, actions));
-		URL url = new URL("https://esg-datanode.jpl.nasa.gov/esgf-security/saml/soap/secure/attributeService.htm");
+		URL url = new URL("https://esg-datanode.jpl.nasa.gov/esgf-idp/saml/soap/secure/attributeService.htm");
 		Assert.assertTrue(attServices.containsKey(url));
 		final Set<String> attTypes = attServices.get(url);
 		Assert.assertEquals(1,attTypes.size());

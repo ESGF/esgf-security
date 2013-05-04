@@ -51,16 +51,16 @@ public class RegistryServiceLocalXmlImplTest {
 	    Assert.assertTrue(service.getAttributes().containsKey("wheel"));
 	    
 	    // double endpoints
-		Assert.assertTrue(service.getAttributeServices("CMIP5 Research").contains( new URL("https://pcmdi9.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm")));
-        Assert.assertTrue(service.getAttributeServices("CMIP5 Research").contains( new URL("https://pcmdi3.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm")));
-        Assert.assertTrue(service.getRegistrationServices("CMIP5 Research").contains( new URL("https://pcmdi9.llnl.gov/esgf-security/secure/registrationService.htm")));
-        Assert.assertTrue(service.getRegistrationServices("CMIP5 Research").contains( new URL("https://pcmdi3.llnl.gov/esgf-security/secure/registrationService.htm")));
+		Assert.assertTrue(service.getAttributeServices("CMIP5 Research").contains( new URL("https://pcmdi9.llnl.gov/esgf-idp/saml/soap/secure/attributeService.htm")));
+        Assert.assertTrue(service.getAttributeServices("CMIP5 Research").contains( new URL("https://pcmdi3.llnl.gov/esgf-idp/saml/soap/secure/attributeService.htm")));
+        Assert.assertTrue(service.getRegistrationServices("CMIP5 Research").contains( new URL("https://pcmdi9.llnl.gov/esgf-idp/secure/registrationService.htm")));
+        Assert.assertTrue(service.getRegistrationServices("CMIP5 Research").contains( new URL("https://pcmdi3.llnl.gov/esgf-idp/secure/registrationService.htm")));
         
-        Assert.assertTrue(service.getAttributeServices("NASA OBS").contains( new URL("https://esg-datanode.jpl.nasa.gov/esgf-security/saml/soap/secure/attributeService.htm")));
-        Assert.assertTrue(service.getRegistrationServices("NASA OBS").contains( new URL("https://esg-datanode.jpl.nasa.gov/esgf-security/secure/registrationService.htm")));
+        Assert.assertTrue(service.getAttributeServices("NASA OBS").contains( new URL("https://esg-datanode.jpl.nasa.gov/esgf-idp/saml/soap/secure/attributeService.htm")));
+        Assert.assertTrue(service.getRegistrationServices("NASA OBS").contains( new URL("https://esg-datanode.jpl.nasa.gov/esgf-idp/secure/registrationService.htm")));
 
         // no registration service
-        Assert.assertTrue(service.getAttributeServices("wheel").contains( new URL("https://localhost/esgf-security/saml/soap/secure/attributeService.htm")));
+        Assert.assertTrue(service.getAttributeServices("wheel").contains( new URL("https://localhost/esgf-idp/saml/soap/secure/attributeService.htm")));
 
 	}
 	
@@ -103,7 +103,7 @@ public class RegistryServiceLocalXmlImplTest {
         
         final RegistryService service = new RegistryServiceLocalXmlImpl(ESGF_AZS);
         
-        Assert.assertTrue(service.getAuthorizationServices().contains( new URL("https://esgf-node1.llnl.gov/esgf-security/saml/soap/secure/authorizationService.htm")) );
+        Assert.assertTrue(service.getAuthorizationServices().contains( new URL("https://esgf-node1.llnl.gov/esgf-idp/saml/soap/secure/authorizationService.htm")) );
         
     }
     
