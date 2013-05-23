@@ -43,6 +43,7 @@ public class ReloadableFileSet {
      * Constructor accepts a list of comma-separated files.
      * Each file can be specified as an absolute file path (starting with '/') 
      * or as a relative classpath (not starting with '/').
+     * Missing files are ignored, but a warning message is logged.
      * 
      * @param xmlFilePath
      * @throws Exception
@@ -56,6 +57,7 @@ public class ReloadableFileSet {
             if (filePath.startsWith("/")) {
                 File file = new File(filePath); 
                 if (!file.exists()) {
+                    LOG.warn("File "+file.getAbsolutePath()+" not found");
                     throw new Exception("File "+file.getAbsolutePath()+" not found");
                 }
                 files.add( file );
@@ -63,6 +65,7 @@ public class ReloadableFileSet {
             } else {
                 File file = new ClassPathResource(filePath).getFile();
                 if (!file.exists()) {
+                    LOG.warn("File "+file.getAbsolutePath()+" not found");
                     throw new Exception("File "+file.getAbsolutePath()+" not found");
                 }
                 files.add( file );
