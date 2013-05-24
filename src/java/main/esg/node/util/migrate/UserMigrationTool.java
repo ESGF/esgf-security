@@ -49,32 +49,28 @@
 ***************************************************************************/
 package esg.node.util.migrate;
 
-import java.io.*;
-import java.util.*;
-
-import java.util.Properties;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import javax.sql.DataSource;
-
+import java.util.Properties;
 import java.util.regex.Matcher;
 
-import org.apache.commons.pool.ObjectPool;
-import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.commons.dbcp.ConnectionFactory;
-import org.apache.commons.dbcp.PoolingDataSource;
-import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.DriverManagerConnectionFactory;
-
+import org.apache.commons.dbcp.PoolableConnectionFactory;
+import org.apache.commons.dbcp.PoolingDataSource;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
-
-import esg.node.security.*;
-import esg.common.util.ESGFProperties;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.impl.*;
+import org.apache.commons.pool.impl.GenericObjectPool;
+
+import esg.common.util.ESGFProperties;
+import esg.node.security.ESGFDataAccessException;
+import esg.node.security.GroupRoleDAO;
+import esg.node.security.UserInfo;
+import esg.node.security.UserInfoCredentialedDAO;
+import esg.node.security.UserInfoDAO;
 
 /**
    Description:
