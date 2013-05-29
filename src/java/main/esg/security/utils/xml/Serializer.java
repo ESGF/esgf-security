@@ -53,7 +53,7 @@ public class Serializer {
         final File file = new File(outputFile);
         final Result result = new StreamResult(file);
         
-        final Transformer xformer = TransformerFactory.newInstance().newTransformer();
+        final Transformer xformer = (new org.apache.xalan.processor.TransformerFactoryImpl()).newTransformer();
         xformer.transform(source, result);
         
    }
@@ -66,7 +66,7 @@ public class Serializer {
 	   final StringWriter writer = new StringWriter();
 	   final Result result = new StreamResult(writer);
 	   
-	   final Transformer xformer = TransformerFactory.newInstance().newTransformer();
+	   final Transformer xformer = (new org.apache.xalan.processor.TransformerFactoryImpl()).newTransformer();
 	   xformer.transform(source, result);
 	   writer.close();
 	   
@@ -87,7 +87,7 @@ public class Serializer {
 	   final StringWriter writer = new StringWriter();
 	   final Result result = new StreamResult(System.out);
 	   
-	   final Transformer xformer = TransformerFactory.newInstance().newTransformer();
+	   final Transformer xformer = (new org.apache.xalan.processor.TransformerFactoryImpl()).newTransformer();
 	   xformer.transform(source, result);
 	   writer.close();
 
@@ -199,7 +199,7 @@ public class Serializer {
   /** Method to serialize a javax.xml.transform.Source object to a String */
   public static String SourceToString(javax.xml.transform.Source source) throws javax.xml.transform.TransformerException {
 
-   javax.xml.transform.TransformerFactory tFactory = javax.xml.transform.TransformerFactory.newInstance();
+   javax.xml.transform.TransformerFactory tFactory = new org.apache.xalan.processor.TransformerFactoryImpl();
    javax.xml.transform.Transformer transformer = tFactory.newTransformer(); // copies source --> result
    // execute transformation
    java.io.CharArrayWriter caw = new java.io.CharArrayWriter();
