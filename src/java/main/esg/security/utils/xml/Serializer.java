@@ -32,6 +32,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.jdom.JDOMException;
+import org.opensaml.xml.io.MarshallingException;
+import org.w3c.dom.Node;
 
 /** 
  * Utility class for writing XML to output. It contains only static methods.
@@ -72,6 +74,20 @@ public class Serializer {
 	   
        return writer.toString();
 	   
+   }
+   
+   public static String DOMtoString(Node node) throws MarshallingException {
+       try {
+           StringWriter writer = new StringWriter();
+           Transformer transformer = (new org.apache.xalan.processor.TransformerFactoryImpl()).newTransformer();
+           transformer.transform(new DOMSource(node), new StreamResult(writer));
+           String xml = writer.toString();
+           return xml;
+       } catch(TransformerConfigurationException e1) {
+           throw new MarshallingException(e1);
+       } catch(TransformerException e2) {
+           throw new MarshallingException(e2);
+       }
    }
 
    /** 

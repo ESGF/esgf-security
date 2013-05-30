@@ -30,7 +30,6 @@ import org.opensaml.ws.soap.soap11.Envelope;
 import org.opensaml.xml.io.MarshallingException;
 import org.opensaml.xml.io.UnmarshallingException;
 import org.opensaml.xml.parse.XMLParserException;
-import org.opensaml.xml.util.XMLHelper;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -39,6 +38,7 @@ import esg.security.authz.service.api.SAMLAuthorizationServiceClient;
 import esg.security.authz.service.api.SAMLAuthorizationStatementHandler;
 import esg.security.authz.service.api.SAMLAuthorizations;
 import esg.security.common.SAMLBuilder;
+import esg.security.utils.xml.Serializer;
 
 /**
  * Implementation of {@link SAMLAuthorizationServiceClient} specific to SOAP binding.
@@ -82,7 +82,7 @@ public class SAMLAuthorizationServiceClientSoapImpl implements SAMLAuthorization
 		
 		// serialize
 		final Element soapRequestElement = samlBuilder.marshall(soapRequestEnvelope);
-		final String xml = XMLHelper.prettyPrintXML((Node)soapRequestElement);
+		final String xml = Serializer.DOMtoString((Node)soapRequestElement);
 		if (LOG.isTraceEnabled()) LOG.trace("SOAP request:\n"+xml);
 		
 		return xml;

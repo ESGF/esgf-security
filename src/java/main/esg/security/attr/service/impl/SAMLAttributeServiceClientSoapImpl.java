@@ -36,7 +36,6 @@ import org.opensaml.ws.soap.soap11.Envelope;
 import org.opensaml.xml.io.MarshallingException;
 import org.opensaml.xml.io.UnmarshallingException;
 import org.opensaml.xml.parse.XMLParserException;
-import org.opensaml.xml.util.XMLHelper;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -45,6 +44,7 @@ import esg.security.attr.service.api.SAMLAttributeStatementHandler;
 import esg.security.attr.service.api.SAMLAttributes;
 import esg.security.attr.service.api.exceptions.SAMLAttributeServiceClientResponseException;
 import esg.security.common.SAMLBuilder;
+import esg.security.utils.xml.Serializer;
 
 /**
  * Implementation of {@link SAMLAttributeServiceClient} specific to SOAP binding.
@@ -126,7 +126,7 @@ public class SAMLAttributeServiceClientSoapImpl implements SAMLAttributeServiceC
 		
 		// serialize
 		final Element soapRequestElement = samlBuilder.marshall(soapRequestEnvelope);
-		final String xml = XMLHelper.prettyPrintXML((Node)soapRequestElement);
+		final String xml = Serializer.DOMtoString((Node)soapRequestElement);
 		if (LOG.isDebugEnabled()) LOG.debug("SOAP request:\n"+xml);
 		
 		return xml;

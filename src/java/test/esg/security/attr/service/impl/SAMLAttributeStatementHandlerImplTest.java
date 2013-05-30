@@ -30,7 +30,6 @@ import org.junit.Test;
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.Attribute;
 import org.opensaml.xml.ConfigurationException;
-import org.opensaml.xml.util.XMLHelper;
 import org.springframework.core.io.ClassPathResource;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -40,6 +39,7 @@ import esg.security.common.SAMLBuilder;
 import esg.security.common.SAMLParameters;
 import esg.security.common.SAMLTestParameters;
 import esg.security.common.SAMLUnknownPrincipalException;
+import esg.security.utils.xml.Serializer;
 import esg.security.utils.xml.XmlChecker;
 
 
@@ -96,7 +96,7 @@ public class SAMLAttributeStatementHandlerImplTest {
 	
 			// compare to expected test XML
 			final Element assertionElement = builder.marshall(assertion);
-			final String xml = XMLHelper.prettyPrintXML((Node)assertionElement);
+			final String xml = Serializer.DOMtoString((Node)assertionElement);
 	        if (LOG.isDebugEnabled()) LOG.debug(xml);
 	        XmlChecker.compare(xml, SAMLTestParameters.ATTRIBUTES_FILE);
 		} 
@@ -122,7 +122,7 @@ public class SAMLAttributeStatementHandlerImplTest {
 	
 			// compare to expected test XML
 			final Element assertionElement = builder.marshall(assertion);
-			final String xml = XMLHelper.prettyPrintXML((Node)assertionElement);
+			final String xml = Serializer.DOMtoString((Node)assertionElement);
 	        if (LOG.isDebugEnabled()) LOG.debug(xml);
 	        XmlChecker.compare(xml, SAMLTestParameters.ATTRIBUTES_FILE_PARTIAL);
 		} 
@@ -146,7 +146,7 @@ public class SAMLAttributeStatementHandlerImplTest {
     
             // compare to expected test XML
             final Element assertionElement = builder.marshall(assertion);
-            final String xml = XMLHelper.prettyPrintXML((Node)assertionElement);
+            final String xml = Serializer.DOMtoString((Node)assertionElement);
             if (LOG.isDebugEnabled()) LOG.debug(xml);
             XmlChecker.compare(xml, SAMLTestParameters.ATTRIBUTES_FILE_FULL);
         } 

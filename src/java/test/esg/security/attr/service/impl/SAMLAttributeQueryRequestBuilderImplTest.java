@@ -28,7 +28,6 @@ import org.junit.Test;
 import org.opensaml.saml2.core.Attribute;
 import org.opensaml.saml2.core.AttributeQuery;
 import org.opensaml.xml.ConfigurationException;
-import org.opensaml.xml.util.XMLHelper;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -36,6 +35,7 @@ import esg.security.authz.service.impl.SAMLAuthorizationFactoryTrivialImpl;
 import esg.security.common.SAMLBuilder;
 import esg.security.common.SAMLParameters;
 import esg.security.common.SAMLTestParameters;
+import esg.security.utils.xml.Serializer;
 import esg.security.utils.xml.XmlChecker;
 
 /**
@@ -75,7 +75,7 @@ public class SAMLAttributeQueryRequestBuilderImplTest {
 			final AttributeQuery attributeQuery 
 				= samlAttributeQueryRequestBuilder.buildAttributeQueryRequest(SAMLTestParameters.IDENTIFIER, SAMLTestParameters.ISSUER, new ArrayList<Attribute>());
 			final Element attributeQueryRequestElement = builder.marshall(attributeQuery);
-			final String xml = XMLHelper.prettyPrintXML((Node)attributeQueryRequestElement);
+			final String xml = Serializer.DOMtoString((Node)attributeQueryRequestElement);
 			if (LOG.isDebugEnabled()) LOG.debug(xml);
 	        XmlChecker.compare(xml, SAMLTestParameters.ATTRIBUTE_REQUEST_EMPTY);
 		}
@@ -101,7 +101,7 @@ public class SAMLAttributeQueryRequestBuilderImplTest {
 			final AttributeQuery attributeQuery 
 				= samlAttributeQueryRequestBuilder.buildAttributeQueryRequest(SAMLTestParameters.IDENTIFIER, SAMLTestParameters.ISSUER, attributes);
 			final Element attributeQueryRequestElement = builder.marshall(attributeQuery);
-			final String xml = XMLHelper.prettyPrintXML((Node)attributeQueryRequestElement);
+			final String xml = Serializer.DOMtoString((Node)attributeQueryRequestElement);
 			if (LOG.isDebugEnabled()) LOG.debug(xml);
 	        XmlChecker.compare(xml, SAMLTestParameters.ATTRIBUTE_REQUEST_WITH_ATTRIBUTES);
 	        

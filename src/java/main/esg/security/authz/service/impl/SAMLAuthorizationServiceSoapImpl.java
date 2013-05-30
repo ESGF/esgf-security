@@ -26,7 +26,6 @@ import org.opensaml.saml2.core.AuthzDecisionQuery;
 import org.opensaml.saml2.core.Response;
 import org.opensaml.ws.soap.soap11.Body;
 import org.opensaml.ws.soap.soap11.Envelope;
-import org.opensaml.xml.util.XMLHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.w3c.dom.Element;
@@ -36,6 +35,7 @@ import esg.security.authz.service.api.SAMLAuthorizationFactory;
 import esg.security.authz.service.api.SAMLAuthorizationQueryResponseBuilder;
 import esg.security.authz.service.api.SAMLAuthorizationService;
 import esg.security.common.SAMLBuilder;
+import esg.security.utils.xml.Serializer;
 
 /**
  * Implementation of {@link SAMLAuthorizationService} for SOAP binding.
@@ -80,7 +80,7 @@ public class SAMLAuthorizationServiceSoapImpl implements SAMLAuthorizationServic
 				
 		// read SAML authorization request from input stream	
         final Element soapRequestElement = samlBuilder.parse(inputStream);
-        if (LOG.isDebugEnabled()) LOG.debug("SOAP request:\n"+XMLHelper.prettyPrintXML((Node)soapRequestElement) );
+        if (LOG.isDebugEnabled()) LOG.debug("SOAP request:\n"+Serializer.DOMtoString((Node)soapRequestElement));
         final Envelope soapRequestEnvelope = (Envelope)samlBuilder.unmarshall(soapRequestElement);
         final Body soapRequestBody = soapRequestEnvelope.getBody();
         
@@ -98,7 +98,7 @@ public class SAMLAuthorizationServiceSoapImpl implements SAMLAuthorizationServic
 
         soapResponseEnvelope.setBody(soapResponseBody);
         final Element soapResponseElement = samlBuilder.marshall(soapResponseEnvelope);
-        final String xml = XMLHelper.prettyPrintXML((Node)soapResponseElement);
+        final String xml = Serializer.DOMtoString((Node)soapResponseElement);
         if (LOG.isDebugEnabled()) LOG.debug("SOAP response:\n"+xml );
         
         return xml;

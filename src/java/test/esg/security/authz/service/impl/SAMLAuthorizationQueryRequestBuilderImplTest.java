@@ -30,6 +30,7 @@ import org.w3c.dom.Node;
 
 import esg.security.common.SAMLBuilder;
 import esg.security.common.SAMLTestParameters;
+import esg.security.utils.xml.Serializer;
 import esg.security.utils.xml.XmlChecker;
 
 /**
@@ -63,7 +64,7 @@ public class SAMLAuthorizationQueryRequestBuilderImplTest {
 			final AuthzDecisionQuery authzDecisionQuery 
 				= samlAuthorizationQueryRequestBuilder.buildAuthorizationQueryRequest(SAMLTestParameters.IDENTIFIER, SAMLTestParameters.TEST_RESOURCE_PATH, SAMLTestParameters.TEST_ACTION, SAMLTestParameters.ISSUER);
 			final Element authzDecisionQueryRequestElement = builder.marshall(authzDecisionQuery);
-			final String xml = XMLHelper.prettyPrintXML((Node)authzDecisionQueryRequestElement);
+			final String xml = Serializer.DOMtoString((Node)authzDecisionQueryRequestElement);
 			if (LOG.isDebugEnabled()) LOG.debug(xml);
 	        XmlChecker.compare(xml, SAMLTestParameters.REQUEST);
 		}		

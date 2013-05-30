@@ -28,7 +28,6 @@ import org.opensaml.saml2.core.AttributeQuery;
 import org.opensaml.saml2.core.Response;
 import org.opensaml.xml.ConfigurationException;
 import org.opensaml.xml.parse.BasicParserPool;
-import org.opensaml.xml.util.XMLHelper;
 import org.springframework.core.io.ClassPathResource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -36,6 +35,7 @@ import org.w3c.dom.Node;
 
 import esg.security.common.SAMLBuilder;
 import esg.security.common.SAMLTestParameters;
+import esg.security.utils.xml.Serializer;
 import esg.security.utils.xml.XmlChecker;
 
 /**
@@ -75,7 +75,7 @@ public class SAMLAttributeQueryResponseBuilderImplTest {
 	        
 	        final Response response = samlAttribuuteQueryResponseBuilder.buildAttributeQueryResponse(attributeQueryRequest);
 	        final Element attributeQueryResponseElement = builder.marshall(response);
-	        final String xml = XMLHelper.prettyPrintXML((Node)attributeQueryResponseElement);
+	        final String xml = Serializer.DOMtoString((Node)attributeQueryResponseElement);
 	        if (LOG.isDebugEnabled()) LOG.debug(xml);
 	        XmlChecker.compare(xml,  SAMLTestParameters.ATTRIBUTE_RESPONSE_SUCCESS);
 		}
@@ -96,7 +96,7 @@ public class SAMLAttributeQueryResponseBuilderImplTest {
 	        
 	        final Response response = samlAttribuuteQueryResponseBuilder.buildAttributeQueryResponse(attributeQueryRequest);
 	        final Element attributeQueryResponseElement = builder.marshall(response);
-	        final String xml = XMLHelper.prettyPrintXML((Node)attributeQueryResponseElement);
+	        final String xml = Serializer.DOMtoString((Node)attributeQueryResponseElement);
 	        if (LOG.isDebugEnabled()) LOG.debug(xml);
 	        XmlChecker.compare(xml,  SAMLTestParameters.ATTRIBUTE_RESPONSE_WITH_ATTRIBUTES_SUCCESS);
 		}
@@ -117,7 +117,7 @@ public class SAMLAttributeQueryResponseBuilderImplTest {
 	        
 	        final Response response = samlAttribuuteQueryResponseBuilder.buildAttributeQueryResponse(attributeQueryRequest);
 	        final Element attributeQueryResponseElement = builder.marshall(response);
-	        final String xml = XMLHelper.prettyPrintXML((Node)attributeQueryResponseElement);
+	        final String xml = Serializer.DOMtoString((Node)attributeQueryResponseElement);
 	        if (LOG.isDebugEnabled()) LOG.debug(xml);
 	        XmlChecker.compare(xml, SAMLTestParameters.ATTRIBUTE_PARTIAL_RESPONSE);
 		}
@@ -139,7 +139,7 @@ public class SAMLAttributeQueryResponseBuilderImplTest {
 	        
 	        final Response response = samlAttribuuteQueryResponseBuilder.buildAttributeQueryResponse(attributeQueryRequest);
 	        final Element attributeQueryResponseElement = builder.marshall(response);
-	        final String xml = XMLHelper.prettyPrintXML((Node)attributeQueryResponseElement);
+	        final String xml = Serializer.DOMtoString((Node)attributeQueryResponseElement);
 	        if (LOG.isDebugEnabled()) LOG.debug(xml);
 	        XmlChecker.compare(xml,  SAMLTestParameters.ATTRIBUTE_RESPONSE_FAILURE);
 		}

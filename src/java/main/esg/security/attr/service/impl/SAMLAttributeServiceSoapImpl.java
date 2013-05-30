@@ -26,7 +26,6 @@ import org.opensaml.saml2.core.AttributeQuery;
 import org.opensaml.saml2.core.Response;
 import org.opensaml.ws.soap.soap11.Body;
 import org.opensaml.ws.soap.soap11.Envelope;
-import org.opensaml.xml.util.XMLHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.w3c.dom.Element;
@@ -36,6 +35,7 @@ import esg.security.attr.service.api.SAMLAttributeFactory;
 import esg.security.attr.service.api.SAMLAttributeQueryResponseBuilder;
 import esg.security.attr.service.api.SAMLAttributeService;
 import esg.security.common.SAMLBuilder;
+import esg.security.utils.xml.Serializer;
 
 /**
  * Implementation of {@link SAMLAttributeService} for SOAP binding.
@@ -80,7 +80,7 @@ public class SAMLAttributeServiceSoapImpl implements SAMLAttributeService {
 		
 		// read SAML attribute request from input stream	
         final Element soapRequestElement = samlBuilder.parse(inputStream);
-        if (LOG.isDebugEnabled()) LOG.debug("SOAP request:\n"+XMLHelper.prettyPrintXML((Node)soapRequestElement) );
+        if (LOG.isDebugEnabled()) LOG.debug("SOAP request:\n"+Serializer.DOMtoString((Node)soapRequestElement) );
         final Envelope soapRequestEnvelope = (Envelope)samlBuilder.unmarshall(soapRequestElement);
         final Body soapRequestBody = soapRequestEnvelope.getBody();
         final AttributeQuery samlRequest = (AttributeQuery)soapRequestBody.getUnknownXMLObjects().get(0);
@@ -94,7 +94,7 @@ public class SAMLAttributeServiceSoapImpl implements SAMLAttributeService {
         soapResponseBody.getUnknownXMLObjects().add(samlResponse);
         soapResponseEnvelope.setBody(soapResponseBody);
         final Element soapResponseElement = samlBuilder.marshall(soapResponseEnvelope);
-        final String xml = XMLHelper.prettyPrintXML((Node)soapResponseElement);
+        final String xml = Serializer.DOMtoString((Node)soapResponseElement);
         if (LOG.isDebugEnabled()) LOG.debug("SOAP response:\n"+xml );
         
         return xml;
