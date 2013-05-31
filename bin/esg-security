@@ -235,9 +235,13 @@ write_security_db_install_log() {
 #******************************************************************
 
 security_startup_hook() {
+    echo -n "Security Startup Hook: Setup policy and whitelists... "
     init
-    _setup_policy_files && echo ":-D"
-    _setup_static_whitelists "ats idp" && echo ":-D"
+    echo -n "(p) " && _setup_policy_files && echo -n ":-D "
+    [ $? != 0 ] && echo -n ":-("
+    echo -n "(w) " && _setup_static_whitelists "ats idp" && echo -n ":-D "
+    [ $? != 0 ] && echo -n ":-("
+    echo
 }
 
 _setup_policy_files() {
@@ -286,7 +290,7 @@ _setup_policy_files() {
                 chmod 640 ${esg_config_dir}/${policy_file_name}_common.xml
         fi
     else
-        debug_print "This function, setup_policy_files(), is not applicable to current node type (${sel})"
+        debug_print " WARNING: This function, setup_policy_files(), is not applicable to current node type (${sel})"
     fi
 }
 
@@ -333,7 +337,7 @@ _setup_static_whitelists() {
             fi
         done
     else
-        debug_print "This function, _setup_static_whitelists(), is not applicable to current node type (${sel})"
+        debug_print " WARNING: This function, _setup_static_whitelists(), is not applicable to current node type (${sel})"
     fi
 }
 
