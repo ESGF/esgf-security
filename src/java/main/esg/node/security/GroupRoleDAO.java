@@ -135,10 +135,10 @@ public class GroupRoleDAO implements Serializable {
     //-------------------
     
     private static final String showUsersInGroupQuery =
-        "SELECT username, firstname, lastname, openid FROM esgf_security.user WHERE id IN (SELECT p.user_id FROM esgf_security.permission as p WHERE p.group_id = (SELECT id FROM esgf_security.group WHERE name = ? )) AND p.approved = 't'";
+        "SELECT username, firstname, lastname, openid FROM esgf_security.user WHERE id IN (SELECT p.user_id FROM esgf_security.permission as p WHERE p.group_id = (SELECT id FROM esgf_security.group WHERE name = ? ) AND p.approved = 't')";
 
     private static final String showUsersInRoleQuery =
-        "SELECT username, firstname, lastname, openid FROM esgf_security.user WHERE id IN (SELECT p.user_id FROM esgf_security.permission as p WHERE p.role_id = (SELECT id FROM esgf_security.role WHERE name = ? )) AND p.approved = 't'";
+        "SELECT username, firstname, lastname, openid FROM esgf_security.user WHERE id IN (SELECT p.user_id FROM esgf_security.permission as p WHERE p.role_id = (SELECT id FROM esgf_security.role WHERE name = ? ) AND p.approved = 't')";
 
     //-------------------
 
@@ -146,7 +146,7 @@ public class GroupRoleDAO implements Serializable {
         "SELECT * from esgf_security.group WHERE id NOT in (SELECT DISTINCT group_id FROM esgf_security.permission as p WHERE user_id = (SELECT id FROM esgf_security.user WHERE openid = ? ))";
 
     private static final String showGroupsSubscribedToQuery =
-        "SELECT * FROM esgf_security.group WHERE id IN (SELECT DISTINCT group_id FROM esgf_security.permission as p WHERE user_id = (SELECT id FROM esgf_security.user WHERE openid = ? )) AND p.approved = 't'";
+        "SELECT * FROM esgf_security.group WHERE id IN (SELECT DISTINCT group_id FROM esgf_security.permission as p WHERE user_id = (SELECT id FROM esgf_security.user WHERE openid = ? ) AND p.approved = 't')";
 
      //-------------------
 
