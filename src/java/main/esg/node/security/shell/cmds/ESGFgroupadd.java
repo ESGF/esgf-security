@@ -143,7 +143,7 @@ private static Log log = LogFactory.getLog(ESGFgroupadd.class);
         
         //------------------
 
-        String description = null;
+        String description = "";
         if(line.hasOption( "d" )) {
             description = line.getOptionValue( "d" );
             env.getWriter().println("description: ["+description+"]");
@@ -167,7 +167,7 @@ private static Log log = LogFactory.getLog(ESGFgroupadd.class);
         //------------------
 
         GroupRoleDAO groupRoleDAO = new GroupRoleDAO(env.getEnv());
-        if(groupRoleDAO.addGroup(groupname)) {
+        if(groupRoleDAO.addGroup(groupname, description, visible, autoapprove)) {
             env.getWriter().println("[OK]");
         }else{
             env.getWriter().println("[FAILED]");
