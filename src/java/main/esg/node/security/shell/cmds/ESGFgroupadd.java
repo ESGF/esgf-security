@@ -117,7 +117,7 @@ private static Log log = LogFactory.getLog(ESGFgroupadd.class);
     }
 
     public ESGFEnv doEval(CommandLine line, ESGFEnv env) {
-        System.out.println("inside the \"groupadd\" command's doEval: "+line);
+        //System.out.println("inside the \"groupadd\" command's doEval: "+line);
 
         //------------------
         //Collect args...
@@ -163,12 +163,12 @@ private static Log log = LogFactory.getLog(ESGFgroupadd.class);
         //------------------
 
         GroupRoleDAO groupRoleDAO = new GroupRoleDAO(env.getEnv());
-        System.out.println("Group Name: "+groupname);
-        System.out.println("Description: "+description);
-        System.out.println("visible: "+visible);
-        System.out.println("Auto Approve: "+autoapprove);
+        log.trace("Group Name: "+groupname);
+        log.trace("Description: "+description);
+        log.trace("visible: "+visible);
+        log.trace("Auto Approve: "+autoapprove);
         if(groupRoleDAO.addGroup(groupname, description, visible, autoapprove)) {
-            System.out.println("groupRoleDAO.addGroup("+groupname+", "+description+", "+visible+", "+autoapprove+")");
+            log.trace("groupRoleDAO.addGroup("+groupname+", "+description+", "+visible+", "+autoapprove+")");
             env.getWriter().println("[OK]");
         }else{
             env.getWriter().println("[FAILED]");
