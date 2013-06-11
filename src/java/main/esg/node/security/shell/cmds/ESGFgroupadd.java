@@ -109,7 +109,7 @@ private static Log log = LogFactory.getLog(ESGFgroupadd.class);
             OptionBuilder.withArgName("name")
             .hasArg(true)
             .withDescription("Description of group")
-            .withLongOpt("description")
+            .withLongOpt("name")
             .isRequired(true)
             .create("n");
         getOptions().addOption(name);
