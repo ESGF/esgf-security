@@ -99,49 +99,45 @@ private static Log log = LogFactory.getLog(ESGFgroupadd.class);
 
         Option description = 
             OptionBuilder.withArgName("description")
-            .hasArgs()
+            .hasArg(true)
             .withDescription("Description of group")
             .withLongOpt("description")
             .create("d");
         getOptions().addOption(description);
 
+        Option name = 
+            OptionBuilder.withArgName("name")
+            .hasArg(true)
+            .withDescription("Description of group")
+            .withLongOpt("description")
+            .isRequired(true)
+            .create("n");
+        getOptions().addOption(name);
+
     }
 
     public ESGFEnv doEval(CommandLine line, ESGFEnv env) {
-        log.trace("inside the \"groupadd\" command's doEval");
+        System.out.println("inside the \"groupadd\" command's doEval: "+line);
 
         //------------------
         //Collect args...
         //------------------
         
         //Don't burn cycles if don't need to...
-        if(log.isInfoEnabled()) {
-            int i=0;
-            for(String arg : line.getArgs()) {
-                log.info("arg("+(i++)+"): "+arg);
-            }
-        }
+        //if(log.isInfoEnabled()) {
+              int i=0;
+              for(String arg : line.getArgs()) {
+                  log.info("groupadd arg("+(i++)+"): "+arg);
+              }
+        //}
         
-        //Scrubbing... (need to go into cli code and toss in some regex's to clean this type of shit up)
-        java.util.List<String> argsList = new java.util.ArrayList<String>();
-        String[] args = null;
-        for(String arg : line.getArgs()) {
-            if(!arg.isEmpty()) {
-                argsList.add(arg);
-            }
-        }
-        args = argsList.toArray(new String[]{});
-
         String groupname = null;
-        if(args.length > 0) {
-            groupname = args[0];
-            env.getWriter().println("group to create is: ["+groupname+"]");
-            env.getWriter().flush();
-        }else {
-            throw new esg.common.ESGRuntimeException("You must provide the group name to create");
+        if(line.hasOption( "n" )) {
+            groupname = line.getOptionValue( "n" );
+            env.getWriter().println("group name: ["+groupname+"]");
         }
-        
-        //------------------
+
+        if (groupname == null) throw new esg.common.ESGRuntimeException("You must provide the group name to create");
 
         String description = "";
         if(line.hasOption( "d" )) {
@@ -167,7 +163,12 @@ private static Log log = LogFactory.getLog(ESGFgroupadd.class);
         //------------------
 
         GroupRoleDAO groupRoleDAO = new GroupRoleDAO(env.getEnv());
+        System.out.println("Group Name: "+groupname);
+        System.out.println("Description: "+description);
+        System.out.println("visible: "+visible);
+        System.out.println("Auto Approve: "+autoapprove);
         if(groupRoleDAO.addGroup(groupname, description, visible, autoapprove)) {
+            System.out.println("groupRoleDAO.addGroup("+groupname+", "+description+", "+visible+", "+autoapprove+")");
             env.getWriter().println("[OK]");
         }else{
             env.getWriter().println("[FAILED]");
