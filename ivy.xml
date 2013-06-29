@@ -143,7 +143,7 @@ Note: Check Maven for propery dependency parameter values @
     <dependency org="xerces" name="xercesImpl" rev="2.9.1" conf="default->default; endorsed->default" />
     
     <!-- jars needed for JSP views -->
-    <dependency org="javax.servlet" name="jstl" rev="1.1.2" transitive="false"/>
+    <dependency org="javax.servlet" name="jstl" rev="1.2" transitive="false"/>
     <dependency org="taglibs" name="standard" rev="1.1.2" transitive="false"/>
     
   </dependencies>
