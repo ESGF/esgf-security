@@ -127,8 +127,8 @@ Note: Check Maven for propery dependency parameter values @
     <dependency org="commons-httpclient" name="commons-httpclient" rev="3.1" conf="endorsed->default" />
     <dependency org="commons-lang" name="commons-lang" rev="2.5" conf="endorsed->default" />
     <dependency org="org.slf4j" name="slf4j-api" rev="1.6.4" conf="endorsed->default" />
-    <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.6.1" conf="endorsed->default" />
-    <dependency org="org.slf4j" name="jcl-over-slf4j" rev="1.6.1" conf="endorsed->default" />
+    <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.6.4" conf="endorsed->default" />
+    <dependency org="org.slf4j" name="jcl-over-slf4j" rev="1.6.4" conf="endorsed->default" />
     <dependency org="joda-time" name="joda-time" rev="2.0" conf="endorsed->default" />
     <dependency org="log4j" name="log4j" rev="1.2.17" conf="endorsed->default" transitive="false" />
     <dependency org="javax.mail" name="mail" rev="1.4.4" conf="endorsed->default" transitive="false" />
