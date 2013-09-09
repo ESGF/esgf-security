@@ -55,7 +55,7 @@ public class XrdsDocTest {
 	public static final String YADIS_FILEPATH = "esg/security/yadis/yadis.xml";
 	
 	@Test
-//	@Ignore		
+	@Ignore		
 	public void testParseDoc() throws ParserConfigurationException, 
 		SAXException, 
 		IOException, XPathExpressionException, XrdsParseException {
