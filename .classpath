@@ -61,5 +61,6 @@
 	<classpathentry kind="lib" path="lib/fetched/tiles-api-2.1.4.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/tiles-core-2.1.4.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/tiles-jsp-2.1.4.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/serializer-2.9.1.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
