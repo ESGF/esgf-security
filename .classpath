@@ -47,10 +47,6 @@
 	<classpathentry kind="lib" path="lib/fetched/commons-pool-1.5.4.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/mail-1.4.4.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/commons-io-2.4.jar"/>
-	<classpathentry kind="lib" path="lib/fetched/esgf-node-manager-accesslog-client-0.6.18.jar"/>
-	<classpathentry kind="lib" path="lib/fetched/esgf-node-manager-common-0.6.18.jar"/>
-	<classpathentry kind="lib" path="lib/fetched/esgf-node-manager-connector-0.6.18.jar"/>
-	<classpathentry kind="lib" path="lib/fetched/esgf-node-manager-filters-0.6.18.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/joda-time-2.0.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/jstl-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/spring-beans-3.2.2.RELEASE.jar"/>
@@ -62,5 +58,9 @@
 	<classpathentry kind="lib" path="lib/fetched/tiles-core-2.1.4.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/tiles-jsp-2.1.4.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/serializer-2.9.1.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/esgf-node-manager-accesslog-client-0.6.19.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/esgf-node-manager-common-0.6.19.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/esgf-node-manager-connector-0.6.19.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/esgf-node-manager-filters-0.6.19.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

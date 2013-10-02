@@ -25,20 +25,26 @@ public class IdentityResolverClient {
      */
     public static void main(String[] args) throws Exception {
         
-        if (args.length!=1) {
-            System.out.println("Usage: java esg.security.attr.main.IdentityResolverClient <path to openids file>" );
+        if (args.length!=3) {
+            System.out.println("Usage: java esg.security.attr.main.IdentityResolverClient "
+                              + "<path to client keystore file> <path to client truststore file> <path to openids file>" );
+            System.out.println("Example: java esg.security.attr.main.IdentityResolverClient /Users/cinquini/myApplications/apache-tomcat/esg-datanode-rapidssl.ks "
+                              +" /Users/cinquini/myApplications/apache-tomcat/esg-truststore.ts /tmp/openids.txt");
             System.exit(-1);
         }
         
         // instantiate identity resolver
         final IdentityResolver resolver = new IdentityResolverImpl();
-                
+          
         // set certificates for client-server handshake
-        CertUtils.setTruststore("/Users/cinquini/myApplications/apache-tomcat/esg-truststore.ts");
-        CertUtils.setKeystore("/Users/cinquini/myApplications/apache-tomcat/esg-datanode-rapidssl.ks");
+        //CertUtils.setKeystore("/Users/cinquini/myApplications/apache-tomcat/esg-datanode-rapidssl.ks");
+        CertUtils.setKeystore(args[0]);
+        //CertUtils.setTruststore("/Users/cinquini/myApplications/apache-tomcat/esg-truststore.ts");
+        CertUtils.setTruststore(args[1]);
+
 
         // input file
-        File openids = new File(args[0]);
+        File openids = new File(args[2]);
         BufferedReader reader = new BufferedReader(new FileReader(openids));
         
         // output file
