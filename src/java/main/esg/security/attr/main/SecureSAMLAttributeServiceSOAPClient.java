@@ -40,15 +40,15 @@ public class SecureSAMLAttributeServiceSOAPClient {
 	  // use HTTP endpoint for application deployed on localhost
 	  //private static final String ENDPOINT = "https://localhost:8443/esgf-security/saml/soap/secure/attributeService.htm";
 	  //private static final String ENDPOINT = "https://esg-gateway.jpl.nasa.gov/saml/soap/secure/attributeService.htm";  
-	  private static final String ENDPOINT = "https://pcmdi3.llnl.gov/esgcet/saml/soap/secure/attributeService.htm";  
-	  private static final String SAML_REQUEST = "esg/security/attr/main/SAMLattributeQueryRequest.xml";
+	  private static final String ENDPOINT = "https://esg-datanode.jpl.nasa.gov/esgf-idp/saml/soap/secure/attributeService.htm";  
+	  private static final String SAML_REQUEST = "esg/security/resources/SAMLattributeQueryRequest.xml";
 	  
 	  public static void main(String[] args) throws Exception {
 
 		  // setup client certificate and trustore for mutual authentication
 		  //CertUtils.setTruststore("esg/security/resources/client-trustore.ks");
-		  CertUtils.setTruststore("esg/security/resources/esg-truststore-openid.ts");
-		  CertUtils.setKeystore("esg/security/resources/client-cert.ks");
+		  CertUtils.setTruststore("esg/security/resources/esg-truststore.ts");
+		  CertUtils.setKeystore("esg/security/resources/keystore-tomcat");
 		  
 		  final File file = new ClassPathResource(SAML_REQUEST).getFile();
 		  final String samlRequest = FileUtils.readFileToString(file);
