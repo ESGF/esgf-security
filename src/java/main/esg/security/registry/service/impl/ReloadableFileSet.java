@@ -58,7 +58,7 @@ public class ReloadableFileSet {
                 File file = new File(filePath); 
                 if (!file.exists()) {
                     LOG.warn("File "+file.getAbsolutePath()+" not found");
-                    //throw new Exception("File "+file.getAbsolutePath()+" not found");
+                    //throw new Exception("File:"+file.getAbsolutePath()+" not found");
                 } else {
                     files.add( file );
                 }
@@ -67,7 +67,7 @@ public class ReloadableFileSet {
                 File file = new ClassPathResource(filePath).getFile();
                 if (!file.exists()) {
                     LOG.warn("File "+file.getAbsolutePath()+" not found");
-                    //throw new Exception("File "+file.getAbsolutePath()+" not found");
+                    //throw new Exception("File:"+file.getAbsolutePath()+" not found");
                 } else {
                     files.add( file );
                 }
