@@ -62,5 +62,7 @@
 	<classpathentry kind="lib" path="lib/fetched/esgf-node-manager-common-0.6.19.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/esgf-node-manager-connector-0.6.19.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/esgf-node-manager-filters-0.6.19.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/javax.servlet-api-3.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/servlet-api-2.3.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
