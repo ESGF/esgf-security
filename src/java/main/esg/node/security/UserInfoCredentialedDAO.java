@@ -208,7 +208,7 @@ public class UserInfoCredentialedDAO {
         return userInfoDAO.checkPassword(openid,queryPassword);
     }
 
-    /*kltsa 04/06/2014 issue: */
+    /* kltsa 04/06/2014 for issue 23061: Wrapper class for accessing the UserInfoDAO object. */
     public boolean check_user_Password(String username, String queryPassword, StringBuilder openid){
         return userInfoDAO.check_user_Password(username, queryPassword, openid);
     }
