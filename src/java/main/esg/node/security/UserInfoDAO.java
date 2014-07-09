@@ -228,7 +228,7 @@ public class UserInfoDAO {
     private static final String getPasswordQuery = 
         "SELECT password FROM esgf_security.user WHERE openid = ?";
 
-    /*kltsa 04/06/2014 issue 23061. */
+    /*kltsa 04/06/2014 change for issue 23061. */
     private static final String get_Password_from_username_Query = 
         "SELECT password FROM esgf_security.user WHERE username = ?";
     
@@ -892,8 +892,8 @@ public class UserInfoDAO {
     }
    
     
-    /* kltsa 04/06/2014 change for issue 23061  : Search database based on the supplied username and password 
-     *                                            and also return openid. 
+    /* kltsa 04/06/2014 change for issue 23061  : Search database based on the supplied username, password 
+     *                                            also corresponding return openid. 
      */
     public boolean check_user_Password(String username, String queryPassword, StringBuilder openid) 
     {
