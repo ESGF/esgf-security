@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ats_whitelist xmlns="http://www.esgf.org/whitelist">
+    <attribute type="NASA OBS" 
+    		   attributeService="https://esg-datanode.jpl.nasa.gov/esgf-security/saml/soap/secure/attributeService.htm"
+               description="NASA Observations" 
+               registrationService="https://esg-datanode.jpl.nasa.gov/esgf-security/secure/registrationService.htm" />
+    <attribute type="ARM"
+    		   description="Atmospheric Radiation Measurements"
+               attributeService="https://esg-vm-demo02.ccs.ornl.gov/esgf-security/saml/soap/secure/attributeService.htm"
+               registrationService="https://esg-vm-demo02.ccs.ornl.gov/esgf-security/secure/registrationService.htm" />
+    <attribute type="NACP Ameriflux"
+    		   description="NACP Ameriflux"
+               attributeService="https://esg-vm-demo02.ccs.ornl.gov/esgf-security/saml/soap/secure/attributeService.htm"
+               registrationService="https://esg-vm-demo02.ccs.ornl.gov/esgf-security/secure/registrationService.htm" />
+    <attribute type="ARM"
+    		   description="ARM"
+               attributeService="https://esg-vm-demo02.ccs.ornl.gov/esgf-security/saml/soap/secure/attributeService.htm"
+               registrationService="https://esg-vm-demo02.ccs.ornl.gov/esgf-security/secure/registrationService.htm" />
+    <attribute type="CLAMP"
+    		   description="CLAMP"
+               attributeService="https://esg-vm-demo02.ccs.ornl.gov/esgf-security/saml/soap/secure/attributeService.htm"
+               registrationService="https://esg-vm-demo02.ccs.ornl.gov/esgf-security/secure/registrationService.htm" />
+    <attribute type="CMIP5 Research" 
+               description="Users of CMIP5 datasets for non-commercial purpose only"
+               attributeService="https://pcmdi9.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm"
+               registrationService="https://pcmdi9.llnl.gov/esgf-security/secure/registrationService.htm" 
+               license="licenses/ipccResearchLicense.xml"/>
+    <attribute type="CMIP5 Commercial" 
+               description="Users of CMIP5 datasets for commercial purposes"
+               attributeService="https://pcmdi9.llnl.gov/esgf-security/saml/soap/secure/attributeService.htm"
+               registrationService="https://pcmdi9.llnl.gov/esgf-security/secure/registrationService.htm" 
+               license="licenses/ipccCommercialLicense.xml"/>
+    <attribute type="CSSEF_PNNL" 
+              attributeService="https://esg1-gw.pnl.gov/esgf-security/saml/soap/secure/attributeService.htm"
+              description="CSSEF PNNL" 
+              registrationService="https://esg1-gw.pnl.gov/esgf-security/secure/registrationService.htm" />
+    <attribute type="NOAA ESRL"
+    		   description="EGF Administrators for NOAA ESRL"
+               attributeService="https://hydra.fsl.noaa.gov/esgf-security/saml/soap/secure/attributeService.htm"
+               registrationService="https://hydra.fsl.noaa.gov/esgf-security/secure/registrationService.htm" />          
+    <attribute type="Test Group" 
+    		   description="Group of test users"
+               attributeService="https://localhost:8443/esgf-security/saml/soap/secure/attributeService.htm"
+               registrationService="https://localhost:8443/esgf-security/secure/registrationService.htm" />
+               
+    <!-- local attribute service serving local administrators group -->
+    <attribute type="wheel"
+               attributeService="https://localhost/esgf-security/saml/soap/secure/attributeService.htm"
+               description="Local Administrators" />
+   
+</ats_whitelist>

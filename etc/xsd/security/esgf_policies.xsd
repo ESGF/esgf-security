@@ -1,0 +1,26 @@
+<xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" version="0.2"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.esgf.org/security"
+            xmlns:tns="http://www.esgf.org/security">
+  
+  <xsd:attributeGroup name="EsgfPolicyAttributes">
+    <xsd:attribute name="action"  type="xsd:string" use="required"/>
+    <xsd:attribute name="attribute_value"  type="xsd:string"/>
+    <xsd:attribute name="attribute_type"  type="xsd:string" use="required"/>
+    <xsd:attribute name="resource" type="xsd:string" use="required"/>
+  </xsd:attributeGroup>
+  
+  <xsd:element name="policy">
+    <xsd:complexType>
+      <xsd:attributeGroup ref="tns:EsgfPolicyAttributes"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="policies">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="tns:policy" minOccurs="1" maxOccurs="unbounded"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  
+</xsd:schema>

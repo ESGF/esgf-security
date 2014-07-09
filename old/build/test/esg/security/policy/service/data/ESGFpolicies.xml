@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<policies>
+
+	<policy resource="\Acmip5.*" attribute_type="CMIP5 Research" attribute_value="User" action="Read"/>
+	<policy resource="\Acmip5.*" attribute_type="CMIP5 Commercial" attribute_value="User" action="Read"/>
+	<policy resource="\Acmip5.*" attribute_type="CMIP5 Research"  attribute_value="Admin" action="Write"/>
+	<policy resource=".+\.airs\..+" attribute_type="AIRS" attribute_value="User" action="Read"/>
+	<policy resource=".+\.airs\..+" attribute_type="AIRS" attribute_value="Admin" action="Write"/>
+	<policy resource=".*mls.*" attribute_type="MLS" attribute_value="User" action="Read"/>
+	
+	<!-- Everybody can read, nobody can write -->
+	<policy resource=".*\/free\/.*" attribute_type="ANY" attribute_value="" action="Read"/>
+	<policy resource=".*\/free\/.*" attribute_type="NONE" attribute_value="" action="Write"/>
+
+</policies>

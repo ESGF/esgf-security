@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<policies>
+
+        <!-- CMIP5 Research access control -->
+        <policy resource=".*cmip5.*" attribute_type="CMIP5 Research" attribute_value="user" action="Read"/>
+        <policy resource=".*cmip5.*" attribute_type="CMIP5 Research" attribute_value="publisher" action="Write"/>
+
+        <policy resource=".*obs4MIPs.*" attribute_type="CMIP5 Research" attribute_value="user" action="Read"/>
+        <policy resource=".*obs4MIPs.*" attribute_type="CMIP5 Research" attribute_value="publisher" action="Write"/>
+       
+        <!-- NASA-JPL access control -->
+        <policy resource=".*NASA-JPL.*" attribute_type="NASA OBS" attribute_value="user" action="Read"/>
+        <policy resource=".*NASA-JPL.*" attribute_type="NASA OBS" attribute_value="publisher" action="Write"/>
+        <policy resource=".*NASA-GSFC.*" attribute_type="NASA OBS" attribute_value="user" action="Read"/>
+        <policy resource=".*NASA-GSFC.*" attribute_type="NASA OBS" attribute_value="publisher" action="Write"/>
+        <policy resource=".*AVISO.*" attribute_type="NASA OBS" attribute_value="user" action="Read"/>
+        <policy resource=".*AVISO.*" attribute_type="NASA OBS" attribute_value="publisher" action="Write"/>
+        <policy resource=".*REMSS.*" attribute_type="NASA OBS" attribute_value="user" action="Read"/>
+        <policy resource=".*REMSS.*" attribute_type="NASA OBS" attribute_value="publisher" action="Write"/>
+        
+        
+        <!-- ORNL access control -->
+        <policy resource=".*\/arm\/.*" attribute_type="ARM" attribute_value="user" action="Read"/>
+        <policy resource=".*\/arm\/.*" attribute_type="ARM" attribute_value="publisher" action="Write"/>
+        <policy resource=".*\/ameriflux\/.*" attribute_type="NACP Ameriflux" attribute_value="user" action="Read"/>
+        <policy resource=".*\/ameriflux\/.*" attribute_type="NACP Ameriflux" attribute_value="publisher" action="Write"/>
+        <policy resource=".*\/clm\/.*" attribute_type="CLM Data" attribute_value="user" action="Read"/>
+        <policy resource=".*\/clm\/.*" attribute_type="CLM Data" attribute_value="publisher" action="Write"/>
+        <policy resource=".*\/c-lamp\/.*" attribute_type="CLAMP" attribute_value="user" action="Read"/>
+        <policy resource=".*\/c-lamp\/.*" attribute_type="CLAMP" attribute_value="publisher" action="Write"/>
+        
+        <!-- PNNL access control for CSSEF project -->
+        <policy resource=".*cssef_data.*" attribute_type="CSSEF_PNNL" attribute_value="user" action="Read"/> 
+        <policy resource=".*cssef.*" attribute_type="CSSEF_PNNL" attribute_value="user" action="Read"/> 
+        <policy resource=".*cssef.*" attribute_type="CSSEF_PNNL" attribute_value="publisher" action="Write"/> 
+        
+        
+        <!-- NOAA datasets -->
+        <policy resource=".*oc_gis_downscaling.*" attribute_type="ANY" attribute_value="" action="Read"/>
+        <policy resource=".*oc_gis_downscaling.*" attribute_type="NOAA ESRL" attribute_value="publisher" action="Write"/>
+        <policy resource=".*maurer.*" attribute_type="ANY" attribute_value="" action="Read"/>
+        <policy resource=".*maurer.*" attribute_type="NOAA ESRL" attribute_value="publisher" action="Write"/>
+        <policy resource=".*dycore_2008.*" attribute_type="ANY" attribute_value="" action="Read"/>
+        <policy resource=".*dycore_2008.*" attribute_type="NOAA ESRL" attribute_value="publisher" action="Write"/>
+        
+        <!-- Admin-restricted applications -->
+        <policy resource=".*esgf-dashboard.*" attribute_type="wheel" attribute_value="super" action="Read"/>
+        
+        <!-- URLs matching */test/* 
+        <policy resource=".*\/test\/.*" attribute_type="Test Attribute" attribute_value="user" action="Read"/>
+        <policy resource=".*\/test\/.*" attribute_type="Test Attribute" attribute_value="publisher" action="Write"/>
+        -->
+
+        <!-- Test resources are made freely available -->
+        <policy resource=".*test.*" attribute_type="ANY" attribute_value="" action="Read"/>
+        <policy resource=".*test.*" attribute_type="Test_Group" attribute_value="publisher" action="Write"/>
+        <policy resource=".*test.*" attribute_type="wheel" attribute_value="super" action="Write"/>
+        <!-- <policy resource=".*test.*" attribute_type="Test Group" attribute_value="User" action="Read"/> -->
+
+        <!-- Everything is Free 
+        <policy resource=".*esg_dataroot.*" attribute_type="ANY" attribute_value="" action="Read"/> -->
+        
+
+</policies>
