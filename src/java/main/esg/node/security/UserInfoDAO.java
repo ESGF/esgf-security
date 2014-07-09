@@ -892,8 +892,8 @@ public class UserInfoDAO {
     }
    
     
-    /* kltsa 04/06/2014 change for issue 23061  : Search database based on the supplied username, password 
-     *                                            also corresponding return openid. 
+    /* kltsa 04/06/2014 change for issue 23061  : Searches database based on the supplied username, password. 
+     *                                            Also corresponding openid is returned. 
      */
     public boolean check_user_Password(String username, String queryPassword, StringBuilder openid) 
     {
