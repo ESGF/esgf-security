@@ -207,6 +207,11 @@ public class UserInfoCredentialedDAO {
     public boolean checkPassword(String openid, String queryPassword) {
         return userInfoDAO.checkPassword(openid,queryPassword);
     }
+
+    /*kltsa 04/06/2014 issue: */
+    public boolean check_user_Password(String username, String queryPassword, StringBuilder openid){
+        return userInfoDAO.check_user_Password(username, queryPassword, openid);
+    }
     
     //Given the old password and the new password for a given user
     //(openid) update the password, only if the old password matches

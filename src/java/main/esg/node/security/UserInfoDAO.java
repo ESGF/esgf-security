@@ -228,6 +228,14 @@ public class UserInfoDAO {
     private static final String getPasswordQuery = 
         "SELECT password FROM esgf_security.user WHERE openid = ?";
 
+    /*kltsa 04/06/2014 issue 23061. */
+    private static final String get_Password_from_username_Query = 
+        "SELECT password FROM esgf_security.user WHERE username = ?";
+    
+    private static final String get_Openid_from_username_Query = 
+            "SELECT openid FROM esgf_security.user WHERE username = ?";
+
+
     private static final String getOpenidsForEmailQuery =
         "SELECT openid FROM esgf_security.user WHERE email = ? ";
 
@@ -882,6 +890,56 @@ public class UserInfoDAO {
         }
         return isMatch;
     }
+   
+    
+    /* kltsa 04/06/2014 change for issue 23061  : Search database based on the supplied username and password 
+     *                                            and also return openid. 
+     */
+    public boolean check_user_Password(String username, String queryPassword, StringBuilder openid) 
+    {
+      boolean isMatch = false;
+      String openid_real = null;
+            
+      try
+      {
+        String cryptPassword = queryRunner.query(get_Password_from_username_Query, passwordQueryHandler, username);
+        if(cryptPassword == null) 
+        {
+          log.error("PASSWORD RETURNED FROM DATABASE for ["+username+"] IS: "+cryptPassword);
+          return false;
+        }
+        isMatch = encoder.equals(queryPassword,cryptPassword);
+      }
+      catch(SQLException ex)
+      {
+        log.error(ex);
+        throw new ESGFDataAccessException(ex);
+      }
+        
+      /* Also return the openid. */
+      if(isMatch)
+      {	  
+        try
+        {
+          openid_real = queryRunner.query(get_Openid_from_username_Query, passwordQueryHandler, username);
+          if(openid_real == null) 
+          {
+            log.error("OPENID RETURNED FROM DATABASE for ["+username+"] IS: "+openid_real);
+            return false;
+          }
+        }
+        catch(SQLException ex) 
+        {
+          log.error(ex);
+          throw new ESGFDataAccessException(ex);
+        }
+        
+        openid.append(openid_real);
+      }  
+        
+      return isMatch;
+    }
+
     
     //Given the old password and the new password for a given user
     //(openid) update the password, only if the old password matches
