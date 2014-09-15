@@ -228,12 +228,12 @@ public class UserInfoDAO {
     private static final String getPasswordQuery = 
         "SELECT password FROM esgf_security.user WHERE openid = ?";
 
-    /*kltsa 04/06/2014 change for issue 23061. */
-    private static final String get_Password_from_username_Query = 
+    /*kltsa 04/06/2014. */
+    private static final String getPaswordForUsernameQuery = 
         "SELECT password FROM esgf_security.user WHERE username = ?";
     
-    private static final String get_Openid_from_username_Query = 
-            "SELECT openid FROM esgf_security.user WHERE username = ?";
+    private static final String getOpenidForUsernameQuery = 
+         "SELECT openid FROM esgf_security.user WHERE username = ?";
 
 
     private static final String getOpenidsForEmailQuery =
@@ -892,17 +892,14 @@ public class UserInfoDAO {
     }
    
     
-    /* kltsa 04/06/2014 change for issue 23061  : Searches database based on the supplied username and password 
-     *                                            also corresponding openid is returned. 
-     */
-    public boolean checkPassword_ids(String username, String queryPassword, StringBuilder openid) 
+    /* kltsa 04/06/2014 : checks if password is correct. */ 
+    public boolean checkPassword_ids(String username, String queryPassword) 
     {
       boolean isMatch = false;
-      String openid_real = null;
-            
+                  
       try
       {
-        String cryptPassword = queryRunner.query(get_Password_from_username_Query, passwordQueryHandler, username);
+        String cryptPassword = queryRunner.query(getPaswordForUsernameQuery, passwordQueryHandler, username);
         if(cryptPassword == null) 
         {
           log.error("PASSWORD RETURNED FROM DATABASE for ["+username+"] IS: "+cryptPassword);
@@ -916,30 +913,22 @@ public class UserInfoDAO {
         throw new ESGFDataAccessException(ex);
       }
         
-      /* Also return the openid. */
-      if(isMatch)
-      {	  
-        try
-        {
-          openid_real = queryRunner.query(get_Openid_from_username_Query, passwordQueryHandler, username);
-          if(openid_real == null) 
-          {
-            log.error("OPENID RETURNED FROM DATABASE for ["+username+"] IS: "+openid_real);
-            return false;
-          }
-        }
-        catch(SQLException ex) 
-        {
-          log.error(ex);
-          throw new ESGFDataAccessException(ex);
-        }
-        
-        openid.append(openid_real);
-      }  
-        
       return isMatch;
     }
 
+    /* kltsa 04/06/2014 : Returns user openid. */ 
+    String getOpenid(String username) {
+        String openid = "null";
+        try {
+        	openid = queryRunner.query(getOpenidForUsernameQuery, singleStringResultSetHandler, username);
+        }catch(SQLException ex) {
+            log.error(ex);
+            throw new ESGFDataAccessException(ex);
+        }
+        return openid;
+    }
+    
+    
     
     //Given the old password and the new password for a given user
     //(openid) update the password, only if the old password matches

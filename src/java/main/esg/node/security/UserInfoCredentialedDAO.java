@@ -208,10 +208,18 @@ public class UserInfoCredentialedDAO {
         return userInfoDAO.checkPassword(openid,queryPassword);
     }
 
-    /* kltsa 04/06/2014 for issue 23061: Wrapper class for accessing the UserInfoDAO object. */
-    public boolean checkPassword_ids(String username, String queryPassword, StringBuilder openid){
-        return userInfoDAO.checkPassword_ids(username, queryPassword, openid);
+    /* kltsa 04/06/2014 : Methods for checking password and retrieving user openid.*/
+    public boolean checkPassword_ids(String username, String queryPassword){
+        return userInfoDAO.checkPassword_ids(username, queryPassword);
     }
+    
+    public String getOpenid(String username) {
+        if(!checkCredentials()) {
+            throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
+        }
+        return userInfoDAO.getOpenid(username);
+    }
+    
     
     //Given the old password and the new password for a given user
     //(openid) update the password, only if the old password matches
