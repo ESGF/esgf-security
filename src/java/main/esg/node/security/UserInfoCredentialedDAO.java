@@ -207,6 +207,19 @@ public class UserInfoCredentialedDAO {
     public boolean checkPassword(String openid, String queryPassword) {
         return userInfoDAO.checkPassword(openid,queryPassword);
     }
+
+    /* kltsa 04/06/2014 : Methods for checking password and retrieving user openid.*/
+    public boolean checkPassword_ids(String username, String queryPassword){
+        return userInfoDAO.checkPassword_ids(username, queryPassword);
+    }
+    
+    public String getOpenid(String username) {
+        if(!checkCredentials()) {
+            throw new ESGFSecurityIllegalAccessException("Sorry, you do not have the appropriate privilege for this operation");
+        }
+        return userInfoDAO.getOpenid(username);
+    }
+    
     
     //Given the old password and the new password for a given user
     //(openid) update the password, only if the old password matches
