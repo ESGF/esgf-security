@@ -228,6 +228,14 @@ public class UserInfoDAO {
     private static final String getPasswordQuery = 
         "SELECT password FROM esgf_security.user WHERE openid = ?";
 
+    /*kltsa 04/06/2014. */
+    private static final String getPaswordForUsernameQuery = 
+        "SELECT password FROM esgf_security.user WHERE username = ?";
+    
+    private static final String getOpenidForUsernameQuery = 
+         "SELECT openid FROM esgf_security.user WHERE username = ?";
+
+
     private static final String getOpenidsForEmailQuery =
         "SELECT openid FROM esgf_security.user WHERE email = ? ";
 
@@ -882,6 +890,45 @@ public class UserInfoDAO {
         }
         return isMatch;
     }
+   
+    
+    /* kltsa 04/06/2014 : checks if password is correct. */ 
+    public boolean checkPassword_ids(String username, String queryPassword) 
+    {
+      boolean isMatch = false;
+                  
+      try
+      {
+        String cryptPassword = queryRunner.query(getPaswordForUsernameQuery, passwordQueryHandler, username);
+        if(cryptPassword == null) 
+        {
+          log.error("PASSWORD RETURNED FROM DATABASE for ["+username+"] IS: "+cryptPassword);
+          return false;
+        }
+        isMatch = encoder.equals(queryPassword,cryptPassword);
+      }
+      catch(SQLException ex)
+      {
+        log.error(ex);
+        throw new ESGFDataAccessException(ex);
+      }
+        
+      return isMatch;
+    }
+
+    /* kltsa 04/06/2014 : Returns user openid. */ 
+    String getOpenid(String username) {
+        String openid = "null";
+        try {
+        	openid = queryRunner.query(getOpenidForUsernameQuery, singleStringResultSetHandler, username);
+        }catch(SQLException ex) {
+            log.error(ex);
+            throw new ESGFDataAccessException(ex);
+        }
+        return openid;
+    }
+    
+    
     
     //Given the old password and the new password for a given user
     //(openid) update the password, only if the old password matches
