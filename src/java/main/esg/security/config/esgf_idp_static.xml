@@ -28,5 +28,6 @@
     <value>https://pcmdi11.llnl.gov/esgf-idp/idp/openidServer.htm</value>
     <value>https://vesgint-idx.ipsl.jussieu.fr/esgf-idp/idp/openidServer.htm</value>
     <value>https://www.earthsystemgrid.org/openid/provider.htm</value>
+    <value>https://dm1.cptec.inpe.br/esgf-idp/openidServer.htm</value>
 
 </idp_whitelist>
