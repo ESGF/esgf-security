@@ -420,7 +420,7 @@ Builds the project via ant (obviously).
         <include name="commons-dbcp*.jar"/>
         <include name="commons-dbutils*.jar"/>
         <include name="esgf-node-manager-common*.jar"/>
-        <include name="postgresql-8.3-603.jdbc3.jar"/>
+        <include name="postgresql-9.4-1201.jdbc41.jar"/>
       </zipgroupfileset>
     </jar>
     <!-- <signjar jar="${dist_dir}/${module}-user-migration-${version_num}.jar" alias="${signing_alias}" keystore="${keystore}" storepass="${storepass}"/> -->
