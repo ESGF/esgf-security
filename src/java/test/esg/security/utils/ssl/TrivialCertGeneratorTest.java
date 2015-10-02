@@ -134,8 +134,7 @@ public class TrivialCertGeneratorTest {
         assertEquals(DN, info.get(X509CertInfo.ISSUER).toString());
         //check version
         assertEquals(CertificateVersion.V3,
-                ((CertificateVersion) info.get(X509CertInfo.VERSION))
-                        .get(CertificateVersion.VERSION));
+                ((CertificateVersion) info.get(CertificateVersion.VERSION)));
         //check validity
         long notBefore = ((Date) ((CertificateValidity) info
                 .get(X509CertInfo.VALIDITY))

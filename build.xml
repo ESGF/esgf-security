@@ -109,7 +109,7 @@ Builds the project via ant (obviously).
   <property name="ivy.esgf-repo-local.default.root.dir" value="${user.home}/.ivy2/local"/>
   <property name="ivy_retrieve_type" value="jar, bundle"/>
   <property name="filter" value="false"/>
-  <property name="java.version.val" value="1.7"/>
+  <property name="java.version.val" value="1.8"/>
 
   <!-- **static defines** -->
   <property name="version_num" value="0.0.0"/>
@@ -420,7 +420,7 @@ Builds the project via ant (obviously).
         <include name="commons-dbcp*.jar"/>
         <include name="commons-dbutils*.jar"/>
         <include name="esgf-node-manager-common*.jar"/>
-        <include name="postgresql-8.3-603.jdbc3.jar"/>
+        <include name="postgresql-8.4-703.jdbc3.jar"/>
       </zipgroupfileset>
     </jar>
     <!-- <signjar jar="${dist_dir}/${module}-user-migration-${version_num}.jar" alias="${signing_alias}" keystore="${keystore}" storepass="${storepass}"/> -->
