@@ -139,7 +139,7 @@ Note: Check Maven for propery dependency parameter values @
     <dependency org="velocity" name="velocity" rev="1.5" conf="default->default; endorsed->default" />
     <dependency org="xml-security" name="xmlsec" rev="1.4.2" conf="default->default; default->default; endorsed->default" transitive="false" />
     <dependency org="xalan" name="serializer" rev="2.9.1" conf="default->default; endorsed->default" />
-    <dependency org="xalan" name="xalan" rev="2.7.1" conf="default->default; endorsed->default" />
+    <dependency org="xalan" name="xalan" rev="2.7.2" conf="default->default; endorsed->default" />
     <dependency org="xerces" name="xercesImpl" rev="2.9.1" conf="default->default; endorsed->default" />
     
     <!-- jars needed for JSP views -->
