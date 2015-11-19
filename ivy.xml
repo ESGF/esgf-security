@@ -93,7 +93,8 @@ Note: Check Maven for propery dependency parameter values @
     <dependency org="commons-codec" name="commons-codec" rev="1.4" conf="default->default" />
     <dependency org="commons-collections" name="commons-collections" rev="3.2.1" conf="default->default" />
     <dependency org="commons-digester" name="commons-digester" rev="2.0" conf="default->default" />
-    <dependency org="commons-httpclient" name="commons-httpclient" rev="3.1" conf="default->default" />
+    <!-- <dependency org="commons-httpclient" name="commons-httpclient" rev="3.1" conf="default->default" /> -->
+    <dependency org="org.apache.httpcomponents" name="httpclient" rev="4.5.1" conf="default->default" />
     <dependency org="commons-io" name="commons-io" rev="2.4" conf="default->default" />
     <dependency org="commons-lang" name="commons-lang" rev="2.5" conf="default->default" />
    
@@ -124,7 +125,8 @@ Note: Check Maven for propery dependency parameter values @
     <!-- endorsed directory -->
     <dependency org="commons-codec" name="commons-codec" rev="1.4" conf="endorsed->default" />
     <dependency org="commons-collections" name="commons-collections" rev="3.2.1" conf="endorsed->default" />
-    <dependency org="commons-httpclient" name="commons-httpclient" rev="3.1" conf="endorsed->default" />
+    <!-- <dependency org="commons-httpclient" name="commons-httpclient" rev="3.1" conf="endorsed->default" /> -->
+    <dependency org="org.apache.httpcomponents" name="httpclient" rev="4.5.1" conf="endorsed->default" />
     <dependency org="commons-lang" name="commons-lang" rev="2.5" conf="endorsed->default" />
     <dependency org="org.slf4j" name="slf4j-api" rev="1.6.4" conf="endorsed->default" />
     <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.6.4" conf="endorsed->default" />

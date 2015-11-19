@@ -2,17 +2,24 @@ package esg.security.utils.http;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpException;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 
 /**
  * Class containing utility for issuing HTTP GET/POST requests.
@@ -33,7 +40,7 @@ public class HttpUtils {
     public final static String get(final String uri, final Map<String, String> pars) throws Exception {
         
         // create an instance of HttpClient.
-        HttpClient client = new HttpClient();
+    	CloseableHttpClient client = HttpClients.createDefault();
         
         // build full URL with query string
         String url = uri;
@@ -43,26 +50,29 @@ public class HttpUtils {
             delimiter = "&";
         }
 
-        // create a method instance.
-        GetMethod method = new GetMethod(url);
+        // create GET request
+        HttpGet httpGet = new HttpGet(url);
         
         // provide custom retry handler is necessary
-        method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
+        //method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
 
+        CloseableHttpResponse response = client.execute(httpGet);
         try {
             
           // execute the method.
-          int statusCode = client.executeMethod(method);
+          int statusCode = response.getStatusLine().getStatusCode();
 
           if (statusCode != HttpStatus.SC_OK) {
-            throw new Exception("HTTP GET request failed: url="+url+" error=" + method.getStatusLine());
+            throw new Exception("HTTP GET request failed: url="+url+" error=" + response.getStatusLine());
           }
 
           // read the response body.
-          byte[] responseBody = method.getResponseBody();
+          HttpEntity entity = response.getEntity();
+          String body = EntityUtils.toString(entity);
 
-          // use caution: ensure correct character encoding and is not binary data
-          return(new String(responseBody));
+          // note: must fully consume the response
+          EntityUtils.consume(entity);
+          return body;
 
         } catch (HttpException e) {
             LOG.warn(e.getMessage());
@@ -72,7 +82,7 @@ public class HttpUtils {
             throw new Exception("Fatal transport error: " + e.getMessage());
         } finally {
           // release the connection.
-          method.releaseConnection();
+          response.close();
         }  
         
     }
@@ -87,33 +97,40 @@ public class HttpUtils {
     public final static String post(final String url, final Map<String, String> pars) throws Exception {
         
         // create an instance of HttpClient.
-        HttpClient client = new HttpClient();
+    	CloseableHttpClient client = HttpClients.createDefault();
         
-        // create a method instance.
-        PostMethod method = new PostMethod(url);
+        // create a POST request
+    	HttpPost httpPost = new HttpPost(url);
         
         // add request parameters
+    	List <NameValuePair> nvps = new ArrayList <NameValuePair>();
         for (final String key : pars.keySet()) {
-           method.addParameter(key, pars.get(key));
+        	nvps.add(new BasicNameValuePair(key, pars.get(key)));
         }
+        httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+ 
         
         // provide custom retry handler is necessary
-        method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
+        //method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
 
+        CloseableHttpResponse response = client.execute(httpPost);
         try {
             
           // execute the method.
-          int statusCode = client.executeMethod(method);
+          int statusCode = response.getStatusLine().getStatusCode();
 
           if (statusCode != HttpStatus.SC_OK) {
-            throw new Exception("HTTP POST request failed: url="+url+" error=" + method.getStatusLine());
+            throw new Exception("HTTP POST request failed: url="+url+" error=" + response.getStatusLine());
           }
-
+          
           // read the response body.
-          byte[] responseBody = method.getResponseBody();
+          HttpEntity entity = response.getEntity();
+          String body = EntityUtils.toString(entity);
 
-          // use caution: ensure correct character encoding and is not binary data
-          return(new String(responseBody));
+          // note: must fully consume the response
+          EntityUtils.consume(entity);
+          return body;
+
 
         } catch (HttpException e) {
             LOG.warn(e.getMessage());
@@ -123,7 +140,7 @@ public class HttpUtils {
             throw new Exception("Fatal transport error: " + e.getMessage());
         } finally {
           // release the connection.
-          method.releaseConnection();
+          response.close();
         }  
         
     }
