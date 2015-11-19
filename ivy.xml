@@ -99,11 +99,11 @@ Note: Check Maven for propery dependency parameter values @
     <dependency org="commons-lang" name="commons-lang" rev="2.5" conf="default->default" />
    
     <dependency org="javax.servlet" name="javax.servlet-api" rev="3.0.1" conf="default->default"/>
-    <dependency org="org.springframework" name="spring-core" rev="4.1.6.RELEASE" transitive="false" conf="default->default"  />
-    <dependency org="org.springframework" name="spring-web" rev="4.1.6.RELEASE" transitive="false" conf="default->default"  />
-    <dependency org="org.springframework" name="spring-webmvc" rev="4.1.6.RELEASE" transitive="false" conf="default->default"  />
-    <dependency org="org.springframework" name="spring-beans" rev="4.1.6.RELEASE" transitive="false" conf="default->default"  />
-    <dependency org="org.springframework" name="spring-context" rev="4.1.6.RELEASE" transitive="false" conf="default->default"  />
+    <dependency org="org.springframework" name="spring-core" rev="4.2.3.RELEASE" conf="default->default"  />
+    <dependency org="org.springframework" name="spring-web" rev="4.2.3.RELEASE" conf="default->default"  />
+    <dependency org="org.springframework" name="spring-webmvc" rev="4.2.3.RELEASE" conf="default->default"  />
+    <dependency org="org.springframework" name="spring-beans" rev="4.2.3.RELEASE" conf="default->default"  />
+    <dependency org="org.springframework" name="spring-context" rev="4.2.3.RELEASE" conf="default->default"  />
 
     <dependency org="org.apache.tiles" name="tiles-core" rev="2.1.4" transitive="false" conf="default->default"  />
     <dependency org="org.apache.tiles" name="tiles-api" rev="2.1.4" transitive="false" conf="default->default"  />

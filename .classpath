@@ -60,11 +60,6 @@
 	<classpathentry kind="lib" path="lib/fetched/jaxb-impl-2.2.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/logkit-1.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/oro-2.0.8.jar"/>
-	<classpathentry kind="lib" path="lib/fetched/spring-beans-4.1.6.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/fetched/spring-context-4.1.6.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/fetched/spring-core-4.1.6.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/fetched/spring-web-4.1.6.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/fetched/spring-webmvc-4.1.6.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/xalan-2.7.2.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/activation-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/avalon-framework-4.1.5.jar"/>
@@ -78,5 +73,13 @@
 	<classpathentry kind="lib" path="lib/fetched/esgf-node-manager-common-0.7.9.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/esgf-node-manager-connector-0.7.9.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/esgf-node-manager-filters-0.7.9.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/aopalliance-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/spring-aop-4.2.3.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/spring-beans-4.2.3.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/spring-context-4.2.3.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/spring-core-4.2.3.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/spring-expression-4.2.3.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/spring-web-4.2.3.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/spring-webmvc-4.2.3.RELEASE.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
