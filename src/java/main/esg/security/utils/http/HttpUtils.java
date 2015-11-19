@@ -9,7 +9,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpException;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -74,9 +73,6 @@ public class HttpUtils {
           EntityUtils.consume(entity);
           return body;
 
-        } catch (HttpException e) {
-            LOG.warn(e.getMessage());
-            throw new Exception("Fatal protocol violation: " + e.getMessage());
         } catch (IOException e) {
             LOG.warn(e.getMessage());
             throw new Exception("Fatal transport error: " + e.getMessage());
@@ -132,9 +128,6 @@ public class HttpUtils {
           return body;
 
 
-        } catch (HttpException e) {
-            LOG.warn(e.getMessage());
-            throw new Exception("Fatal protocol violation: " + e.getMessage());
         } catch (IOException e) {
             LOG.warn(e.getMessage());
             throw new Exception("Fatal transport error: " + e.getMessage());
