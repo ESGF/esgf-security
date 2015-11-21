@@ -30,6 +30,14 @@ public class HttpUtils {
     private static final Log LOG = LogFactory.getLog(HttpUtils.class);
     
     /**
+     * Shared instance across all clients.
+     */
+    private static CloseableHttpClient client = null;
+    static {
+    	client = HttpClients.createDefault();
+    }
+    
+    /**
      * Method to execute a GET request.
      * 
      * @param uri : the URL to be requested without any query parameters
@@ -37,10 +45,7 @@ public class HttpUtils {
      * @return
      */
     public final static String get(final String uri, final Map<String, String> pars) throws Exception {
-        
-        // create an instance of HttpClient.
-    	CloseableHttpClient client = HttpClients.createDefault();
-        
+                
         // build full URL with query string
         String url = uri;
         String delimiter = "?";
@@ -91,10 +96,7 @@ public class HttpUtils {
      * @return
      */
     public final static String post(final String url, final Map<String, String> pars) throws Exception {
-        
-        // create an instance of HttpClient.
-    	CloseableHttpClient client = HttpClients.createDefault();
-        
+                
         // create a POST request
     	HttpPost httpPost = new HttpPost(url);
         
@@ -137,5 +139,15 @@ public class HttpUtils {
         }  
         
     }
+    
+	/**
+	 * Method that cleans up the HttpClient, but not necessarily guaranteed to be called in Java.
+	 */
+	protected void finalize() throws Throwable {
+		if (client!=null) {
+			client.close();
+		}
+		super.finalize();
+	}
 
 }

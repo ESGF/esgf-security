@@ -40,14 +40,7 @@ import org.apache.http.util.EntityUtils;
  * Note: this class needs to be a singleton to avoid instantiating too many HTTP connection managers.
  */
 public class SOAPServiceClient {
-    
-    // connection timeout in milliseconds
-    private final static int TIMEOUT = 10000;
-    
-    // maximum number of connection per host
-    //private final static int MAX_HOST_CONNECTIONS = 50;
-    //private final static int MAX_TOTAL_CONNECTIONS = 200;
-    
+        
     private static SOAPServiceClient self = new SOAPServiceClient();
 	
 	private final CloseableHttpClient client;
@@ -82,7 +75,7 @@ public class SOAPServiceClient {
 	 */
 	public String doSoap(final String endpoint, final String soapRequest) {
 		
-		if (LOG.isDebugEnabled()) LOG.debug("Querying SOAP endpoint: "+endpoint+" timeout="+TIMEOUT+" milliseconds");
+		//if (LOG.isDebugEnabled()) LOG.debug("Querying SOAP endpoint: "+endpoint+" timeout="+TIMEOUT+" milliseconds");
 	    final HttpPost httpPost = new HttpPost(endpoint);
 
 	    CloseableHttpResponse response = null;
@@ -140,6 +133,16 @@ public class SOAPServiceClient {
 	
 	private void log(final String message) {
 		if (LOG.isDebugEnabled()) LOG.debug(message);
+	}
+	
+	/**
+	 * Method that cleans up the HttpClient, but not necessarily guaranteed to be called in Java.
+	 */
+	protected void finalize() throws Throwable {
+		if (client!=null) {
+			client.close();
+		}
+		super.finalize();
 	}
 
 }

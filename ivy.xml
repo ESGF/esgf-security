@@ -89,7 +89,7 @@ Note: Check Maven for propery dependency parameter values @
 	<!-- compile/runtime dependencies -->
     <dependency org="com.caucho" name="hessian" rev="3.0.20" conf="default->default" />
 
-    <dependency org="commons-beanutils" name="commons-beanutils" rev="1.8.3" conf="default->default" />
+    <dependency org="commons-beanutils" name="commons-beanutils" rev="1.9.2" conf="default->default" />
     <dependency org="commons-codec" name="commons-codec" rev="1.4" conf="default->default" />
     <dependency org="commons-collections" name="commons-collections" rev="3.2.1" conf="default->default" />
     <dependency org="commons-digester" name="commons-digester" rev="2.0" conf="default->default" />
