@@ -430,7 +430,7 @@ public class UserInfoDAO {
             }
         };
 
-        new InitAdmin();
+        // new InitAdmin();
     }
     
     public void setProperties(Properties props) { this.props = props; }
