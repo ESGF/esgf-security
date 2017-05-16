@@ -22,6 +22,7 @@ import java.net.URL;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import esg.security.attr.service.api.SAMLAttributeService;
 
@@ -81,5 +82,17 @@ public interface RegistryService {
      * @param shards
      */
     void setShards(LinkedHashSet<String> shards);
+    
+    /**
+     * Method to return the search aliases.
+     * @return
+     */
+    List<Set<String>> getAliases();
+    
+    /**
+     * Method to set the list of search aliases.
+     * @param aliases
+     */
+    void setAliases( List<Set<String>> aliases);
 
 }

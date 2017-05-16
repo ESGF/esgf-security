@@ -18,7 +18,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/fetched/junit-4.8.1.jar"/>
-	<classpathentry kind="lib" path="lib/fetched/commons-collections-3.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/commons-digester-2.0.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/commons-lang-2.5.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/jdom-1.1.jar"/>
@@ -65,10 +64,6 @@
 	<classpathentry kind="lib" path="lib/fetched/httpcore-4.4.3.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/log4j-1.2.17.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/postgresql-8.4-703.jdbc3.jar"/>
-	<classpathentry kind="lib" path="lib/fetched/esgf-node-manager-accesslog-client-0.7.9.jar"/>
-	<classpathentry kind="lib" path="lib/fetched/esgf-node-manager-common-0.7.9.jar"/>
-	<classpathentry kind="lib" path="lib/fetched/esgf-node-manager-connector-0.7.9.jar"/>
-	<classpathentry kind="lib" path="lib/fetched/esgf-node-manager-filters-0.7.9.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/aopalliance-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/spring-aop-4.2.3.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/spring-beans-4.2.3.RELEASE.jar"/>
@@ -83,5 +78,10 @@
 	<classpathentry kind="lib" path="lib/fetched/taglibs-standard-impl-1.2.5.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/taglibs-standard-spec-1.2.5.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/commons-beanutils-1.9.2.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/commons-collections-3.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/esgf-node-manager-accesslog-client-0.7.23.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/esgf-node-manager-common-0.7.23.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/esgf-node-manager-connector-0.7.23.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/esgf-node-manager-filters-0.7.23.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
