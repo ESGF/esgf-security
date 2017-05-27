@@ -122,7 +122,13 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 			if (isFree(policyMap.get(action))) {
 				log("Action="+action+" on resource="+resource+" is allowed with NO resctrictions");	
 				decision = DecisionTypeEnumeration.PERMIT.toString();
-			
+				
+			// authentication only required
+			} else if (isAuthOnly(policyMap.get(action))) {
+				log("Action="+action+" on resource="+resource+" is allowed for ALL authenticated users");	
+				decision = DecisionTypeEnumeration.PERMIT.toString();
+
+			// cached permission
 			} else if (isCached(identifier, policyMap.get(action))) {
 			    log("User="+identifier +" has cached attributes for action="+action+" on resource="+resource);
                 decision = DecisionTypeEnumeration.PERMIT.toString();
@@ -173,6 +179,23 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 		}
 		
 		// no free access by default
+		return false;
+		
+	}
+	
+	/**
+	 * Method to check whether a given set of policies entitles access to all authenticated users
+	 * @param policies
+	 * @return
+	 */
+	boolean isAuthOnly(final List<PolicyAttribute> policies) {
+		
+		for (final PolicyAttribute policy : policies) {
+			// found attribute that only requires authentication
+			if (policy.getType().equalsIgnoreCase(SAMLParameters.AUTH_ONLY_RESOURCE_ATTRIBUTE_TYPE)) return true;
+		}
+		
+		// no auth only access by default
 		return false;
 		
 	}
@@ -278,7 +301,8 @@ public class SAMLAuthorizationFactoryImpl implements SAMLAuthorizationFactory {
 			for (final PolicyAttribute policy : policyMap.get(action)) {				
 				log("Action="+action+ " on Resource="+resource+" requires attribute type="+policy.getType()+" value="+policy.getValue());
 				
-				if (!policy.getType().equalsIgnoreCase(SAMLParameters.FREE_RESOURCE_ATTRIBUTE_TYPE)) {
+				if (!policy.getType().equalsIgnoreCase(SAMLParameters.FREE_RESOURCE_ATTRIBUTE_TYPE) && 
+					!policy.getType().equalsIgnoreCase(SAMLParameters.AUTH_ONLY_RESOURCE_ATTRIBUTE_TYPE)) {
 					try {
 						
 						// URLs of AttributeServices serving this attribute type

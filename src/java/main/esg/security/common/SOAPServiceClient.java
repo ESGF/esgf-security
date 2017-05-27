@@ -20,16 +20,19 @@ package esg.security.common;
 
 import java.io.IOException;
 
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpConnectionManager;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
-import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 
 /**
  * Generic client class to send a SAML request via SOAP/HTTP, and return a SOAP response from the server.
@@ -37,17 +40,10 @@ import org.apache.commons.logging.LogFactory;
  * Note: this class needs to be a singleton to avoid instantiating too many HTTP connection managers.
  */
 public class SOAPServiceClient {
-    
-    // connection timeout in milliseconds
-    private final static int TIMEOUT = 10000;
-    
-    // maximum number of connection per host
-    private final static int MAX_HOST_CONNECTIONS = 50;
-    private final static int MAX_TOTAL_CONNECTIONS = 200;
-    
+        
     private static SOAPServiceClient self = new SOAPServiceClient();
 	
-	private final HttpClient client;
+	private final CloseableHttpClient client;
 	
 	protected final static Log LOG = LogFactory.getLog(SOAPServiceClient.class);
 
@@ -66,14 +62,8 @@ public class SOAPServiceClient {
 	 */
 	private SOAPServiceClient() {
 
-	    //HttpConnectionManager manager = new SimpleHttpConnectionManager();
-	    HttpConnectionManager manager = new MultiThreadedHttpConnectionManager();
-	    manager.getParams().setConnectionTimeout(TIMEOUT);
-	    manager.getParams().setSoTimeout(TIMEOUT);
-	    manager.getParams().setDefaultMaxConnectionsPerHost(MAX_HOST_CONNECTIONS);
-	    manager.getParams().setMaxTotalConnections(MAX_TOTAL_CONNECTIONS);
-	    client = new HttpClient(manager);
-	    
+		client = HttpClients.createDefault();
+			    
 	}
 		
 	/**
@@ -85,56 +75,74 @@ public class SOAPServiceClient {
 	 */
 	public String doSoap(final String endpoint, final String soapRequest) {
 		
-		if (LOG.isDebugEnabled()) LOG.debug("Querying SOAP endpoint: "+endpoint+" timeout="+TIMEOUT+" milliseconds");
-	    final PostMethod method = new PostMethod(endpoint);
+		//if (LOG.isDebugEnabled()) LOG.debug("Querying SOAP endpoint: "+endpoint+" timeout="+TIMEOUT+" milliseconds");
+	    final HttpPost httpPost = new HttpPost(endpoint);
 
-		try {
-		    		    
-		    // insert SOAP request as HTTP request body
-			log(soapRequest);
-		    final byte[] bytes = soapRequest.getBytes();		    
-		    final ByteArrayRequestEntity requestEntity = new ByteArrayRequestEntity(bytes);
-		    method.setRequestEntity(requestEntity);
-						
-		    // Execute the method.
-		    int statusCode = client.executeMethod(method);
-
-		    if (statusCode != HttpStatus.SC_OK) {
-		        String error = "HTTP Method failed: " + method.getStatusLine();
-		    	log(error);
-		    	throw new RuntimeException(error);
-		    }
+	    CloseableHttpResponse response = null;
 		    
-		    // read response headers
-		    final Header[] headers = method.getResponseHeaders();
-		    for (final Header header : headers) {
-		    	if (LOG.isDebugEnabled()) LOG.debug("Response header name="+header.getName()+" value="+header.getValue());
+		    try {
+		    	
+			    // insert SOAP request as HTTP request body
+				log(soapRequest);
+			    final byte[] bytes = soapRequest.getBytes();		    
+			    final ByteArrayEntity requestEntity = new ByteArrayEntity(bytes);
+			    httpPost.setEntity(requestEntity);
+							
+			    // Execute the method.
+			    response = client.execute(httpPost);
+
+		    	// check response status
+		    	StatusLine statusLine = response.getStatusLine();
+		    	if (LOG.isDebugEnabled()) LOG.debug("Response status line: "+statusLine);
+		    	int statusCode = statusLine.getStatusCode();
+			    if (statusCode != HttpStatus.SC_OK) {
+			        String error = "HTTP Method failed: " + statusLine;
+			    	log(error);
+			    	throw new RuntimeException(error);
+			    }
+
+			    // read response headers
+			    final Header[] headers = response.getAllHeaders();
+			    for (final Header header : headers) {
+			    	if (LOG.isDebugEnabled()) LOG.debug("Response header name="+header.getName()+" value="+header.getValue());
+			    }
+
+			    // read the response body (may be null)
+		        HttpEntity entity = response.getEntity();
+		        final String soapResponse = EntityUtils.toString(entity);
+		        log(soapResponse);
+		        
+		        EntityUtils.consume(entity);
+		        
+		        return soapResponse;
+		        
+		    } catch(IOException e) {
+		    	log(e.getMessage());
+		    	throw new RuntimeException(e);
+		        
+		    } finally {
+		        if (response!=null) {
+		        	try {
+		        		response.close();
+		        	} catch(IOException e) {}
+		        }
 		    }
 
-		    // read the response body (may be null)
-		    byte[] responseBody = method.getResponseBody();
-		    final String soapResponse = new String(responseBody);
-		    log(soapResponse);
-		    
-		    return soapResponse;
-
-	    } catch (HttpException e) {
-	    	log(e.getMessage());
-	    	throw new RuntimeException(e);
-	    	
-	    } catch (IOException e) {
-	    	log(e.getMessage());
-	    	throw new RuntimeException(e);
-	    	
-	    } finally {
-	    	// release the connection.
-	    	method.releaseConnection();
-	    }
-		
+		  
 	}
 	
 	private void log(final String message) {
 		if (LOG.isDebugEnabled()) LOG.debug(message);
+	}
+	
+	/**
+	 * Method that cleans up the HttpClient, but not necessarily guaranteed to be called in Java.
+	 */
+	protected void finalize() throws Throwable {
+		if (client!=null) {
+			client.close();
+		}
+		super.finalize();
 	}
 
 }

@@ -24,10 +24,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -66,6 +68,9 @@ public class RegistryServiceLocalXmlImpl implements RegistryService, ReloadableF
     
     // local storage for LAS servers IP addresses
     private List<String> lasServers = new ArrayList<String>();
+    
+    // local storage for facet aliases
+    private List<Set<String>> aliases = new ArrayList<Set<String>>();
     
     // local storage for Solr 
     // NOTE: preserve shards order!
@@ -201,6 +206,30 @@ public class RegistryServiceLocalXmlImpl implements RegistryService, ReloadableF
         return shards;
         
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Set<String>> getAliases() {
+        
+        // reload registry if needed
+        watcher.reload();        
+        
+        // return aliases list
+        return aliases;
+        
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+	public void setAliases(final List<Set<String>> _aliases) {
+        synchronized (aliases) {
+            aliases = _aliases;             
+        }               
+	}
 
     /**
 	 * Method to parse the XML registry files into the local map of services.
@@ -226,6 +255,8 @@ public class RegistryServiceLocalXmlImpl implements RegistryService, ReloadableF
 	    boolean reloadLasServers = false;
 	    final LinkedHashSet<String> _shards = new LinkedHashSet<String>();
 	    boolean reloadShards = false;
+	    final List<Set<String>> _aliases = new ArrayList<Set<String>>();
+	    boolean reloadAliases = false;
 	    
 	    // loop over registry files
 	    for (final File registryFile : registryFiles) {   
@@ -308,6 +339,20 @@ public class RegistryServiceLocalXmlImpl implements RegistryService, ReloadableF
                         LOG.info("Added shard: "+  element.getText());
                     }
                     
+                 // parse search aliases
+                } else if (root.getName().equals("aliases")) {
+                    reloadAliases = true;
+                    
+                    for (final Object obj : root.getChildren("set", NS)) {
+                    	Set<String> set = new HashSet<String>();
+                        final Element element = (Element)obj;
+                        for (final Object obj2 : element.getChildren("value", NS)) {
+                        	final Element element2 = (Element)obj2;
+                        	set.add(element2.getText());
+                        }
+                        _aliases.add( set );
+                        LOG.info("Added aliases: "+  set);
+                    }
                 }
         		
                 if (LOG.isInfoEnabled()) LOG.info("Loaded information from registry file="+registryFile.getAbsolutePath());    
@@ -352,6 +397,11 @@ public class RegistryServiceLocalXmlImpl implements RegistryService, ReloadableF
 	    if (reloadShards) {
             synchronized (shards) {
                 shards = _shards;             
+            }               
+	    }
+	    if (reloadAliases) {
+            synchronized (aliases) {
+            	aliases = _aliases;             
             }               
 	    }
         

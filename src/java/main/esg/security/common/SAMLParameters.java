@@ -55,6 +55,7 @@ public interface SAMLParameters {
         
     
     public final static String FREE_RESOURCE_ATTRIBUTE_TYPE = "ANY";
+    public final static String AUTH_ONLY_RESOURCE_ATTRIBUTE_TYPE = "AUTH_ONLY";
     
     public enum RegistrationOutcome {
         UNKNOWN, SUCCESS, PENDING, DENIED, EXISTING

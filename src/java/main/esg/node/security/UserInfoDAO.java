@@ -229,11 +229,11 @@ public class UserInfoDAO {
         "SELECT password FROM esgf_security.user WHERE openid = ?";
 
     /*kltsa 04/06/2014. */
-    private static final String getPaswordForUsernameQuery = 
-        "SELECT password FROM esgf_security.user WHERE username = ?";
+    private static final String getPasswordForUsernameQuery = 
+        "SELECT password FROM esgf_security.user WHERE username = ? and openid like ?";
     
     private static final String getOpenidForUsernameQuery = 
-         "SELECT openid FROM esgf_security.user WHERE username = ?";
+         "SELECT openid FROM esgf_security.user WHERE username = ? and openid like ?";
 
 
     private static final String getOpenidsForEmailQuery =
@@ -430,7 +430,7 @@ public class UserInfoDAO {
             }
         };
 
-        new InitAdmin();
+        // new InitAdmin();
     }
     
     public void setProperties(Properties props) { this.props = props; }
@@ -899,13 +899,16 @@ public class UserInfoDAO {
                   
       try
       {
-        String cryptPassword = queryRunner.query(getPaswordForUsernameQuery, passwordQueryHandler, username);
+    	String hostName = props.getProperty("esgf.host", getFQDN());
+    	String idpPeer = props.getProperty("esgf.idp.peer", hostName);
+        String cryptPassword = queryRunner.query(getPasswordForUsernameQuery, passwordQueryHandler, username, "%"+idpPeer+"%");
         if(cryptPassword == null) 
         {
           log.error("PASSWORD RETURNED FROM DATABASE for ["+username+"] IS: "+cryptPassword);
           return false;
         }
         isMatch = encoder.equals(queryPassword,cryptPassword);
+        log.debug("Check password: username="+username+" idpPeer="+idpPeer+" authenticated="+isMatch);
       }
       catch(SQLException ex)
       {
@@ -917,10 +920,12 @@ public class UserInfoDAO {
     }
 
     /* kltsa 04/06/2014 : Returns user openid. */ 
-    String getOpenid(String username) {
+    public String getOpenid(String username) {
+    	String hostName = props.getProperty("esgf.host", getFQDN());
+    	String idpPeer = props.getProperty("esgf.idp.peer", hostName);
         String openid = "null";
         try {
-        	openid = queryRunner.query(getOpenidForUsernameQuery, singleStringResultSetHandler, username);
+        	openid = queryRunner.query(getOpenidForUsernameQuery, singleStringResultSetHandler, username, "%"+idpPeer+"%");
         }catch(SQLException ex) {
             log.error(ex);
             throw new ESGFDataAccessException(ex);

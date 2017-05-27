@@ -1,33 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 
-<idp_whitelist xmlns="http://www.esgf.org/whitelist">
+<idp_whitelist xmlns="http://www.esgf.org/whitelist">a
 
-    <value>https://adm07.cmcc.it/esgf-idp/idp/openidServer.htm</value>
     <value>https://ceda.ac.uk/openid/Provider/server</value>
     <value>https://ceda.ac.uk/OpenID/Provider/server</value>
-    <value>https://cordexesg.dmi.dk/esgf-idp/idp/openidServer.htm</value>
-    <value>https://dev.esg.anl.gov/esgf-idp/idp/openidServer.htm</value>
-    <value>https://esg-cccr.tropmet.res.in/esgf-idp/idp/openidServer.htm</value>
-    <value>https://esg01.nersc.gov/esgf-idp/idp/openidServer.htm</value>
-    <value>https://esg2.e-inis.ie/esgf-idp/idp/openidServer.htm</value>
-    <value>https://esg2.nci.org.au/esgf-idp/idp/openidServer.htm</value>
-    <value>https://esgdata.gfdl.noaa.gov/esgf-idp/idp/openidServer.htm</value>
-    <value>https://esg.bnu.edu.cn/esgf-idp/idp/openidServer.htm</value>
-    <value>https://esg.ccs.ornl.gov/esgf-idp/idp/openidServer.htm</value>
-    <value>https://esg.pik-potsdam.de/esgf-idp/idp/openidServer.htm</value>
-    <value>https://esg-datanode.jpl.nasa.gov/esgf-idp/idp/openidServer.htm</value>
     <value>https://esg-dn1.nsc.liu.se/esgf-idp/idp/openidServer.htm</value>
-    <value>https://esgf-data.dkrz.de/esgf-idp/idp/openidServer.htm</value>
-    <value>https://esgf-data.ucar.edu/esgf-idp/idp/openidServer.htm</value>
-    <value>https://esgf.nccs.nasa.gov/esgf-idp/idp/openidServer.htm</value>
+    <value>https://esgf-node.jpl.nasa.gov/esgf-idp/idp/openidServer.htm</value>
     <value>https://esgf-node.ipsl.upmc.fr/esgf-idp/idp/openidServer.htm</value>
-    <value>https://euclipse1.dkrz.de/esgf-idp/idp/openidServer.htm</value>
-    <value>https://hydra.fsl.noaa.gov/esgf-idp/idp/openidServer.htm</value>
-    <value>https://noresg.norstore.uio.no/esgf-idp/idp/openidServer.htm</value>
-    <value>https://pcmdi9.llnl.gov/esgf-idp/idp/openidServer.htm</value>
-    <value>https://pcmdi11.llnl.gov/esgf-idp/idp/openidServer.htm</value>
-    <value>https://vesgint-idx.ipsl.jussieu.fr/esgf-idp/idp/openidServer.htm</value>
-    <value>https://www.earthsystemgrid.org/openid/provider.htm</value>
-    <value>https://dm1.cptec.inpe.br/esgf-idp/openidServer.htm</value>
+    <value>https://pcmdi.llnl.gov/esgf-idp/idp/openidServer.htm</value>
+    <value>https://esgf-data.dkrz.de/esgf-idp/idp/openidServer.htm</value>
+    <value>https://hydra.fsl.noaa.gov/esgf-idp/idp/openidServer.htm</value>a
 
 </idp_whitelist>
