@@ -281,7 +281,7 @@ public class SAMLBuilder {
 	// <saml:Action xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">read</saml:Action>
 	public Action getAction(final String action) {
         final Action actionObj = actionBuilder.buildObject();
-        //actionObj.setNamespace(SAMLParameters.AC_ACTION);
+        actionObj.setNamespace(Action.RWEDC_NS_URI);
         actionObj.setAction(action);
         return actionObj;
 	}
