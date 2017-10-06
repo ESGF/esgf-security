@@ -182,8 +182,7 @@ configure_postgress() {
         #install the egg....
         source ${cdat_home}/bin/activate esgf-pub
         ((DEBUG)) && "easy_install ${esgf_security_egg_file}"
-        conda install -y postgresql
-        easy_install ${esgf_security_egg_file}
+        $cdat_home/bin/easy_install ${esgf_security_egg_file}
         [ $? != 0 ] && echo "ERROR: Could not create esgf security python module" && checked_done 1
 
         if [ -n "$(postgres_list_db_schemas ${node_db_security_schema_name})" ]; then
