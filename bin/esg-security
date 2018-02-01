@@ -176,7 +176,7 @@ configure_postgress() {
         #------------------------------------------------------------------------
 
         #download the egg file from the distribution server is necessary....
-        checked_get ${esgf_security_egg_file} ${esg_dist_url}/${script_maj_version}/${script_sub_version}/esgf-security/${esgf_security_egg_file} $((force_install))
+        checked_get ${esgf_security_egg_file} ${esg_dist_url}/esgf-security/${esgf_security_egg_file} $((force_install))
         (( $? > 1 )) && return 0
 
         #install the egg....
@@ -376,7 +376,7 @@ clean_security_database_subsystem_installation() {
             if $(psql -U ${postgress_user} esgcet -c "\dt esgf_security.;" | egrep '^\([1-9]* row[s]?\)' >& /dev/null); then
 
                 #Call me paranoid but I want some integrity check that this code is what is meant to be straight from the distribution.
-                diff <(md5sum ${scripts_dir}/esg-security | tr -s " " | cut -d " " -f 1) <(curl -s -L --insecure ${esg_dist_url}/${script_maj_version}/${script_sub_version}/esgf-security/esg-security.md5 | tr -s " " | cut -d " " -f 1) >& /dev/null
+                diff <(md5sum ${scripts_dir}/esg-security | tr -s " " | cut -d " " -f 1) <(curl -s -L --insecure ${esg_dist_url}/esgf-security/esg-security.md5 | tr -s " " | cut -d " " -f 1) >& /dev/null
                 [ $? != 0 ] && echo " WARNING: Could not verify ${scripts_dir}/esg-security, aborting this uninstall" && return 3
                 echo "[VERIFIED]"
 
@@ -400,8 +400,8 @@ clean_security_database_subsystem_installation() {
 fetch_user_migration_launcher() {
     if [ $((sel & IDP_BIT ))   != 0 ]; then
         pushd ${scripts_dir} >& /dev/null
-        checked_get ${esgf_user_migration_launcher} ${esg_dist_url}/${script_maj_version}/${script_sub_version}/${security_web_service_name}/${esgf_user_migration_launcher} $((force_install))
-        (( $? > 1 )) && echo " ERROR: Could not download ${esg_dist_url}/${script_maj_version}/${script_sub_version}/${security_web_service_name}/${esgf_user_migration_launcher} :-(" && popd >& /dev/null && return 1
+        checked_get ${esgf_user_migration_launcher} ${esg_dist_url}/${security_web_service_name}/${esgf_user_migration_launcher} $((force_install))
+        (( $? > 1 )) && echo " ERROR: Could not download ${esg_dist_url}/${security_web_service_name}/${esgf_user_migration_launcher} :-(" && popd >& /dev/null && return 1
         chmod 755 ${esgf_user_migration_launcher}
         popd >& /dev/null
         return 0
@@ -413,8 +413,8 @@ fetch_user_migration_launcher() {
 fetch_policy_check_launcher() {
     if [ $((sel & IDP_BIT+DATA_BIT ))   != 0 ]; then
         pushd ${scripts_dir} >& /dev/null
-        checked_get ${esgf_policy_check_launcher} ${esg_dist_url}/${script_maj_version}/${script_sub_version}/${security_web_service_name}/${esgf_policy_check_launcher} $((force_install))
-        (( $? > 1 )) && echo " ERROR: Could not download ${esg_dist_url}/${script_maj_version}/${script_sub_version}/${security_web_service_name}/${esgf_policy_check_launcher} :-(" && popd >& /dev/null && return 1
+        checked_get ${esgf_policy_check_launcher} ${esg_dist_url}/${security_web_service_name}/${esgf_policy_check_launcher} $((force_install))
+        (( $? > 1 )) && echo " ERROR: Could not download ${esg_dist_url}/${security_web_service_name}/${esgf_policy_check_launcher} :-(" && popd >& /dev/null && return 1
         chmod 755 ${esgf_policy_check_launcher}
         popd >& /dev/null
         return 0
