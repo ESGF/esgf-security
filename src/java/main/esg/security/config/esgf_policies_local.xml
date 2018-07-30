@@ -13,6 +13,8 @@
     <!-- <policy resource=".*cmip5.*" attribute_type="CMIP5 Research" attribute_value="default" action="Read"/> -->
     <!-- <policy resource=".*cmip5.*" attribute_type="CMIP5 Commercial" attribute_value="default" action="Read"/> -->
     
+    <!-- The following statements makes all CMIP6 files freely available for download -->
+    <policy resource=".*CMIP6.*" attribute_type="ANY" attribute_value="" action="Read"/>
 
     <!-- The following statement allows all members of group "MY GROUP" to read any local URL that contains "my_data"
     <policy resource=".*my_data.*" attribute_type="MY GROUP" attribute_value="user" action="Read"/> -->
