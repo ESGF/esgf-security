@@ -18,7 +18,7 @@
  ******************************************************************************/
 package esg.security.common;
 
-import org.jdom.Namespace;
+import org.jdom2.Namespace;
 
 /**
  * Interface containing commonly used SAML parameters.
