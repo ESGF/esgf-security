@@ -75,13 +75,12 @@
 	<classpathentry kind="lib" path="lib/fetched/esgf-node-manager-connector-1.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/esgf-node-manager-filters-1.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/fetched/jdom-2.0.2.jar"/>
-	<classpathentry kind="lib" path="lib/fetched/spring-aop-5.1.0.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/fetched/spring-beans-5.1.0.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/fetched/spring-context-5.1.0.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/fetched/spring-core-5.1.0.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/fetched/spring-expression-5.1.0.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/fetched/spring-jcl-5.1.0.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/fetched/spring-web-5.1.0.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/fetched/spring-webmvc-5.1.0.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/spring-aop-4.3.19.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/spring-beans-4.3.19.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/spring-context-4.3.19.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/spring-core-4.3.19.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/spring-expression-4.3.19.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/spring-web-4.3.19.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/fetched/spring-webmvc-4.3.19.RELEASE.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
