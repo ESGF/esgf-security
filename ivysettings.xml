@@ -22,8 +22,11 @@
       
       <!-- Spring repository -->
       <include url="${ivy.default.root.url}/ivysettings-spring.xml"/>
+      
+      <!-- Alfresco -->
+      <include url="/Users/cinquini/eclipse-workspace/esgf-artifacts/ivy/ivysettings-alfresco.xml"/>
 
-      <include url="${ivy.default.root.url}/ivysettings-default-chain.xml"/>
+      <include url="/Users/cinquini/eclipse-workspace/esgf-artifacts/ivy/ivysettings-default-chain.xml"/>
       
 </ivysettings>
 
