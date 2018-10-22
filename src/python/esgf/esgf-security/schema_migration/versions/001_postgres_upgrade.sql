@@ -267,6 +267,7 @@ INSERT INTO esgf_security.role (name,description) VALUES ('none', 'None');
 INSERT INTO esgf_security.role (name,description) VALUES ('default', 'Standard');
 INSERT INTO esgf_security.role (name,description) VALUES ('publisher', 'Data Publisher');
 INSERT INTO esgf_security.role (name,description) VALUES ('admin', 'Group Administrator');
+INSERT INTO esgf_security.role (name,description) VALUES ('user', 'User Data Access');
 
 --
 -- PostgreSQL database dump complete
