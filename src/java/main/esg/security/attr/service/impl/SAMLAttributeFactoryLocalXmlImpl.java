@@ -24,9 +24,9 @@ import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
 import org.springframework.core.io.ClassPathResource;
 
 import esg.security.attr.service.api.SAMLAttributeFactory;

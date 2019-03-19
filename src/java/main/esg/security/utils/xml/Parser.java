@@ -26,10 +26,10 @@ import java.util.Enumeration;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
-import org.jdom.Document;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.XMLOutputter;
+import org.jdom2.Document;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.XMLOutputter;
 
 
 /**
@@ -79,7 +79,7 @@ public class Parser {
    */
   public static String toString(String xmlfile) throws JDOMException, IOException {
     Document jdoc = toJDOM(xmlfile);
-    XMLOutputter outputter = new XMLOutputter(org.jdom.output.Format.getCompactFormat());
+    XMLOutputter outputter = new XMLOutputter(org.jdom2.output.Format.getCompactFormat());
     return outputter.outputString(jdoc);
   } // toString()
 
@@ -118,7 +118,7 @@ public class Parser {
    */
   public static String toString(String xmlfile, boolean validate) throws JDOMException, IOException {
     Document jdoc = toJDOM(xmlfile, validate);
-    XMLOutputter outputter = new XMLOutputter(org.jdom.output.Format.getCompactFormat());
+    XMLOutputter outputter = new XMLOutputter(org.jdom2.output.Format.getCompactFormat());
     return outputter.outputString(jdoc);
   } // toString()
 

@@ -182,7 +182,8 @@ configure_postgress() {
         #install the egg....
         source ${cdat_home}/bin/activate esgf-pub
         ((DEBUG)) && "easy_install ${esgf_security_egg_file}"
-        $cdat_home/bin/easy_install ${esgf_security_egg_file}
+        conda install -y postgresql
+        easy_install ${esgf_security_egg_file}
         [ $? != 0 ] && echo "ERROR: Could not create esgf security python module" && checked_done 1
 
         if [ -n "$(postgres_list_db_schemas ${node_db_security_schema_name})" ]; then
@@ -382,8 +383,8 @@ clean_security_database_subsystem_installation() {
                 backup_db -db ${node_db_name} -s security
                 echo "removing esgf_security.* schema and tables and DATA"
                 ${cdat_home}/bin/esgf_security_initialize --dburl ${postgress_user}:${pg_sys_acct_passwd}@localhost:${postgress_port}/esgcet -d 0
-                rm -rvf ${cdat_home}/bin/esgf_security_initialize && \
-                    rm -rf ${cdat_home}/lib/python${python_version}/${esgf_security_egg_file} && \
+                rm -rvf ${cdat_home}/envs/esgf-pub/bin/esgf_security_initialize && \
+                    rm -rf ${cdat_home}/envs/esgf-pub/lib/python${python_version}/${esgf_security_egg_file} && \
                     perl -n -i -e'print unless m!python:esgf_security!' ${install_manifest} && echo "[REMOVED]"
             else
                 echo " Could not find security tables in the database."
