@@ -190,6 +190,10 @@ public class Parser {
   	
     	SAXBuilder _builder = new SAXBuilder(parser, validate);
     _builder.setFeature("http://xml.org/sax/features/namespaces",true);
+    _builder.setFeature("http://apache.org/xml/features/disallow-doctype-decl",true);
+    _builder.setFeature("http://xml.org/sax/features/external-general-entities", false);
+    _builder.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+    _builder.setExpandEntities(false);
     //  builder.setIgnoringElementContentWhitespace(true);
     
     // load schema locations
